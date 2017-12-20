@@ -47,6 +47,7 @@
 @property (nonatomic) NVKeyboard *keyboard;
 @property (nonatomic) GSSiPopoverView *popoverView;
 @property (nonatomic, copy) NSArray<NSString *> *zips;
+@property (nonatomic) NSTimer *timer;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;
@@ -131,7 +132,7 @@
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
                   @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Show RiteHome Recorder",
-                  @"Show RiteHome Player", @"Realtor.com Property Search"];
+                  @"Show RiteHome Player", @"Search Realtor Listings"];
     
     [_tableView reloadData];
 }
@@ -741,25 +742,39 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Realtor.com Property Search"])
+              isEqualToString:@"Search Realtor Listings"])
     {
-        if (hasNetwork())
-        {
-            NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
-            
-            NSString *text = [NSString stringWithContentsOfFile:filePath
-                                                       encoding:NSUTF8StringEncoding
-                                                          error:nil];
-            
-            _zips = [text componentsSeparatedByString:@"\n"];
-            _zips = @[@"55344"];
-            _numZips = 0;
-            [self searchPropsForZip];
-        }
+        _timer = [NSTimer scheduledTimerWithTimeInterval:3600.0
+                                                  target:self
+                                                selector:@selector(performListingsSearch)
+                                                userInfo:nil
+                                                 repeats:YES];
         
-        else
-            showAlert(@"RHSearch ERROR: Network required.");
+        [_timer fire];
     }
+}
+
+- (void)performListingsSearch
+{
+    if (hasNetwork())
+    {
+        CRAPI.sharedInstance.rhUpdateTime = NSDate.date.timeIntervalSince1970;
+        CRAPI.sharedInstance.rhItemsUpdated = 0;
+        CRAPI.sharedInstance.rhItemsModified = 0;
+        CRAPI.sharedInstance.rhItemsAdded = 0;
+        NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
+        
+        NSString *text = [NSString stringWithContentsOfFile:filePath
+                                                   encoding:NSUTF8StringEncoding
+                                                      error:nil];
+        
+        _zips = [text componentsSeparatedByString:@"\n"];
+        _numZips = 0;
+        [self searchPropsForZip];
+    }
+    
+    else
+        showAlert(@"RHSearch ERROR: Network required.");
 }
 
 - (void)searchPropsForZip
@@ -773,23 +788,68 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                       forZip:(int)zip
 {
     _numListings += items.count;
-    
-    NSLog(@"%i returned %li items", zip, items.count);
-    NSLog(@"%i listings found in %i zips so far", _numListings, _numZips);
-    
-    for (RHSearchItem *item in items)
-        NSLog(@"%@", item);
-    
     _zip++;
+    
+    RHSearchDatabase *rhsd = RHSearchDatabase.new;
+    [rhsd updateDatabaseForSearchItems:items];
     
     if (_numZips < _zips.count)
         [self searchPropsForZip];
+    
+    else
+    {
+        int count1 = rhsd.numberOfItems;
+        [rhsd deleteOldItems];
+        int count2 = rhsd.numberOfItems;
+        int itemsDeleted = (count1 - count2);
+        
+        NSError *error = nil;
+        
+        NSString *filePath = [NSString stringWithFormat:@"%@/RHSearchResults.txt",
+                              UserDefaults.defaults.localFilePath];
+        
+        NSMutableString *results = NSMutableString.string;
+        
+        NSString *oldResults = [NSString stringWithContentsOfFile:filePath
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:&error];
+        
+        if (!error)
+            [results appendString:oldResults];
+        
+        if (!results.length)
+            [results appendString:@"TIME\tTOTAL\tADDED\tMODIFIED\tDELETED"];
+        
+        [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i",
+        CRAPI.sharedInstance.rhUpdateTime, CRAPI.sharedInstance.rhItemsUpdated, CRAPI.sharedInstance.rhItemsAdded,
+        CRAPI.sharedInstance.rhItemsModified, itemsDeleted]];
+        
+        [results.copy writeToFile:filePath
+                       atomically:YES
+                         encoding:NSUTF8StringEncoding
+                            error:&error];
+        
+        [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+            
+            _push = FTPDataPush.push;
+            _push.delegate = self;
+            _push.popover = _popoverView;
+            [_popoverView showAfter:0.1 withTitle:@"Upload RHSearch.txt"];
+            
+            [_push sendFile:filePath.lastPathComponent
+              fromDirectory:filePath.stringByDeletingLastPathComponent
+                     toFile:filePath.lastPathComponent
+                toDirectory:@"RiteHome"
+             deleteWhenDone:NO
+             appendFileName:NO];
+        }];
+    }
 }
 
 - (void)searchDidReceiveError:(NSString *)error
                        forZip:(int)zip
 {
-    NSLog(@"Search for zip %i received ERROR: %@", zip, error);
+    showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)", error, zip]);
 }
 
 - (void)uploadCrimeData
