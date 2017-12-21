@@ -860,7 +860,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                  appendFileName:NO];
             }];
             
-            [self performSelector:@selector(performListingsSearch) withObject:nil afterDelay:3600.0];
+            [self performSelector:@selector(performListingsSearch) withObject:nil afterDelay:10800.0];
         }
     }
 }
@@ -874,7 +874,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                               CRAPI.sharedInstance.rhErrors];
     }];
     
-    [NSThread sleepForTimeInterval:300.0];
+    [NSThread sleepForTimeInterval:900.0];
     [self searchPropsForZip];
 }
 
