@@ -783,7 +783,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     RHSearch *search = [RHSearch searchWithDelegate:self];
     CRAPI.sharedInstance.rhCurrentZip = _zips[_numZips++].intValue;
-    [search getItemsForZip:CRAPI.sharedInstance.rhCurrentZip];
+    [search getItemsForZip];
     
     [NSOperationQueue.mainQueue addOperationWithBlock:^ {
         _popoverView.title = [NSString stringWithFormat:@"RHSearch for Zip: %i",
@@ -794,77 +794,81 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
-                      forZip:(int)zip
+                   morePages:(BOOL)morePages
 {
     _numListings += items.count;
     RHSearchDatabase *rhsd = RHSearchDatabase.new;
     [rhsd updateDatabaseForSearchItems:items];
     
-    NSLog(@"time: %i; %i total, %i added, %i modified, %i ignored",
-          CRAPI.sharedInstance.rhUpdateTime, _numListings, CRAPI.sharedInstance.rhItemsAdded,
-          CRAPI.sharedInstance.rhItemsModified, CRAPI.sharedInstance.rhItemsIgnored);
+    NSLog(@"zip: %i, time: %i; %i total, %i added, %i modified, %i ignored",
+          CRAPI.sharedInstance.rhCurrentZip, CRAPI.sharedInstance.rhUpdateTime, _numListings,
+          CRAPI.sharedInstance.rhItemsAdded, CRAPI.sharedInstance.rhItemsModified,
+          CRAPI.sharedInstance.rhItemsIgnored);
     
-    if (_numZips < _zips.count)
-        [self searchPropsForZip];
-    
-    else
+    if (!morePages)
     {
-        int count1 = rhsd.numberOfItems;
-        [rhsd deleteOldItems];
-        int count2 = rhsd.numberOfItems;
-        int itemsDeleted = (count1 - count2);
+        if (_numZips < _zips.count)
+            [self searchPropsForZip];
         
-        NSError *error = nil;
-        
-        NSString *filePath = [NSString stringWithFormat:@"%@/RHSearchResults.txt",
-                              UserDefaults.defaults.localFilePath];
-        
-        NSMutableString *results = NSMutableString.string;
-        
-        NSString *oldResults = [NSString stringWithContentsOfFile:filePath
-                                                         encoding:NSUTF8StringEncoding
-                                                            error:&error];
-        
-        if (!error)
-            [results appendString:oldResults];
-        
-        if (!results.length)
-            [results appendString:@"TIME\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED"];
-        
-        [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i\t%i",
-        CRAPI.sharedInstance.rhUpdateTime, count2, CRAPI.sharedInstance.rhItemsAdded,
-        CRAPI.sharedInstance.rhItemsModified, itemsDeleted, CRAPI.sharedInstance.rhItemsIgnored]];
-        
-        [results.copy writeToFile:filePath
-                       atomically:YES
-                         encoding:NSUTF8StringEncoding
-                            error:&error];
-        
-        [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+        else
+        {
+            int count1 = rhsd.numberOfItems;
+            [rhsd deleteOldItems];
+            int count2 = rhsd.numberOfItems;
+            int itemsDeleted = (count1 - count2);
             
-            _push = FTPDataPush.push;
-            _push.delegate = self;
-            [_popoverView updateProgress:0.0];
-            _push.popover = _popoverView;
-            _popoverView.title = @"Upload RHSearch.txt";
+            NSError *error = nil;
             
-            [_push sendFile:filePath.lastPathComponent
-              fromDirectory:filePath.stringByDeletingLastPathComponent
-                     toFile:filePath.lastPathComponent
-                toDirectory:@"RiteHome"
-             deleteWhenDone:NO
-             appendFileName:NO];
-        }];
+            NSString *filePath = [NSString stringWithFormat:@"%@/RHSearchResults.txt",
+                                  UserDefaults.defaults.localFilePath];
+            
+            NSMutableString *results = NSMutableString.string;
+            
+            NSString *oldResults = [NSString stringWithContentsOfFile:filePath
+                                                             encoding:NSUTF8StringEncoding
+                                                                error:&error];
+            
+            if (!error)
+                [results appendString:oldResults];
+            
+            if (!results.length)
+                [results appendString:@"TIME\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED"];
+            
+            [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i\t%i",
+                                   CRAPI.sharedInstance.rhUpdateTime, count2, CRAPI.sharedInstance.rhItemsAdded,
+                                   CRAPI.sharedInstance.rhItemsModified, itemsDeleted, CRAPI.sharedInstance.rhItemsIgnored]];
+            
+            [results.copy writeToFile:filePath
+                           atomically:YES
+                             encoding:NSUTF8StringEncoding
+                                error:&error];
+            
+            [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+                
+                _push = FTPDataPush.push;
+                _push.delegate = self;
+                [_popoverView updateProgress:0.0];
+                _push.popover = _popoverView;
+                _popoverView.title = @"Upload RHSearch.txt";
+                
+                [_push sendFile:filePath.lastPathComponent
+                  fromDirectory:filePath.stringByDeletingLastPathComponent
+                         toFile:filePath.lastPathComponent
+                    toDirectory:@"RiteHome"
+                 deleteWhenDone:NO
+                 appendFileName:NO];
+            }];
+        }
     }
 }
 
 - (void)searchDidReceiveError:(NSString *)error
-                       forZip:(int)zip
 {
     [NSOperationQueue.mainQueue addOperationWithBlock:^ {
         
         [_popoverView hide];
-        showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)", error, zip]);
+        showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)",
+                   error, CRAPI.sharedInstance.rhCurrentZip]);
     }];
 }
 
