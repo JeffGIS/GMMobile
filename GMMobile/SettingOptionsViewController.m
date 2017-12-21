@@ -759,7 +759,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (hasNetwork())
     {
         CRAPI.sharedInstance.rhUpdateTime = NSDate.date.timeIntervalSince1970;
-        CRAPI.sharedInstance.rhItemsUpdated = 0;
         CRAPI.sharedInstance.rhItemsModified = 0;
         CRAPI.sharedInstance.rhItemsAdded = 0;
         NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
@@ -828,7 +827,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [results appendString:@"TIME\tTOTAL\tADDED\tMODIFIED\tDELETED"];
         
         [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i",
-        CRAPI.sharedInstance.rhUpdateTime, CRAPI.sharedInstance.rhItemsUpdated, CRAPI.sharedInstance.rhItemsAdded,
+        CRAPI.sharedInstance.rhUpdateTime, count2, CRAPI.sharedInstance.rhItemsAdded,
         CRAPI.sharedInstance.rhItemsModified, itemsDeleted]];
         
         [results.copy writeToFile:filePath
@@ -857,8 +856,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)searchDidReceiveError:(NSString *)error
                        forZip:(int)zip
 {
-    [_popoverView hide];
-    showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)", error, zip]);
+    [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+        
+        [_popoverView hide];
+        showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)", error, zip]);
+    }];
 }
 
 - (void)uploadCrimeData
