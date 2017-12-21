@@ -744,7 +744,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Search Realtor Listings"])
     {
-        _timer = [NSTimer scheduledTimerWithTimeInterval:10800.0
+        _timer = [NSTimer scheduledTimerWithTimeInterval:21600.0
                                                   target:self
                                                 selector:@selector(performListingsSearch)
                                                 userInfo:nil
