@@ -744,7 +744,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Search Realtor Listings"])
     {
-        _timer = [NSTimer scheduledTimerWithTimeInterval:3600.0
+        _timer = [NSTimer scheduledTimerWithTimeInterval:10800.0
                                                   target:self
                                                 selector:@selector(performListingsSearch)
                                                 userInfo:nil
@@ -789,7 +789,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _popoverView.title = [NSString stringWithFormat:@"RHSearch for Zip: %i",
                               CRAPI.sharedInstance.rhCurrentZip];
         
-        [_popoverView updateProgress:(_numZips / (float)_zips.count)];
+        [_popoverView updateProgress:((_numZips - 1) / (float)_zips.count)];
     }];
 }
 
