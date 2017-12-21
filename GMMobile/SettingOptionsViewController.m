@@ -770,6 +770,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         _zips = [text componentsSeparatedByString:@"\n"];
         _numZips = 0;
+
+        [_popoverView showAfter:0.0 withTitle:@""];
         [self searchPropsForZip];
     }
     
@@ -782,6 +784,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     RHSearch *search = [RHSearch searchWithDelegate:self];
     _zip = _zips[_numZips++].intValue;
     [search getItemsForZip:_zip];
+    
+    [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+        _popoverView.title = [NSString stringWithFormat:@"RHSearch for Zip: %i", _zip];
+        [_popoverView updateProgress:(_numZips / (float)_zips.count)];
+    }];
 }
 
 - (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
@@ -833,8 +840,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             _push = FTPDataPush.push;
             _push.delegate = self;
+            [_popoverView updateProgress:0.0];
             _push.popover = _popoverView;
-            [_popoverView showAfter:0.1 withTitle:@"Upload RHSearch.txt"];
+            _popoverView.title = @"Upload RHSearch.txt";
             
             [_push sendFile:filePath.lastPathComponent
               fromDirectory:filePath.stringByDeletingLastPathComponent
@@ -849,6 +857,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)searchDidReceiveError:(NSString *)error
                        forZip:(int)zip
 {
+    [_popoverView hide];
     showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)", error, zip]);
 }
 
