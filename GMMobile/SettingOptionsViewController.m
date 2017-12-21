@@ -47,7 +47,6 @@
 @property (nonatomic) NVKeyboard *keyboard;
 @property (nonatomic) GSSiPopoverView *popoverView;
 @property (nonatomic, copy) NSArray<NSString *> *zips;
-@property (nonatomic) NSTimer *timer;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;
@@ -744,13 +743,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Search Realtor Listings"])
     {
-        _timer = [NSTimer scheduledTimerWithTimeInterval:21600.0
-                                                  target:self
-                                                selector:@selector(performListingsSearch)
-                                                userInfo:nil
-                                                 repeats:YES];
-        
-        [_timer fire];
+        [self performListingsSearch];
     }
 }
 
@@ -762,6 +755,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.rhItemsModified = 0;
         CRAPI.sharedInstance.rhItemsAdded = 0;
         CRAPI.sharedInstance.rhItemsIgnored = 0;
+        CRAPI.sharedInstance.rhErrors = 0;
+        
         NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
         
         NSString *text = [NSString stringWithContentsOfFile:filePath
@@ -772,6 +767,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _numZips = 0;
 
         [_popoverView showAfter:0.0 withTitle:@""];
+        CRAPI.sharedInstance.rhCurrentZip = _zips.firstObject.intValue;
         [self searchPropsForZip];
     }
     
@@ -782,14 +778,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)searchPropsForZip
 {
     RHSearch *search = [RHSearch searchWithDelegate:self];
-    CRAPI.sharedInstance.rhCurrentZip = _zips[_numZips++].intValue;
     [search getItemsForZip];
     
     [NSOperationQueue.mainQueue addOperationWithBlock:^ {
         _popoverView.title = [NSString stringWithFormat:@"RHSearch for Zip: %i",
                               CRAPI.sharedInstance.rhCurrentZip];
         
-        [_popoverView updateProgress:((_numZips - 1) / (float)_zips.count)];
+        [_popoverView updateProgress:(_numZips / (float)_zips.count)];
     }];
 }
 
@@ -800,15 +795,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     RHSearchDatabase *rhsd = RHSearchDatabase.new;
     [rhsd updateDatabaseForSearchItems:items];
     
-    NSLog(@"zip: %i, time: %i; %i total, %i added, %i modified, %i ignored",
+    NSLog(@"zip: %i, time: %i; %i total, %i added, %i modified, %i ignored, %i errors",
           CRAPI.sharedInstance.rhCurrentZip, CRAPI.sharedInstance.rhUpdateTime, _numListings,
           CRAPI.sharedInstance.rhItemsAdded, CRAPI.sharedInstance.rhItemsModified,
-          CRAPI.sharedInstance.rhItemsIgnored);
+          CRAPI.sharedInstance.rhItemsIgnored, CRAPI.sharedInstance.rhErrors);
     
     if (!morePages)
     {
         if (_numZips < _zips.count)
+        {
+            CRAPI.sharedInstance.rhCurrentZip = _zips[_numZips++].intValue;
             [self searchPropsForZip];
+        }
         
         else
         {
@@ -816,6 +814,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [rhsd deleteOldItems];
             int count2 = rhsd.numberOfItems;
             int itemsDeleted = (count1 - count2);
+            int currentTime = NSDate.date.timeIntervalSince1970;
+            int runningTime = (currentTime - CRAPI.sharedInstance.rhUpdateTime);
             
             NSError *error = nil;
             
@@ -832,11 +832,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 [results appendString:oldResults];
             
             if (!results.length)
-                [results appendString:@"TIME\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED"];
+                [results appendString:@"START\tRUNNING\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED\tERRORS"];
             
-            [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i\t%i",
-                                   CRAPI.sharedInstance.rhUpdateTime, count2, CRAPI.sharedInstance.rhItemsAdded,
-                                   CRAPI.sharedInstance.rhItemsModified, itemsDeleted, CRAPI.sharedInstance.rhItemsIgnored]];
+            [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i",
+                                   CRAPI.sharedInstance.rhUpdateTime, runningTime, count2, CRAPI.sharedInstance.rhItemsAdded,
+                                   CRAPI.sharedInstance.rhItemsModified, itemsDeleted, CRAPI.sharedInstance.rhItemsIgnored,
+                                   CRAPI.sharedInstance.rhErrors]];
             
             [results.copy writeToFile:filePath
                            atomically:YES
@@ -858,18 +859,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                  deleteWhenDone:NO
                  appendFileName:NO];
             }];
+            
+            [self performSelector:@selector(performListingsSearch) withObject:nil afterDelay:3600.0];
         }
     }
 }
 
 - (void)searchDidReceiveError:(NSString *)error
 {
+    CRAPI.sharedInstance.rhErrors++;
+    
     [NSOperationQueue.mainQueue addOperationWithBlock:^ {
-        
-        [_popoverView hide];
-        showAlert([NSString stringWithFormat:@"RHSearch ERROR:\n%@\n(zip: %i)",
-                   error, CRAPI.sharedInstance.rhCurrentZip]);
+        _popoverView.title = [NSString stringWithFormat:@"RHSearch ERROR (%i)...waiting",
+                              CRAPI.sharedInstance.rhErrors];
     }];
+    
+    [NSThread sleepForTimeInterval:300.0];
+    [self searchPropsForZip];
 }
 
 - (void)uploadCrimeData
