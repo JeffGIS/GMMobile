@@ -860,7 +860,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                  appendFileName:NO];
             }];
             
-            [NSThread sleepForTimeInterval:3600.0];
+            [NSThread sleepForTimeInterval:RH_BATCH_INTERVAL];
             [self performListingsSearch];
         }
     }
@@ -875,7 +875,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                               CRAPI.sharedInstance.rhErrors];
     }];
     
-    [NSThread sleepForTimeInterval:900.0];
+    [NSThread sleepForTimeInterval:RH_ERROR_INTERVAL];
     [self searchPropsForZip];
 }
 
