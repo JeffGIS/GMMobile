@@ -834,7 +834,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             if (!results.length)
                 [results appendString:@"START\tRUNNING\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED\tERRORS"];
             
-            [results appendString:[NSString stringWithFormat:@"\n%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i",
+            [results appendString:[NSString stringWithFormat:@"\r\n%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i",
                                    CRAPI.sharedInstance.rhUpdateTime, runningTime, count2, CRAPI.sharedInstance.rhItemsAdded,
                                    CRAPI.sharedInstance.rhItemsModified, itemsDeleted, CRAPI.sharedInstance.rhItemsIgnored,
                                    CRAPI.sharedInstance.rhErrors]];
@@ -860,7 +860,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                  appendFileName:NO];
             }];
             
-            [self performSelector:@selector(performListingsSearch) withObject:nil afterDelay:10800.0];
+            [NSThread sleepForTimeInterval:3600.0];
+            [self performListingsSearch];
         }
     }
 }
