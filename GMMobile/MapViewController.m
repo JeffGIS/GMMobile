@@ -52,6 +52,7 @@
 #import "CCodeLibrary/YTPlayerView.h"
 #import "CCodeLibrary/RHRecorder.h"
 #import "CCodeLibrary/RHPlayer.h"
+#import "CCodeLibrary/RHWalkScore.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -75,7 +76,7 @@
     NVAlertViewDelegate,MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,
     PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,
     NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,
-    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate>
+    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate,RHWalkScoreDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -1279,8 +1280,27 @@
         _mapView.mapType = kGMSTypeHybrid;
         [_locationManager requestLocation];
     }
+    
+    RHWalkScore *rhws = [RHWalkScore walkScoreWithDelegate:self];
+    
+    [rhws getWalkScoreForAddress:@"309 2nd Ave S"
+                            city:@"Minneapolis"
+                           state:@"MN"
+                             zip:55401
+                             lat:44.9787
+                             lon:-93.2667];
 }
 #pragma mark - EndOfViewDidAppear
+
+- (void)walkScoreDidReturnItem:(RHWalkScore *)item
+{
+    NSLog(@"RHWalkScore Item: %@", item);
+}
+
+- (void)walkScoreDidReceiveError:(NSString *)error
+{
+    NSLog(@"RHWalkScore ERROR: %@", error);
+}
 
 - (void)viewWillDisappear:(BOOL)animated
 {
