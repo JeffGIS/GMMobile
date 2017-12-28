@@ -1069,55 +1069,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (IBAction)showBumpDetector:(id)sender
-{
-    return;
-    
-    /*GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
-                                                                   coundownTime:8
-                                                                          title:@"This is the title parameter"
-                                                                       delegate:self];
-#pragma unused(bumpDetector)
-        return;
-        
-        _push = FTPDataPush.push;
-        _push.delegate = self;
-        _push.popover = _popover;
-        PropertyData *pd = PropertyData.new;
-        
-        NSString *toDir = @"Propdata";
-        NSString *file = pd.path.lastPathComponent;;
-        NSString *fromDir = pd.path.stringByDeletingLastPathComponent;
-        [_popover showAfter:0.1 withTitle:@"Upload Database"];
-        
-        [_push sendFile:file
-          fromDirectory:fromDir
-                 toFile:file
-            toDirectory:toDir
-         deleteWhenDone:NO
-         appendFileName:NO];*/
-}
-
-- (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
-didReturnTimeInterval:(NSString *)timeInterval
-{
-    [bumpDetector hideBumpDetector:YES];
-    
-    NSString *title = [NSString stringWithFormat:@"Collision Detection\nElapsed Time\n%@ seconds", timeInterval];
-    
-    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                      delegate:self
-                                                         title:title
-                                               buttonTextArray:@[@"OK"]
-                                              destructiveIndex:0];
-#pragma unused(alert)
-}
-
-- (void)bumpDetectorDidCancel:(GSSiBumpDetector *)bumpDetector;
-{
-    [bumpDetector hideBumpDetector:YES];
-}
-
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
