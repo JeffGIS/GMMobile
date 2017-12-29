@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>55</string>
+	<string>56</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -50,14 +50,14 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Create user initiated video content</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Create user initiated audio content</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Get contacts for email</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Get location for field survey</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Get location for field survey</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Create user initiated audio content</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Get photos from field survey</string>
 	<key>NSUbiquitousContainers</key>

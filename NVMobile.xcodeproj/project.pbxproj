@@ -87,6 +87,9 @@
 		69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DB1DCD4BBE00D408E9 /* upArrow.png */; };
 		69CB89E01DCD558700D408E9 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DF1DCD558700D408E9 /* backspace.png */; };
 		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
+		69CE5BF41FF68AD7007D5D1F /* browseIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE5BF11FF68AD6007D5D1F /* browseIcon.png */; };
+		69CE5BF51FF68AD7007D5D1F /* returnIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE5BF21FF68AD6007D5D1F /* returnIcon.png */; };
+		69CE5BF61FF68AD7007D5D1F /* advertiseIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69D4C3061F06BA1700051E1C /* NVPanoramaView.m */; };
 		69D625551FA3F1F6008D6F08 /* hsvPause.png in Resources */ = {isa = PBXBuildFile; fileRef = 69D625521FA3F1F6008D6F08 /* hsvPause.png */; };
@@ -396,6 +399,9 @@
 		69CB89DB1DCD4BBE00D408E9 /* upArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = upArrow.png; sourceTree = "<group>"; };
 		69CB89DF1DCD558700D408E9 /* backspace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backspace.png; sourceTree = "<group>"; };
 		69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		69CE5BF11FF68AD6007D5D1F /* browseIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = browseIcon.png; sourceTree = "<group>"; };
+		69CE5BF21FF68AD6007D5D1F /* returnIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = returnIcon.png; sourceTree = "<group>"; };
+		69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = advertiseIcon.png; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69D2C7EF1E5209CC0040FCF9 /* landuse.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = landuse.slt; sourceTree = "<group>"; };
@@ -728,6 +734,9 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
+				69CE5BF11FF68AD6007D5D1F /* browseIcon.png */,
+				69CE5BF21FF68AD6007D5D1F /* returnIcon.png */,
 				69FD71341FE2FB3300EAFDEF /* VideoRecordIcon.png */,
 				69FD71371FE2FB3400EAFDEF /* VideoStopIcon.png */,
 				69E2E7E21FD864E800050D10 /* pdfIcon.png */,
@@ -1351,6 +1360,7 @@
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
 				69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */,
+				69CE5BF51FF68AD7007D5D1F /* returnIcon.png in Resources */,
 				696FA9841FE842A600E727DE /* zipcodes.txt in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
@@ -1392,6 +1402,7 @@
 				69E2E7E61FD86E6300050D10 /* NVCrimeIntro.pdf in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,
+				69CE5BF61FF68AD7007D5D1F /* advertiseIcon.png in Resources */,
 				6948ED341EC50D7A00809632 /* NVMobileIcon1024.png in Resources */,
 				69FEC88D1CA9A53E002BF231 /* whiteMapIt.png in Resources */,
 				69D625591FA3F2B1008D6F08 /* hsvLoop.png in Resources */,
@@ -1431,6 +1442,7 @@
 				BB8B969B1E8568CA00B6A9F7 /* Burglary.png in Resources */,
 				EB4A581B1FB5E5BE00B8B613 /* PARKS.TXT in Resources */,
 				1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */,
+				69CE5BF41FF68AD7007D5D1F /* browseIcon.png in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 				A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */,
 				6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */,
