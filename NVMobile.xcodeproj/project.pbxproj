@@ -29,6 +29,7 @@
 		692D9CF81CA2FCAA00AFCA9A /* whitePlus.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */; };
 		692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */ = {isa = PBXBuildFile; fileRef = 692EFA541D36B0F5007B0D18 /* question-256x256.png */; };
 		692EFA571D36B11D007B0D18 /* questionMarkHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */; };
+		6930635A1FF6C2FD00562A98 /* VideoPlayIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 693063571FF6C2FC00562A98 /* VideoPlayIcon.png */; };
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
@@ -337,6 +338,7 @@
 		692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whitePlus.png; sourceTree = "<group>"; };
 		692EFA541D36B0F5007B0D18 /* question-256x256.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "question-256x256.png"; sourceTree = "<group>"; };
 		692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMarkHighlighted.png; sourceTree = "<group>"; };
+		693063571FF6C2FC00562A98 /* VideoPlayIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VideoPlayIcon.png; sourceTree = "<group>"; };
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
@@ -739,6 +741,7 @@
 				69CE5BF21FF68AD6007D5D1F /* returnIcon.png */,
 				69FD71341FE2FB3300EAFDEF /* VideoRecordIcon.png */,
 				69FD71371FE2FB3400EAFDEF /* VideoStopIcon.png */,
+				693063571FF6C2FC00562A98 /* VideoPlayIcon.png */,
 				69E2E7E21FD864E800050D10 /* pdfIcon.png */,
 				69E2E7E01FD8628000050D10 /* ytIcon.png */,
 				694D99F71FAA396A0023FD37 /* redArrowLeft.png */,
@@ -1369,6 +1372,7 @@
 				EB4A58191FB5E5BE00B8B613 /* Counties.TXT in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
+				6930635A1FF6C2FD00562A98 /* VideoPlayIcon.png in Resources */,
 				69FEC8971CA9AD0F002BF231 /* whiteMapItWithX.png in Resources */,
 				A9D281891B045BAD00523B29 /* loadData.png in Resources */,
 				EB4A581A1FB5E5BE00B8B613 /* TOP500Cities.TXT in Resources */,
