@@ -780,7 +780,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     RHSearch *search = [RHSearch searchWithDelegate:self];
     [search getItemsForZip];
     
-    [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+    [NSOperationQueue.mainQueue addOperationWithBlock:^{
         _popoverView.title = [NSString stringWithFormat:@"RHSearch for Zip: %i",
                               CRAPI.sharedInstance.rhCurrentZip];
         
@@ -860,7 +860,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                  appendFileName:NO];
             }];
             
-            [NSThread sleepForTimeInterval:RH_BATCH_INTERVAL];
             [self performListingsSearch];
         }
     }
