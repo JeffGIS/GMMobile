@@ -20,9 +20,7 @@
 #import "CCodeLibrary/ChartsBitmap.h"
 #import "CCodeLibrary/HotSpotVideoVC.h"
 #import "CCodeLibrary/CRAPI.h"
-#import "CCodeLibrary/RHRecorder.h"
-#import "CCodeLibrary/RHPlayer.h"
-#import "CCodeLibrary/RHSearch.h"
+#import "CCodeLibrary/RiteHome.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -131,7 +129,7 @@
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
                   @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Show RiteHome Recorder",
-                  @"Show RiteHome Player", @"Search Realtor Listings"];
+                  @"Show RiteHome Player", @"Show RiteHome Editor", @"Search Realtor Listings"];
     
     [_tableView reloadData];
 }
@@ -737,6 +735,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Show RiteHome Player"])
     {
         RHPlayer *player = RHPlayer.new;
+        [self presentViewController:player animated:NO completion:nil];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Show RiteHome Editor"])
+    {
+        RHEditor *player = RHEditor.new;
         [self presentViewController:player animated:NO completion:nil];
     }
     
