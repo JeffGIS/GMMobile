@@ -865,6 +865,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                  appendFileName:NO];
             }];
             
+            [NSThread sleepForTimeInterval:RH_QUERY_INTERVAL];
             [self performListingsSearch];
         }
     }
