@@ -339,7 +339,7 @@
                     }
                 }
                 
-                [self refreshMapView];
+                [self reloadTableViews];
             }
             
             _dragSelectActive = NO;
@@ -1022,7 +1022,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             default:break;
         }
         
-        [self refreshMapView];
+        [self reloadTableViews];
     }
 }
 
