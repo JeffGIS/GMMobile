@@ -178,23 +178,27 @@
     
     if (tlmo.legend.hasOverlay)
     {
-        int sum = 0, max = 0;
+        int sum = 0, max = 0, numCells = 0;
         NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
         
         for (ThemeLegendCell *tlc in tlmo.legend.cells)
         {
-            sum+= tlc.count;
-            max = MAX(max, tlc.count);
-            tlmo.minSymbolWidth = MIN(tlmo.minSymbolWidth, tlc.symbolWidth);
-            [countArray addObject:[NSNumber numberWithInt:tlc.count]];
+            if (tlc.status)
+            {
+                numCells++;
+                sum+= tlc.count;
+                max = MAX(max, tlc.count);
+                tlmo.minSymbolWidth = MIN(tlmo.minSymbolWidth, tlc.symbolWidth);
+                [countArray addObject:[NSNumber numberWithInt:tlc.count]];
+            }
         }
         
         NSSortDescriptor *sortAscending = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:YES];
         [countArray sortUsingDescriptors:[NSArray arrayWithObject:sortAscending]];
         
-        if (max)
+        if (max && numCells)
         {
-            CGFloat avgValue = (sum / (CGFloat)tlmo.legend.numCells);
+            CGFloat avgValue = (sum / (CGFloat)numCells);
             tlmo.avgPctOfMax = (avgValue / (CGFloat)max);
             tlmo.avgPctOfMax = ((tlmo.avgPctOfMax - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
             NSInteger middle = (countArray.count / 2);
@@ -213,9 +217,12 @@
             tlmo.medianPctOfMax = ((tlmo.medianPctOfMax - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
             
             for (ThemeLegendCell *tlc in tlmo.legend.cells)
+            {
+                if (tlc.status)
                 stdDev += pow((avgValue - tlc.count), 2);
+            }
             
-            stdDev = sqrt(stdDev / (CGFloat)tlmo.legend.numCells);
+            stdDev = sqrt(stdDev / (CGFloat)numCells);
             tlmo.stdDev1Lower = ((avgValue - stdDev) / (CGFloat)max);
             tlmo.stdDev1Upper = ((avgValue + stdDev) / (CGFloat)max);
             tlmo.stdDev2Lower = ((avgValue - (stdDev * 2.0)) / (CGFloat)max);
