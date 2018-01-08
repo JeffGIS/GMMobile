@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 
 @interface BoundaryData : NSObject
 @property int processingID;
-@property sqlite3 *database;
+@property sqlite3nv *database;
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;

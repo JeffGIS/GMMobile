@@ -16,7 +16,7 @@
 @interface CrimeList ()
 
 @property NSString *fileName, *path;
-@property sqlite3 *database;
+@property sqlite3nv *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
 @property int dbIsOpen;
@@ -26,7 +26,7 @@
 @implementation CrimeList
 
 - (void)logError:(int)sqlReturn
-          method:(sqlite3*)database
+          method:(sqlite3nv *)database
 {
     NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i = %i:%s",
                   sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
@@ -246,8 +246,8 @@ NSString * GetCrimeListDirectory (void)
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentCrimeList"];
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _crimeListDir, _fileName];
         
-        //        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
-        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
+        //        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_path.UTF8String, &_database), _database);
         NSLog(@"CrimeList Database open");
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
         rtn = YES;
@@ -261,7 +261,7 @@ NSString * GetCrimeListDirectory (void)
     if (opened && _isOpen)
     {
         NSLog(@"CrimeList Database close");
-        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
         _controlNumberList = nil;

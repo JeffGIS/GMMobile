@@ -24,7 +24,7 @@
 @property NSString * fileName;
 @property NSString * filePath;
 @property NSString * documentsDirectory;
-@property sqlite3 *database;
+@property sqlite3nv *database;
 @property BOOL isOpen;
 @property int fileSize;
 @property NSString * indexName;

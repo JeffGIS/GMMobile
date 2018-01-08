@@ -22,7 +22,7 @@ LPYEARLYVALUES pYearly;
 - (NSNumber *) getNumberWithLocale:(NSLocale*) stringLocale;
 @end
 
-int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
+int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 {
     return SQLOK (__FILE__,__LINE__,sqlReturn,database);
 }
@@ -112,7 +112,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     CloseTRANS2P (&_pTranLLtoView);
     CloseTRANS2P (&_pTranViewtoLL);
-    sqlite3_close(_database);
+    SQLite_Close(_database);
     //NSLog(@"Property Database dealloc");
 }
 - (BOOL)open
@@ -120,7 +120,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (!_isOpen)
     {
         self.isOpen = YES;
-        self.isOpen = !SQLOKpd(sqlite3_open(_path.UTF8String, &_database), _database, 1);
+        self.isOpen = !SQLOKpd(SQLite_Open(_path.UTF8String, &_database), _database, 1);
         
         //NSLog(@"Property Database open");
         
@@ -144,7 +144,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     if (opened)
     {
-        SQLOKpd(sqlite3_close(_database), _database, 0);
+        SQLOKpd(SQLite_Close(_database), _database, 0);
         //NSLog(@"Property Database close");
         _isOpen = NO;
     }

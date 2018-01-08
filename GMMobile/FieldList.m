@@ -15,7 +15,7 @@
 
 @property NSString *fileName, *path;
 @property NSString * fieldListDir;
-@property sqlite3 *database;
+@property sqlite3nv *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
 @property int dbIsOpen;
@@ -187,7 +187,7 @@ NSString * GetFieldListDirectory (void)
         _dbIsOpen++;
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentFieldList"];
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _fieldListDir, _fileName];
-        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_path.UTF8String, &_database), _database);
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
         if (!_fileSize)
             [self initializeList];
@@ -203,7 +203,7 @@ NSString * GetFieldListDirectory (void)
     if (opened && _isOpen)
     {
         //NSLog(@"FieldList Database close");
-        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
     }

@@ -12,7 +12,7 @@
 @interface Destinations ()
 
 @property NSString *documentsDirectory, *fileName, *path;
-@property sqlite3 *database;
+@property sqlite3nv *database;
 @property BOOL isOpen;
 @property (nonatomic) unsigned long long fileSize;
 @property NSCondition *condition;
@@ -63,7 +63,7 @@
 @implementation Destinations
 
 - (void)logError:(int)sqlReturn
-          method:(sqlite3*)database
+          method:(sqlite3nv *)database
 {
     NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i = %i:%s",
                   sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
@@ -103,7 +103,7 @@
 
 - (void)dealloc
 {
-    sqlite3_close(_database);
+    SQLite_Close(_database);
     //NSLog(@"Destinations Database dealloc");
 }
 - (BOOL)open
@@ -112,7 +112,7 @@
     if (!_isOpen)
     {
         _isOpen = YES;
-        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_path.UTF8String, &_database), _database);
         //NSLog(@"Destinations Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
@@ -126,7 +126,7 @@
 {
     if (opened)
     {
-        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
         //NSLog(@"Destinations Database close");
         _isOpen = NO;
     }

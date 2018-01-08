@@ -55,8 +55,8 @@
     BOOL rtn = FALSE;
     if (!_isOpen)
     {
-        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
-//        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_proppath.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_path.UTF8String, &_database), _database);
+//        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_proppath.UTF8String, &_database), _database);
         NSLog(@"Boundary Database open");
         
         if (_isOpen)
@@ -98,7 +98,7 @@
 {
     if (opened && _isOpen)
     {
-        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
         NSLog(@"Boundary Database close");
         _isOpen = NO;
     }

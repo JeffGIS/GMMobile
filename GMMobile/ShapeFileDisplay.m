@@ -209,7 +209,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
         _fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:_indexName
                                                                    error:nil].fileSize;
-        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_indexName.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_indexName.UTF8String, &_database), _database);
         if (_fileSize <= 0)
         {
             [self startTransaction];
@@ -238,7 +238,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     if (_isOpen)
     {
-        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
         _isOpen = NO;
     }
 }

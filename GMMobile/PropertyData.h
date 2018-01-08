@@ -99,7 +99,7 @@ typedef struct {int nMatchingProperties;
 @interface PropertyData : NSObject
 
 @property (nonatomic, weak) id <PropertyDataDelegate> delegate;
-@property sqlite3 *database;
+@property sqlite3nv *database;
 @property (atomic) BOOL isOpen;
 @property NSString* version;
 @property (nonatomic, copy) NSString *documentsDirectory;
