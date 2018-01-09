@@ -24,7 +24,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate,GSSiPopoverViewDelegate,RHSearchDelegate>
+@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate,GSSiPopoverViewDelegate,RHSearchDelegate,RHEditorDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -741,8 +741,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Show RiteHome Editor"])
     {
-        RHEditor *player = RHEditor.new;
-        [self presentViewController:player animated:NO completion:nil];
+        RHEditor *editor = RHEditor.new;
+        editor.delegate = self;
+        [self presentViewController:editor animated:NO completion:nil];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -750,6 +751,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self performListingsSearch];
     }
+}
+
+- (NSString *)pidForCoord:(CLLocationCoordinate2D *)coord
+{
+    PropertyData *pd = PropertyData.new;
+    return [pd getNearestPID:coord];
 }
 
 - (void)performListingsSearch
