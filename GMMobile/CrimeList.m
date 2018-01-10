@@ -261,7 +261,7 @@ NSString * GetCrimeListDirectory (void)
     if (opened && _isOpen)
     {
         NSLog(@"CrimeList Database close");
-        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
         _controlNumberList = nil;

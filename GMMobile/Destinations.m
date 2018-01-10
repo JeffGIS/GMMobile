@@ -103,7 +103,7 @@
 
 - (void)dealloc
 {
-    SQLite_Close(_database);
+    SQLite_Close(&_database);
     //NSLog(@"Destinations Database dealloc");
 }
 - (BOOL)open
@@ -126,7 +126,7 @@
 {
     if (opened)
     {
-        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         //NSLog(@"Destinations Database close");
         _isOpen = NO;
     }

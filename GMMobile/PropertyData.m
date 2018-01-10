@@ -112,7 +112,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 {
     CloseTRANS2P (&_pTranLLtoView);
     CloseTRANS2P (&_pTranViewtoLL);
-    SQLite_Close(_database);
+    SQLite_Close(&_database);
     //NSLog(@"Property Database dealloc");
 }
 - (BOOL)open
@@ -144,7 +144,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 {
     if (opened)
     {
-        SQLOKpd(SQLite_Close(_database), _database, 0);
+        SQLOKpd(SQLite_Close(&_database), _database, 0);
         //NSLog(@"Property Database close");
         _isOpen = NO;
     }

@@ -238,7 +238,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     if (_isOpen)
     {
-        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         _isOpen = NO;
     }
 }

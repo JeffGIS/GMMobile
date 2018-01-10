@@ -217,7 +217,7 @@ NSString * GetPropListDirectory (void)
     if (opened && _isOpen)
     {
         NSLog(@"PropertyList Database close");
-        SQLOK(__FILE__,__LINE__,SQLite_Close(_database),_database);
+        SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
     }
