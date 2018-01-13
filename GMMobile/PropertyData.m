@@ -724,7 +724,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         {
             *owner = [self noNullString:ownerName];
             if (strlen (ownerMore)>0)
-                *owner = [*owner stringByAppendingFormat:@"\\n%s",ownerMore];
+                *owner = [*owner stringByAppendingFormat:@"\n%s",ownerMore];
         }
         if (taxpayer)
             *taxpayer = [self noNullString:taxpayr];

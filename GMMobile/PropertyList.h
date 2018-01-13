@@ -107,7 +107,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 - (void)close:(BOOL)opened;
 - (void)startTransaction;
 - (void)commitTransaction;
-- (BOOL)executeCmd:(char *)cmd;
+- (BOOL)executeCmd:(const char *)cmd;
 - (BOOL) createTables;
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
@@ -130,7 +130,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
                         type:(PropFieldType)fieldType;
 - (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row;
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field;
-+ (void) deleteProperty:(NSInteger)propNum;
+- (void) deleteProperty:(NSInteger)propNum;
 NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (NSString *) getFieldAverage:(PropFieldType)fieldType;
 - (NSString *) getFieldTotal:(PropFieldType)fieldType;

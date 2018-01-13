@@ -266,7 +266,7 @@ NSString * GetPropListDirectory (void)
 }
 */
 
-- (BOOL)executeCmd:(char *)cmd
+- (BOOL)executeCmd:(const char *)cmd
 {
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);
     return rtn;
@@ -711,9 +711,11 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return pids.copy;
 }
 
-+ (void) deleteProperty:(NSInteger)propNum
+- (void) deleteProperty:(NSInteger)propNum
 {
+    NSString *query = [NSString stringWithFormat:@"DELETE FROM PropertyList WHERE Propnum = %li",(long)propNum];
     
+    [self executeCmd:query.UTF8String];
 }
 
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
@@ -833,7 +835,11 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_TaxPayer:
                 val = (LPSTR)sqlite3_column_blob(statement, 0);
                 if (val)
+                {
                     value = [NSString stringWithFormat:@"%s",val];
+//                    value = [value stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
+//                    value = [value stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+                }
                 break;
             case PFT_EMV_TOTAL:
             case PFT_EMV_LAND_PER_ACRE:

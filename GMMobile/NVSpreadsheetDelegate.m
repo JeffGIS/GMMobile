@@ -60,7 +60,19 @@
 
 - (void)deleteRows:(NSArray *)arrayOfRows
 {
-    
+    NSArray *list = _propList.getPropertyNumbers;
+    BOOL opened = [_propList open];
+    [_propList startTransaction];
+    for (NSNumber *row in arrayOfRows)
+    {
+        NSNumber * propNum = list[row.integerValue];
+        [_propList deleteProperty:(NSInteger)propNum.integerValue];
+    }
+    [_propList commitTransaction];
+    [_propList close:opened];
+    [self closeList];
+    [self openList];
+    return;
 }
 
 - (NSString *)headerTextForRow:(NSUInteger)row
@@ -107,6 +119,15 @@
     
     else
         return @"";
+}
+
+- (NSInteger) getPropNumForColumn:(NSInteger)column
+{
+    NSArray *list = _propList.getPropertyNumbers;
+    if (column < 0 || column > list.count)
+        return -1;
+    NSNumber * rtn = list[column-1];
+    return rtn.integerValue;
 }
 
 - (NSString *)textForColumn:(NSUInteger)column
@@ -258,7 +279,7 @@
                  tabBarController:(UITabBarController *)tabBarController
 {
     PropertyList *proplist = PropertyList.new;
-    int propNum = (int)column;
+    int propNum = (int)[self getPropNumForColumn:column];
     
     if (row == -1)
     {
@@ -272,8 +293,8 @@
         return;
     }
     
-    LLPOINT llpoint = [proplist getPropertyLatLon:column];
-    [proplist setZoomValues:column forRow:row];
+    LLPOINT llpoint = [proplist getPropertyLatLon:propNum];
+    [proplist setZoomValues:propNum forRow:row];
     
     CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
     NSUInteger index = 0;
