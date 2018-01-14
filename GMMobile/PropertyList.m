@@ -765,6 +765,33 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return;
 }
 
+- (int)getNearestProperty:(LLPOINT *)ll
+         distanceInMeters:(double*)dist
+{
+    int rtn = 0;
+    double minDist = DBL_MAX;
+    DPOINT pt = {ll->lon,ll->lat};
+    BOOL opened = [self open];
+    NSArray *list = [self getPropertyNumbers];
+    for (NSNumber *propNum in list)
+    {
+        int propnum = (int)propNum.integerValue;
+        LLPOINT llp = [self getPropertyLatLon:propnum];
+        DPOINT pt2 = {llp.lon,llp.lat};
+        double d = ArcDistance(pt,pt2);
+        
+        if (d < minDist)
+        {
+            minDist = d;
+            rtn = propnum;
+        }
+    }
+    [self close:opened];
+    *dist = minDist;
+    return rtn;
+}
+
+
 - (Bool) parcelInPropertyList:(NSString *)PIN
 {
     Bool rtn = FALSE;

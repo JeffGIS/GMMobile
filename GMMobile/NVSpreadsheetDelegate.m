@@ -8,10 +8,15 @@
 #import "MapViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 
-@interface NVSpreadsheetDelegate ()
+@interface NVSpreadsheetDelegate () <CLLocationManagerDelegate>
 
 @property (nonatomic) PropertyList *propList;
 @property (nonatomic, copy) NSArray *fieldList;
+@property NVSpreadsheetVC* spreadSheetVC;
+@property int locationCount;
+@property NSInteger autoSelectedRow;
+@property (strong, nullable) CLLocationManager *locationManager;
+
 @end
 
 @implementation NVSpreadsheetDelegate
@@ -21,16 +26,70 @@
     return SST_PropertyList;
 }
 
-- (BOOL)openList
+- (BOOL)getCurrentLocation
+{
+    if (![CLLocationManager locationServicesEnabled])
+        return FALSE;
+    _locationCount = 0;
+    if (!_locationManager)
+    {
+        _locationManager = [[CLLocationManager alloc] init];
+        _locationManager.delegate = self;
+    }
+    [_locationManager startUpdatingLocation];
+    return TRUE;
+}
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations
+{
+    CLLocationCoordinate2D currentLocation;
+    currentLocation = [locations.firstObject coordinate];
+    _locationCount++;
+    [_locationManager stopUpdatingLocation];
+    
+    LLPOINT ll;
+    ll.lon = currentLocation.longitude;
+    ll.lat = currentLocation.latitude;
+    double dist;
+    int nearProp = [_propList getNearestProperty:&ll
+                                distanceInMeters:&dist];
+    if (dist < 500)
+    {
+        NSArray *list = _propList.getPropertyNumbers;
+        int iRow = 1;
+        for (NSNumber *prop in list)
+        {
+            if (nearProp == prop.integerValue)
+            {
+                _autoSelectedRow = iRow;
+                [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                 target:_spreadSheetVC
+                                               selector:@selector(autoSelectRow:)
+                                               userInfo:nil
+                                                repeats:NO];
+            }
+            iRow++;
+        }        
+    }
+
+}
+
+-(NSInteger) getAutoSelectRow
+{
+    return _autoSelectedRow;
+}
+
+- (BOOL) openList:(NVSpreadsheetVC*)vc;
 {
     BOOL rtn = FALSE;
     
+    _spreadSheetVC = vc;
     _propList = PropertyList.new;
     if (_propList)
     {
         [_propList open];
         _fieldList = [FieldList getFieldListRecords:NO];
-
+        [self getCurrentLocation];
         rtn = TRUE;
     }
     return rtn;
@@ -71,7 +130,7 @@
     [_propList commitTransaction];
     [_propList close:opened];
     [self closeList];
-    [self openList];
+    [self openList:_spreadSheetVC];
     return;
 }
 
@@ -119,6 +178,13 @@
     
     else
         return @"";
+}
+
+-(int)autoSelectRow
+{
+    int rtn = 0;
+    
+    return rtn;
 }
 
 - (NSInteger) getPropNumForColumn:(NSInteger)column

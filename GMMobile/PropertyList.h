@@ -136,5 +136,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (NSString *) getFieldTotal:(PropFieldType)fieldType;
 - (Bool) parcelInPropertyList:(NSString *)PIN;
 - (NSArray*) getAreaRecords:(NSInteger)propNum;
+- (int)getNearestProperty:(LLPOINT *)ll
+         distanceInMeters:(double*)dist;
 
 @end
