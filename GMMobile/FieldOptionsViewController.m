@@ -463,7 +463,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    /*int row = (int)indexPath.row;
+    int row = (int)indexPath.row;
     FieldListRecord *flr = _fieldlist[row];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
@@ -477,7 +477,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         _fieldlist = [FieldList getFieldListRecords:YES];
         [_tableView reloadData];
-    }*/
+    }
 }
 
 @end
