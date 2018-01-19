@@ -105,14 +105,14 @@
     [_propList close:TRUE];
     _propList = nil;
 }
-- (NSInteger)numRowsInSpreadsheet
+- (NSInteger)numColumnsInSpreadsheet
 {
     return (_fieldList.count-1);
     //return ([PropertyList availablePropertyFields].count - 2);
 
 }
 
-- (NSInteger)numColumnsInSpreadsheet
+- (NSInteger)numRowsInSpreadsheet
 {
     return _propList.getPropertyNumbers.count + 4;
 }
@@ -187,6 +187,13 @@
     return rtn;
 }
 
+- (UIColor*) backgroundColorForCell:(NSInteger)row
+                            column:(NSInteger)column
+{
+    if (row > _propList.numPropertiesInList)
+        return [UIColor colorWithRed:1 green:1 blue:0.85 alpha:1];
+    return UIColor.clearColor;
+}
 - (NSInteger) getPropNumForColumn:(NSInteger)column
 {
     NSArray *list = _propList.getPropertyNumbers;
@@ -257,7 +264,8 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
-    [_propList updatePropertyUserID:(index + 1) userID:text];
+    NSInteger propNum = [self getPropNumForColumn:index];
+    [_propList updatePropertyUserID:propNum userID:text];
 }
 
 - (void)spreadsheetDidEditRowHeaderText:(NSString *)text
