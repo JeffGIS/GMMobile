@@ -114,7 +114,12 @@
 
 - (NSInteger)numRowsInSpreadsheet
 {
-    return _propList.getPropertyNumbers.count + 4;
+    return (_propList.getPropertyNumbers.count + 4);
+}
+
+- (NSInteger)numSelectableRows
+{
+    return _propList.getPropertyNumbers.count;
 }
 
 - (void)deleteRows:(NSArray *)arrayOfRows
