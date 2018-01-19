@@ -85,7 +85,7 @@
     return _autoSelectedRow;
 }
 
-- (BOOL) openList:(NVSpreadsheetVC*)vc;
+- (BOOL) openList:(NVSpreadsheetVC*)vc
 {
     BOOL rtn = FALSE;
     
