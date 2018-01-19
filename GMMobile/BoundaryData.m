@@ -481,6 +481,7 @@
         [areaType isEqualToString:@"Minneapolis Wards"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"] ||
+        [areaType isEqualToString:@"City"] ||
         [areaType isEqualToString:@"BOUNDARY"])
     {
         table = @"BOUNDARYAREA";
@@ -1641,7 +1642,6 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     _pTranViewtoLL = STRANBoundsToCornersP(latlonCornerPoints, pvbounds);
-    
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
@@ -1650,7 +1650,14 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
-    
+    else if ([areaType isEqualToString:@"City"])
+    {
+        areaType = @"Cities And Townships";
+        NSString * areaName = @"Minneapolis";
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND NAME = '%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,areaName,table,table,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
+
     else
     {
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
@@ -1728,7 +1735,7 @@ NextPass:
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
-        if (pass || haveInPoint > haveOutPoint)
+        if (pass || haveInPoint >= haveOutPoint)
         {
             if (!pass)
                 nLoaded++;

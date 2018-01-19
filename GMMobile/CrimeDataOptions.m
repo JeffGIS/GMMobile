@@ -82,7 +82,7 @@
                          @"Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
                          @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
     
-    _linegraphModes = @[@"Line Graph for City",@"Line Graph for Precincts", @"Line Graph for Wards",
+    _linegraphModes = @[@"Line Graph for City",@"Line Graph for Precincts By Year",@"Line Graph for Precincts By Month", @"Line Graph for Wards",
                          @"Line Graph for Sectors", @"Line Graph for Neighborhoods",
                          @"Line Graph For Census Tracts",@"Line Graph for Block Groups",@"Line Graph for Blocks"];
     
@@ -709,6 +709,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([uppercaseMode containsString:@" CITY "])
         CRAPI.sharedInstance.crimeTarget = @"CITY";
+    
+    else if ([uppercaseMode containsString:@" FOR CITY"])
+        CRAPI.sharedInstance.crimeTarget = @"City";
     
     [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeTarget forKey:@"CrimeTarget"];
     
