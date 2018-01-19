@@ -50,7 +50,7 @@
 
 - (NSInteger)numSelectableRows
 {
-    return (_crimeList.availableCrimeFields.count - 1);
+    return _crimeList.getControlNumbers.count;
 }
 
 - (NSInteger)numColumnsInSpreadsheet
