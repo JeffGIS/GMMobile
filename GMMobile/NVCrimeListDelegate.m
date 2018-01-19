@@ -25,7 +25,7 @@
     return CrimeList.getCurrentCrimeListName;
 }
 
-- (BOOL)openList
+- (BOOL)openList:(NVSpreadsheetVC*)vc
 {
     BOOL rtn = FALSE;
     
@@ -45,12 +45,12 @@
 }
 - (NSInteger)numRowsInSpreadsheet
 {
-    return (_crimeList.availableCrimeFields.count - 1);
+    return _crimeList.getControlNumbers.count;
 }
 
 - (NSInteger)numColumnsInSpreadsheet
 {
-    return _crimeList.getControlNumbers.count;
+    return (_crimeList.availableCrimeFields.count - 1);
 }
 
 - (NSString *)headerTextForRow:(NSUInteger)row
@@ -130,7 +130,7 @@
         [CrimeList createNewCrimeList];
     else
         [CrimeList setCurrentCrimeList:listName];
-    [self openList];
+    [self openList:nil];
     
     
     int count = 1;
@@ -172,7 +172,7 @@
     {
         [self closeList];
         [CrimeList renameCurrentCrimeList:titleText];
-        [self openList];
+        [self openList:nil];
     }
 }
 
@@ -285,7 +285,7 @@
     
     if (!_crimeList)
     {
-        if ([self openList])
+        if ([self openList:nil])
             closeList = YES;
     }
     
