@@ -31,12 +31,13 @@
     if (![CLLocationManager locationServicesEnabled])
         return FALSE;
     _locationCount = 0;
+    
     if (!_locationManager)
     {
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
     }
-    [_locationManager startUpdatingLocation];
+    [_locationManager requestLocation];
     return TRUE;
 }
 - (void)locationManager:(CLLocationManager *)manager
@@ -45,7 +46,6 @@
     CLLocationCoordinate2D currentLocation;
     currentLocation = [locations.firstObject coordinate];
     _locationCount++;
-    [_locationManager stopUpdatingLocation];
     
     LLPOINT ll;
     ll.lon = currentLocation.longitude;
@@ -72,6 +72,12 @@
         }        
     }
 
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error
+{
+    NSLog(@"CLLocationManager ERROR: %@", error.localizedDescription);
 }
 
 -(NSInteger) getAutoSelectRow

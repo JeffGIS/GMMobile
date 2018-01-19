@@ -119,6 +119,7 @@
 		69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */; };
 		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
 		69E8C4321F1057E7001F2995 /* NVGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E8C4311F1057E7001F2995 /* NVGeocoder.m */; };
+		69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */ = {isa = PBXBuildFile; fileRef = 69EE923820127B9A00A610D6 /* VideoTabItem.png */; };
 		69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177331D7A0B7400741C68 /* GoogleMaps.framework */; };
 		69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */; };
 		69F1773A1D7A0B7400741C68 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */; };
@@ -442,6 +443,7 @@
 		69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumbPhone.png; sourceTree = "<group>"; };
 		69E8C4301F1057E7001F2995 /* NVGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVGeocoder.h; sourceTree = "<group>"; };
 		69E8C4311F1057E7001F2995 /* NVGeocoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVGeocoder.m; sourceTree = "<group>"; };
+		69EE923820127B9A00A610D6 /* VideoTabItem.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VideoTabItem.png; sourceTree = "<group>"; };
 		69F177331D7A0B7400741C68 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
 		69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsCore.framework; sourceTree = "<group>"; };
@@ -736,6 +738,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69EE923820127B9A00A610D6 /* VideoTabItem.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				69CE5BF11FF68AD6007D5D1F /* browseIcon.png */,
 				69CE5BF21FF68AD6007D5D1F /* returnIcon.png */,
@@ -1411,6 +1414,7 @@
 				69FEC88D1CA9A53E002BF231 /* whiteMapIt.png in Resources */,
 				69D625591FA3F2B1008D6F08 /* hsvLoop.png in Resources */,
 				69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */,
+				69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,
