@@ -48,6 +48,11 @@
     return (_crimeList.availableCrimeFields.count - 1);
 }
 
+- (NSInteger)numSelectableRows
+{
+    return (_crimeList.availableCrimeFields.count - 1);
+}
+
 - (NSInteger)numColumnsInSpreadsheet
 {
     return _crimeList.getControlNumbers.count;
