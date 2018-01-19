@@ -679,6 +679,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
+    _numPropertiesInList = propNums.count;
     return propNums.copy;
 }
 
@@ -1136,11 +1137,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                       userID:(NSString*)userID
 {
     BOOL opened = [self open];
-    
+    [self startTransaction];
     NSString *PIDBlob = [self stringToBlob:userID];
     NSString * cmd = [NSString stringWithFormat:@"UPDATE PropertyList SET FieldValue = X'%@' WHERE PropNum = %li AND FieldType = %li",
                       PIDBlob,(long)propNum, (long)PFT_UserID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self commitTransaction];
     [self close:opened];
 }
 

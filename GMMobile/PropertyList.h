@@ -95,6 +95,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 @property NSString* propListDir;
 @property (nonatomic) GSSiPopoverView *popover;
 @property int propVersion;
+@property int numPropertiesInList;
 
 + (NSArray *) getPropertyLists;
 + (NSString*) getCurrentPropertyListName;
