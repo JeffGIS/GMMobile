@@ -84,4 +84,5 @@ NSString* CrimeListFieldDescription (NSInteger fieldNumber);
 - (BOOL)addIncidentToCrimeList:(int)controlNum;
 + (BOOL)incidentInCurrentCrimeList:(int)controlNum;
 + (BOOL)removeIncidentInCurrentCrimeList:(int)controlNum;
+- (NSArray*) createControlNumbers:(BOOL) useSort;
 @end

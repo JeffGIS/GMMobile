@@ -367,6 +367,49 @@
     }
     return rtn;
 }
+- (NSArray *) getSelectedRowKeys:(NSArray*)selectedRows
+{
+    if (!selectedRows || !selectedRows.count)
+        return nil;
+    NSMutableArray * array = NSMutableArray.new;
+    NSArray * currentList = [_crimeList createControlNumbers:YES];
+    for (NSNumber * selectedRow in selectedRows)
+    {
+        int row = (int)selectedRow.integerValue - 1;
+        if (row < currentList.count)
+        {
+            NSNumber * key = currentList[row];
+            [array addObject:key];
+        }
+    }
+    return array;
+}
+- (NSMutableArray *) selectRowsUsingKeys:(NSArray*)selectedRowKeys
+{
+    NSMutableArray * array = NSMutableArray.new;
+    
+    if (selectedRowKeys)
+    {
+        NSArray * currentList = [_crimeList createControlNumbers:YES];
+         for (NSNumber * selectedKey in selectedRowKeys)
+        {
+            int selKey = (int)selectedKey.integerValue;
+            int row = 1;
+            for (NSNumber * keyval in currentList)
+            {
+                int key = (int)keyval.integerValue;
+                if (key == selKey)
+                {
+                    NSNumber * selval = [NSNumber numberWithInteger:row];
+                    [array addObject:selval];
+                }
+                row++;
+            }
+        }
+
+    }
+    return array;
+}
 
 - (void)getTimeLine:(NVSpreadsheetVC *)parentController
 {
