@@ -342,10 +342,11 @@
     CRAPI.sharedInstance.mapToolbar = _mapToolbar;
     CRAPI.sharedInstance.mapVC = self;
     
-    HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    NSInteger configIndex = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
-    if (config)
+    if (configIndex)
     {
+        HardCodedConfigs config = (configIndex - 1);
         _nvdl = [[NVDataLoader alloc] init];
         _nvdl.delegate = self;
         [_nvdl loadNVData:(config - 1) popover:_popover];
@@ -442,10 +443,13 @@
     
     else if (!_fromSpreadsheet)
     {
-        HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+        NSInteger configIndex = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
         
-        if (config)
-            [ConfigurationControl.sharedInstance setApp:(config - 1)];
+        if (configIndex)
+        {
+            HardCodedConfigs config = (configIndex - 1);
+            [ConfigurationControl.sharedInstance setApp:config];
+        }
         
         else
             self.tabBarController.selectedIndex = 3;
