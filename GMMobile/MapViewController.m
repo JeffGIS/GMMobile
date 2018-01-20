@@ -417,30 +417,24 @@
     
     if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
     {
-        if (_firstTimeAppear)
-            [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+
     }
     
     else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
     {
-        if (_firstTimeAppear)
-            [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
+        
     }
     
     else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
     {
         if (_firstTimeAppear)
-        {
-            [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
             self.tabBarController.tabBar.hidden = YES;
-        }
     }
     
     else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmngame"])
     {
         if (_firstTimeAppear)
         {
-            [ConfigurationControl.sharedInstance setApp:HCConfigMinnesotaGame];
             self.tabBarController.tabBar.hidden = YES;
             [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
         }

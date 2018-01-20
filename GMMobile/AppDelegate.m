@@ -110,6 +110,18 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if (error)
         NSLog(@"AVAudioSession set category ERROR: %@", error.localizedDescription);
     
+    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+        [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+        [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
+    
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
+        [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
+    
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmngame"])
+        [ConfigurationControl.sharedInstance setApp:HCConfigMinnesotaGame];
+    
     return YES;
 }
 - (BOOL) checkUnbundledFile:(NSString*)fileName
