@@ -214,28 +214,11 @@
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
-		EB38AF421FB3AF2F00E5DD93 /* MinnesotaData.slt in Resources */ = {isa = PBXBuildFile; fileRef = EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */; };
 		EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */ = {isa = PBXBuildFile; fileRef = EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
 		EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB398F091ABC94240043875E /* PlatProfileView.m */; };
 		EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F0D1AC04B530043875E /* censusdatadef.txt */; };
 		EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C11AA89DE100B8B162 /* PipeTrace.m */; };
-		EB4A58191FB5E5BE00B8B613 /* Counties.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58161FB5E5BD00B8B613 /* Counties.TXT */; };
-		EB4A581A1FB5E5BE00B8B613 /* TOP500Cities.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58171FB5E5BD00B8B613 /* TOP500Cities.TXT */; };
-		EB4A581B1FB5E5BE00B8B613 /* PARKS.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58181FB5E5BE00B8B613 /* PARKS.TXT */; };
-		EB4A581D1FB6518100B8B613 /* Top200Lakes.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A581C1FB6518000B8B613 /* Top200Lakes.TXT */; };
-		EB4A58221FB7555400B8B613 /* hourglass3.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A581E1FB7555000B8B613 /* hourglass3.png */; };
-		EB4A58231FB7555400B8B613 /* hourglass4.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A581F1FB7555100B8B613 /* hourglass4.png */; };
-		EB4A58241FB7555400B8B613 /* hourglass2.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58201FB7555200B8B613 /* hourglass2.png */; };
-		EB4A58251FB7555400B8B613 /* hourglass1.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58211FB7555300B8B613 /* hourglass1.png */; };
-		EB4A582E1FB89A7B00B8B613 /* happy8.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58261FB89A7800B8B613 /* happy8.png */; };
-		EB4A582F1FB89A7B00B8B613 /* happy5.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58271FB89A7900B8B613 /* happy5.png */; };
-		EB4A58301FB89A7B00B8B613 /* happy1.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58281FB89A7900B8B613 /* happy1.png */; };
-		EB4A58311FB89A7B00B8B613 /* happy2.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58291FB89A7A00B8B613 /* happy2.png */; };
-		EB4A58321FB89A7B00B8B613 /* happy6.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582A1FB89A7A00B8B613 /* happy6.png */; };
-		EB4A58331FB89A7B00B8B613 /* happy7.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582B1FB89A7A00B8B613 /* happy7.png */; };
-		EB4A58341FB89A7B00B8B613 /* happy3.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582C1FB89A7B00B8B613 /* happy3.png */; };
-		EB4A58351FB89A7B00B8B613 /* happy4.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582D1FB89A7B00B8B613 /* happy4.png */; };
 		EB4A58381FC754E200B8B613 /* HuntingDataDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
 		EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */; };
@@ -561,7 +544,6 @@
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = MinnesotaData.slt; sourceTree = "<group>"; };
 		EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinnesotaGame.h; sourceTree = "<group>"; };
 		EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MinnesotaGame.m; sourceTree = "<group>"; };
 		EB398F061ABC61C40043875E /* landusecodes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = landusecodes.txt; sourceTree = "<group>"; };
@@ -570,22 +552,6 @@
 		EB398F0D1AC04B530043875E /* censusdatadef.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = censusdatadef.txt; sourceTree = "<group>"; };
 		EB4A18C01AA89DE100B8B162 /* PipeTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeTrace.h; sourceTree = "<group>"; };
 		EB4A18C11AA89DE100B8B162 /* PipeTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PipeTrace.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		EB4A58161FB5E5BD00B8B613 /* Counties.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Counties.TXT; sourceTree = "<group>"; };
-		EB4A58171FB5E5BD00B8B613 /* TOP500Cities.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TOP500Cities.TXT; sourceTree = "<group>"; };
-		EB4A58181FB5E5BE00B8B613 /* PARKS.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PARKS.TXT; sourceTree = "<group>"; };
-		EB4A581C1FB6518000B8B613 /* Top200Lakes.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Top200Lakes.TXT; sourceTree = "<group>"; };
-		EB4A581E1FB7555000B8B613 /* hourglass3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hourglass3.png; sourceTree = "<group>"; };
-		EB4A581F1FB7555100B8B613 /* hourglass4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hourglass4.png; sourceTree = "<group>"; };
-		EB4A58201FB7555200B8B613 /* hourglass2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hourglass2.png; sourceTree = "<group>"; };
-		EB4A58211FB7555300B8B613 /* hourglass1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hourglass1.png; sourceTree = "<group>"; };
-		EB4A58261FB89A7800B8B613 /* happy8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy8.png; sourceTree = "<group>"; };
-		EB4A58271FB89A7900B8B613 /* happy5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy5.png; sourceTree = "<group>"; };
-		EB4A58281FB89A7900B8B613 /* happy1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy1.png; sourceTree = "<group>"; };
-		EB4A58291FB89A7A00B8B613 /* happy2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy2.png; sourceTree = "<group>"; };
-		EB4A582A1FB89A7A00B8B613 /* happy6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy6.png; sourceTree = "<group>"; };
-		EB4A582B1FB89A7A00B8B613 /* happy7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy7.png; sourceTree = "<group>"; };
-		EB4A582C1FB89A7B00B8B613 /* happy3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy3.png; sourceTree = "<group>"; };
-		EB4A582D1FB89A7B00B8B613 /* happy4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy4.png; sourceTree = "<group>"; };
 		EB4A58361FC754E200B8B613 /* HuntingDataDisplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HuntingDataDisplay.h; sourceTree = "<group>"; };
 		EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HuntingDataDisplay.m; sourceTree = "<group>"; };
 		EB4F25831A757F2000761FD5 /* FindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindViewController.h; sourceTree = "<group>"; };
@@ -1060,23 +1026,6 @@
 		EB4A58131FB5E55900B8B613 /* MinnesotaGameData */ = {
 			isa = PBXGroup;
 			children = (
-				EB4A58281FB89A7900B8B613 /* happy1.png */,
-				EB4A58291FB89A7A00B8B613 /* happy2.png */,
-				EB4A582C1FB89A7B00B8B613 /* happy3.png */,
-				EB4A582D1FB89A7B00B8B613 /* happy4.png */,
-				EB4A58271FB89A7900B8B613 /* happy5.png */,
-				EB4A582A1FB89A7A00B8B613 /* happy6.png */,
-				EB4A582B1FB89A7A00B8B613 /* happy7.png */,
-				EB4A58261FB89A7800B8B613 /* happy8.png */,
-				EB4A58211FB7555300B8B613 /* hourglass1.png */,
-				EB4A58201FB7555200B8B613 /* hourglass2.png */,
-				EB4A581E1FB7555000B8B613 /* hourglass3.png */,
-				EB4A581F1FB7555100B8B613 /* hourglass4.png */,
-				EB4A581C1FB6518000B8B613 /* Top200Lakes.TXT */,
-				EB4A58161FB5E5BD00B8B613 /* Counties.TXT */,
-				EB4A58181FB5E5BE00B8B613 /* PARKS.TXT */,
-				EB4A58171FB5E5BD00B8B613 /* TOP500Cities.TXT */,
-				EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */,
 			);
 			name = MinnesotaGameData;
 			sourceTree = "<group>";
@@ -1306,7 +1255,6 @@
 				BB2B13941D6F78B10072957F /* upperlower.txt in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				69D625551FA3F1F6008D6F08 /* hsvPause.png in Resources */,
-				EB4A581D1FB6518100B8B613 /* Top200Lakes.TXT in Resources */,
 				695A9C211EA173F400F1B5D7 /* copyIcon.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				BB8B969A1E8568CA00B6A9F7 /* Robbery.png in Resources */,
@@ -1334,9 +1282,7 @@
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				A9BB3E1B1B1FA7A3003E1BAF /* blackCrosshairs.png in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
-				EB38AF421FB3AF2F00E5DD93 /* MinnesotaData.slt in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
-				EB4A58311FB89A7B00B8B613 /* happy2.png in Resources */,
 				A95EC7E31B224BFC0031B903 /* downloadCloud.png in Resources */,
 				694D99F91FAA396A0023FD37 /* redArrowLeft.png in Resources */,
 				69B46EFE1BC215F100BB7724 /* destinations.png in Resources */,
@@ -1350,7 +1296,6 @@
 				69F1774C1D7A0CA400741C68 /* GooglePlaces.bundle in Resources */,
 				69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
-				EB4A58221FB7555400B8B613 /* hourglass3.png in Resources */,
 				1F5ADD581CB95EDA002D7BED /* PropListField_4.pdf in Resources */,
 				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
 				6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */,
@@ -1372,17 +1317,12 @@
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
 				69E62D501BBF276B0018390B /* fieldOptions.png in Resources */,
-				EB4A58191FB5E5BE00B8B613 /* Counties.TXT in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
 				6930635A1FF6C2FD00562A98 /* VideoPlayIcon.png in Resources */,
 				69FEC8971CA9AD0F002BF231 /* whiteMapItWithX.png in Resources */,
 				A9D281891B045BAD00523B29 /* loadData.png in Resources */,
-				EB4A581A1FB5E5BE00B8B613 /* TOP500Cities.TXT in Resources */,
-				EB4A58301FB89A7B00B8B613 /* happy1.png in Resources */,
-				EB4A58251FB7555400B8B613 /* hourglass1.png in Resources */,
 				694D99F81FAA396A0023FD37 /* redArrowRight.png in Resources */,
-				EB4A58331FB89A7B00B8B613 /* happy7.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				6991ED2F1FA9115F007306B2 /* redX.png in Resources */,
 				697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */,
@@ -1398,14 +1338,9 @@
 				69E2E7E11FD8628000050D10 /* ytIcon.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */,
-				EB4A58241FB7555400B8B613 /* hourglass2.png in Resources */,
-				EB4A58231FB7555400B8B613 /* hourglass4.png in Resources */,
-				EB4A58321FB89A7B00B8B613 /* happy6.png in Resources */,
-				EB4A582F1FB89A7B00B8B613 /* happy5.png in Resources */,
 				69E2E7E31FD864E800050D10 /* pdfIcon.png in Resources */,
 				69D625571FA3F1F6008D6F08 /* hsvPlay.png in Resources */,
 				69F1774A1D7A0C9400741C68 /* GooglePlacePicker.bundle in Resources */,
-				EB4A58351FB89A7B00B8B613 /* happy4.png in Resources */,
 				69E2E7E61FD86E6300050D10 /* NVCrimeIntro.pdf in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,
@@ -1422,12 +1357,10 @@
 				69FD71391FE2FB3400EAFDEF /* VideoStopIcon.png in Resources */,
 				A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */,
 				69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */,
-				EB4A582E1FB89A7B00B8B613 /* happy8.png in Resources */,
 				697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */,
 				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				BB8B96991E8568CA00B6A9F7 /* Assault.png in Resources */,
-				EB4A58341FB89A7B00B8B613 /* happy3.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
@@ -1448,7 +1381,6 @@
 				694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */,
 				BB8B969C1E8568CA00B6A9F7 /* Part2-2.png in Resources */,
 				BB8B969B1E8568CA00B6A9F7 /* Burglary.png in Resources */,
-				EB4A581B1FB5E5BE00B8B613 /* PARKS.TXT in Resources */,
 				1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */,
 				69CE5BF41FF68AD7007D5D1F /* browseIcon.png in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
