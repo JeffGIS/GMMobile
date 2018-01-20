@@ -144,6 +144,7 @@
                       pass:(int)pass;
 {
     NSString *query;
+    NSString *crimeLegend = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt[2];
     //int UCR;
@@ -564,7 +565,7 @@ NextPass:
                 if (numYears > 1)
                 {
                     ChartsBitmap *cb = ChartsBitmap.new;
-                    cb.title = [NSString stringWithFormat:@"Violent Crime for %@ By Year",_choroplethTarget];
+                    cb.title = [NSString stringWithFormat:@"%@ for %@ By Year",crimeLegend, _choroplethTarget];
                     cb.format = ChartsBitmapDataFormatYears;
                     
                     for (AreaData *ai in pias.areaInfo)
@@ -583,7 +584,7 @@ NextPass:
                 }
                 
                 ChartsBitmap *cbdow = ChartsBitmap.new;
-                cbdow.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Day of Week"];
+                cbdow.title = [NSString stringWithFormat:@"%@ for %@ By Day of Week",crimeLegend,_choroplethTarget];
                 cbdow.format = ChartsBitmapDataFormatDayOfWeek;
                 
                 for (AreaData *ai in pias.areaInfo)
@@ -601,7 +602,7 @@ NextPass:
                 [CRAPI.sharedInstance.chartBitmaps addObject:cbdow];
                 
                 ChartsBitmap *cb = ChartsBitmap.new;
-                cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Hour"];
+                cb.title = [NSString stringWithFormat:@"%@ for %@ By Hour",crimeLegend,_choroplethTarget];
                 cb.format = ChartsBitmapDataFormatHourOfDay;
                 
                 for (AreaData *ai in pias.areaInfo)

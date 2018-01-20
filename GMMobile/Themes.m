@@ -75,6 +75,8 @@
                 thm = [self createTheme:ViolentTheme];
             if ([crimeLegend isEqualToString:@"Assault"])
                 thm = [self createTheme:AssaultTheme];
+            if ([crimeLegend isEqualToString:@"Domestic Assault"])
+                thm = [self createTheme:DomesticAssaultTheme];
             if ([crimeLegend isEqualToString:@"Burglary"])
                 thm = [self createTheme:BurglaryTheme];
             if ([crimeLegend isEqualToString:@"Robbery"])
@@ -439,6 +441,7 @@
             case ViolentTheme:
             case CrimeIndexTheme:
             case AssaultTheme:
+            case DomesticAssaultTheme:
             case RobberyTheme:
             case BurglaryTheme:
             case SelectedTheftTheme:

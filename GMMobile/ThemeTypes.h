@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     ViolentTheme,
     CrimeIndexTheme,
     AssaultTheme,
+    DomesticAssaultTheme,
     BurglaryTheme,
     RobberyTheme,
     NarcoticsTheme,

@@ -692,6 +692,39 @@ static int ii=0;
             class.values = @[@"ASLT5"];
             [thm.classes addObject:class];
             break;
+        case DomesticAssaultTheme:
+            thm.minUCR = 5;
+            thm.maxUCR = 9;
+            thm.legend.title = @"Domestic Assault";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 4;
+            class = [ThemeClass createWithTitle:@"Domestic Assault 1st deg"];
+            class.color = [UIColor greenColor];
+            class.symbol = CrossSym;
+            class.UCR = 5;
+            class.values = @[@"DASLT1"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Domestic Assault 2nd deg"];
+            class.color = [UIColor greenColor];
+            class.symbol = DiamondSym;
+            class.UCR = 5;
+            class.values = @[@"DASLT2"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Domestic Assault 3rd deg"];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            class.UCR = 5;
+            class.values = @[@"DASLT3"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Domestic Assault 5th deg"];
+            class.color = [UIColor greenColor];
+            class.symbol = CircleSym;
+            class.UCR = 9;
+            class.values = @[@"DASLT5"];
+            [thm.classes addObject:class];
+            break;
         case RobberyTheme:
             thm.minUCR = 4;
             thm.maxUCR = 4;
@@ -1491,6 +1524,7 @@ int getThemeOpt(ThemeTypes type)
             break;
         case Part2Theme:
         case AssaultTheme:
+        case DomesticAssaultTheme:
         case ViolentTheme:
         case RobberyTheme:
         case BurglaryTheme:
@@ -1519,6 +1553,7 @@ int getThemeOpt(ThemeTypes type)
     switch (self.type)
     {
         case AssaultTheme:
+        case DomesticAssaultTheme:
         case RobberyTheme:
         case BurglaryTheme:
         case SelectedTheftTheme:
@@ -1721,6 +1756,7 @@ int getThemeOpt(ThemeTypes type)
                 }
                 break;
             case AssaultTheme:
+            case DomesticAssaultTheme:
             case RobberyTheme:
             case BurglaryTheme:
             case SelectedTheftTheme:

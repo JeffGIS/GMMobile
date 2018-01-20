@@ -65,7 +65,7 @@
     _compareOptionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _tableView = UITableView.new;
     
-    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Violent Crimes", @"Assault", @"Burglary", @"Robbery",
+    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Violent Crimes", @"Assault", @"Domestic Assault", @"Burglary", @"Robbery",
                  @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto", @"Crime Index"];
     
     _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Hotspot Video", @"Choropleth Map", @"Line Graph"];
@@ -82,7 +82,7 @@
                          @"Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
                          @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
     
-    _linegraphModes = @[@"Line Graph for City",@"Line Graph for Precincts By Year",@"Line Graph for Precincts By Month", @"Line Graph for Wards",
+    _linegraphModes = @[@"Line Graph for City",@"Line Graph for Precincts", @"Line Graph for Wards",
                          @"Line Graph for Sectors", @"Line Graph for Neighborhoods",
                          @"Line Graph For Census Tracts",@"Line Graph for Block Groups",@"Line Graph for Blocks"];
     
