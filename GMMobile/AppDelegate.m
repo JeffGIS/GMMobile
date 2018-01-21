@@ -109,18 +109,27 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     if (error)
         NSLog(@"AVAudioSession set category ERROR: %@", error.localizedDescription);
+    NSString * bundleID = NSBundle.mainBundle.bundleIdentifier;
+    //bundleID = @"com.gssi.newvisioncrime";
+    HardCodedConfigs appID = NUMHardCodedConfigs;
     
-    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
-        [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    if ([bundleID isEqualToString:@"com.gssi.newvisionmetro"])
+        appID = HCConfigMetroProp;
     
-    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
-        [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
+    else if ([bundleID isEqualToString:@"com.gssi.newvisioncrime"])
+        appID = HCConfigCrimes;
     
-    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
-        [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
+    else if ([bundleID isEqualToString:@"com.gssi.newvisionsidewalk"])
+        appID = HCConfigSidewalk;
     
-    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmngame"])
-        [ConfigurationControl.sharedInstance setApp:HCConfigMinnesotaGame];
+    else if ([bundleID isEqualToString:@"com.gssi.newvisionmngame"])
+        appID = HCConfigMinnesotaGame;
+    
+    if (appID < NUMHardCodedConfigs)
+    {
+        [UserDefaults.defaults saveNSInteger:(appID + 1) forKey:@"CurrentConfig"];
+        [ConfigurationControl.sharedInstance setApp:appID];
+    }
     
     return YES;
 }

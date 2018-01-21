@@ -349,7 +349,7 @@
         HardCodedConfigs config = (configIndex - 1);
         _nvdl = [[NVDataLoader alloc] init];
         _nvdl.delegate = self;
-        [_nvdl loadNVData:(config - 1) popover:_popover];
+        [_nvdl loadNVData:config popover:_popover];
     }
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
