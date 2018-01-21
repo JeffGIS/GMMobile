@@ -32,6 +32,8 @@
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSString * bundleID = CRAPI.sharedInstance.bundleID;
+    
     UITextField *lagFreeField = [[UITextField alloc] init];
     [self.window addSubview:lagFreeField];
     [lagFreeField becomeFirstResponder];
@@ -90,8 +92,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
-    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"] &&
-        ![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
+    if (![bundleID isEqualToString:@"com.gssi.newvisioncrime"] &&
+        ![bundleID isEqualToString:@"com.gssi.newvisionsidewalk"])
     {
         if (![self checkUnbundledFile:@"landuse"
                                  type:@"slt"
@@ -109,8 +111,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     if (error)
         NSLog(@"AVAudioSession set category ERROR: %@", error.localizedDescription);
-    NSString * bundleID = NSBundle.mainBundle.bundleIdentifier;
-    //bundleID = @"com.gssi.newvisioncrime";
     HardCodedConfigs appID = NUMHardCodedConfigs;
     
     if ([bundleID isEqualToString:@"com.gssi.newvisionmetro"])

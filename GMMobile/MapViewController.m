@@ -162,12 +162,12 @@
     _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
                                                                                               ofType:@"png"]];
     
-    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmobile"] &&
-        ![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionaccess"])
+    if (![CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmobile"] &&
+        ![CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionaccess"])
     {
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
         
-        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionaccess"])
+        if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionaccess"])
             [NVTabBarEdit tabBarController:self.tabBarController setText:@"Projects" forViewControllerWithID:@"ApplicationsVC"];
     }
     
@@ -416,23 +416,23 @@
 {
     [super viewWillAppear:animated];
     
-    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+    if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
     {
 
     }
     
-    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    else if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisioncrime"])
     {
         
     }
     
-    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
+    else if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionsidewalk"])
     {
         if (_firstTimeAppear)
             self.tabBarController.tabBar.hidden = YES;
     }
     
-    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmngame"])
+    else if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmngame"])
     {
         if (_firstTimeAppear)
         {
@@ -701,7 +701,7 @@
     
     else
     {
-        if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"] &&
+        if (![CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionsidewalk"] &&
             ![CRAPI.sharedInstance.sourceApp isEqualToString:@"CRISDetailSdwk"])
         {
             self.tabBarController.tabBar.hidden = NO;
@@ -980,7 +980,7 @@
            replaceViewControllerWithID:@"FieldOptionsVC"
                     withViewController:findvc];
         
-        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+        if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
         {
             [NVTabBarEdit tabBarController:self.tabBarController
                replaceViewControllerWithID:@"DestinationsVC"
@@ -1010,7 +1010,7 @@
         configVC.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"config"
                                                                                                    ofType:@"png"]];
         
-        if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+        if (![CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
             index--;
         
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:configVC atIndex:index];
@@ -1156,7 +1156,7 @@
         UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:crimeOptionsVC atIndex:1];
         
-        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+        if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisioncrime"])
             [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
         
         _nvssvc.tabBarItem.title = @"Crime Lists";
@@ -1270,7 +1270,7 @@
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
     {
-        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
+        if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionsidewalk"])
             [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
         
         _mapView.mapType = kGMSTypeHybrid;

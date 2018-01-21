@@ -93,7 +93,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         _appList = NSMutableArray.array;
         ApplicationObject *ap = nil;
         
-        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionaccess"])
+        if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionaccess"])
         {
             ap = [[ApplicationObject alloc] initWithNameAndID:@"Maple Grove"
                                                    identifier:HCConfigMapleGrove];
@@ -615,8 +615,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     
     else
     {
-        NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingAreas];
-        [list addObject:dsid];
+        //NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingAreas]; areas now in bundle
+        //[list addObject:dsid];
         
         for (int layer = 0; layer < NUMHardCodedLayers; layer++)
         {
