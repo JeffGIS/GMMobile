@@ -583,6 +583,24 @@ NextPass:
                     [CRAPI.sharedInstance.chartBitmaps addObject:cb];
                 }
                 
+                ChartsBitmap *cbmon = ChartsBitmap.new;
+                cbmon.title = [NSString stringWithFormat:@"%@ for %@ By Month",crimeLegend,_choroplethTarget];
+                cbmon.format = ChartsBitmapDataFormatMonths;
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 12; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.monthCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    [cbmon.dataSets addObject:cbd];
+                }
+                [CRAPI.sharedInstance.chartBitmaps addObject:cbmon];
+                
                 ChartsBitmap *cbdow = ChartsBitmap.new;
                 cbdow.title = [NSString stringWithFormat:@"%@ for %@ By Day of Week",crimeLegend,_choroplethTarget];
                 cbdow.format = ChartsBitmapDataFormatDayOfWeek;
