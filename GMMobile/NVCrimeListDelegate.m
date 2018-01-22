@@ -100,15 +100,18 @@
     NSArray *list = crimelist.getControlNumbers;
     //BOOL opened = [crimelist open];
     [crimelist startTransaction];
-    for (NSNumber * rownum in arrayOfRows)
+    
+    for (NSNumber *rownum in arrayOfRows)
     {
-        int row = (int)rownum.integerValue - 1;
+        int row = rownum.intValue;
+        
         if (row < list.count)
         {
             NSNumber *cnum = list[row];
-            [crimelist deleteControlNumber:(int)cnum.integerValue];
+            [crimelist deleteControlNumber:cnum.intValue];
         }
     }
+    
     [crimelist commitTransaction];
     [crimelist close:YES];
     [crimelist open];

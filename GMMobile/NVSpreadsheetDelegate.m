@@ -133,11 +133,13 @@
     NSArray *list = _propList.getPropertyNumbers;
     BOOL opened = [_propList open];
     [_propList startTransaction];
+    
     for (NSNumber *row in arrayOfRows)
     {
-        NSNumber * propNum = list[row.integerValue];
+        NSNumber *propNum = list[row.integerValue];
         [_propList deleteProperty:(NSInteger)propNum.integerValue];
     }
+    
     [_propList commitTransaction];
     [_propList close:opened];
     [self closeList];
