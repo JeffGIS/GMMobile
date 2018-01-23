@@ -44,7 +44,8 @@
 - (NSInteger)addIndividualDestination:(Destination *)destination;
 - (NSInteger)addGroupDestination:(Destination *)destination;
 - (void)removeDestination:(NSInteger)destinationID;
-- (void)addRoutesForProperty:(NSInteger)propNum;
+- (void)addRoutesForProperty:(NSInteger)propNum
+                  inPropList:(PropertyList*)propList;
 
 - (NSInteger)addDestination:(Destination *)destination
                     toGroup:(NSInteger)groupID;

@@ -587,8 +587,8 @@
 }
 
 - (void)addRoutesForProperty:(NSInteger)propNum
+                  inPropList:(PropertyList*)propList
 {
-    PropertyList *propList = [[PropertyList alloc]init];
     LLPOINT propPt = [propList getPropertyLatLon:propNum];
     
     NSArray *individDests = [self getIndividualDestinations];

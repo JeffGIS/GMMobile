@@ -137,7 +137,14 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (NSString *) getFieldTotal:(PropFieldType)fieldType;
 - (Bool) parcelInPropertyList:(NSString *)PIN;
 - (NSArray*) getAreaRecords:(NSInteger)propNum;
+
 - (int)getNearestProperty:(LLPOINT *)ll
          distanceInMeters:(double*)dist;
+
+- (NSString *)getVideoDirectory:(int)propNum;
+- (bool)addVideoClip:(int)propNum
+       videoFileName:(NSString*)fileName
+                clip:(RHClip *) clip;
+-(NSArray<RHClip*> *) getVideoClipsForProperty:(int)propNum;
 
 @end

@@ -305,7 +305,6 @@
 {
     [_propList close:YES];
     NSArray * rtn = [PropertyList getPropertyLists];
-    [_propList createTables];
     [_propList open];
     return rtn;
 }
@@ -321,7 +320,6 @@
 {
     [_propList close:YES];
     [PropertyList deleteCurrentPropertyList];
-    [_propList createTables];
     [_propList open];
 }
 
@@ -329,7 +327,6 @@
 {
     [_propList close:YES];
     [PropertyList createNewPropertyList];
-    [_propList createTables];
     [_propList open];
 }
 

@@ -14,7 +14,7 @@
 
 @interface PropertyList ()
 
-@property NSString *fileName, *path;
+@property NSString *plName, *plPath, *plDirectory;
 @property sqlite3nv *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
@@ -32,12 +32,24 @@
 
 NSString * GetPropListDirectory (void)
 {
-    NSString * documentsDirectory = CRAPI.sharedInstance.documentsDirectory;
+    NSString * documentsDirectory = CRAPI.sharedInstance.sharedOutputDirectory;
     NSString * propListDir = [NSString stringWithFormat:@"%@/PropertyLists",documentsDirectory];
+    if (CRAPI.sharedInstance.resetPropList)
+    {
+        NSError *error = nil;
+        
+        [NSFileManager.defaultManager removeItemAtPath:propListDir
+                                                 error:&error];
+        
+        if (error)
+            NSLog(@"%@ file removal error", propListDir);
+        
+        CRAPI.sharedInstance.resetPropList = NO;
+    }
     [NSFileManager.defaultManager createDirectoryAtPath:propListDir
                             withIntermediateDirectories:YES
                                              attributes:nil
-                                                error:nil];
+                                                  error:nil];
     
     return propListDir;
 }
@@ -49,8 +61,7 @@ NSString * GetPropListDirectory (void)
     for (NSString *fileName in [NSFileManager.defaultManager contentsOfDirectoryAtPath:dir
                                                                 error:nil])
     {
-        NSString *leafName = textBefore (fileName.lastPathComponent,@".");
-        [array addObject:leafName];
+        [array addObject:fileName];
     }
     return array;
 }
@@ -87,12 +98,12 @@ NSString * GetPropListDirectory (void)
 + (BOOL) renameCurrentPropertyList:(NSString *)newName
 {
     PropertyList *pl = [[PropertyList alloc]init];
-    NSString *currentFile = pl.path;
-    NSString *newFile = [NSString stringWithFormat:@"%@/%@.sqlite", pl.propListDir, newName];
+    NSString *currentDir = pl.plDirectory;
+    NSString *newFile = [NSString stringWithFormat:@"%@/%@", pl.propListDir, newName];
 
     [pl close:YES];
     NSError * err = NULL;
-    BOOL result = [NSFileManager.defaultManager  moveItemAtPath:currentFile
+    BOOL result = [NSFileManager.defaultManager  moveItemAtPath:currentDir
                                                          toPath:newFile
                                                           error:&err];
     if(!result)
@@ -108,14 +119,14 @@ NSString * GetPropListDirectory (void)
 
 + (BOOL) deleteCurrentPropertyList
 {
-
     PropertyList *pl = [[PropertyList alloc]init];
-    NSString *currentFile = pl.path;
-    NSError *error = nil;
+    [pl open];
+    NSString *currentDir = [pl getCurrentPropListDir];
     [pl close:YES];
-    if (![NSFileManager.defaultManager removeItemAtPath:currentFile error:&error])
+    NSError *error = nil;
+    if (![NSFileManager.defaultManager removeItemAtPath:currentDir error:&error])
     {
-        NSLog(@"%@ file removal error", currentFile);
+        NSLog(@"%@ file removal error", currentDir);
         return FALSE;
     }
     NSArray *lists = [PropertyList getPropertyLists];
@@ -123,7 +134,7 @@ NSString * GetPropListDirectory (void)
         [UserDefaults.defaults saveString:lists[0]
                                    forKey:@"CurrentPropertyList"];
     else
-        [UserDefaults.defaults saveString:@"PropertyList1"
+        [UserDefaults.defaults saveString:@"PropList1"
                                    forKey:@"CurrentPropertyList"];
     
     return TRUE;
@@ -144,43 +155,7 @@ NSString * GetPropListDirectory (void)
     self = [super init];
     
     if (self)
-    {
-        _propListDir = GetPropListDirectory ();
-        _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
-        
-        if (!_fileName)
-        {
-            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-                _fileName = @"PropList1";
-            
-            else
-                _fileName = @"PropertyList1";
-            
-            [UserDefaults.defaults saveString:_fileName
-                                       forKey:@"CurrentPropertyList"];
-        }
-        
-        _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
-        
-        //int version = [self datasetVersion];
-        
-        if (CRAPI.sharedInstance.resetPropList)
-        {
-            NSError *error = nil;
-            
-            [NSFileManager.defaultManager removeItemAtPath:_path
-                                                     error:&error];
-            
-            if (error)
-                NSLog(@"%@ file removal error", _fileName);
-            
-            CRAPI.sharedInstance.resetPropList = NO;
-        }
-        
-        [self createTables];
-
-    }
-    NSLog(@"Init property list %@", _fileName);
+    NSLog(@"Init property list");
     
     return self;
 }
@@ -190,6 +165,30 @@ NSString * GetPropListDirectory (void)
     [self close:YES];
     NSLog(@"PropertyList Database dealloc");
 }
+
+- (NSString*) getCurrentPropListDir
+{
+    _propListDir = GetPropListDirectory ();
+    _plName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
+    
+    if (!_plName)
+    {
+        _plName = @"PropList1";
+        [UserDefaults.defaults saveString:_plName
+                                   forKey:@"CurrentPropertyList"];
+    }
+    
+    NSString * dir = [NSString stringWithFormat:@"%@/%@", _propListDir, _plName];
+    [NSFileManager.defaultManager createDirectoryAtPath:dir
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+    
+    //int version = [self datasetVersion];
+    
+    return dir;
+}
+
 - (BOOL)open
 {
     BOOL rtn = NO;
@@ -199,13 +198,16 @@ NSString * GetPropListDirectory (void)
         if (_dbIsOpen)
             NSLog(@"PropertyList already open");
         _dbIsOpen++;
-        _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
-        _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
+        _plDirectory = [self getCurrentPropListDir];
+        _plPath = [NSString stringWithFormat:@"%@/PropertyData.slt", _plDirectory];
 
 //        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
-        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_path.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_plPath.UTF8String, &_database), _database);
         NSLog(@"PropertyList Database open");
-        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
+        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_plPath error:nil].fileSize;
+        if (!_fileSize)
+            [self createTables];
+
         rtn = YES;
     }
     
@@ -228,7 +230,8 @@ NSString * GetPropListDirectory (void)
     BOOL opened = [self open];
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
-    CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC, FieldType ASC);";
+    CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC, FieldType ASC);\
+    CREATE TABLE IF NOT EXISTS PropertyVideo (videoID INTEGER PRIMARY KEY,PropNum INTEGER,Title CHAR(256), Type INT, Cost REAL, Notes CHAR(4096), VideoFileName CHAR(256), StartTime FLOAT, EndTime FLOAT);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType CHAR(32),AreaID CHAR(64),Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
@@ -239,6 +242,83 @@ NSString * GetPropListDirectory (void)
     return rtn;
 }
 
+- (int)nextVideoID
+{
+    int rtn = 1;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT max(videoID) FROM PropertyVideo"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = sqlite3_column_int(statement, 0) + 1;
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    
+    return rtn;
+}
+
+- (NSString *)getVideoDirectory:(int)propNum
+{
+    NSString * pldir = [self getCurrentPropListDir];
+    NSString *dir = [NSString stringWithFormat:@"%@/Prop%i_video",pldir,propNum];
+    [NSFileManager.defaultManager createDirectoryAtPath:dir
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+
+    return dir;
+}
+- (bool)addVideoClip:(int)propNum
+       videoFileName:(NSString*)fileName
+                clip:(RHClip *) clip
+{
+    BOOL opened = [self open];
+    int clipID = clip.clipID;
+    
+    if (!clipID)
+        clipID = [self nextVideoID];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyVideo VALUES (%i,%i,'%@',%i, %f, '%@','%@',%f,%f);",clipID,propNum,clip.title,(int)clip.quality,clip.cost,clip.notes,fileName,clip.startTime,clip.endTime];
+    bool rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self close:opened];
+    return rtn;
+}
+
+-(NSArray *) getVideoClipsForProperty:(int)propNum
+{
+    NSMutableArray * rtn = NSMutableArray.new;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT videoID, Title, Type, Cost, Notes, VideoFileName, StartTime, EndTime FROM PropertyVideo WHERE PropNum = %i",propNum];
+     sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        RHClip * clip = RHClip.new;
+        clip.clipID = sqlite3_column_int(statement, i++);
+        LPCSTR val = (LPCSTR)sqlite3_column_text (statement, i++);
+        clip.title = [NSString stringWithUTF8String:val];
+        clip.quality = sqlite3_column_int(statement, i++);
+        clip.cost = sqlite3_column_double(statement, i++);
+        val = (LPCSTR)sqlite3_column_text (statement, i++);
+        clip.notes = [NSString stringWithUTF8String:val];
+        val = (LPCSTR)sqlite3_column_text (statement, i++);
+        clip.videoFileName = [NSString stringWithUTF8String:val];
+        clip.startTime = sqlite3_column_double(statement, i++);
+        clip.endTime = sqlite3_column_double(statement, i++);
+        [rtn addObject:clip];
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    [self close:opened];
+    return rtn;
+}
 /*
 - (int)datasetVersion
 {
@@ -1303,6 +1383,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                               useDesc:(LPSTR)usedesc.UTF8String];
     
     BOOL opened = [self open];
+    [self startTransaction];
     int dbid = [self next_id];
     int PropNum = [self nextPropNum];
     int propVersion = [propData propertyDatasetVersion];
@@ -1442,10 +1523,14 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                           values:(SlowValues *)vals
 {
     BOOL opened = [self open];
-    int dbid = [self next_id];
-    NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
+    if (!opened)
+    {
+        int dbid = [self next_id];
+        NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
+        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        [self commitTransaction];
+    }
     [self close:opened];
 }
 

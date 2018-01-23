@@ -117,7 +117,8 @@
     
     //add routes from property to destinations
     Destinations *dests = [[Destinations alloc]init];
-    [dests addRoutesForProperty:propNum];
+    [dests addRoutesForProperty:propNum
+                     inPropList:_delegate];
     nComputes++;
     dispatch_async(dispatch_get_main_queue(),
                    ^{
