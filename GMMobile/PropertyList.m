@@ -273,17 +273,20 @@ NSString * GetPropListDirectory (void)
 
     return dir;
 }
-- (bool)addVideoClip:(int)propNum
-       videoFileName:(NSString*)fileName
-                clip:(RHClip *) clip
+
+- (BOOL)addVideoClip:(RHClip *)clip
 {
     BOOL opened = [self open];
     int clipID = clip.clipID;
     
     if (!clipID)
         clipID = [self nextVideoID];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyVideo VALUES (%i,%i,'%@',%i, %f, '%@','%@',%f,%f);",clipID,propNum,clip.title,(int)clip.quality,clip.cost,clip.notes,fileName,clip.startTime,clip.endTime];
-    bool rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    
+    NSString *cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyVideo VALUES (%i,%i,'%@',%i, %f, '%@','%@',%f,%f);",
+                     clipID, clip.propNum, clip.title, (int)clip.quality, clip.cost, clip.notes, clip.videoFileName,
+                     clip.startTime,clip.endTime];
+    
+    BOOL rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
     return rtn;
 }
@@ -873,9 +876,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 }
 
 
-- (Bool) parcelInPropertyList:(NSString *)PIN
+- (BOOL)parcelInPropertyList:(NSString *)PIN
 {
-    Bool rtn = FALSE;
+    BOOL rtn = FALSE;
     NSString *value = @"";
     NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li", (long)PFT_PIN];
     
