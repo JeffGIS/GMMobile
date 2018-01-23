@@ -207,7 +207,8 @@
         return [UIColor colorWithRed:1 green:1 blue:0.85 alpha:1];
     return UIColor.clearColor;
 }
-- (NSInteger) getPropNumForColumn:(NSInteger)column
+
+- (NSInteger)getPropNumForColumn:(NSInteger)column
 {
     NSArray *list = _propList.getPropertyNumbers;
     if (column < 0 || column > list.count)
@@ -458,6 +459,21 @@
 - (void)setCurrentPropList:(NSString *)propList
 {
     [PropertyList setCurrentPropertyList:propList];
+}
+
+- (NSString *)vidDirForPropNum:(int)propNum
+{
+    return [PropertyList.new getVideoDirectory:propNum];
+}
+
+- (BOOL)addVideoClip:(RHClip *)clip
+{
+    BOOL clipAdded = [PropertyList.new addVideoClip:clip];
+    
+    if (clipAdded)
+        {NSLog(@"RHClip successfully added:\n%@", clip);}
+    
+    return clipAdded;
 }
 
 @end
