@@ -556,7 +556,22 @@ NSString * GetPropListDirectory (void)
         case PFT_LastSalePrice:
             name = @"Last Sale Price";
             break;
-            
+        case PFT_ProsAndCons:
+            name = @"Pros And Cons";
+            break;
+        case PFT_Ave_EMV_block:
+            name = @"Average EMV (Block)";
+            break;
+        case PFT_Ave_EMV_blockgroup:
+            name = @"Average EMV (Block Group)";
+            break;
+        case PFT_Ave_EMV_eighthMile:
+            name = @"Average EMV (Eighth Mile)";
+            break;
+        case PFT_Ave_EMV_qtrMile:
+            name = @"Average EMV (Qtr Mile)";
+            break;
+
         default:break;
     }
     
@@ -1534,6 +1549,30 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self close:opened];
 }
 
+/*
+ Top spreadsheet fields
+ProsAndCons
+TraveLess
+Average Market Value
+Average Home Age
+Percent Open Space/Parks
+Percent Commercial
+Percent Industrial
+Miles of major roads
+Stability
+Homestead rate
+Homestead trend
+Age mean, median and distribution
+Income
+Percent Single Family
+Percent vote Republican
+Percent vote Democrat
+Percent with children
+Percent single parent
+Ave no of children
+Ave age of children
+School data
+*/
 
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {

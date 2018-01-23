@@ -252,6 +252,12 @@
             
             return [NSString stringWithFormat:@"%.1f", val];
         }
+        else if (type == PFT_ProsAndCons)
+        {
+            NSArray *clips = [_propList getVideoClipsForProperty:(int)propNum];
+
+            return [NSString stringWithFormat:@"%i Clips",(int)clips.count];
+        }
         
         return [proplist getFieldValue:propNum
                                   type:type];
@@ -411,6 +417,22 @@
     [popoverTableView hide:YES];
 }
 
+- (NSMutableArray *) getOptionsForCell:(NSInteger)row
+                                column:(NSInteger)column
+{
+    NSMutableArray *array = [NSMutableArray arrayWithArray:@[@"Map It", @"Cancel"]];
+
+    FieldListRecord *flr = nil;
+        
+    if (row < _fieldList.count)
+    {
+        flr = _fieldList[row];
+        if (flr.type == PFT_ProsAndCons)
+            array = [NSMutableArray arrayWithArray:@[@"Show Pros And Cons"]];
+    }
+
+    return array;
+}
 
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {

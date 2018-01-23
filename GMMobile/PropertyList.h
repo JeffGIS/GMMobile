@@ -67,6 +67,11 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_YearBuilt,
     PFT_LastSaleYear,
     PFT_LastSalePrice,
+    PFT_ProsAndCons,
+    PFT_Ave_EMV_block,
+    PFT_Ave_EMV_blockgroup,
+    PFT_Ave_EMV_eighthMile,
+    PFT_Ave_EMV_qtrMile,
     PFT_END,
 };
 typedef NS_ENUM(NSInteger, PropBaseType)
