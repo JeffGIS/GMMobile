@@ -5,7 +5,7 @@
 #import "CCodeLibrary/GSSiEnums.h"
 #import "CCodeLibrary/DisplayCharacteristics.h"
 #import "Theme.h"
-#import "PropertyList.h"
+//#import "PropertyList.h"
 #import "MinnesotaGame.h"
 
 #define MAX_LAYER_NAME 32
@@ -72,8 +72,8 @@ NUMHardCodedLayers};
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;
 @property DataCompareOptions dataCompareOption;
-@property PropFieldType currentPropSheetFieldType;
-@property PropFieldType currentPropSheetFieldType2;
+@property int currentPropSheetFieldType;
+@property int currentPropSheetFieldType2;
 @property NSString * MapitPID;
 @property int MapitBoundaryOpt;
 @property int MapitBoundaryRefno;

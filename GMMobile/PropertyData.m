@@ -8,6 +8,7 @@ NSString *fileName = @"MetroGIS_database.gcf";
 #import "MapViewENUMS.h"
 #import "CCodeLibrary/NVTextDrawing.h"
 #import "CCodeLibrary/MathUtil.h"
+#import "RiteHomeCompute.h"
 MNMXCORD curbounds;
 
 typedef struct { int EMV_LAND, EMV_BLDG, EMV_TOTAL, TAX_CAPACITY, TOTAL_TAX, SPEC_ASSES, SALE_YEAR, SALE_VALUE;
@@ -2257,8 +2258,10 @@ Exit:
                 
                 //SQLOKpd(SQLiteFinalize(statement),_database, 57);
                 
-                DATA_FROM_TABLES values;
-                [self computeValuesFromTables:&values
+                RiteHomeCompute *rhCompute = RiteHomeCompute.new;
+                
+                DATA_FROM_PARCELS *values = DATA_FROM_PARCELS.new;
+                [rhCompute computeValuesFromParcelsInCensus:values
                                  inCensusArea:(LPSTR)censusBlock
                                        totEMV:(int)totalEMV
                                       useDesc:(LPSTR)usedesc];
@@ -2266,7 +2269,7 @@ Exit:
                 line = [NSString stringWithFormat:@"Stability:%.i%%", values.stability5yr];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Percent Commercial:%i%%", values.pctHomestead];
+                line = [NSString stringWithFormat:@"Percent Homestead:%i%%", values.pctHomestead];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"EMV Rank:%i%%", values.rankTotEMV];

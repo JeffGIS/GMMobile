@@ -9,6 +9,7 @@
 #import "NVMetroSettings.h"
 #import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/MathUtil.h"
+#import "RiteHomeCompute.h"
 
 //#define CURRENT_VERSION 28
 
@@ -19,6 +20,8 @@
 @property BOOL isOpen;
 @property unsigned long long fileSize;
 @property int dbIsOpen;
+@property RiteHomeCompute *rhCompute;
+
 @end
 
 @implementation PropertyList
@@ -1389,9 +1392,10 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     char cenBlock[20];
     strcpy (cenBlock, cenblock.UTF8String);
     cenBlock[12] = 0;
-    DATA_FROM_PARCELS *values_blockgroup;
+    DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
+    DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
 
-    [rhCompute computeValuesFromParcelsInCensus:&values_blockgroup
+    [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
                          inCensusArea:(LPSTR)cenBlock
                                totEMV:(int)totEMV
                               useDesc:(LPSTR)usedesc.UTF8String];

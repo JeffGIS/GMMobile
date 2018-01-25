@@ -5,7 +5,6 @@
 //  Created by JEFFREY E SMITH on 1/25/18.
 //  Copyright © 2018 GSSi. All rights reserved.
 //
-
 #import <Foundation/Foundation.h>
 #import "PropertyData.h"
 #import "BoundaryData.h"

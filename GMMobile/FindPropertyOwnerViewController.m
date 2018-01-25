@@ -4,6 +4,7 @@
 #import "FindPropertyOwnerViewController.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
 #import "CCodeLibrary/GSSiPopoverView.h"
+#import "PropertyList.h"
 
 @interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate,UIGestureRecognizerDelegate,GSSiPopoverViewDelegate>
 

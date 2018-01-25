@@ -224,14 +224,14 @@ Top:
     [_propData close:opened];
     return rtn;
 }
-
+/*
 - (bool)computeValuesFromCensus:(DATA_FROM_PARCELS *)values
                    inCensusArea:(LPSTR)cenBlockIN
                          totEMV:(int)totEMV
                         useDesc:(LPSTR) usedescIN
 {
     bool rtn = FALSE;
-/*
+
 if (strlen (cenBlockIN) > 12)
 query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT,HHTOTAL,HH_UNDER18,HH_65OVER FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",cenBlockIN];
 else
@@ -253,8 +253,9 @@ if (sqlite3_step(statement) == SQLITE_ROW)
 }
 
 SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _propData.database);
-*/
+
     return rtn;
 }
-
+*/
 @end
+

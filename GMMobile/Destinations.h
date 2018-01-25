@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import <Foundation/Foundation.h>
-#import "PropertyList.h"
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <MapKit/MapKit.h>
 
@@ -45,7 +44,7 @@
 - (NSInteger)addGroupDestination:(Destination *)destination;
 - (void)removeDestination:(NSInteger)destinationID;
 - (void)addRoutesForProperty:(NSInteger)propNum
-                  inPropList:(PropertyList*)propList;
+                  inPropList:(id)propList;
 
 - (NSInteger)addDestination:(Destination *)destination
                     toGroup:(NSInteger)groupID;
@@ -55,6 +54,6 @@
 - (void)updateDestination:(Destination*)dest;
 
 - (CGFloat)totalValueForProperty:(NSInteger)propNum
-                          ofType:(PropFieldType)type;
+                          ofType:(int)type;
 
 @end

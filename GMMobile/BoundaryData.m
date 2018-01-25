@@ -5,6 +5,7 @@
 
 #import "BoundaryData.h"
 #import "PropertyData.h"
+#import "PropertyList.h"
 #import "CCodeLibrary/CensusData.h"
 #import "ConfigurationControl.h"
 
