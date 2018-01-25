@@ -208,12 +208,12 @@
     return UIColor.clearColor;
 }
 
-- (NSInteger)getPropNumForColumn:(NSInteger)column
+- (NSInteger)getPropNumForRow:(NSInteger)row
 {
     NSArray *list = _propList.getPropertyNumbers;
-    if (column < 0 || column > list.count)
+    if (row < 0 || row > list.count)
         return -1;
-    NSNumber * rtn = list[column-1];
+    NSNumber * rtn = list[row-1];
     return rtn.integerValue;
 }
 
@@ -284,7 +284,7 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
-    NSInteger propNum = [self getPropNumForColumn:index];
+    NSInteger propNum = [self getPropNumForRow:index];
     [_propList updatePropertyUserID:propNum userID:text];
 }
 
@@ -345,8 +345,8 @@
     
     LLPOINT llpoint = [proplist getPropertyLatLon:column];
     
-    [proplist setZoomValues:column
-                     forRow:row];
+    [proplist setZoomValues:row
+                 withOption:column];
     
     CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
     NSUInteger index = 0;
@@ -370,9 +370,9 @@
                  tabBarController:(UITabBarController *)tabBarController
 {
     PropertyList *proplist = PropertyList.new;
-    int propNum = (int)[self getPropNumForColumn:column];
+    int propNum = (int)[self getPropNumForRow:row];
     
-    if (row == -1)
+    if (column == -2)
     {
         NSArray *areaRecs = [proplist getAreaRecords:propNum];
         
@@ -385,7 +385,8 @@
     }
     
     LLPOINT llpoint = [proplist getPropertyLatLon:propNum];
-    [proplist setZoomValues:propNum forRow:row];
+    [proplist setZoomValues:propNum
+                 withOption:column];
     
     CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
     NSUInteger index = 0;
@@ -425,12 +426,20 @@
 
     FieldListRecord *flr = nil;
         
-    if (row < _fieldList.count)
+    if (column < _fieldList.count)
     {
-        flr = _fieldList[row];
-        if (flr.type == PFT_ProsAndCons)
-            array = [NSMutableArray arrayWithArray:@[@"Show Pros And Cons"]];
-    }
+        flr = _fieldList[column];
+        switch (flr.type)
+        {
+            case PFT_ProsAndCons:
+                array = [NSMutableArray arrayWithArray:@[@"Show Pros And Cons"]];
+                break;
+            case PFT_PIN:
+            case PFT_Address:
+                array = [NSMutableArray arrayWithArray:@[@"Zoom to This Property", @"Zoom to All Properties in List", @"Cancel"]];
+                break;
+       }
+     }
 
     return array;
 }

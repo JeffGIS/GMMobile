@@ -134,7 +134,8 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 - (NSString *) getFieldValue:(NSInteger)propNum
                         type:(PropFieldType)fieldType;
-- (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row;
+- (void)setZoomValues:(NSInteger)propNum
+           withOption:(NSInteger)option;
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field;
 - (void) deleteProperty:(NSInteger)propNum;
 NSString* propertyListFieldDescription (NSInteger fieldNumber);

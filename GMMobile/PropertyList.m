@@ -1256,7 +1256,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return pt;
 }
 
-- (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row
+- (void)setZoomValues:(NSInteger)propNum
+           withOption:(NSInteger)option
 {
     BOOL opened = [self open];
     if (propNum == -1)
@@ -1290,7 +1291,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     }
     NSString * PID = [self getFieldValue:propNum
                                     type:PFT_PIN];
-    if (row == 1)
+    if (option == -1)
     {
         NSString * value = [self getFieldValue:propNum
                                           type:PFT_LatLon];
@@ -1310,38 +1311,40 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         return;
     }
     NSArray *fields = [PropertyList availablePropertyFields];
-    NSNumber *field = fields[row];
-    PropFieldType ifield = field.integerValue;
-    ConfigurationControl.sharedInstance.MapitPID = PID;
-    ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
-    ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
-    NVMetroSettings.sharedInstance.currentFeatureSaved = [self setFeatureTypeForField:ifield];
-    NVMetroSettings.sharedInstance.savedVisibleBounds = CRAPI.sharedInstance.lastViewBounds;
-
-    if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+    if (option < fields.count)
     {
-        NSString * value = [self getFieldValue:propNum
-                                          type:PFT_LatLon];
-        ConfigurationControl.sharedInstance.MapitTargetCenterPoint = LLPOINTFromString (value);
-        ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = [PropertyList getRadiusForField:ifield];
-    }
-    else
-    {
-        NSString * cenBlock = [PropertyData getCensusBlockForPID:PID];
-        NSString * type  = @"BLOCK";
-        if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_AREA_BLOCKGRP)
+        NSNumber *field = fields[option];
+        PropFieldType ifield = field.integerValue;
+        ConfigurationControl.sharedInstance.MapitPID = PID;
+        ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
+        ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
+        NVMetroSettings.sharedInstance.currentFeatureSaved = [self setFeatureTypeForField:ifield];
+        NVMetroSettings.sharedInstance.savedVisibleBounds = CRAPI.sharedInstance.lastViewBounds;
+        
+        if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
         {
-            char blkGrp[20];
-            strncpy (blkGrp,cenBlock.UTF8String,12);
-            blkGrp[12] = 0;
-            cenBlock = [NSString stringWithUTF8String:blkGrp];
-            type = @"BLOCKGROUP";
+            NSString * value = [self getFieldValue:propNum
+                                              type:PFT_LatLon];
+            ConfigurationControl.sharedInstance.MapitTargetCenterPoint = LLPOINTFromString (value);
+            ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = [PropertyList getRadiusForField:ifield];
         }
-        ConfigurationControl.sharedInstance.MapitBoundaryRefno = [BoundaryData getBoundaryAreaRefnoForType:type andName:cenBlock];
-        ConfigurationControl.sharedInstance.MapitBoundaryType = type;
+        else
+        {
+            NSString * cenBlock = [PropertyData getCensusBlockForPID:PID];
+            NSString * type  = @"BLOCK";
+            if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_AREA_BLOCKGRP)
+            {
+                char blkGrp[20];
+                strncpy (blkGrp,cenBlock.UTF8String,12);
+                blkGrp[12] = 0;
+                cenBlock = [NSString stringWithUTF8String:blkGrp];
+                type = @"BLOCKGROUP";
+            }
+            ConfigurationControl.sharedInstance.MapitBoundaryRefno = [BoundaryData getBoundaryAreaRefnoForType:type andName:cenBlock];
+            ConfigurationControl.sharedInstance.MapitBoundaryType = type;
+        }
     }
-
-     [self close:opened];
+    [self close:opened];
 }
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
