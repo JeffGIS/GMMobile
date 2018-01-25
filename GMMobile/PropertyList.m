@@ -1389,20 +1389,20 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     char cenBlock[20];
     strcpy (cenBlock, cenblock.UTF8String);
     cenBlock[12] = 0;
-    DATA_FROM_TABLES values_blockgroup;
+    DATA_FROM_PARCELS *values_blockgroup;
 
-    [propData computeValuesFromTables:&values_blockgroup
+    [rhCompute computeValuesFromParcelsInCensus:&values_blockgroup
                          inCensusArea:(LPSTR)cenBlock
                                totEMV:(int)totEMV
                               useDesc:(LPSTR)usedesc.UTF8String];
     
-    DATA_FROM_TABLES values_block;
+  /*  DATA_FROM_PARCELS *values_block;
     
-    [propData computeValuesFromTables:&values_block
+    [rhCompute computeValuesFromTables:&values_block
                          inCensusArea:(LPSTR)cenblock.UTF8String
                                totEMV:(int)totEMV
                               useDesc:(LPSTR)usedesc.UTF8String];
-    
+*/
     BOOL opened = [self open];
     [self startTransaction];
     int dbid = [self next_id];

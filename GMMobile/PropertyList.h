@@ -3,6 +3,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "RiteHomeCompute.h"
 #import "GetSlowValues.h"
 
 typedef NS_ENUM(NSInteger, PropFieldType)
@@ -101,6 +102,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 @property (nonatomic) GSSiPopoverView *popover;
 @property int propVersion;
 @property int numPropertiesInList;
+@property RiteHomeCompute *rhCompute;
 
 + (NSArray *) getPropertyLists;
 + (NSString*) getCurrentPropertyListName;

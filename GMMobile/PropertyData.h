@@ -29,18 +29,6 @@ typedef NS_ENUM(NSInteger, ActionOption)
     ActionOptionAddToNewPropList,
 };
 
-typedef struct {int nMatchingProperties;
-                int stability5yr,
-                    stability15yr,
-                    rankTotEMV,
-                    pctHomestead,
-                    homeOwnPct,
-                    medianBuiltYear,
-                    medianAgePop,
-                    pctChildren,
-                    pctSenior;
-                }DATA_FROM_TABLES;
-
 @class PropertyData;
 
 @protocol PropertyDataDelegate <NSObject>
@@ -157,11 +145,6 @@ typedef struct {int nMatchingProperties;
                   totTAX:(double *)totTAX
                  specAss:(double *)specAss
                    acres:(double *)acres;
-
-- (void)computeValuesFromTables:(DATA_FROM_TABLES *)values
-                   inCensusArea:(LPSTR)cenBlockIN
-                         totEMV:(int)totEMV
-                        useDesc:(LPSTR) usedescIN;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 + (NSString *)getCensusBlockForPID:(NSString *)PID;
