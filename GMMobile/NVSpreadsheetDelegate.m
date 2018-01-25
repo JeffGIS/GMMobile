@@ -429,6 +429,7 @@
     if (column < _fieldList.count)
     {
         flr = _fieldList[column];
+        
         switch (flr.type)
         {
             case PFT_ProsAndCons:
@@ -438,8 +439,9 @@
             case PFT_Address:
                 array = [NSMutableArray arrayWithArray:@[@"Zoom to This Property", @"Zoom to All Properties in List", @"Cancel"]];
                 break;
-       }
-     }
+            default:break;
+        }
+    }
 
     return array;
 }
@@ -483,6 +485,11 @@
         {NSLog(@"RHClip successfully added:\n%@", clip);}
     
     return clipAdded;
+}
+
+- (NSArray *)clipsForProperty:(int)propNum
+{
+    return [PropertyList.new getVideoClipsForProperty:propNum];
 }
 
 @end

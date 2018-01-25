@@ -293,7 +293,7 @@ NSString * GetPropListDirectory (void)
 
 -(NSArray *) getVideoClipsForProperty:(int)propNum
 {
-    NSMutableArray * rtn = NSMutableArray.new;
+    NSMutableArray *rtn = NSMutableArray.array;
     BOOL opened = [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT videoID, Title, Type, Cost, Notes, VideoFileName, StartTime, EndTime FROM PropertyVideo WHERE PropNum = %i",propNum];
      sqlite3_stmt *statement = NULL;
@@ -320,7 +320,7 @@ NSString * GetPropListDirectory (void)
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
-    return rtn;
+    return rtn.copy;
 }
 /*
 - (int)datasetVersion
