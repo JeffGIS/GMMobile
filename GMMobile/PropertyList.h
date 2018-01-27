@@ -97,6 +97,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 @interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate>
 @property (nonatomic, weak) id <PropertyListDelegate> delegate;
+@property sqlite3nv *database;
 @property NSString* propListDir;
 @property (nonatomic) GSSiPopoverView *popover;
 @property int propVersion;

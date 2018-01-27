@@ -23,6 +23,7 @@
 @property NSString * areaType;
 @property int propNum;
 @property int iDist;
+@property MapitBaseLayer baseLayer;
 @property double squareMetersInRect;
 @property double squareMetersPerPixel;
 @end
@@ -51,7 +52,7 @@
                    });
     float totComputes = 5 * 2 + 1;
     float nComputes = 0;
-    for (int idist = 0; idist < 2; idist++)
+    for (int idist = 0; idist < 3; idist++)
     {
         [self computeValuesFromMap:slowVals
                            popover:popover
@@ -140,6 +141,7 @@
 
 {
     void *bmData = NULL;
+    _baseLayer = baseLayer;
     _iDist = idist;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     int width = 1024;
@@ -307,7 +309,7 @@ displayCharacteristics:dc
             pct = (double)(c)/_totPixelsInRect;
             double squareMetersInRadius = pct * _squareMetersInRect;
             totPct += pct;
-            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,'%@','%@',%i,%f,%f);",_propNum,_areaType,areaID,idist+1,squareMetersInRadius,pct];
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%i,'%@',%i,%f,%f);",_propNum,_baseLayer,areaID,idist+1,squareMetersInRadius,pct];
             [_delegate executePropListCommand:cmd];
         }
     }
@@ -502,7 +504,7 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
         {
             double pct = (double)pixels / _totPixelsInCircle;
             double squareMetersInRadius = pixels * _squareMetersPerPixel;
-            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,'%@',%u,%i,%f,%f);",_propNum,_areaType,fileAndID,_iDist+1,squareMetersInRadius,pct];
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%i,%u,%i,%f,%f);",_propNum,_baseLayer,fileAndID,_iDist+1,squareMetersInRadius,pct];
             [_delegate executePropListCommand:cmd];
         }
     }

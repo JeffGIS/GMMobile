@@ -7,7 +7,6 @@
 #import "Destinations.h"
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
-#import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/MathUtil.h"
 #import "RiteHomeCompute.h"
 
@@ -15,12 +14,14 @@
 
 @interface PropertyList ()
 
+@property RiteHomeCompute *rhCompute;
+
 @property NSString *plName, *plPath, *plDirectory;
-@property sqlite3nv *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
 @property int dbIsOpen;
-@property RiteHomeCompute *rhCompute;
+@property NSString *usedesc;
+@property double totEMV;
 
 @end
 
@@ -237,7 +238,7 @@ NSString * GetPropListDirectory (void)
     CREATE TABLE IF NOT EXISTS PropertyVideo (videoID INTEGER PRIMARY KEY,PropNum INTEGER,Title CHAR(256), Type INT, Cost REAL, Notes CHAR(4096), VideoFileName CHAR(256), StartTime FLOAT, EndTime FLOAT);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
-    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType CHAR(32),AreaID CHAR(64),Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
+    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType INT,AreaID CHAR(64),Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
     CREATE INDEX IF NOT EXISTS AreasWithinDistance_index ON AreasWithinDistance (PropNum ASC, AreaType ASC);";
     rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
 
@@ -780,7 +781,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
-    _numPropertiesInList = propNums.count;
+    _numPropertiesInList = (int)propNums.count;
     return propNums.copy;
 }
 
@@ -1364,15 +1365,14 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     NSString *streetName = @"";
     NSString *city = @"";
     NSString *cenblock = @"";
-    NSString *usedesc = @"";
     NSString *owner = @"";
     NSString *taxpayer = @"";
-    double totEMV = 0;
     double landEMV = 0;
     double bldgEMV = 0;
     double totTax = 0;
     double specAssmt = 0;
     double acres = 0;
+    NSString * usedesc;
     
     [propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
@@ -1382,7 +1382,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                   taxpayerName:&taxpayer
                    censusBlock:&cenblock
                        useDesc:&usedesc
-                        totEMV:&totEMV
+                        totEMV:&_totEMV
                        landEMV:&landEMV
                        bldgEMV:&bldgEMV
                         totTAX:&totTax
@@ -1392,21 +1392,24 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     char cenBlock[20];
     strcpy (cenBlock, cenblock.UTF8String);
     cenBlock[12] = 0;
+    _usedesc = usedesc;
+    _rhCompute = RiteHomeCompute.new;
+    _rhCompute.propData = propData;
+    _rhCompute.propList = self;
     DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
     DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
 
     [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
-                         inCensusArea:(LPSTR)cenBlock
-                               totEMV:(int)totEMV
-                              useDesc:(LPSTR)usedesc.UTF8String];
+                                    inCensusArea:(LPSTR)cenBlock
+                                          totEMV:(int)_totEMV
+                                         useDesc:(LPSTR)_usedesc.UTF8String];
     
-  /*  DATA_FROM_PARCELS *values_block;
     
-    [rhCompute computeValuesFromTables:&values_block
-                         inCensusArea:(LPSTR)cenblock.UTF8String
-                               totEMV:(int)totEMV
-                              useDesc:(LPSTR)usedesc.UTF8String];
-*/
+    [_rhCompute computeValuesFromParcelsInCensus:values_block
+                                    inCensusArea:(LPSTR)cenblock.UTF8String
+                                          totEMV:(int)_totEMV
+                                         useDesc:(LPSTR)_usedesc.UTF8String];
+    
     BOOL opened = [self open];
     [self startTransaction];
     int dbid = [self next_id];
@@ -1432,7 +1435,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,propVersion,addressBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
-    dataBlob = [self doubleToBlob:totEMV];
+    dataBlob = [self doubleToBlob:_totEMV];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_TOTAL,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self doubleToBlob:landEMV];
@@ -1550,6 +1553,29 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     BOOL opened = [self open];
     if (!opened)
     {
+        DATA_FROM_PARCELS *values_eighthMile = DATA_FROM_PARCELS.new;
+        DATA_FROM_PARCELS *values_quarterMile = DATA_FROM_PARCELS.new;
+        DATA_FROM_PARCELS *values_halfMile = DATA_FROM_PARCELS.new;
+
+        [_rhCompute computeValuesFromParcelsInCircle:values_eighthMile
+                                         forProperty:propNum
+                                            inCircle:1
+                                              totEMV:(int)_totEMV
+                                             useDesc:(LPSTR)_usedesc.UTF8String];
+        
+        [_rhCompute computeValuesFromParcelsInCircle:values_quarterMile
+                                         forProperty:propNum
+                                            inCircle:2
+                                              totEMV:(int)_totEMV
+                                             useDesc:(LPSTR)_usedesc.UTF8String];
+        
+        [_rhCompute computeValuesFromParcelsInCircle:values_halfMile
+                                         forProperty:propNum
+                                            inCircle:3
+                                              totEMV:(int)_totEMV
+                                             useDesc:(LPSTR)_usedesc.UTF8String];
+        
+
         int dbid = [self next_id];
         NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
         NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
@@ -1602,19 +1628,18 @@ School data
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         int i = 0;
+        int areaType = sqlite3_column_int(statement, i++);
         LPSTR cval = (LPSTR)sqlite3_column_text(statement, i++);
-        NSString * areaType = [NSString stringWithUTF8String:cval];
-        cval = (LPSTR)sqlite3_column_text(statement, i++);
         NSString * areaID = [NSString stringWithUTF8String:cval];
         int iDist = sqlite3_column_int(statement, i++);
         double sqrMetersInCircle = sqlite3_column_double(statement, i++);
         double percentOfCircle = sqlite3_column_double(statement, i++);
-        if ([areaType isEqualToString:@"PARCEL"])
+        if (areaType == MBL_Parcels)
         {
             NSString *PID = [PropertyData getPIDforPolyID:(int)areaID.integerValue];
             areaID = PID;
         }
-        NSString * line = [NSString stringWithFormat:@"%@:%@ %i %f %f",areaType,areaID,iDist,sqrMetersInCircle,percentOfCircle];
+        NSString * line = [NSString stringWithFormat:@"%i:%@ %i %f %f",areaType,areaID,iDist,sqrMetersInCircle,percentOfCircle];
         [array addObject:line];
     }
     

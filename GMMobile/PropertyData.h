@@ -149,6 +149,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 + (NSString *)getCensusBlockForPID:(NSString *)PID;
 + (NSString *)getPIDforPolyID:(int)ID;
+- (NSString *)getPIDforPolyid:(int)ID;
 
 - (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;
 

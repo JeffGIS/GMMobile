@@ -610,15 +610,22 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 
 + (NSString *)getPIDforPolyID:(int)ID
 {
-    NSString *PID = @"";
     PropertyData *pd = [[PropertyData alloc]init];
     BOOL opened = [pd open];
+    NSString *PID = [pd getPIDforPolyid:ID];
+    [pd close:opened];
+    
+    return PID;
+}
+- (NSString *)getPIDforPolyid:(int)ID
+{
+    NSString *PID = @"";
     NSString *query = [NSString stringWithFormat:@"SELECT [PID] FROM PARCELPOLY Where id = %i",
                        ID];
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database, 38);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 38);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -626,8 +633,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         PID = [NSString stringWithUTF8String:pidc];
     }
     
-    SQLOKpd(SQLiteFinalize(statement), pd.database, 39);
-    [pd close:opened];
+    SQLOKpd(SQLiteFinalize(statement), _database, 39);
     
     return PID;
 }

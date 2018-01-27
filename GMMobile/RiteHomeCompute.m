@@ -42,20 +42,23 @@
     CGFloat totYears = 0;
     //CGFloat medianAge = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
-    NSMutableArray * array=[[NSMutableArray alloc]init];
+    NSMutableArray * EMVarray=[[NSMutableArray alloc]init];
     NSMutableArray * ageArray=[[NSMutableArray alloc]init];
 
 Top:
+    if (statement)
+    {
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        CGFloat acres = sqlite3_column_double(statement,0);
-        LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, 1);
-        LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 2);
-        int totEMV = (int)sqlite3_column_double(statement, 3);
-        //double totTax = sqlite3_column_double(statement, 4);
-        LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 5);
-        LPSTR yearBuilt = (LPSTR)sqlite3_column_text(statement, 6);
-        LPSTR openSpace = (LPSTR)sqlite3_column_text(statement, 7);
+        int i=0;
+        CGFloat acres = sqlite3_column_double(statement,i++);
+        LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, i++);
+        int totEMV = (int)sqlite3_column_double(statement, i++);
+        double totTax = sqlite3_column_double(statement, i++);
+        LPSTR homestead = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR yearBuilt = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR openSpace = (LPSTR)sqlite3_column_text(statement, i++);
         
         totProp++;
         int yrBuilt = atoi (yearBuilt);
@@ -90,25 +93,27 @@ Top:
             if (totEMV > 0)
             {
                 NSNumber * emv = [NSNumber numberWithInteger:totEMV];
-                [array addObject:emv];
+                [EMVarray addObject:emv];
                 sumAcres += acres;
                 sumEMV += totEMV;
             }
         }
     }
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
+    }
     if (statement_PidList)
     {
         if (sqlite3_step(statement_PidList) == SQLITE_ROW)
         {
-            LPSTR pin = (LPSTR)sqlite3_column_text(statement_PidList,0);
+            int polyID = sqlite3_column_int(statement_PidList,0);
+            NSString *PIN = [_propData getPIDforPolyid:polyID];
             NSString *parcelFieldList = [RiteHomeCompute parcelFieldList];
-            NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM PROPINFO Where PIN = '%s'",parcelFieldList,pin];
+            NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM PROPINFO Where PIN = '%@'",parcelFieldList,PIN];
             SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
             goto Top;
         }
         else
-            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement_PidList),_propData.database);
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement_PidList),_propList.database);
     }
     if (values.nMatchingProperties)
     {
@@ -121,7 +126,7 @@ Top:
     }
     if (nAge)
     {
-        //totYears /= nAge;
+        values.aveBuiltYear = totYears /= nAge;
         [ageArray sortUsingComparator: ^(id obj1, id obj2)
          {
              NSNumber *v1 = obj1;
@@ -148,7 +153,7 @@ Top:
             values.medianBuiltYear = age1.intValue;
     }
     
-    [array sortUsingComparator: ^(id obj1, id obj2)
+    [EMVarray sortUsingComparator: ^(id obj1, id obj2)
      {
          NSNumber *v1 = obj1;
          NSNumber *v2 = obj2;
@@ -162,16 +167,16 @@ Top:
          return (NSComparisonResult)NSOrderedSame;
      }];
     
-    if ([array count])
+    if ([EMVarray count])
     {
         int n=1;
         int myStartRank= -1;
         int myEndRank= -1;
-        int medianN = (int)array.count / 2;
-        int medianM = array.count % 2;
+        int medianN = (int)EMVarray.count / 2;
+        int medianM = EMVarray.count % 2;
         //NSNumber *minEMV = array[0];
         //NSNumber *maxEMV = array[array.count - 1];
-        for (NSNumber *EMVvalue in array)
+        for (NSNumber *EMVvalue in EMVarray)
         {
             if (n == medianN)
                 medianEMV = EMVvalue.intValue;
@@ -191,7 +196,7 @@ Top:
         //aveEMV = sumEMV / [array count];
         //pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
         //pctMedianEMV = ((double)myTotEMV / medianEMV) * 100;
-        values.rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[array count]);
+        values.rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[EMVarray count]);
     }
     
      return rtn;
@@ -222,6 +227,31 @@ Top:
                            statement:statement
                     PIDListStatement:nil];
     [_propData close:opened];
+    return rtn;
+}
+
+- (bool)computeValuesFromParcelsInCircle:(DATA_FROM_PARCELS *)values
+                             forProperty:(int)propNum
+                                inCircle:(int)circleID
+                                  totEMV:(int)totEMV
+                                 useDesc:(LPSTR) usedescIN
+{
+    bool rtn;
+    sqlite3_stmt *statement = NULL;
+    sqlite3_stmt *statement_PID = NULL;
+    NSString *query;
+    
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_Parcels,circleID];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement_PID, 0), _propList.database);
+    BOOL opened = [_propData open];
+    rtn = [self computeParcelValues:values
+                             totEMV:totEMV
+                            useDesc:usedescIN
+                          statement:statement
+                   PIDListStatement:statement_PID];
+
+    [_propData close:opened];
+
     return rtn;
 }
 /*
