@@ -30,17 +30,17 @@
     int totProp = 0;
     double sumEMV=0;
     double sumAcres=0;
-    //double pctAveEMV;
-    //double aveEMV;
-    //double pctMedianEMV;
     int medianEMV=0;
-    
-    //double pctMedEMV;
+    int now = 2017;
+    int nowMinus25 = now - 25;
+    int numNewerThan25 = 0;
+    int nowMinus10 = now - 10;
+    int numNewerThan10 = 0;
+
     int myTotEMV = totEMV;
     int nAge = 0, nSales5yr = 0, nSales15yr = 0;
     int minSale = INT_MAX;
     CGFloat totYears = 0;
-    //CGFloat medianAge = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
     NSMutableArray * EMVarray=[[NSMutableArray alloc]init];
     NSMutableArray * ageArray=[[NSMutableArray alloc]init];
@@ -85,6 +85,10 @@ Top:
             }
             if (yrBuilt > 1800)
             {
+                if (yrBuilt > nowMinus25)
+                    numNewerThan25++;
+                if (yrBuilt > nowMinus10)
+                    numNewerThan10++;
                 totYears += yrBuilt;
                 nAge++;
                 NSNumber *age = [[NSNumber alloc]initWithInt:yrBuilt];
@@ -117,8 +121,8 @@ Top:
     }
     if (values.nMatchingProperties)
     {
-        values.stability5yr  = IDNINT(100.0-(100.0 * nSales5yr) / values.nMatchingProperties);
-        values.stability15yr = IDNINT(100.0-(100.0 * nSales15yr) / values.nMatchingProperties);
+        values.stability_5yr  = IDNINT(100.0-(100.0 * nSales5yr) / values.nMatchingProperties);
+        values.stability_15yr = IDNINT(100.0-(100.0 * nSales15yr) / values.nMatchingProperties);
     }
     if (totProp)
     {
@@ -127,6 +131,8 @@ Top:
     if (nAge)
     {
         values.aveBuiltYear = totYears /= nAge;
+        values.pctNew_10yr =  (100 * numNewerThan10)  / nAge;
+        values.pctNew_25yr = (100 * numNewerThan25) / nAge;
         [ageArray sortUsingComparator: ^(id obj1, id obj2)
          {
              NSNumber *v1 = obj1;

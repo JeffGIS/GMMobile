@@ -1473,26 +1473,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     dataBlob = [self intToBlob:values_block.pctHomestead];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.homeOwnPct];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.medianBuiltYear];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.medianAgePop];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.pctChildren];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.pctSenior];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-
-    dataBlob = [self intToBlob:values_block.stability5yr];
+    dataBlob = [self intToBlob:values_block.stability_5yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.stability15yr];
+    dataBlob = [self intToBlob:values_block.stability_15yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
@@ -1502,25 +1489,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     dataBlob = [self intToBlob:values_blockgroup.pctHomestead];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.homeOwnPct];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.medianBuiltYear];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.medianAgePop];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.pctChildren];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.pctSenior];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.stability5yr];
+    dataBlob = [self intToBlob:values_blockgroup.stability_5yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.stability15yr];
+    dataBlob = [self intToBlob:values_blockgroup.stability_15yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
@@ -1548,7 +1523,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return rtn;
 }
 - (void)getSlowValuesDidComplete:(int)propNum
-                          values:(SlowValues *)vals
+                     totComputes:(int)totComputes
+                     numComputes:(int)nComputes
 {
     BOOL opened = [self open];
     if (!opened)
@@ -1562,26 +1538,46 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                                             inCircle:1
                                               totEMV:(int)_totEMV
                                              useDesc:(LPSTR)_usedesc.UTF8String];
-        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
         [_rhCompute computeValuesFromParcelsInCircle:values_quarterMile
                                          forProperty:propNum
                                             inCircle:2
                                               totEMV:(int)_totEMV
                                              useDesc:(LPSTR)_usedesc.UTF8String];
         
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
         [_rhCompute computeValuesFromParcelsInCircle:values_halfMile
                                          forProperty:propNum
                                             inCircle:3
                                               totEMV:(int)_totEMV
                                              useDesc:(LPSTR)_usedesc.UTF8String];
         
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
 
         int dbid = [self next_id];
-        NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
+        NSString *dataBlob = [self intToBlob:values_quarterMile.stability_5yr];
         NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
         [self executeCmd:(LPSTR)cmd.UTF8String];
         [self commitTransaction];
-    }
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:1.0];
+                           [_popover hide];
+                       });
+        
+   }
     [self close:opened];
 }
 
@@ -1590,7 +1586,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 ProsAndCons
 TraveLess
 Average Market Value
-Average Home Age
+Average, median Home Age
+Percent new homes (5 yr)
+Percent new homes (15 yr)
 Percent Open Space/Parks
 Percent Commercial
 Percent Industrial

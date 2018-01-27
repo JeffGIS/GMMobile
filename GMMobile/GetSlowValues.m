@@ -12,9 +12,6 @@
 #import "BoundaryData.h"
 #import "CCodeLibrary/PercentInArea.h"
 
-@implementation SlowValues
-@end
-
 @interface GetSlowValues ()
 @property BoundaryData * bd;
 @property int totMaskPixels;
@@ -40,7 +37,6 @@
     double radius[4] = {OneMile / 8,OneMile / 4,OneMile / 2,OneMile};
     _delegate = delegate;
     _propNum = propNum;
-    SlowValues * slowVals = [[SlowValues alloc]init];
     _popover = popover;
     _popover.delegate = self;
     _popover.progressView.hidden = NO;
@@ -50,12 +46,12 @@
                        [_popover showAfter:0.1
                                  withTitle:@"Computing RiteHome Values"];
                    });
-    float totComputes = 5 * 2 + 1;
+    int numDist = 3;
+    float totComputes = 5 * numDist + 1 + 4;
     float nComputes = 0;
-    for (int idist = 0; idist < 3; idist++)
+    for (int idist = 0; idist < numDist; idist++)
     {
-        [self computeValuesFromMap:slowVals
-                           popover:popover
+        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
@@ -66,8 +62,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-        [self computeValuesFromMap:slowVals
-                           popover:popover
+        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
@@ -78,8 +73,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-       [self computeValuesFromMap:slowVals
-                           popover:popover
+       [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
@@ -90,8 +84,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-        [self computeValuesFromMap:slowVals
-                           popover:popover
+        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
@@ -102,8 +95,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-       [self computeValuesFromMap:slowVals
-                           popover:popover
+       [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
@@ -127,12 +119,13 @@
                        [_popover hide];
                   });
     if (_delegate)
-        [_delegate getSlowValuesDidComplete:propNum values:slowVals];
+        [_delegate getSlowValuesDidComplete:propNum
+                                totComputes:totComputes
+                                numComputes:nComputes];
 
 }
 
-- (void)computeValuesFromMap:(SlowValues *)values
-                     popover:(GSSiPopoverView*)popover
+- (void)computeValuesFromMap:(GSSiPopoverView*)popover
                 aroundLatLon:(LLPOINT)latlon
                   withRadius:(double)radius
                   distanceID:(int)idist

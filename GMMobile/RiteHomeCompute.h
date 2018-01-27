@@ -13,16 +13,14 @@
 
 @interface DATA_FROM_PARCELS : NSObject
 @property  int  nMatchingProperties;
-@property  int  stability5yr,
-                stability15yr,
+@property  int  stability_5yr,
+                stability_15yr,
                 rankTotEMV,
                 pctHomestead,
-                homeOwnPct,
                 medianBuiltYear,
                 aveBuiltYear,
-                medianAgePop,
-                pctChildren,
-                pctSenior;
+                pctNew_10yr,
+                pctNew_25yr;
 @end
 
 @interface RiteHomeCompute:NSObject

@@ -2272,7 +2272,7 @@ Exit:
                                        totEMV:(int)totalEMV
                                       useDesc:(LPSTR)usedesc];
                 
-                line = [NSString stringWithFormat:@"Stability:%.i%%", values.stability5yr];
+                line = [NSString stringWithFormat:@"Stability:%.i%%", values.stability_5yr];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Percent Homestead:%i%%", values.pctHomestead];

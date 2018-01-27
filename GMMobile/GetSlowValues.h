@@ -10,27 +10,13 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 
 
-@interface SlowValues : NSObject
-@property int nMatchingProperties;
-@property int stability5yr_qtrMile;
-@property int stability5yr_halfMile;
-@property int stability15yr_halfMile;
-@property int rankTotEMV;
-@property int pctHomestead;
-@property int homeOwnPct;
-@property int medianBuiltYear;
-@property int medianAgePop;
-@property int pctChildren_qtrMile;
-@property int pctChildren_halfMile;
-@property int pctSenior_halfMile;
-@end
-
 @class GetSlowValues;
 
 @protocol GetSlowValuesDelegate <NSObject>
 
-- (void)getSlowValuesDidComplete:(int)propNum
-                          values:(SlowValues *)vals;
+- (void) getSlowValuesDidComplete:(int)propNum
+                      totComputes:(int)totComputes
+                      numComputes:(int)nComputes;
 - (BOOL)executePropListCommand:(NSString*)cmd;
 @end
 
