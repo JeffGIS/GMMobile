@@ -10,12 +10,18 @@
 
 @implementation DATA_FROM_PARCELS
 @end
+@implementation DATA_FROM_BLOCKS
+@end
 
 @implementation RiteHomeCompute
 
+/*
+ CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
+ */
+
 +(NSString *) parcelFieldList
 {
-    NSString * list = @"ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE";
+    NSString * list = @"ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE, OWNER_NAME, TAX_NAME";
     return list;
 }
 
@@ -23,7 +29,7 @@
                       totEMV:(int)totEMV
                      useDesc:(LPSTR) usedescIN
                    statement:(sqlite3_stmt*)statement
-            PIDListStatement:(sqlite3_stmt*)statement_PidList;
+            PIDListStatement:(sqlite3_stmt*)statement_PidList
 {
     bool rtn = FALSE;
     int nHomestead=0;
@@ -32,10 +38,10 @@
     double sumAcres=0;
     int medianEMV=0;
     int now = 2017;
-    int nowMinus25 = now - 25;
+    int nowMinus5 = now - 5,nowMinus10 = now - 10,nowMinus15 = now - 15,nowMinus25 = now - 25;
     int numNewerThan25 = 0;
-    int nowMinus10 = now - 10;
     int numNewerThan10 = 0;
+    int numNoTax = 0;
 
     int myTotEMV = totEMV;
     int nAge = 0, nSales5yr = 0, nSales15yr = 0;
@@ -59,7 +65,9 @@ Top:
         LPSTR homestead = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR yearBuilt = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR openSpace = (LPSTR)sqlite3_column_text(statement, i++);
-        
+        LPSTR ownName = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR taxName = (LPSTR)sqlite3_column_text(statement, i++);
+
         totProp++;
         int yrBuilt = atoi (yearBuilt);
         if (*homestead == 'y' || *homestead == 'Y')
@@ -73,14 +81,16 @@ Top:
         if (!strcasecmp (useDesc,usedescIN))
         {
             values.nMatchingProperties++;
+            if (!totTax)
+                numNoTax++;
             if (*saleDate)
             {
                 int date = atoi (saleDate);
                 minSale = min (minSale,date);
                 date /= 10000;
-                if (date >= 2010)
+                if (date >= nowMinus5)
                     nSales5yr++;
-                if (date >= 2005)
+                if (date >= nowMinus15)
                     nSales15yr++;
             }
             if (yrBuilt > 1800)
@@ -123,10 +133,11 @@ Top:
     {
         values.stability_5yr  = IDNINT(100.0-(100.0 * nSales5yr) / values.nMatchingProperties);
         values.stability_15yr = IDNINT(100.0-(100.0 * nSales15yr) / values.nMatchingProperties);
+        values.pctNoTax = IDNINT((100.0 * numNoTax) / values.nMatchingProperties);
+        values.pctHomestead  = IDNINT((100.0 * nHomestead) / totProp);
     }
     if (totProp)
     {
-        values.pctHomestead  = IDNINT((100.0 * nHomestead) / totProp);
     }
     if (nAge)
     {
@@ -208,6 +219,66 @@ Top:
      return rtn;
 }
 
+
++(NSString *) blockFieldList
+{
+    NSString * list = @"POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY";
+    return list;
+}
+
+
+- (bool) computeBlockValues:(DATA_FROM_BLOCKS *)values
+                   statement:(sqlite3_stmt*)statement_BlockList
+{
+    bool rtn = FALSE;
+    sqlite3_stmt *statement = NULL;
+    double totPop = 0;
+    double pctOfAreaInCircle = 1;
+
+Top:
+    if (statement)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            rtn = TRUE;
+            int i=0;
+            int popTotal = sqlite3_column_int(statement,i++);
+            int livedAlone = sqlite3_column_int(statement,i++);
+            int marrKids = sqlite3_column_int(statement,i++);
+            int unMarrKids = sqlite3_column_int(statement,i++);
+            int famNoKids = sqlite3_column_int(statement,i++);
+            int nonFamily = sqlite3_column_int(statement,i++);
+            
+            totPop += popTotal * pctOfAreaInCircle;
+        }
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
+    }
+    if (statement_BlockList)
+    {
+        if (sqlite3_step(statement_BlockList) == SQLITE_ROW)
+        {
+            int polyID = sqlite3_column_int(statement_BlockList,0);
+            double SQMetersInCircle = sqlite3_column_double(statement_BlockList,1);
+            double polyArea;
+            NSString *BLOCK = [BoundaryData getKeyforPolyid:polyID
+                                                     ofType:@"BLOCK"
+                                               areaInMeters:&polyArea];
+            pctOfAreaInCircle = SQMetersInCircle /polyArea;
+//            if (pctOfAreaInCircle > 1)
+//                pctOfAreaInCircle = 1;
+            NSString *blockFieldList = [RiteHomeCompute blockFieldList];
+            NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA Where GEOG_UNIT = '%@'",blockFieldList,BLOCK];
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
+            goto Top;
+        }
+        else
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement_BlockList),_propList.database);
+    }
+    values.totPop = IDNINT (totPop);
+    values.totPopPerSqMile = IDNINT (totPop / _circleAreaInSqMiles);
+    return rtn;
+}
+
 - (bool)computeValuesFromParcelsInCensus:(DATA_FROM_PARCELS *)values
                             inCensusArea:(LPSTR)cenBlockIN
                                   totEMV:(int)totEMV
@@ -246,6 +317,9 @@ Top:
     sqlite3_stmt *statement = NULL;
     sqlite3_stmt *statement_PID = NULL;
     NSString *query;
+    int circleId = circleID - 1;
+    _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
+
     
     query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_Parcels,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement_PID, 0), _propList.database);
@@ -255,9 +329,29 @@ Top:
                             useDesc:usedescIN
                           statement:statement
                    PIDListStatement:statement_PID];
-
+    
     [_propData close:opened];
+    
+    return rtn;
+}
+- (bool)computeValuesFromBlocksInCircle:(DATA_FROM_BLOCKS *)values
+                             forProperty:(int)propNum
+                                inCircle:(int)circleID
+{
+    bool rtn;
+    sqlite3_stmt *statement = NULL;
+    NSString *query;
+    int circleId = circleID - 1;
+    _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
 
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_CensusBlocks,circleID];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
+    BOOL opened = [_propData open];
+    rtn = [self computeBlockValues:values
+                          statement:statement];
+    
+    [_propData close:opened];
+    
     return rtn;
 }
 /*

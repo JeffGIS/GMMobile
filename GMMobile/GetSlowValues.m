@@ -33,8 +33,6 @@
                 aroundLatLon:(LLPOINT)latlon
                      useDesc:(LPSTR) usedescIN
 {
-    double OneMile = 5280 * FTM;
-    double radius[4] = {OneMile / 8,OneMile / 4,OneMile / 2,OneMile};
     _delegate = delegate;
     _propNum = propNum;
     _popover = popover;
@@ -47,13 +45,13 @@
                                  withTitle:@"Computing RiteHome Values"];
                    });
     int numDist = 3;
-    float totComputes = 5 * numDist + 1 + 4;
+    float totComputes = 5 * numDist + 1 + 7;
     float nComputes = 0;
     for (int idist = 0; idist < numDist; idist++)
     {
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
-                        withRadius:radius[idist]
+                        withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_LandUse];
@@ -64,7 +62,7 @@
                        });
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
-                        withRadius:radius[idist]
+                        withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusTracts];
@@ -75,7 +73,7 @@
                        });
        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
-                        withRadius:radius[idist]
+                        withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusBlockGroups];
@@ -86,7 +84,7 @@
                        });
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
-                        withRadius:radius[idist]
+                        withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusBlocks];
@@ -97,7 +95,7 @@
                        });
        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
-                        withRadius:radius[idist]
+                        withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_Parcels];
@@ -116,7 +114,6 @@
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [_popover updateProgress:nComputes/totComputes];
-                       [_popover hide];
                   });
     if (_delegate)
         [_delegate getSlowValuesDidComplete:propNum

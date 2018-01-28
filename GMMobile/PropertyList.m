@@ -1523,8 +1523,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return rtn;
 }
 - (void)getSlowValuesDidComplete:(int)propNum
-                     totComputes:(int)totComputes
-                     numComputes:(int)nComputes
+                     totComputes:(float)totComputes
+                     numComputes:(float)nComputes
 {
     BOOL opened = [self open];
     if (!opened)
@@ -1532,6 +1532,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         DATA_FROM_PARCELS *values_eighthMile = DATA_FROM_PARCELS.new;
         DATA_FROM_PARCELS *values_quarterMile = DATA_FROM_PARCELS.new;
         DATA_FROM_PARCELS *values_halfMile = DATA_FROM_PARCELS.new;
+        DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_BLOCKS *values_block_quarterMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_BLOCKS *values_block_halfMile = DATA_FROM_BLOCKS.new;
 
         [_rhCompute computeValuesFromParcelsInCircle:values_eighthMile
                                          forProperty:propNum
@@ -1565,7 +1568,37 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-
+        
+        [_rhCompute computeValuesFromBlocksInCircle:values_block_eighthMile
+                                        forProperty:propNum
+                                           inCircle:1];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
+        [_rhCompute computeValuesFromBlocksInCircle:values_block_quarterMile
+                                        forProperty:propNum
+                                           inCircle:2];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
+        [_rhCompute computeValuesFromBlocksInCircle:values_block_halfMile
+                                        forProperty:propNum
+                                           inCircle:3];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
         int dbid = [self next_id];
         NSString *dataBlob = [self intToBlob:values_quarterMile.stability_5yr];
         NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];

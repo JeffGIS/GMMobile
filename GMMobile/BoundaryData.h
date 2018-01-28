@@ -132,5 +132,9 @@ boundsPointInAreas:(PointInAreas*)pias
                                 polyPartLen:(int **)polyPartLen;
 - (MNMXCORD)getBoundsForBoundaryType:(NSString *)type
                                 refno:(long)refno;
++ (NSString *) getKeyforPolyid:(int)polyID
+                        ofType:(NSString*)type
+                  areaInMeters:(double*)pArea;
+
 
 @end

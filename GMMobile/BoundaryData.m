@@ -166,6 +166,35 @@
     SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0),_database);
 }
 
++ (NSString *) getKeyforPolyid:(int)polyID
+                        ofType:(NSString*)type
+                  areaInMeters:(double*)pArea
+{
+    NSString * KEY = @"";
+    double area = 0;
+    NSString * query = [NSString stringWithFormat:@"SELECT %@, area FROM CENSUS%@POLY Where id = %i",type,type,
+                        polyID];
+    
+    sqlite3_stmt *statement = NULL;
+    BoundaryData *bad = [[BoundaryData alloc]init];
+    
+    BOOL opened = [bad open];
+
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(bad.database, query.UTF8String, -1, &statement, 0), bad.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR key = (LPSTR)sqlite3_column_text(statement, 0);
+        KEY = [NSString stringWithUTF8String:key];
+        area = sqlite3_column_double(statement, 1);
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), bad.database);
+    [bad close:opened];
+    *pArea = area;
+    return KEY;
+}
+
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radiusInMeters
                        lineWidth:(CGFloat)lineWidth
