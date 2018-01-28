@@ -238,7 +238,7 @@ NSString * GetPropListDirectory (void)
     CREATE TABLE IF NOT EXISTS PropertyVideo (videoID INTEGER PRIMARY KEY,PropNum INTEGER,Title CHAR(256), Type INT, Cost REAL, Notes CHAR(4096), VideoFileName CHAR(256), StartTime FLOAT, EndTime FLOAT);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
-    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType INT,AreaID CHAR(64),Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
+    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType INT,AreaID INT,Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
     CREATE INDEX IF NOT EXISTS AreasWithinDistance_index ON AreasWithinDistance (PropNum ASC, AreaType ASC);";
     rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
 
@@ -1535,6 +1535,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_quarterMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_halfMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
+        DATA_FROM_LANDUSE *values_landUse_quarterMile = DATA_FROM_LANDUSE.new;
+        DATA_FROM_LANDUSE *values_landUse_halfMile = DATA_FROM_LANDUSE.new;
 
         [_rhCompute computeValuesFromParcelsInCircle:values_eighthMile
                                          forProperty:propNum
@@ -1592,6 +1595,36 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [_rhCompute computeValuesFromBlocksInCircle:values_block_halfMile
                                         forProperty:propNum
                                            inCircle:3];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
+        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
+                                         forProperty:propNum
+                                            inCircle:1];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
+        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_quarterMile
+                                         forProperty:propNum
+                                            inCircle:2];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
+        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_halfMile
+                                         forProperty:propNum
+                                            inCircle:3];
         
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),

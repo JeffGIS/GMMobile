@@ -21,7 +21,7 @@
 @property int propNum;
 @property int iDist;
 @property MapitBaseLayer baseLayer;
-@property double squareMetersInRect;
+@property double squareMetersInRect,squareMetersInCircle;
 @property double squareMetersPerPixel;
 @end
 
@@ -157,7 +157,9 @@
     latlonBounds = CornerPointBounds (&cornerPoints);
     _totPixelsInRect = width * height;
     _squareMetersInRect = LLRectInSQMeters (latlonCornerPoints);
+    _squareMetersInCircle = circleRadiusInMeters[idist] * circleRadiusInMeters[idist] * PY;
     _squareMetersPerPixel = _squareMetersInRect / _totPixelsInRect;
+    
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
     HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
@@ -280,7 +282,7 @@ displayCharacteristics:dc
     int c;
     double r = width / 2;
     int pixInCircle = PY * r * r;
-    int maskPixels = _totPixelsInRect - pixInCircle;
+    //int maskPixels = _totPixelsInRect - pixInCircle;
     if (*(LPUINT)&lastColor == *(LPUINT)&maskColor)
         _totMaskPixels += count;
     _totPixelsInCircle = _totPixelsInRect - _totMaskPixels;
@@ -294,12 +296,14 @@ displayCharacteristics:dc
         {
             NSString * areaID;
             ThemeClass *tc = theme.classes[i];
+            UINT fileAndID;
             areaID = [tc.title stringByReplacingOccurrencesOfString:@" " withString:@""];
             c = colorCounts[i];
-            pct = (double)(c)/_totPixelsInRect;
-            double squareMetersInRadius = pct * _squareMetersInRect;
+            pct = (double)(c)/_totPixelsInCircle;
+            double squareMetersInRadius = pct * _squareMetersInCircle;
             totPct += pct;
-            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%i,'%@',%i,%f,%f);",_propNum,_baseLayer,areaID,idist+1,squareMetersInRadius,pct];
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%i,%u,%i,%f,%f);",_propNum,_baseLayer,i
+,idist+1,squareMetersInRadius,pct];
             [_delegate executePropListCommand:cmd];
         }
     }

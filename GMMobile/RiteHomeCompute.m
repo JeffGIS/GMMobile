@@ -12,6 +12,8 @@
 @end
 @implementation DATA_FROM_BLOCKS
 @end
+@implementation DATA_FROM_LANDUSE
+@end
 
 @implementation RiteHomeCompute
 
@@ -228,13 +230,13 @@ Top:
 
 
 - (bool) computeBlockValues:(DATA_FROM_BLOCKS *)values
-                   statement:(sqlite3_stmt*)statement_BlockList
+                  statement:(sqlite3_stmt*)statement_BlockList
 {
     bool rtn = FALSE;
     sqlite3_stmt *statement = NULL;
     double totPop = 0;
     double pctOfAreaInCircle = 1;
-
+    
 Top:
     if (statement)
     {
@@ -264,8 +266,8 @@ Top:
                                                      ofType:@"BLOCK"
                                                areaInMeters:&polyArea];
             pctOfAreaInCircle = SQMetersInCircle /polyArea;
-//            if (pctOfAreaInCircle > 1)
-//                pctOfAreaInCircle = 1;
+            //            if (pctOfAreaInCircle > 1)
+            //                pctOfAreaInCircle = 1;
             NSString *blockFieldList = [RiteHomeCompute blockFieldList];
             NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA Where GEOG_UNIT = '%@'",blockFieldList,BLOCK];
             SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
@@ -276,6 +278,38 @@ Top:
     }
     values.totPop = IDNINT (totPop);
     values.totPopPerSqMile = IDNINT (totPop / _circleAreaInSqMiles);
+    return rtn;
+}
+
++(NSString *) landUseFieldList
+{
+    NSString * list = @"USECODE,Area";
+    return list;
+}
+
+- (bool) computeLandUseValues:(DATA_FROM_LANDUSE *)values
+                  statement:(sqlite3_stmt*)statement
+{
+    bool rtn = FALSE;
+    int numPoly = 0;
+    double totalPct = 0;
+    double totPct[LUC_Count]={0};
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = TRUE;
+        numPoly++;
+        int i=0;
+        int polyID = sqlite3_column_int(statement,i++);
+        double SQMetersInCircle = sqlite3_column_double(statement,i++);
+        double PercentOfCircle = sqlite3_column_double(statement,i++);
+        if (polyID < 0 || polyID >= LUC_Count)
+            rtn = FALSE;
+        else
+            totPct[polyID] += PercentOfCircle;
+        totalPct += PercentOfCircle;
+    }
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
     return rtn;
 }
 
@@ -335,20 +369,40 @@ Top:
     return rtn;
 }
 - (bool)computeValuesFromBlocksInCircle:(DATA_FROM_BLOCKS *)values
-                             forProperty:(int)propNum
-                                inCircle:(int)circleID
+                            forProperty:(int)propNum
+                               inCircle:(int)circleID
 {
     bool rtn;
     sqlite3_stmt *statement = NULL;
     NSString *query;
     int circleId = circleID - 1;
     _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
-
+    
     query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_CensusBlocks,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
     BOOL opened = [_propData open];
     rtn = [self computeBlockValues:values
-                          statement:statement];
+                         statement:statement];
+    
+    [_propData close:opened];
+    
+    return rtn;
+}
+- (bool)computeValuesFromLandUseInCircle:(DATA_FROM_LANDUSE *)values
+                            forProperty:(int)propNum
+                               inCircle:(int)circleID
+{
+    bool rtn;
+    sqlite3_stmt *statement = NULL;
+    NSString *query;
+    int circleId = circleID - 1;
+    _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
+    
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_LandUse,circleID];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
+    BOOL opened = [_propData open];
+    rtn = [self computeLandUseValues:values
+                         statement:statement];
     
     [_propData close:opened];
     
