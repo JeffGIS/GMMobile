@@ -139,10 +139,12 @@ typedef NS_ENUM(NSInteger, ActionOption)
             taxpayerName:(NSString **)taxpayer
              censusBlock:(NSString **)cenblock
                  useDesc:(NSString **)usedesc
+                saleDate:(NSString **)saleDate
+               saleValue:(double *)saleValue
                   totEMV:(double *)totEMV
                  landEMV:(double *)landEMV
                  bldgEMV:(double *)bldgEMV
-                  totTAX:(double *)totTAX
+                  totTAX:(double *)totTax
                  specAss:(double *)specAss
                    acres:(double *)acres;
 

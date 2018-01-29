@@ -2010,7 +2010,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
-                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil saleDate:nil saleValue:nil
                                         totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
                     
                     _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
@@ -2086,7 +2086,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
-                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil saleDate:nil saleValue:nil
                                         totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
                     
                     _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
@@ -4702,6 +4702,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                    ownerName:nil taxpayerName:nil
                  censusBlock:&cenblock
                      useDesc:&usedesc
+                    saleDate:nil saleValue:nil
                       totEMV:&totEMV
                      landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil])
     {
@@ -4770,7 +4771,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         [propData getAddressForPID:nearPID
                    houseNumAndUnit:&houseAndUnit
                         streetName:&streetName
-                              city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                              city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil saleDate:nil saleValue:nil
                             totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
         
         _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];

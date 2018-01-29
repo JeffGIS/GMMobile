@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctCommercial_halfMile,
     PFT_PctCommercial_Mile,
     PFT_YearBuilt,
-    PFT_LastSaleYear,
+    PFT_LastSaleDate,
     PFT_LastSalePrice,
     PFT_ProsAndCons,
     PFT_Ave_EMV_block,
@@ -151,5 +151,6 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (NSString *)getVideoDirectory:(int)propNum;
 - (BOOL)addVideoClip:(RHClip *)clip;
 - (NSArray<RHClip*> *) getVideoClipsForProperty:(int)propNum;
+- (NSString *) getPIDforPropnum:(int)propNum;
 
 @end

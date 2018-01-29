@@ -673,16 +673,18 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
          houseNumAndUnit:(NSString **)houseAndUnit
               streetName:(NSString **)streetName
                     city:(NSString **)city
-             ownerName:(NSString **)owner
-             taxpayerName:(NSString **)taxpayer
+               ownerName:(NSString **)owner
+            taxpayerName:(NSString **)taxpayer
              censusBlock:(NSString **)cenblock
                  useDesc:(NSString **)usedesc
+                saleDate:(NSString **)saleDate
+               saleValue:(double *)saleValue
                   totEMV:(double *)totEMV
-                  landEMV:(double *)landEMV
+                 landEMV:(double *)landEMV
                  bldgEMV:(double *)bldgEMV
                   totTAX:(double *)totTax
                  specAss:(double *)specAss
-                  acres:(double *)acres
+                   acres:(double *)acres
 {
     BOOL rtn = FALSE;
     *houseAndUnit = @"";
@@ -696,7 +698,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     if (totEMV)
         *totEMV = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY]  FROM PROPINFO Where PIN = '%@'",
+    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE]  FROM PROPINFO Where PIN = '%@'",
                        PID];
     sqlite3_stmt *statement = NULL;
     
@@ -720,6 +722,8 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         double totTx = sqlite3_column_double(statement, i++);
         double specAssmt = sqlite3_column_double(statement, i++);
         double acresp = sqlite3_column_double(statement, i++);
+        LPSTR  saleDat = (LPSTR)sqlite3_column_text(statement, i++);
+        double saleValu = sqlite3_column_double(statement, i++);
         *houseAndUnit = [NSString stringWithFormat:@"%s%s",bldgnum,unit];
         *streetName = [NSString stringWithUTF8String:street];
         if (city)
@@ -738,6 +742,10 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
             *taxpayer = [self noNullString:taxpayr];
         if (usedesc)
             *usedesc = [self noNullString:usedescc];
+        if (saleDate)
+            *saleDate= [self noNullString:saleDat];
+        if (saleValue)
+            *saleValue = saleValu;
         if (totEMV)
             *totEMV = emvtot;
         if (landEMV)

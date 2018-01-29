@@ -52,6 +52,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.resetPropList = NO;
     CRAPI.sharedInstance.resetFieldList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
+#ifdef DEBUG
+    CRAPI.sharedInstance.resetPropList = YES;
+#endif
     
     UIUserNotificationType nTypes =
     UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;

@@ -22,6 +22,9 @@
 @property int dbIsOpen;
 @property NSString *usedesc;
 @property double totEMV;
+@property int dbid;
+@property int PropNum;
+@property int PropVersion;
 
 @end
 
@@ -47,6 +50,9 @@ NSString * GetPropListDirectory (void)
         
         if (error)
             NSLog(@"%@ file removal error", propListDir);
+        NSString *plName = @"";
+        [UserDefaults.defaults saveString:plName
+                                   forKey:@"CurrentPropertyList"];
         
         CRAPI.sharedInstance.resetPropList = NO;
     }
@@ -63,7 +69,7 @@ NSString * GetPropListDirectory (void)
     NSString *dir = GetPropListDirectory();
     NSMutableArray *array = [[NSMutableArray alloc]init];
     for (NSString *fileName in [NSFileManager.defaultManager contentsOfDirectoryAtPath:dir
-                                                                error:nil])
+                                                                                 error:nil])
     {
         [array addObject:fileName];
     }
@@ -90,7 +96,7 @@ NSString * GetPropListDirectory (void)
     
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentPropertyList"];
-
+    
 }
 
 + (NSString*) getCurrentPropertyListName
@@ -104,7 +110,7 @@ NSString * GetPropListDirectory (void)
     PropertyList *pl = [[PropertyList alloc]init];
     NSString *currentDir = pl.plDirectory;
     NSString *newFile = [NSString stringWithFormat:@"%@/%@", pl.propListDir, newName];
-
+    
     [pl close:YES];
     NSError * err = NULL;
     BOOL result = [NSFileManager.defaultManager  moveItemAtPath:currentDir
@@ -117,7 +123,7 @@ NSString * GetPropListDirectory (void)
     }
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentPropertyList"];
-
+    
     return TRUE;
 }
 
@@ -138,7 +144,7 @@ NSString * GetPropListDirectory (void)
         [UserDefaults.defaults saveString:lists[0]
                                    forKey:@"CurrentPropertyList"];
     else
-        [UserDefaults.defaults saveString:@"PropList1"
+        [UserDefaults.defaults saveString:@""
                                    forKey:@"CurrentPropertyList"];
     
     return TRUE;
@@ -159,7 +165,7 @@ NSString * GetPropListDirectory (void)
     self = [super init];
     
     if (self)
-    NSLog(@"Init property list");
+        NSLog(@"Init property list");
     
     return self;
 }
@@ -175,7 +181,7 @@ NSString * GetPropListDirectory (void)
     _propListDir = GetPropListDirectory ();
     _plName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
     
-    if (!_plName)
+    if (!_plName || !*_plName.UTF8String)
     {
         _plName = @"PropList1";
         [UserDefaults.defaults saveString:_plName
@@ -204,14 +210,14 @@ NSString * GetPropListDirectory (void)
         _dbIsOpen++;
         _plDirectory = [self getCurrentPropListDir];
         _plPath = [NSString stringWithFormat:@"%@/PropertyData.slt", _plDirectory];
-
-//        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
+        
+        //        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
         _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_plPath.UTF8String, &_database), _database);
         NSLog(@"PropertyList Database open");
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_plPath error:nil].fileSize;
         if (!_fileSize)
             [self createTables];
-
+        
         rtn = YES;
     }
     
@@ -241,7 +247,7 @@ NSString * GetPropListDirectory (void)
     cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType INT,AreaID INT,Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
     CREATE INDEX IF NOT EXISTS AreasWithinDistance_index ON AreasWithinDistance (PropNum ASC, AreaType ASC);";
     rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
-
+    
     [self close:opened];
     return rtn;
 }
@@ -274,7 +280,7 @@ NSString * GetPropListDirectory (void)
                             withIntermediateDirectories:YES
                                              attributes:nil
                                                   error:nil];
-
+    
     return dir;
 }
 
@@ -300,7 +306,7 @@ NSString * GetPropListDirectory (void)
     NSMutableArray *rtn = NSMutableArray.array;
     BOOL opened = [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT videoID, Title, Type, Cost, Notes, VideoFileName, StartTime, EndTime FROM PropertyVideo WHERE PropNum = %i",propNum];
-     sqlite3_stmt *statement = NULL;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
@@ -327,31 +333,31 @@ NSString * GetPropListDirectory (void)
     return rtn.copy;
 }
 /*
-- (int)datasetVersion
-{
-    int rtn = -1;
-    BOOL opened = [self open];
-    
-    if (_isOpen && _fileSize > 0)
-    {
-        NSString *query = [NSString stringWithFormat:@"SELECT Version FROM PropertyList_VERSION"];
-        
-        sqlite3_stmt *statement = NULL;
-        
-        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
-        
-        if (sqlite3_step(statement) == SQLITE_ROW)
-        {
-            rtn = sqlite3_column_int(statement, 0);
-        }
-        
-        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-    }
-    
-    [self close:opened];
-    return rtn;
-}
-*/
+ - (int)datasetVersion
+ {
+ int rtn = -1;
+ BOOL opened = [self open];
+ 
+ if (_isOpen && _fileSize > 0)
+ {
+ NSString *query = [NSString stringWithFormat:@"SELECT Version FROM PropertyList_VERSION"];
+ 
+ sqlite3_stmt *statement = NULL;
+ 
+ SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+ 
+ if (sqlite3_step(statement) == SQLITE_ROW)
+ {
+ rtn = sqlite3_column_int(statement, 0);
+ }
+ 
+ SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+ }
+ 
+ [self close:opened];
+ return rtn;
+ }
+ */
 
 - (BOOL)executeCmd:(const char *)cmd
 {
@@ -557,8 +563,8 @@ NSString * GetPropListDirectory (void)
         case PFT_YearBuilt:
             name = @"Year Built";
             break;
-        case PFT_LastSaleYear:
-            name = @"Last Sale Year";
+        case PFT_LastSaleDate:
+            name = @"Last Sale Date";
             break;
         case PFT_LastSalePrice:
             name = @"Last Sale Price";
@@ -578,7 +584,7 @@ NSString * GetPropListDirectory (void)
         case PFT_Ave_EMV_qtrMile:
             name = @"Average EMV (Qtr Mile)";
             break;
-
+            
         default:break;
     }
     
@@ -631,39 +637,39 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     int type = MAPIT_CIRCULAR;
     return type;
     /*switch (field)
-    {
-        case PFT_Stability5yr_block:
-        case PFT_Stability15yr_block:
-        case PFT_PctHomestead_block:
-        case PFT_PctHomeOwn_block:
-        case PFT_MedianAgePop_block:
-        case PFT_MedianBuiltYear_block:
-        case PFT_MedianAgeAdults_block:
-        case PFT_PctChildren_block:
-        case PFT_PctSenior_block:
-        case PFT_RankEMV_block:
-            type = MAPIT_AREA_BLOCK;
-            break;
-        case PFT_Stability5yr_blockgroup:
-        case PFT_Stability15yr_blockgroup:
-        case PFT_PctHomestead_blockgroup:
-        case PFT_PctHomeOwn_blockgroup:
-        case PFT_MedianAgePop_blockgroup:
-        case PFT_MedianBuiltYear_blockgroup:
-        case PFT_MedianAgeChildren_block:
-        case PFT_PctChildren_blockgroup:
-        case PFT_MedianAgeChildren_blockgroup:
-        case PFT_MedianAgeAdults_blockgroup:
-        case PFT_PctSenior_blockgroup:
-        case PFT_RankEMV_blockgroup:
-            type = MAPIT_AREA_BLOCKGRP;
-            break;
-            
-        default:
-            break;
-    }
-    
-    return type;*/
+     {
+     case PFT_Stability5yr_block:
+     case PFT_Stability15yr_block:
+     case PFT_PctHomestead_block:
+     case PFT_PctHomeOwn_block:
+     case PFT_MedianAgePop_block:
+     case PFT_MedianBuiltYear_block:
+     case PFT_MedianAgeAdults_block:
+     case PFT_PctChildren_block:
+     case PFT_PctSenior_block:
+     case PFT_RankEMV_block:
+     type = MAPIT_AREA_BLOCK;
+     break;
+     case PFT_Stability5yr_blockgroup:
+     case PFT_Stability15yr_blockgroup:
+     case PFT_PctHomestead_blockgroup:
+     case PFT_PctHomeOwn_blockgroup:
+     case PFT_MedianAgePop_blockgroup:
+     case PFT_MedianBuiltYear_blockgroup:
+     case PFT_MedianAgeChildren_block:
+     case PFT_PctChildren_blockgroup:
+     case PFT_MedianAgeChildren_blockgroup:
+     case PFT_MedianAgeAdults_blockgroup:
+     case PFT_PctSenior_blockgroup:
+     case PFT_RankEMV_blockgroup:
+     type = MAPIT_AREA_BLOCKGRP;
+     break;
+     
+     default:
+     break;
+     }
+     
+     return type;*/
 }
 
 + (CGFloat)getRadiusForField:(PropFieldType)field
@@ -723,7 +729,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctCommercial_halfMile:
             bt = PBT_Commercial;
             break;
-         default:
+        default:
             break;
     }
     
@@ -744,22 +750,26 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_Owner:
         case PFT_TaxPayer:
         case PFT_Links:
+        case PFT_LastSaleDate:
             rtn = VTString;
             break;
         case PFT_ACRES:
+            rtn = VTAcres;
+            break;
         case PFT_EMV_TOTAL:
         case PFT_EMV_BUILDING:
         case PFT_EMV_LAND:
         case PFT_EMV_LAND_PER_ACRE:
         case PFT_TOTAL_TAX:
         case PFT_SPEC_ASSESSMENT:
-            rtn = VTDouble;
+        case PFT_LastSalePrice:
+            rtn = VTDollars;
             break;
         default:
             rtn = VTInteger;
             break;
     }
-     return rtn;
+    return rtn;
 }
 
 - (NSArray*) getPropertyNumbers
@@ -783,6 +793,34 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self close:opened];
     _numPropertiesInList = (int)propNums.count;
     return propNums.copy;
+}
+
+- (NSString *) getPIDforPropnum:(int)propNum
+{
+    NSString *PID = @"";
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li AND Propnum = %i", (long)PFT_PIN,propNum];
+    
+    BOOL opened = [self open];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR val;
+        
+        val = (LPSTR)sqlite3_column_blob(statement, 0);
+        if (val)
+        {
+            PID = [NSString stringWithFormat:@"%s",val];
+        }
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    [self close:opened];
+
+    return PID;
 }
 
 - (NSArray*) getPIDS
@@ -949,43 +987,39 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         LPSTR val;
         int ival;
         double dval;
-        
-        switch (fieldType)
+        ValueTypes vt = [self getFieldValueType:fieldType];
+        switch (vt)
         {
-            case PFT_LatLon:
+            case VTLLPoint:
             {
                 LLPOINT pt = *(LLPOINT*)sqlite3_column_blob(statement, 0);
                 value = [NSString stringWithFormat:@"%f %f",pt.lat,pt.lon];
             }
                 break;
-            case PFT_UserID:
-            case PFT_PIN:
-            case PFT_Address:
-            case PFT_Owner:
-            case PFT_TaxPayer:
+            case VTString:
                 val = (LPSTR)sqlite3_column_blob(statement, 0);
                 if (val)
                 {
                     value = [NSString stringWithFormat:@"%s",val];
-//                    value = [value stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
-//                    value = [value stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+                    //                    value = [value stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
+                    //                    value = [value stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
                 }
                 break;
-            case PFT_EMV_TOTAL:
-            case PFT_EMV_LAND_PER_ACRE:
-            case PFT_EMV_LAND:
-            case PFT_EMV_BUILDING:
-            case PFT_SPEC_ASSESSMENT:
-            case PFT_TOTAL_TAX:
+            case VTDollars:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
                 value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
                 break;
-            case PFT_ACRES:
+            case VTDouble:
+                dval = *(double*)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithFormat:@"%f",dval];
+                break;
+            case VTAcres:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
                 value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
                 break;
+            case VTInteger:
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
                 value = [NSString stringWithFormat:@"%i",ival];
@@ -1002,44 +1036,46 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (NSString *) getFieldTotal:(PropFieldType)fieldType
 {
     NSString *value = @"";
-    if ([self getFieldValueType:fieldType] == VTDouble)
+    ValueTypes type = [self getFieldValueType:fieldType];
+    
+    switch (type)
     {
-        double totval = 0;
-        NSNumber *num;
-        int nval = 0;
-        NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
-        
-        BOOL opened = [self open];
-        
-        sqlite3_stmt *statement = NULL;
-        
-        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
-        
-        while (sqlite3_step(statement) == SQLITE_ROW)
+        case VTDouble:
+        case VTAcres:
+        case VTDollars:
         {
-            double dval = *(double*)sqlite3_column_blob(statement, 0);
-            totval += dval;
-            nval++;
-        }
-        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-        [self close:opened];
-        switch (fieldType)
-        {
-            case PFT_EMV_TOTAL:
-            case PFT_EMV_LAND_PER_ACRE:
-            case PFT_EMV_LAND:
-            case PFT_EMV_BUILDING:
-            case PFT_SPEC_ASSESSMENT:
-            case PFT_TOTAL_TAX:
-                num = [[NSNumber alloc] initWithDouble:totval];
-                value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
-                break;
-            case PFT_ACRES:
-                num = [[NSNumber alloc] initWithDouble:totval];
-                value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
-                break;
-            default:
-                break;
+            double totval = 0;
+            NSNumber *num;
+            int nval = 0;
+            NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
+            
+            BOOL opened = [self open];
+            
+            sqlite3_stmt *statement = NULL;
+            
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+            
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                double dval = *(double*)sqlite3_column_blob(statement, 0);
+                totval += dval;
+                nval++;
+            }
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+            [self close:opened];
+            switch (type)
+            {
+                case VTDollars:
+                    num = [[NSNumber alloc] initWithDouble:totval];
+                    value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
+                    break;
+                case VTAcres:
+                    num = [[NSNumber alloc] initWithDouble:totval];
+                    value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
+                    break;
+                default:
+                    break;
+            }
         }
     }
     return value;
@@ -1048,47 +1084,52 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (NSString *) getFieldAverage:(PropFieldType)fieldType
 {
     NSString *value = @"";
-    if ([self getFieldValueType:fieldType] == VTDouble)
+    ValueTypes type = [self getFieldValueType:fieldType];
+    
+    switch (type)
     {
-        double totval = 0;
-        int nval = 0;
-        NSNumber *num;
-        NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
-        
-        BOOL opened = [self open];
-        
-        sqlite3_stmt *statement = NULL;
-        
-        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
-        
-        while (sqlite3_step(statement) == SQLITE_ROW)
+        default:
+            break;
+            
+        case VTDouble:
+        case VTAcres:
+        case VTDollars:
         {
-            double dval = *(double*)sqlite3_column_blob(statement, 0);
-            totval += dval;
-            nval++;
-        }
-        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-        [self close:opened];
-        if (nval > 0)
-        {
-            totval /= nval;
-            switch (fieldType)
+            double totval = 0;
+            int nval = 0;
+            NSNumber *num;
+            NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
+            
+            BOOL opened = [self open];
+            
+            sqlite3_stmt *statement = NULL;
+            
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+            
+            while (sqlite3_step(statement) == SQLITE_ROW)
             {
-                case PFT_EMV_TOTAL:
-                case PFT_EMV_LAND_PER_ACRE:
-                case PFT_EMV_LAND:
-                case PFT_EMV_BUILDING:
-                case PFT_SPEC_ASSESSMENT:
-                case PFT_TOTAL_TAX:
-                    num = [[NSNumber alloc] initWithDouble:totval];
-                    value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
-                    break;
-                case PFT_ACRES:
-                    num = [[NSNumber alloc] initWithDouble:totval];
-                    value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
-                    break;
-                default:
-                    break;
+                double dval = *(double*)sqlite3_column_blob(statement, 0);
+                totval += dval;
+                nval++;
+            }
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+            [self close:opened];
+            if (nval > 0)
+            {
+                totval /= nval;
+                switch (type)
+                {
+                    case VTDollars:
+                        num = [[NSNumber alloc] initWithDouble:totval];
+                        value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
+                        break;
+                    case VTAcres:
+                        num = [[NSNumber alloc] initWithDouble:totval];
+                        value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -1351,6 +1392,38 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self close:opened];
 }
 
+- (void) addString:(NSString*)value
+          withCode:(int)code
+{
+    NSString * dataBlob = [self stringToBlob:value];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    
+}
+- (void) addDouble:(double)value
+          withCode:(int)code
+{
+    NSString * dataBlob = [self doubleToBlob:value];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+}
+- (void) addInt:(int)value
+       withCode:(int)code
+{
+    NSString * dataBlob = [self intToBlob:value];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+}
+- (void) addLLPoints:(LLPOINT*)pidPoint
+           numPoints:(int)np
+            withCode:(int)code
+{
+    NSString *dataBlob = [self llpointsToBlob:pidPoint
+                                    numPoints:np];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+}
+
 - (BOOL)addParcelToPropertyList:(NSString *)PID
                         popover:(GSSiPopoverView *)popover
 {
@@ -1372,7 +1445,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     double totTax = 0;
     double specAssmt = 0;
     double acres = 0;
+    double saleValue = 0;
     NSString * usedesc;
+    NSString * saleDate;
     
     [propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
@@ -1382,6 +1457,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                   taxpayerName:&taxpayer
                    censusBlock:&cenblock
                        useDesc:&usedesc
+                      saleDate:&saleDate
+                     saleValue:&saleValue
                         totEMV:&_totEMV
                        landEMV:&landEMV
                        bldgEMV:&bldgEMV
@@ -1398,7 +1475,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     _rhCompute.propList = self;
     DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
     DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
-
+    
     [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
                                     inCensusArea:(LPSTR)cenBlock
                                           totEMV:(int)_totEMV
@@ -1412,106 +1489,60 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     BOOL opened = [self open];
     [self startTransaction];
-    int dbid = [self next_id];
-    int PropNum = [self nextPropNum];
-    int propVersion = [propData propertyDatasetVersion];
+    
+    _dbid = [self next_id];
+    _PropNum = [self nextPropNum];
+    _PropVersion = [propData propertyDatasetVersion];
     NSString *dataBlob;
-    
-    //add PID to Proplist
-    NSString *PIDBlob = [self stringToBlob:PID];
-    NSString *pointBlob = [self llpointsToBlob:&pidPoint
-                                    numPoints:1];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PIN,propVersion,PIDBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_UserID,propVersion,PIDBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-
-    //add LatLon to Proplist
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_LatLon,propVersion,pointBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-
     NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
-    NSString *addressBlob = [self stringToBlob:address];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,propVersion,addressBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
     
-    dataBlob = [self doubleToBlob:_totEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_TOTAL,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:landEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_LAND,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:bldgEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_BUILDING,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:totTax];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_TOTAL_TAX,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:specAssmt];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_SPEC_ASSESSMENT,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:acres];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_ACRES,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
+    
+    [self addString:PID       withCode:PFT_PIN];
+    [self addString:PID       withCode:PFT_UserID];
+    [self addString:address   withCode:PFT_Address];
+    [self addDouble:_totEMV   withCode:PFT_EMV_TOTAL];
+    [self addDouble:landEMV   withCode:PFT_EMV_LAND];
+    [self addDouble:bldgEMV   withCode:PFT_EMV_BUILDING];
+    [self addDouble:totTax    withCode:PFT_TOTAL_TAX];
+    [self addDouble:specAssmt withCode:PFT_SPEC_ASSESSMENT];
+    [self addDouble:acres     withCode:PFT_ACRES];
     if (acres > 0)
     {
         double landPerAcre = landEMV/acres;
-        dataBlob = [self doubleToBlob:landPerAcre];
-        cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_LAND_PER_ACRE,propVersion,dataBlob];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+        [self addDouble:landPerAcre withCode:PFT_EMV_LAND_PER_ACRE];
     }
-    dataBlob = [self stringToBlob:owner];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Owner,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self stringToBlob:taxpayer];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_TaxPayer,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    //add values from tables to Proplist
-    dataBlob = [self intToBlob:values_block.rankTotEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.pctHomestead];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.medianBuiltYear];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.stability_5yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.stability_15yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self addString:owner     withCode:PFT_Owner];
+    [self addString:taxpayer  withCode:PFT_TaxPayer];
+    [self addString:saleDate  withCode:PFT_LastSaleDate];
+    [self addDouble:saleValue withCode:PFT_LastSalePrice];
     
-    dataBlob = [self intToBlob:values_blockgroup.rankTotEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.pctHomestead];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.medianBuiltYear];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.stability_5yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.stability_15yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self addInt:values_block.rankTotEMV      withCode:PFT_RankEMV_block];
+    [self addInt:values_block.pctHomestead    withCode:PFT_PctHomestead_block];
+    [self addInt:values_block.medianBuiltYear withCode:PFT_MedianBuiltYear_block];
+    [self addInt:values_block.stability_5yr   withCode:PFT_Stability5yr_block];
+    [self addInt:values_block.stability_15yr  withCode:PFT_Stability15yr_block];
+    
+    [self addInt:values_blockgroup.rankTotEMV      withCode:PFT_RankEMV_blockgroup];
+    [self addInt:values_blockgroup.pctHomestead    withCode:PFT_PctHomestead_blockgroup];
+    [self addInt:values_blockgroup.medianBuiltYear withCode:PFT_MedianBuiltYear_blockgroup];
+    [self addInt:values_blockgroup.stability_5yr   withCode:PFT_Stability5yr_blockgroup];
+    [self addInt:values_blockgroup.stability_15yr  withCode:PFT_Stability15yr_blockgroup];
+    
     rtn = YES;
     
     dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
-     
-     dispatch_async(getSlowValueQue,
-     ^{
-    GetSlowValues *sv = [[GetSlowValues alloc]init];
-    [sv computeSlowValues:PropNum
-                     dbid:dbid
-                 delegate:self
-                  popover:_popover
-             aroundLatLon:pidPoint
-                   useDesc:(LPSTR)usedesc.UTF8String];
-      });
+    
+    dispatch_async(getSlowValueQue,
+                   ^{
+                       GetSlowValues *sv = [[GetSlowValues alloc]init];
+                       [sv computeSlowValues:_PropNum
+                                        dbid:_dbid
+                                    delegate:self
+                                     popover:_popover
+                                aroundLatLon:pidPoint
+                                     useDesc:(LPSTR)usedesc.UTF8String];
+                   });
     
     //[self close:opened];
     return rtn;
@@ -1538,7 +1569,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_quarterMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_halfMile = DATA_FROM_LANDUSE.new;
-
+        
         [_rhCompute computeValuesFromParcelsInCircle:values_eighthMile
                                          forProperty:propNum
                                             inCircle:1
@@ -1643,36 +1674,36 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover hide];
                        });
         
-   }
+    }
     [self close:opened];
 }
 
 /*
  Top spreadsheet fields
-ProsAndCons
-TraveLess
-Average Market Value
-Average, median Home Age
-Percent new homes (5 yr)
-Percent new homes (15 yr)
-Percent Open Space/Parks
-Percent Commercial
-Percent Industrial
-Miles of major roads
-Stability
-Homestead rate
-Homestead trend
-Age mean, median and distribution
-Income
-Percent Single Family
-Percent vote Republican
-Percent vote Democrat
-Percent with children
-Percent single parent
-Ave no of children
-Ave age of children
-School data
-*/
+ ProsAndCons
+ TraveLess
+ Average Market Value
+ Average, median Home Age
+ Percent new homes (5 yr)
+ Percent new homes (15 yr)
+ Percent Open Space/Parks
+ Percent Commercial
+ Percent Industrial
+ Miles of major roads
+ Stability
+ Homestead rate
+ Homestead trend
+ Age mean, median and distribution
+ Income
+ Percent Single Family
+ Percent vote Republican
+ Percent vote Democrat
+ Percent with children
+ Percent single parent
+ Ave no of children
+ Ave age of children
+ School data
+ */
 
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {

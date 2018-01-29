@@ -7,6 +7,7 @@
 #import "Destinations.h"
 #import "MapViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
+#import "ChartsViewController.h"
 
 @interface NVSpreadsheetDelegate () <CLLocationManagerDelegate>
 
@@ -439,13 +440,24 @@
             case PFT_Address:
                 array = [NSMutableArray arrayWithArray:@[@"Zoom to This Property", @"Zoom to All Properties in List", @"Cancel"]];
                 break;
+            case PFT_LastSaleDate:
+            case PFT_LastSalePrice:
+                array = [NSMutableArray arrayWithArray:@[@"Show Sales History", @"Cancel"]];
+               break;
             default:break;
         }
     }
 
     return array;
 }
-
+- (void) displayPropHistory:(int)propNum
+                     overVC:(UIViewController*)vc
+{
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypePropReport];
+    NSString *PID = [_propList getPIDforPropnum:propNum];
+    chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:PID];
+    [vc presentViewController:chartsVC animated:YES completion:nil];
+}
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {
     return propertyListFieldDescription(row);
