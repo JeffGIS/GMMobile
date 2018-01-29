@@ -308,6 +308,49 @@ Top:
         else
             totPct[polyID] += PercentOfCircle;
         totalPct += PercentOfCircle;
+        int iPCT = IDNINT(PercentOfCircle * 100.0);
+        switch (polyID)
+        {
+            case LUC_SingleFamilyResidential:
+                values.PCT_SingleFamilyResidential = iPCT;
+                break;
+            case LUC_MultiFamilyResidential:
+                values.PCT_MultiFamilyResidential = iPCT;
+                break;
+            case LUC_MixedUseResidential:
+                values.PCT_MixedUseResidential = iPCT;
+                break;
+            case LUC_RetailCommercial:
+                values.PCT_RetailCommercial = iPCT;
+                break;
+            case LUC_Office:
+                values.PCT_Office = iPCT;
+                break;
+            case LUC_Industrial:
+                values.PCT_Industrial = iPCT;
+                break;
+            case LUC_Institutional:
+                values.PCT_Institutional = iPCT;
+                break;
+            case LUC_HighwayRailway:
+                values.PCT_HighwayRailway = iPCT;
+                break;
+            case LUC_Airport:
+                values.PCT_Airport = iPCT;
+                break;
+            case LUC_ParkRecPreserve:
+                values.PCT_ParkRecPreserve = iPCT;
+                break;
+            case LUC_Agriculture:
+                values.PCT_Agriculture = iPCT;
+                break;
+            case LUC_Undeveloped:
+                values.PCT_Undeveloped = iPCT;
+                break;
+            case LUC_Water:
+                values.PCT_Water = iPCT;
+                break;
+        }
     }
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
     return rtn;

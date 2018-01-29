@@ -56,16 +56,21 @@ pctNoTax;
 @end
 
 @interface DATA_FROM_LANDUSE : NSObject
-@property  int  nMatchingProperties;
-@property  int  totPop,
-totPopPerSqMile,
-rankTotEMV,
-pctHomestead,
-medianBuiltYear,
-aveBuiltYear,
-pctNew_10yr,
-pctNew_25yr,
-pctNoTax;
+@property  int
+PCT_SingleFamilyResidential,
+PCT_MultiFamilyResidential,
+PCT_MixedUseResidential,
+PCT_RetailCommercial,
+PCT_Office,
+PCT_Industrial,
+PCT_Institutional,
+PCT_HighwayRailway,
+PCT_Airport,
+PCT_ParkRecPreserve,
+PCT_Agriculture,
+PCT_Undeveloped,
+PCT_Water;
+
 @end
 
 @interface RiteHomeCompute:NSObject
