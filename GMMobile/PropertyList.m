@@ -314,6 +314,7 @@ NSString * GetPropListDirectory (void)
     {
         int i = 0;
         RHClip * clip = RHClip.new;
+        clip.propNum = propNum;
         clip.clipID = sqlite3_column_int(statement, i++);
         LPCSTR val = (LPCSTR)sqlite3_column_text (statement, i++);
         clip.title = [NSString stringWithUTF8String:val];
