@@ -53,7 +53,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.resetFieldList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
 #ifdef DEBUG
-    CRAPI.sharedInstance.resetPropList = YES;
+    //CRAPI.sharedInstance.resetPropList = YES;
 #endif
     
     UIUserNotificationType nTypes =

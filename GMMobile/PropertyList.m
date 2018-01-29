@@ -78,10 +78,7 @@ NSString * GetPropListDirectory (void)
 
 + (void) createNewPropertyList
 {
-    NSString *baseName = @"PropertyList";
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        baseName = @"PropList";
+    NSString *baseName = @"PropList";
     
     int n = 1;
     NSArray * lists = [PropertyList getPropertyLists];
@@ -108,13 +105,14 @@ NSString * GetPropListDirectory (void)
 + (BOOL) renameCurrentPropertyList:(NSString *)newName
 {
     PropertyList *pl = [[PropertyList alloc]init];
-    NSString *currentDir = pl.plDirectory;
-    NSString *newFile = [NSString stringWithFormat:@"%@/%@", pl.propListDir, newName];
+    NSString *currentDir = [pl getCurrentPropListDir];
+    NSString *propListDir = GetPropListDirectory ();
+    NSString * newDir = [NSString stringWithFormat:@"%@/%@", propListDir, newName];
     
     [pl close:YES];
     NSError * err = NULL;
     BOOL result = [NSFileManager.defaultManager  moveItemAtPath:currentDir
-                                                         toPath:newFile
+                                                         toPath:newDir
                                                           error:&err];
     if(!result)
     {
