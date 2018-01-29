@@ -7,8 +7,8 @@
 #import "Destinations.h"
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
-#import "CCodeLibrary/MathUtil.h"
 #import "RiteHomeCompute.h"
+#import "CCodeLibrary/RiteHome.h"
 
 //#define CURRENT_VERSION 28
 
@@ -25,6 +25,7 @@
 @property int dbid;
 @property int PropNum;
 @property int PropVersion;
+@property RHWalkScore * valuesFromWalkScore;
 
 @end
 
@@ -583,7 +584,25 @@ NSString * GetPropListDirectory (void)
         case PFT_Ave_EMV_qtrMile:
             name = @"Average EMV (Qtr Mile)";
             break;
-            
+        case PFT_WalkScore:
+            name = @"Walk Score";
+            break;
+        case PFT_TransitScore:
+            name = @"Transit Score";
+            break;
+        case PFT_BikeScore:
+            name = @"Bike Score";
+            break;
+        case PFT_WalkDescription:
+            name = @"Walk Description";
+            break;
+        case PFT_TransitDescription:
+            name = @"Transit Description";
+            break;
+        case PFT_BikeDescription:
+            name = @"Bike Description";
+            break;
+
         default:break;
     }
     
@@ -750,6 +769,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_TaxPayer:
         case PFT_Links:
         case PFT_LastSaleDate:
+        case PFT_WalkDescription:
+        case PFT_TransitDescription:
+        case PFT_BikeDescription:
             rtn = VTString;
             break;
         case PFT_ACRES:
@@ -1423,6 +1445,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 
+- (void)walkScoreDidReturnItem:(RHWalkScore *)item
+{
+    NSLog(@"RHWalkScore Item: %@", item);
+    _valuesFromWalkScore = item;
+}
+
+- (void)walkScoreDidReceiveError:(NSString *)error
+{
+    NSLog(@"RHWalkScore ERROR: %@", error);
+    _valuesFromWalkScore = nil;
+}
+
 - (BOOL)addParcelToPropertyList:(NSString *)PID
                         popover:(GSSiPopoverView *)popover
 {
@@ -1448,7 +1482,10 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     NSString * usedesc;
     NSString * saleDate;
     
-    [propData getAddressForPID:PID
+    RHWalkScore *rhws = [RHWalkScore walkScoreWithDelegate:self];
+    _valuesFromWalkScore = nil;
+    
+    if ([propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
                     streetName:&streetName
                           city:&city
@@ -1463,8 +1500,20 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                        bldgEMV:&bldgEMV
                         totTAX:&totTax
                        specAss:&specAssmt
-                         acres:&acres];
-    
+                         acres:&acres])
+    {
+
+        NSString *address = [NSString stringWithFormat:@"%@ %@",houseAndUnit,streetName];
+        if ([rhws getWalkScoreForAddress:address
+                            city:city
+                           state:@"MN"
+                             zip:0
+                             lat:pidPoint.lat
+                             lon:pidPoint.lon])
+        {
+            
+        }
+    }
     char cenBlock[20];
     strcpy (cenBlock, cenblock.UTF8String);
     cenBlock[12] = 0;
@@ -1662,10 +1711,19 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        int dbid = [self next_id];
-        NSString *dataBlob = [self intToBlob:values_quarterMile.stability_5yr];
-        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+        _dbid = [self next_id];
+        if (_valuesFromWalkScore)
+        {
+            [self addInt:_valuesFromWalkScore.walkScore    withCode:PFT_WalkScore];
+            [self addInt:_valuesFromWalkScore.transitScore    withCode:PFT_TransitScore];
+            [self addInt:_valuesFromWalkScore.bikeScore    withCode:PFT_BikeScore];
+            [self addString:_valuesFromWalkScore.walkDescription    withCode:PFT_WalkDescription];
+            [self addString:_valuesFromWalkScore.transitDescription    withCode:PFT_TransitDescription];
+            [self addString:_valuesFromWalkScore.bikeDescription    withCode:PFT_BikeDescription];
+            _valuesFromWalkScore = nil;
+        }
+        [self addInt:values_quarterMile.stability_5yr    withCode:PFT_Stability5yr_qtrMile];
+
         [self commitTransaction];
         dispatch_async(dispatch_get_main_queue(),
                        ^{

@@ -72,6 +72,12 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_Ave_EMV_blockgroup,
     PFT_Ave_EMV_eighthMile,
     PFT_Ave_EMV_qtrMile,
+    PFT_WalkScore,
+    PFT_TransitScore,
+    PFT_BikeScore,
+    PFT_WalkDescription,
+    PFT_TransitDescription,
+    PFT_BikeDescription,
     PFT_END,
 };
 typedef NS_ENUM(NSInteger, PropBaseType)
@@ -95,7 +101,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 @end
 
-@interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate>
+@interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate,RHWalkScoreDelegate>
 @property (nonatomic, weak) id <PropertyListDelegate> delegate;
 @property sqlite3nv *database;
 @property NSString* propListDir;
