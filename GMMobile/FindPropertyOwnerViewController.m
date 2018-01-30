@@ -20,6 +20,7 @@
 @property int lastRowTapped;
 @property (nonatomic) GSSiPopoverView *popover;
 @property BOOL cancelAddProperties;
+@property BOOL thinkingAboutIt;
 
 @end
 
@@ -213,7 +214,7 @@
 - (void)matchingOwners:(NSArray *)ownerArray
 {
     _propOwnerList = ownerArray.copy;
-    
+    _thinkingAboutIt = FALSE;
     [self performSelectorOnMainThread:@selector(reloadTable)
                            withObject:nil
                         waitUntilDone:NO];
@@ -303,21 +304,16 @@
 {
     NSString *inputText = _propOwnerTF.text;
     
-    if ([inputText isEqualToString:@""])
-    {
-        _propOwnerList = nil;
-        [_tableView reloadData];
-    }
+    _propOwnerList = nil;
+    [_tableView reloadData];
+    _thinkingAboutIt = TRUE;
+    CRAPI.sharedInstance.keepProcessing++;
+    PropertyData *propData = [[PropertyData alloc] init];
+    propData.processingID = CRAPI.sharedInstance.keepProcessing;
+    propData.delegate = self;
+    [propData getOwnersMatchingString:inputText limitTo:_limitToOption];
+    [_tableView reloadData];
     
-    else
-    {
-        CRAPI.sharedInstance.keepProcessing++;
-        PropertyData *propData = [[PropertyData alloc] init];
-        propData.processingID = CRAPI.sharedInstance.keepProcessing;
-        propData.delegate = self;
-        [propData getOwnersMatchingString:inputText limitTo:_limitToOption];
-        [_tableView reloadData];
-    }
 }
 
 - (void)textFieldDidChange:(UITextField *)textField
@@ -559,6 +555,15 @@
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
+    }
+    
+    else if (_thinkingAboutIt)
+    {
+        cell.textLabel.text = @"... Searching ...";
+        cell.detailTextLabel.text = @"";
+        cell.textLabel.textColor = UIColor.grayColor;
+        cell.detailTextLabel.textColor = UIColor.grayColor;
+        cell.userInteractionEnabled = NO;
     }
     
     else

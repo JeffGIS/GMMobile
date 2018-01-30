@@ -2274,6 +2274,7 @@ Exit:
                 //SQLOKpd(SQLiteFinalize(statement),_database, 57);
                 
                 RiteHomeCompute *rhCompute = RiteHomeCompute.new;
+                rhCompute.propData = self;
                 
                 DATA_FROM_PARCELS *values = DATA_FROM_PARCELS.new;
                 [rhCompute computeValuesFromParcelsInCensus:values
@@ -2302,8 +2303,8 @@ Exit:
     return report;
 }
 
-#define MAXHITS 4096
-#define MAXOFFSETS 262136L
+#define MAXHITS SHRT_MAX
+#define MAXOFFSETS 262136L * 4
 #define	MAXWIOFFSETS 100
 #define MAXPARTS 32
 

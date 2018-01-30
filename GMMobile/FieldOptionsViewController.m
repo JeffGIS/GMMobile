@@ -27,7 +27,7 @@
 
 - (void)dealloc
 {
-    NSLog(@"Boundary Database dealloc");
+    NSLog(@"Field Options dealloc");
 }
 
 - (void)viewDidLoad
