@@ -311,14 +311,13 @@ NSString * GetFieldListDirectory (void)
     [fl close:opened];
 }
 
-+ (int) getMaxSequence
++ (int) getMaxSequence:(PropFieldType*)ptype
 {
     int rtn = -1;
     FieldList *fl = FieldList.new;
     BOOL opened = [fl open];
     NSString *query = [NSString stringWithFormat:@"SELECT MAX(Sequence) FROM FieldList"];
-    
-    sqlite3_stmt *statement = NULL;
+     sqlite3_stmt *statement = NULL;
     
     SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
     
@@ -329,6 +328,20 @@ NSString * GetFieldListDirectory (void)
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
     
+    if (ptype)
+    {
+        *ptype = 0;
+        query = [NSString stringWithFormat:@"SELECT FieldType FROM FieldList WHERE Sequence = %li",(long)rtn];
+        
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
+        
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            *ptype = sqlite3_column_int(statement, 0);
+        }
+        
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
+    }
     [fl close:opened];
     return rtn;
     
@@ -394,7 +407,7 @@ NSString * GetFieldListDirectory (void)
         {
             tosequence = [FieldList getInsertSequence];
             if (!tosequence)
-                tosequence = [FieldList getMaxSequence] + 1;
+                tosequence = [FieldList getMaxSequence:nil] + 1;
         }
     }
     else
@@ -423,15 +436,27 @@ NSString * GetFieldListDirectory (void)
 
 + (void)setInsertAfterTo:(PropFieldType)type
 {
+    int seq = [FieldList getSequenceFor:type];
     FieldList *fl = FieldList.new;
     BOOL opened = [fl open];
-    
-    NSString *cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;"
-                     "UPDATE FieldList SET InsertAfter = 1 WHERE FieldType = %i;", (int)type];
-    
-    [fl executeCmd:(LPSTR)cmd.UTF8String];
+    if (seq > 0)
+    {
+        
+        NSString *cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;"
+                         "UPDATE FieldList SET InsertAfter = 1 WHERE FieldType = %i;", (int)type];
+        [fl executeCmd:(LPSTR)cmd.UTF8String];
+    }
+    else
+    {
+        PropFieldType maxType;
+        int maxSeq = [FieldList getMaxSequence:&maxType];
+        NSString *cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;"
+                         "UPDATE FieldList SET InsertAfter = 1 WHERE FieldType = %i;", (int)maxType];        
+        [fl executeCmd:(LPSTR)cmd.UTF8String];
+
+    }
     [fl close:opened];
-    
+
 }
 
 +(PropFieldType) getInsertAfter
