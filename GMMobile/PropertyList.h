@@ -99,6 +99,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
         andFieldType:(PropFieldType)type
           withStatus:(long)status;
 
+- (void)ParcelAddedToPropertyList:(int)status;
 @end
 
 @interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate,RHWalkScoreDelegate>

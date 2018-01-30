@@ -74,7 +74,7 @@
     NVAlertViewDelegate,MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,
     PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,
     NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,
-    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate,RHWalkScoreDelegate>
+    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate,PropertyListDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -138,6 +138,7 @@
 @property (nonatomic) GMSCameraPosition *currentPosition;
 @property (nonatomic) YTPlayerView *youTubePlayer;
 @property (nonatomic) UIButton *ytReturnButton;
+@property PropertyList *propertyList;
 
 @end
 
@@ -1073,30 +1074,34 @@
             
             if (CRAPI.sharedInstance.mapPropList)
             {
-                PropertyList *pl = PropertyList.new;
-                BOOL opened = [pl open];
-                NSArray *props = pl.getPropertyNumbers;
-                
-                for (NSNumber *numbers in props)
+                if (!_propertyList)
                 {
-                    if ([numbers isKindOfClass:NSNumber.class])
+                    _propertyList = PropertyList.new;
+                    BOOL opened = [_propertyList  open];
+                    NSArray *props = _propertyList .getPropertyNumbers;
+                    
+                    for (NSNumber *numbers in props)
                     {
-                        NSInteger num = numbers.integerValue;
-                        ll = [pl getPropertyLatLon:num];
-                        coord.latitude = ll.lat;
-                        coord.longitude = ll.lon;
-                        
-                        NVMarkerInfoButton *nvmib =
-                        [NVMarkerInfoButton markerWithPosition:coord
-                                                         title:[pl getFieldValue:num type:PFT_UserID]
-                                                          type:NVMarkerInfoButtonTypePropList
-                                                          view:self.view
-                                                      delegate:self];
-                        
-                        nvmib.tag = ((num * 100) + 3);
+                        if ([numbers isKindOfClass:NSNumber.class])
+                        {
+                            NSInteger num = numbers.integerValue;
+                            ll = [_propertyList  getPropertyLatLon:num];
+                            coord.latitude = ll.lat;
+                            coord.longitude = ll.lon;
+                            
+                            NVMarkerInfoButton *nvmib =
+                            [NVMarkerInfoButton markerWithPosition:coord
+                                                             title:[_propertyList  getFieldValue:num type:PFT_UserID]
+                                                              type:NVMarkerInfoButtonTypePropList
+                                                              view:self.view
+                                                          delegate:self];
+                            
+                            nvmib.tag = ((num * 100) + 3);
+                        }
                     }
+                    [_propertyList  close:opened];
+                    _propertyList = nil;
                 }
-                [pl close:opened];
             }
         }
     }
@@ -1277,26 +1282,8 @@
         [_locationManager requestLocation];
     }
     
-    RHWalkScore *rhws = [RHWalkScore walkScoreWithDelegate:self];
-    
-    [rhws getWalkScoreForAddress:@"309 2nd Ave S"
-                            city:@"Minneapolis"
-                           state:@"MN"
-                             zip:55401
-                             lat:44.9787
-                             lon:-93.2667];
 }
 #pragma mark - EndOfViewDidAppear
-
-- (void)walkScoreDidReturnItem:(RHWalkScore *)item
-{
-    NSLog(@"RHWalkScore Item: %@", item);
-}
-
-- (void)walkScoreDidReceiveError:(NSString *)error
-{
-    NSLog(@"RHWalkScore ERROR: %@", error);
-}
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -4041,7 +4028,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Add to Property List"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropList forKey:@"PIDOption"];
-        [self addToPropList];
+        [self addToProplist];
     }
     
     else if ([text isEqualToString:@"Add to Destinations"])
@@ -4862,12 +4849,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)setTargetParcel
 {
     CRAPI.sharedInstance.currentPID = _selectedPID;
-}
-
-- (void)addToPropList
-{
-    PropertyList *pl = PropertyList.new;
-    [pl addParcelToPropertyList:_selectedPID popover:_popover];
 }
 
 - (void)addToDestinations
@@ -6853,7 +6834,7 @@ didSelectPDFButtonWithText:(NSString *)text
                 case PropertyTableViewSettingFlyover:
                     break;
                 case PropertyTableViewSettingPropList:
-                    [self addToPropList];
+                    [self addToProplist];
                     break;
                 case PropertyTableViewSettingDestinations:
                     [self addToDestinations];
@@ -7286,4 +7267,26 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     [self updateLegendPositions];
 }
 
+- (void) addToProplist
+{
+    _propertyList = PropertyList.new;
+    _propertyList.delegate = self;
+    [_propertyList addParcelToPropertyList:_selectedPID popover:_popover];
+}
+
+- (void)ParcelAddedToPropertyList:(int)status
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                        target:self
+                                                      selector:@selector(endProplist:)
+                                                      userInfo:nil
+                                                       repeats:NO];
+                   });
+}
+- (void)endProplist:(NSTimer*)timer
+{
+    _propertyList = nil;
+}
 @end

@@ -26,6 +26,8 @@
 @property int PropNum;
 @property int PropVersion;
 @property RHWalkScore * valuesFromWalkScore;
+@property BOOL haveWalkScoreValues;
+@property GetSlowValues * slowValues;
 
 @end
 
@@ -172,6 +174,8 @@ NSString * GetPropListDirectory (void)
 - (void)dealloc
 {
     [self close:YES];
+    _slowValues = nil;
+
     NSLog(@"PropertyList Database dealloc");
 }
 
@@ -904,25 +908,15 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     else
         value = [self getFieldValue:propNum type:type];
     
-    if (value)
+    if (_delegate)
     {
-        [self.delegate PropertyList:self
+        [_delegate PropertyList:self
                        returnsValue:value
                   forPropertyNumber:propNum
                        andFieldType:type
                          withStatus:0];
     }
     
-    else
-    {
-        switch (type)
-        {
-            case PFT_PctOpenSpace_halfMile:
-                break;
-            default:
-                break;
-        }
-    }
     
     return;
 }
@@ -1448,7 +1442,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (void)walkScoreDidReturnItem:(RHWalkScore *)item
 {
     NSLog(@"RHWalkScore Item: %@", item);
-    _valuesFromWalkScore = item;
+    _haveWalkScoreValues = TRUE;
 }
 
 - (void)walkScoreDidReceiveError:(NSString *)error
@@ -1482,8 +1476,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     NSString * usedesc;
     NSString * saleDate;
     
-    RHWalkScore *rhws = [RHWalkScore walkScoreWithDelegate:self];
-    _valuesFromWalkScore = nil;
+    _valuesFromWalkScore = [RHWalkScore walkScoreWithDelegate:self];
+    _haveWalkScoreValues = FALSE;
     
     if ([propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
@@ -1504,7 +1498,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     {
 
         NSString *address = [NSString stringWithFormat:@"%@ %@",houseAndUnit,streetName];
-        if ([rhws getWalkScoreForAddress:address
+        if ([_valuesFromWalkScore getWalkScoreForAddress:address
                             city:city
                            state:@"MN"
                              zip:0
@@ -1579,12 +1573,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     rtn = YES;
     
+    _slowValues = [[GetSlowValues alloc]init];
+
     dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
     
     dispatch_async(getSlowValueQue,
                    ^{
-                       GetSlowValues *sv = [[GetSlowValues alloc]init];
-                       [sv computeSlowValues:_PropNum
+                       [_slowValues computeSlowValues:_PropNum
                                         dbid:_dbid
                                     delegate:self
                                      popover:_popover
@@ -1712,7 +1707,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                        });
         
         _dbid = [self next_id];
-        if (_valuesFromWalkScore)
+        if (_haveWalkScoreValues)
         {
             [self addInt:_valuesFromWalkScore.walkScore    withCode:PFT_WalkScore];
             [self addInt:_valuesFromWalkScore.transitScore    withCode:PFT_TransitScore];
@@ -1720,8 +1715,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [self addString:_valuesFromWalkScore.walkDescription    withCode:PFT_WalkDescription];
             [self addString:_valuesFromWalkScore.transitDescription    withCode:PFT_TransitDescription];
             [self addString:_valuesFromWalkScore.bikeDescription    withCode:PFT_BikeDescription];
-            _valuesFromWalkScore = nil;
         }
+        _valuesFromWalkScore.delegate = nil;
         [self addInt:values_quarterMile.stability_5yr    withCode:PFT_Stability5yr_qtrMile];
 
         [self commitTransaction];
@@ -1733,6 +1728,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         
     }
     [self close:opened];
+    _haveWalkScoreValues = FALSE;
+    _valuesFromWalkScore = nil;
+    [_delegate ParcelAddedToPropertyList:TRUE];
 }
 
 /*
