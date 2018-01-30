@@ -9,7 +9,8 @@
 #import "CCodeLibrary/NVPopoverTableView.h"
 #import "CCodeLibrary/NVPopoverSlider.h"
 
-@interface FieldOptionsViewController () <NVPopoverSliderDelegate,NVPopoverTableViewDelegate,UITextFieldDelegate>
+@interface FieldOptionsViewController () <NVPopoverSliderDelegate,
+NVPopoverTableViewDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 
 @property CGFloat rowHeight;
 @property (nonatomic) UIImage *uncheckedBox, *checkedBox;
@@ -149,6 +150,7 @@
     UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                        action:@selector(tvLongPressed:)];
     
+    lpgr.delegate = self;
     [_tableView addGestureRecognizer:lpgr];
 }
 
@@ -515,12 +517,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _longPressIsActive = YES;
         CGPoint point = [gesture locationInView:_tableView];
+        
         NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:point];
         [self cellLongPressed:(int)indexPath.row];
     }
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
         _longPressIsActive = NO;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    return ([gestureRecognizer locationInView:_tableView].y > _rowHeight);
 }
 
 @end
