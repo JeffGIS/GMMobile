@@ -1717,7 +1717,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [self addString:_valuesFromWalkScore.bikeDescription    withCode:PFT_BikeDescription];
         }
         _valuesFromWalkScore.delegate = nil;
+        //[self addInt:values_eigthMile.stability_5yr    withCode:PFT_Stability5yr_eigthMile];
+        //[self addInt:values_eigthMile.stability_15yr    withCode:PFT_Stability15yr_eigthMile];
         [self addInt:values_quarterMile.stability_5yr    withCode:PFT_Stability5yr_qtrMile];
+        [self addInt:values_quarterMile.stability_15yr    withCode:PFT_Stability15yr_qtrMile];
+        [self addInt:values_halfMile.stability_5yr    withCode:PFT_Stability5yr_halfMile];
+        [self addInt:values_halfMile.stability_15yr    withCode:PFT_Stability15yr_halfMile];
 
         [self commitTransaction];
         dispatch_async(dispatch_get_main_queue(),
