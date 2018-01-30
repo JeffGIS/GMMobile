@@ -16,6 +16,7 @@
 @property int sequence;
 @property int weight;
 @property BOOL allowsWeight;
+@property BOOL insertAfter;
 
 @end
 
@@ -33,11 +34,14 @@
 + (void)setSequenceFor:(PropFieldType)type
                   from:(int)fromsequence
                     to:(int)tosequence;
++(void) setInsertAfterTo:(PropFieldType)type;
++(PropFieldType) getInsertAfter;
 
 + (BOOL)renameCurrentFieldList:(NSString *)newName;
 + (BOOL)deleteCurrentFieldList;
 + (BOOL)setCurrentFieldList:(NSString *)propList;
 + (void)createNewFieldList;
++ (int) getInsertSequence;
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;

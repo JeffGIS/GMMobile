@@ -2403,199 +2403,202 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     ownerQueue = dispatch_queue_create(NULL, NULL);
     dispatch_async(ownerQueue,
                    ^{
-    
-    NSMutableArray *ownerArray = [[NSMutableArray alloc] init];
-    int	nParts, ipart, iparttest;
-    //int nOwners;
-    //LPWORDINDEX	pRec;
-    //WORDINDEX Rec;
-    LPINT partOffsets[MAXPARTS], partoff;
-    int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
-    LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-    int Trigger = 1, nHits = 0;
-    //int nowner;
-    BOOL GetNext = TRUE;
-    char Name[66];
-    NSString * cityName = @"";
-    sqlite3_stmt *statement = NULL;
-    
-    NSString *string = INstring.uppercaseString;
-    strncpy(Name, string.UTF8String, 64);
-    nParts = GetNameParts(Name, PartLoc, PartLen, MAXPARTS);
-    
-    if (nParts)
-    {
-    for (ipart = 0; ipart < nParts; ipart++)
-    {
-        nPartOffsets[ipart] = 0;
-        partOffsets[ipart] = 0;
-    }
-    
-    for (ipart = 0; ipart < nParts; ipart++)
-    {
-        if (PartLen[ipart] >= Trigger)
-        {
-            char endWord[12] = {0};
-            char begWord[12] = {0};
-            [self open];
-            
-            strncpy (begWord, PartLoc[ipart], 8);
-            strncpy (endWord, PartLoc[ipart], 8);
-            for (int i= (int)strlen(begWord); i < 11; i++)
-                endWord[i] = 'Z';
-            
-            endWord[11] = 0;
-            
-            NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
-                               begWord,endWord];
-            
-            SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 59);
-            
-            while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
-            {
-                LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
-                int nOffsets = sqlite3_column_int(statement,1);
-                LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
-                
-                if (nPartOffsets[ipart] + nOffsets >= MAXOFFSETS)
-                    GetNext = FALSE;
-                
-                else
-                {
-                    partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*sizeof(int));
-                    partoff = partOffsets[ipart] + nPartOffsets[ipart];
-                    memmove (partoff,pOffsets,nOffsets*sizeof(int));
-                    nPartOffsets[ipart] += nOffsets;
-                }
-            }
-            
-            SQLOKpd(SQLiteFinalize(statement), _database, 60);
-            
-            if (!nPartOffsets[ipart])
-                GetNext = FALSE;
-        }
-        
-        else
-            nPartOffsets[ipart] = INT_MAX;
-    }
-    
-   LPINT Hits = malloc(MAXHITS * sizeof(int));
-   if ([self continueProcessing] && GetNext)
-        nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
-    
-    for (ipart = 0; ipart < nParts; ipart++)
-    {
-        if (partOffsets[ipart])
-            free (partOffsets[ipart]);
-    }
-    
-    if (nHits)
-    {
-        NSString *inList=[[NSString alloc] init];
-        char delim = 0;
-        
-        for (int i = 0; i < nHits; i++)
-        {
-            inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i", delim, Hits[i]]];
-            delim = ',';
-        }
-        
-        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
-                           inList];
-        BoundaryData * bd = BoundaryData.new;
-        SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 61);
-        
-        while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
-        {
-            LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
-            LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
-            LPSTR taxpayer = (LPSTR)sqlite3_column_text(statement,2);
-            LPSTR house = (LPSTR)sqlite3_column_text(statement,3);
-            LPSTR street = (LPSTR)sqlite3_column_text(statement,4);
-            LPSTR city = (LPSTR)sqlite3_column_text(statement,5);
-            cityName = [NSString stringWithUTF8String:city];
-            double lat = sqlite3_column_double(statement,6);
-            double lon = sqlite3_column_double(statement,7);
-            char testName[256];
-            strcpy(testName,owner);
-            int nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
-            int ShowThisOwner = 1;
-            
-            for (ipart = 0; ipart < nParts; ipart++)
-            {
-                for (iparttest = 0; iparttest <nPartsTest; iparttest++)
-                {
-                    if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
-                    {
-                        *PartLocTest[iparttest] = 0;
-                        goto FoundPart;
-                    }
-                }
-                
-                ShowThisOwner = 0;
-                break;
-                
-            FoundPart:;
-            }
-            if (!ShowThisOwner)
-            {
-                strcpy(testName,taxpayer);
-                nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
-                ShowThisOwner = 2;
-                
-                for (ipart = 0; ipart < nParts; ipart++)
-                {
-                    for (iparttest = 0; iparttest <nPartsTest; iparttest++)
-                    {
-                        if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
-                        {
-                            *PartLocTest[iparttest] = 0;
-                            goto FoundPart2;
-                        }
-                    }
-                    
-                    ShowThisOwner = 0;
-                    break;
-                    
-                FoundPart2:;
-                }
-
-            }
-            if (ShowThisOwner)
-            {
-                LLPOINT llpt;
-                llpt.lat = lat;
-                llpt.lon = lon;
-                /*PickedItem *pi = [bd pickBoundaryArea:llpt type:@"Cities And Townships"];
-                if (pi)
-                    cityName = pi.identifier;*/
-            }
-            if (ShowThisOwner == 1)
-            {
-                NSString *name = [[NSString stringWithUTF8String:owner] stringByReplacingOccurrencesOfString:@"," withString:@""];
-                NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %@",
-                                    name, pin, house, street, cityName];
-                if ([self checkLimits:limitTo PIN:pin City:(LPSTR)cityName.UTF8String])
-                    [ownerArray addObject:output];
-            }
-            if (ShowThisOwner == 2)
-            {
-                NSString *name = [[NSString stringWithUTF8String:taxpayer] stringByReplacingOccurrencesOfString:@"," withString:@""];
-                NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %s",
-                                   name, pin, house, street, cityName.UTF8String];
-                
-                if ([self checkLimits:limitTo PIN:pin City:city])
-                    [ownerArray addObject:output];
-            }
-        }
-        
-        SQLOKpd(SQLiteFinalize(statement), _database, 62);
-    }
-    free (Hits);
-    [self close:25];
-    if ([self continueProcessing] && _delegate)
-        [_delegate matchingOwners:[ownerArray.copy sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
-    }
+                       
+                       NSMutableArray *ownerArray = [[NSMutableArray alloc] init];
+                       int	nParts, ipart, iparttest;
+                       //int nOwners;
+                       //LPWORDINDEX	pRec;
+                       //WORDINDEX Rec;
+                       LPINT partOffsets[MAXPARTS], partoff;
+                       int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
+                       LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
+                       int Trigger = 1, nHits = 0;
+                       //int nowner;
+                       BOOL GetNext = TRUE;
+                       char Name[66];
+                       NSString * cityName = @"";
+                       sqlite3_stmt *statement = NULL;
+                       
+                       NSString *string = INstring.uppercaseString;
+                       strncpy(Name, string.UTF8String, 64);
+                       nParts = GetNameParts(Name, PartLoc, PartLen, MAXPARTS);
+                       
+                       if (nParts)
+                       {
+                           for (ipart = 0; ipart < nParts; ipart++)
+                           {
+                               nPartOffsets[ipart] = 0;
+                               partOffsets[ipart] = 0;
+                           }
+                           
+                           for (ipart = 0; ipart < nParts; ipart++)
+                           {
+                               if (PartLen[ipart] >= Trigger)
+                               {
+                                   char endWord[12] = {0};
+                                   char begWord[12] = {0};
+                                   [self open];
+                                   
+                                   strncpy (begWord, PartLoc[ipart], 8);
+                                   strncpy (endWord, PartLoc[ipart], 8);
+                                   for (int i= (int)strlen(begWord); i < 11; i++)
+                                       endWord[i] = 'Z';
+                                   
+                                   endWord[11] = 0;
+                                   
+                                   NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
+                                                      begWord,endWord];
+                                   
+                                   SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 59);
+                                   
+                                   while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+                                   {
+                                       LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
+                                       int nOffsets = sqlite3_column_int(statement,1);
+                                       LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
+                                       
+                                       if (nPartOffsets[ipart] + nOffsets >= MAXOFFSETS)
+                                           GetNext = FALSE;
+                                       
+                                       else
+                                       {
+                                           partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*sizeof(int));
+                                           partoff = partOffsets[ipart] + nPartOffsets[ipart];
+                                           memmove (partoff,pOffsets,nOffsets*sizeof(int));
+                                           nPartOffsets[ipart] += nOffsets;
+                                       }
+                                   }
+                                   
+                                   SQLOKpd(SQLiteFinalize(statement), _database, 60);
+                                   
+                                   if (!nPartOffsets[ipart])
+                                       GetNext = FALSE;
+                               }
+                               
+                               else
+                                   nPartOffsets[ipart] = INT_MAX;
+                           }
+                           
+                           LPINT Hits = malloc(MAXHITS * sizeof(int));
+                           if ([self continueProcessing] && GetNext)
+                               nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
+                           
+                           for (ipart = 0; ipart < nParts; ipart++)
+                           {
+                               if (partOffsets[ipart])
+                                   free (partOffsets[ipart]);
+                           }
+                           
+                           if (nHits)
+                           {
+                               NSString *inList=[[NSString alloc] init];
+                               char delim = 0;
+                               
+                               for (int i = 0; i < nHits; i++)
+                               {
+                                   inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i", delim, Hits[i]]];
+                                   delim = ',';
+                               }
+                               
+                               NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
+                                                  inList];
+                               BoundaryData * bd = BoundaryData.new;
+                               SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 61);
+                               
+                               while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+                               {
+                                   LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
+                                   LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
+                                   LPSTR taxpayer = (LPSTR)sqlite3_column_text(statement,2);
+                                   LPSTR house = (LPSTR)sqlite3_column_text(statement,3);
+                                   LPSTR street = (LPSTR)sqlite3_column_text(statement,4);
+                                   LPSTR city = (LPSTR)sqlite3_column_text(statement,5);
+                                   cityName = [NSString stringWithUTF8String:city];
+                                   double lat = sqlite3_column_double(statement,6);
+                                   double lon = sqlite3_column_double(statement,7);
+                                   char testName[256];
+                                   strcpy(testName,owner);
+                                   int nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
+                                   int ShowThisOwner = 1;
+                                   
+                                   for (ipart = 0; ipart < nParts; ipart++)
+                                   {
+                                       for (iparttest = 0; iparttest <nPartsTest; iparttest++)
+                                       {
+                                           if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
+                                           {
+                                               *PartLocTest[iparttest] = 0;
+                                               goto FoundPart;
+                                           }
+                                       }
+                                       
+                                       ShowThisOwner = 0;
+                                       break;
+                                       
+                                   FoundPart:;
+                                   }
+                                   if (!ShowThisOwner)
+                                   {
+                                       strcpy(testName,taxpayer);
+                                       nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
+                                       ShowThisOwner = 2;
+                                       
+                                       for (ipart = 0; ipart < nParts; ipart++)
+                                       {
+                                           for (iparttest = 0; iparttest <nPartsTest; iparttest++)
+                                           {
+                                               if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
+                                               {
+                                                   *PartLocTest[iparttest] = 0;
+                                                   goto FoundPart2;
+                                               }
+                                           }
+                                           
+                                           ShowThisOwner = 0;
+                                           break;
+                                           
+                                       FoundPart2:;
+                                       }
+                                       
+                                   }
+                                   if (ShowThisOwner)
+                                   {
+                                       LLPOINT llpt;
+                                       llpt.lat = lat;
+                                       llpt.lon = lon;
+                                       /*PickedItem *pi = [bd pickBoundaryArea:llpt type:@"Cities And Townships"];
+                                        if (pi)
+                                        cityName = pi.identifier;*/
+                                   }
+                                   if (ShowThisOwner == 1)
+                                   {
+                                       NSString *name = [[NSString stringWithUTF8String:owner] stringByReplacingOccurrencesOfString:@"," withString:@""];
+                                       NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %@",
+                                                           name, pin, house, street, cityName];
+                                       if ([self checkLimits:limitTo PIN:pin City:(LPSTR)cityName.UTF8String])
+                                           [ownerArray addObject:output];
+                                   }
+                                   if (ShowThisOwner == 2)
+                                   {
+                                       NSString *name = [[NSString stringWithUTF8String:taxpayer] stringByReplacingOccurrencesOfString:@"," withString:@""];
+                                       NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %s",
+                                                           name, pin, house, street, cityName.UTF8String];
+                                       
+                                       if ([self checkLimits:limitTo PIN:pin City:city])
+                                           [ownerArray addObject:output];
+                                   }
+                               }
+                               
+                               SQLOKpd(SQLiteFinalize(statement), _database, 62);
+                           }
+                           free (Hits);
+                           [self close:25];
+                           if ([self continueProcessing] && _delegate)
+                               [_delegate matchingOwners:[ownerArray.copy sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
+                       }
+                       else
+                           [_delegate matchingOwners:NSArray.new];
+                       
                    });
     return TRUE;
 }
