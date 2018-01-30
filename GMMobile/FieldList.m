@@ -421,11 +421,14 @@ NSString * GetFieldListDirectory (void)
     
 }
 
-+(void) setInsertAfterTo:(PropFieldType)type
++ (void)setInsertAfterTo:(PropFieldType)type
 {
     FieldList *fl = FieldList.new;
     BOOL opened = [fl open];
-    NSString * cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;UPDATE FieldList SET InsertAfter = 1 WHERE WHERE FieldType = %i;",(int)type];
+    
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;"
+                     "UPDATE FieldList SET InsertAfter = 1 WHERE FieldType = %i;", (int)type];
+    
     [fl executeCmd:(LPSTR)cmd.UTF8String];
     [fl close:opened];
     

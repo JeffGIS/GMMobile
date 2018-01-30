@@ -20,6 +20,7 @@
 @property (nonatomic) UITextField *titleTextField;
 @property (nonatomic) UISegmentedControl *options;
 @property (nonatomic) UIButton *trash, *plus, *list;
+@property BOOL longPressIsActive;
 
 @end
 
@@ -144,6 +145,11 @@
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = _rowHeight;
     _tableView.sectionHeaderHeight = _rowHeight;
+    
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                       action:@selector(tvLongPressed:)];
+    
+    [_tableView addGestureRecognizer:lpgr];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -483,21 +489,38 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int row = (int)indexPath.row;
-    FieldListRecord *flr = _fieldlist[row];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    if (row > 0 && flr.sequence > 0)
+    if (!_longPressIsActive)
     {
-        int fromseq = flr.sequence;
-        int newseq = [FieldList getInsertSequence];
-        [FieldList setSequenceFor:flr.type
-                             from:fromseq
-                               to:newseq];
+        int row = (int)indexPath.row;
+        FieldListRecord *flr = _fieldlist[row];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
         
-        _fieldlist = [FieldList getFieldListRecords:YES];
-        [_tableView reloadData];
+        if (row > 0 && flr.sequence > 0)
+        {
+            int fromseq = flr.sequence;
+            int newseq = [FieldList getInsertSequence];
+            [FieldList setSequenceFor:flr.type
+                                 from:fromseq
+                                   to:newseq];
+            
+            _fieldlist = [FieldList getFieldListRecords:YES];
+            [_tableView reloadData];
+        }
     }
+}
+
+- (void)tvLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateBegan)
+    {
+        _longPressIsActive = YES;
+        CGPoint point = [gesture locationInView:_tableView];
+        NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:point];
+        [self cellLongPressed:(int)indexPath.row];
+    }
+    
+    else if (gesture.state == UIGestureRecognizerStateEnded)
+        _longPressIsActive = NO;
 }
 
 @end
