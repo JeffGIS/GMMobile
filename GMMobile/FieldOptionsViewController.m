@@ -404,7 +404,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else
         [checkBox setImage:_uncheckedBox forState:UIControlStateNormal];
-    
+    if (flr.insertAfter)
+    {
+        UIImage * image = [UIImage imageNamed:@"digitize.png"];
+        cell.imageView.image = image;
+        _lastSelectedType = flr.type;
+    }
+    else
+        cell.imageView.image = nil;
+
     return cell;
 }
 
@@ -460,6 +468,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (void)cellLongPressed:(int)row
+{
+    FieldListRecord *flr = _fieldlist[row];
+    
+    _lastSelectedType = flr.type;
+    
+    [FieldList setInsertAfterTo:flr.type];
+    
+    _fieldlist = [FieldList getFieldListRecords:YES];
+    [_tableView reloadData];
+}
+
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -467,13 +487,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     FieldListRecord *flr = _fieldlist[row];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (_lastSelectedType && row > 0 && flr.sequence > 0)
+    if (row > 0 && flr.sequence > 0)
     {
-        int fromseq = [FieldList getSequenceFor:_lastSelectedType];
-        
-        [FieldList setSequenceFor:_lastSelectedType
+        int fromseq = flr.sequence;
+        int newseq = [FieldList getInsertSequence];
+        [FieldList setSequenceFor:flr.type
                              from:fromseq
-                               to:row+1];
+                               to:newseq];
         
         _fieldlist = [FieldList getFieldListRecords:YES];
         [_tableView reloadData];

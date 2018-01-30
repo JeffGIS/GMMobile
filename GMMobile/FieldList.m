@@ -219,9 +219,9 @@ NSString * GetFieldListDirectory (void)
         int ifield = (int)field.integerValue;
         NSString *cmd = @"";
         if (ifield == 2)
-            cmd = [NSString stringWithFormat:@"INSERT INTO FieldList VALUES (%i, 1, 0);",ifield];
+            cmd = [NSString stringWithFormat:@"INSERT INTO FieldList VALUES (%i, 1, 0, 1);",ifield];
         else
-            cmd = [NSString stringWithFormat:@"INSERT INTO FieldList VALUES (%i, 0, 0);",ifield];
+            cmd = [NSString stringWithFormat:@"INSERT INTO FieldList VALUES (%i, 0, 0, 0);",ifield];
         [self executeCmd:(LPSTR)cmd.UTF8String];
     }
 }
@@ -229,7 +229,7 @@ NSString * GetFieldListDirectory (void)
 {
     BOOL opened = [self open];
     
-    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS FieldList (FieldType INTEGER PRIMARY KEY,Sequence INTEGER, Weight INTEGER);";
+    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS FieldList (FieldType INTEGER PRIMARY KEY,Sequence INTEGER, Weight INTEGER, InsertAfter INTEGER);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     [self close:opened];
     return rtn;
@@ -257,7 +257,7 @@ NSString * GetFieldListDirectory (void)
     FieldList *fl = FieldList.new;
     
     BOOL opened = [fl open];
-    NSString *query = [NSString stringWithFormat:@"SELECT FieldType, Sequence, Weight FROM FieldList WHERE Sequence > 0 ORDER BY Sequence"];
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldType, Sequence, Weight, InsertAfter FROM FieldList WHERE Sequence > 0 ORDER BY Sequence"];
     
     sqlite3_stmt *statement = NULL;
     
@@ -272,6 +272,7 @@ NSString * GetFieldListDirectory (void)
         flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
         flr.sequence = sqlite3_column_int(statement, 1);
         flr.weight = sqlite3_column_int(statement, 2);
+        flr.insertAfter = sqlite3_column_int(statement, 3);
         [records addObject:flr];
     }
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
@@ -291,7 +292,8 @@ NSString * GetFieldListDirectory (void)
             flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
             flr.sequence = sqlite3_column_int(statement, 1);
             flr.weight = sqlite3_column_int(statement, 2);
-            [records addObject:flr];
+            flr.insertAfter = sqlite3_column_int(statement, 3);
+           [records addObject:flr];
         }
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
     }
@@ -329,7 +331,30 @@ NSString * GetFieldListDirectory (void)
     
     [fl close:opened];
     return rtn;
+    
+}
 
++ (int) getInsertSequence
+{
+    int rtn = 0;
+    FieldList *fl = FieldList.new;
+    BOOL opened = [fl open];
+    NSString *query = [NSString stringWithFormat:@"SELECT Sequence FROM FieldList WHERE InsertAfter = 1"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = sqlite3_column_int(statement, 0) + 1;
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
+    
+    [fl close:opened];
+    return rtn;
+    
 }
 
 + (int) getSequenceFor:(PropFieldType)type
@@ -361,26 +386,72 @@ NSString * GetFieldListDirectory (void)
     NSString *cmd = @"";
     FieldList *fl = FieldList.new;
     BOOL opened = [fl open];
+    int newInsertAfter = 0;
+    [fl startTransaction];
     if (fromsequence == 0)
     {
         if (tosequence == 0)
-            tosequence = [FieldList getMaxSequence] + 1;
+        {
+            tosequence = [FieldList getInsertSequence];
+            if (!tosequence)
+                tosequence = [FieldList getMaxSequence] + 1;
+        }
     }
     else
     {
-        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence -1 WHERE Sequence > %i;",fromsequence];
+        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence -1, InsertAfter = 0 WHERE Sequence > %i;",fromsequence];
         [fl executeCmd:(LPSTR)cmd.UTF8String];
     }
     if (tosequence)
     {
-        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence + 1 WHERE Sequence >= %i;",tosequence];
+        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence + 1, InsertAfter = 0 WHERE Sequence >= %i;",tosequence];
         [fl executeCmd:(LPSTR)cmd.UTF8String];
+        newInsertAfter = 1;
     }
     
-    cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = %i WHERE FieldType = %li;",tosequence,(long)type];
+    cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;UPDATE FieldList SET Sequence = %i, InsertAfter = %i WHERE FieldType = %li;",tosequence,newInsertAfter,(long)type];
+    [fl executeCmd:(LPSTR)cmd.UTF8String];
+    if (!tosequence)
+    {
+        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;UPDATE FieldList SET InsertAfter = 1 WHERE Sequence = %i;",fromsequence-1];
+        [fl executeCmd:(LPSTR)cmd.UTF8String];
+    }
+    [fl commitTransaction];
+    [fl close:opened];
+    
+}
+
++(void) setInsertAfterTo:(PropFieldType)type
+{
+    FieldList *fl = FieldList.new;
+    BOOL opened = [fl open];
+    NSString * cmd = [NSString stringWithFormat:@"UPDATE FieldList SET InsertAfter = 0;UPDATE FieldList SET InsertAfter = 1 WHERE WHERE FieldType = %i;",(int)type];
     [fl executeCmd:(LPSTR)cmd.UTF8String];
     [fl close:opened];
     
 }
+
++(PropFieldType) getInsertAfter
+{
+    PropFieldType rtn = 0;
+    FieldList *fl = FieldList.new;
+    BOOL opened = [fl open];
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldType FROM FieldList WHERE InsertAfter = 1"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = sqlite3_column_int(statement, 0);
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
+    
+    [fl close:opened];
+    return rtn;
+}
+
 
 @end
