@@ -2443,8 +2443,8 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                                    char begWord[12] = {0};
                                    [self open];
                                    
-                                   strncpy (begWord, PartLoc[ipart], 8);
-                                   strncpy (endWord, PartLoc[ipart], 8);
+                                   strncpy0 (begWord, PartLoc[ipart], 8);
+                                   strncpy0 (endWord, PartLoc[ipart], 8);
                                    for (int i= (int)strlen(begWord); i < 11; i++)
                                        endWord[i] = 'Z';
                                    
