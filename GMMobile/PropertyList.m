@@ -26,9 +26,9 @@
 @property int PropNum;
 @property int PropVersion;
 @property RHWalkScore * valuesFromWalkScore;
-@property BOOL haveWalkScoreValues;
+@property int haveWalkScoreValues;
 @property GetSlowValues * slowValues;
-
+@property BOOL opened;
 @end
 
 @implementation PropertyList
@@ -1449,6 +1449,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {
     NSLog(@"RHWalkScore ERROR: %@", error);
     _valuesFromWalkScore = nil;
+    _haveWalkScoreValues = -2;
 }
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
@@ -1475,37 +1476,39 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     double saleValue = 0;
     NSString * usedesc;
     NSString * saleDate;
+    int yearBuilt;
     
     _valuesFromWalkScore = [RHWalkScore walkScoreWithDelegate:self];
     _haveWalkScoreValues = FALSE;
     
     if ([propData getAddressForPID:PID
-               houseNumAndUnit:&houseAndUnit
-                    streetName:&streetName
-                          city:&city
-                     ownerName:&owner
-                  taxpayerName:&taxpayer
-                   censusBlock:&cenblock
-                       useDesc:&usedesc
-                      saleDate:&saleDate
-                     saleValue:&saleValue
-                        totEMV:&_totEMV
-                       landEMV:&landEMV
-                       bldgEMV:&bldgEMV
-                        totTAX:&totTax
-                       specAss:&specAssmt
-                         acres:&acres])
+                   houseNumAndUnit:&houseAndUnit
+                        streetName:&streetName
+                              city:&city
+                         ownerName:&owner
+                      taxpayerName:&taxpayer
+                       censusBlock:&cenblock
+                           useDesc:&usedesc
+                          saleDate:&saleDate
+                         saleValue:&saleValue
+                         yearBuilt:&yearBuilt
+                            totEMV:&_totEMV
+                           landEMV:&landEMV
+                           bldgEMV:&bldgEMV
+                            totTAX:&totTax
+                           specAss:&specAssmt
+                             acres:&acres])
     {
-
+        
         NSString *address = [NSString stringWithFormat:@"%@ %@",houseAndUnit,streetName];
-        if ([_valuesFromWalkScore getWalkScoreForAddress:address
+        if (![_valuesFromWalkScore getWalkScoreForAddress:address
                             city:city
                            state:@"MN"
                              zip:0
                              lat:pidPoint.lat
                              lon:pidPoint.lon])
         {
-            
+            _haveWalkScoreValues = -1;
         }
     }
     char cenBlock[20];
@@ -1529,13 +1532,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                                           totEMV:(int)_totEMV
                                          useDesc:(LPSTR)_usedesc.UTF8String];
     
-    BOOL opened = [self open];
-    [self startTransaction];
+    _opened = [self open];
+    if (_opened)
+        [self startTransaction];
     
     _dbid = [self next_id];
     _PropNum = [self nextPropNum];
     _PropVersion = [propData propertyDatasetVersion];
-    NSString *dataBlob;
     NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
     
     [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
@@ -1558,7 +1561,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addString:taxpayer  withCode:PFT_TaxPayer];
     [self addString:saleDate  withCode:PFT_LastSaleDate];
     [self addDouble:saleValue withCode:PFT_LastSalePrice];
-    
+    [self addInt:yearBuilt    withCode:PFT_YearBuilt];
+
     [self addInt:values_block.rankTotEMV      withCode:PFT_RankEMV_block];
     [self addInt:values_block.pctHomestead    withCode:PFT_PctHomestead_block];
     [self addInt:values_block.medianBuiltYear withCode:PFT_MedianBuiltYear_block];
@@ -1600,8 +1604,6 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                      totComputes:(float)totComputes
                      numComputes:(float)nComputes
 {
-    BOOL opened = [self open];
-    if (!opened)
     {
         DATA_FROM_PARCELS *values_eighthMile = DATA_FROM_PARCELS.new;
         DATA_FROM_PARCELS *values_quarterMile = DATA_FROM_PARCELS.new;
@@ -1707,7 +1709,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                        });
         
         _dbid = [self next_id];
-        if (_haveWalkScoreValues)
+        if (_haveWalkScoreValues > 0)
         {
             [self addInt:_valuesFromWalkScore.walkScore    withCode:PFT_WalkScore];
             [self addInt:_valuesFromWalkScore.transitScore    withCode:PFT_TransitScore];
@@ -1724,7 +1726,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self addInt:values_halfMile.stability_5yr    withCode:PFT_Stability5yr_halfMile];
         [self addInt:values_halfMile.stability_15yr    withCode:PFT_Stability15yr_halfMile];
 
-        [self commitTransaction];
+        if (_opened)
+            [self commitTransaction];
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover updateProgress:1.0];
@@ -1732,7 +1735,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                        });
         
     }
-    [self close:opened];
+    [self close:_opened];
     _haveWalkScoreValues = FALSE;
     _valuesFromWalkScore = nil;
     [_delegate ParcelAddedToPropertyList:TRUE];

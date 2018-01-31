@@ -679,6 +679,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
                  useDesc:(NSString **)usedesc
                 saleDate:(NSString **)saleDate
                saleValue:(double *)saleValue
+               yearBuilt:(int *)yearBuilt
                   totEMV:(double *)totEMV
                  landEMV:(double *)landEMV
                  bldgEMV:(double *)bldgEMV
@@ -698,7 +699,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     if (totEMV)
         *totEMV = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE]  FROM PROPINFO Where PIN = '%@'",
+    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT]  FROM PROPINFO Where PIN = '%@'",
                        PID];
     sqlite3_stmt *statement = NULL;
     
@@ -724,6 +725,9 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         double acresp = sqlite3_column_double(statement, i++);
         LPSTR  saleDat = (LPSTR)sqlite3_column_text(statement, i++);
         double saleValu = sqlite3_column_double(statement, i++);
+        int yearBuild = sqlite3_column_int(statement, i++);
+        if (yearBuilt)
+            *yearBuilt = yearBuild;
         *houseAndUnit = [NSString stringWithFormat:@"%s%s",bldgnum,unit];
         *streetName = [NSString stringWithUTF8String:street];
         if (city)

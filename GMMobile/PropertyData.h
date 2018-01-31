@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
     ActionOptionAddToMap,
     ActionOptionClearAndAddToMap,
     ActionOptionAddToNewPropList,
+    ActionOptionAddToCurrentPropList,
 };
 
 @class PropertyData;
@@ -141,6 +142,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
                  useDesc:(NSString **)usedesc
                 saleDate:(NSString **)saleDate
                saleValue:(double *)saleValue
+               yearBuilt:(int *)yearBuilt
                   totEMV:(double *)totEMV
                  landEMV:(double *)landEMV
                  bldgEMV:(double *)bldgEMV

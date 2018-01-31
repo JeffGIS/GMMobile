@@ -6,7 +6,7 @@
 #import "CCodeLibrary/GSSiPopoverView.h"
 #import "PropertyList.h"
 
-@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate,UIGestureRecognizerDelegate,GSSiPopoverViewDelegate>
+@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate,UIGestureRecognizerDelegate,GSSiPopoverViewDelegate,PropertyListDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
 @property (nonatomic) NVConstrainedButton *returnButton, *limitButton, *actionButton;
@@ -21,6 +21,11 @@
 @property (nonatomic) GSSiPopoverView *popover;
 @property BOOL cancelAddProperties;
 @property BOOL thinkingAboutIt;
+@property PropertyList *pl;
+@property NSArray<NSIndexPath *> *indexPaths;
+@property int propertyToAdd;
+@property NSTimer *timer;
+@property BOOL openedProplist;
 
 @end
 
@@ -370,24 +375,26 @@
                 
                 break;
             case ActionOptionAddToNewPropList:
-            {
                 [PropertyList createNewPropertyList];
+            case ActionOptionAddToCurrentPropList:
+            {
                 NSString *propListName = PropertyList.getCurrentPropertyListName;
-                __weak typeof(self) weakSelf = self;
+                _pl = PropertyList.new;
+                _pl.delegate = self;
+                _indexPaths = _tableView.indexPathsForSelectedRows;
+                _openedProplist = [_pl open];
+                [_pl startTransaction];
+
                 
-                [_popover showAfter:0.0
-                          withTitle:[NSString stringWithFormat:@"Adding Properties to %@", propListName]
-                          andButton:@"Cancel"];
-                
-                [self addPropertiesToList:^{
-                    [weakSelf.popover hide];
-                    
-                    for (NSIndexPath *indexPaths in weakSelf.tableView.indexPathsForSelectedRows)
-                        [weakSelf.tableView deselectRowAtIndexPath:indexPaths animated:NO];
-                    
-                    [weakSelf.returnButton setTitle:@"< Return" forState:UIControlStateNormal];
-                    [weakSelf updateCountLabelText];
-                }];
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [_popover showAfter:0.0
+                                             withTitle:[NSString stringWithFormat:@"Adding Properties to %@", propListName]
+                                             andButton:@"Cancel"];
+                               });
+                _propertyToAdd = 0;
+                [self addPropertyToList];
+
             }
                 break;
             case ActionOptionClearAndAddToMap:
@@ -401,37 +408,53 @@
         [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)addPropertiesToList:(void (^)(void))completion
+- (bool) addPropertyToList
 {
-    dispatch_async(dispatch_queue_create("AddPropertiesToList",NULL), ^{
-        PropertyList *pl = PropertyList.new;
-        NSArray<NSIndexPath *> *indexPaths = _tableView.indexPathsForSelectedRows;
-        BOOL opened = [pl open];
-        [pl startTransaction];
-        for (NSIndexPath *indexPath in indexPaths)
-        {
+    bool rtn = FALSE;
+    if (_propertyToAdd < _indexPaths.count)
+    {
+        [self performSelectorOnMainThread:@selector(addProperty)
+                               withObject:nil
+                            waitUntilDone:NO];
+        rtn = TRUE;
+    }
+    else
+    {
+        if (!_cancelAddProperties)
+            [_pl commitTransaction];
+        [_pl close:_openedProplist];
+
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover hide];
+                       });
+
+    }
+    return rtn;
+}
+- (void)addProperty
+{
+
+    NSIndexPath *indexPath = _indexPaths[_propertyToAdd];
+
             if (!_cancelAddProperties)
             {
                 NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
-                [pl addParcelToPropertyList:pin popover:nil];
+                [_pl addParcelToPropertyList:pin popover:nil];
                 
-                dispatch_async(dispatch_get_main_queue(),
-                               ^{
-                                   [_popover updateProgress:([indexPaths indexOfObject:indexPath] + 1) / (CGFloat)indexPaths.count];
-                               });
             }
-        }
-        if (!_cancelAddProperties)
-            [pl commitTransaction];
-        [pl close:opened];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion();
-            }
-        });
-    });
+
 }
 
+- (void)ParcelAddedToPropertyList:(int)status
+{
+    _propertyToAdd++;
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_popover updateProgress:_propertyToAdd / (CGFloat)_indexPaths.count];
+                   });
+    [self addPropertyToList];
+}
 - (void)limitButtonTapped:(UIButton *)button
 {
     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
@@ -662,6 +685,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     _cancelAddProperties = YES;
+    _propertyToAdd = INT_MAX;
     [popoverView hide];
 }
 

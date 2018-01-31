@@ -37,10 +37,10 @@
     _propNum = propNum;
     _popover = popover;
     _popover.delegate = self;
-    _popover.progressView.hidden = NO;
-    _popover.progressLabel.hidden = YES;
     dispatch_async(dispatch_get_main_queue(),
                    ^{
+                       _popover.progressView.hidden = NO;
+                       _popover.progressLabel.hidden = YES;
                        [_popover showAfter:0.1
                                  withTitle:@"Computing RiteHome Values"];
                    });
