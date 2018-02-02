@@ -113,7 +113,7 @@
 @property (nonatomic) CGPoint digitizingTargetOffset;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
 @property (nonatomic) UIView *digitizationToolbar;
-@property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton;
+@property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *legendMinimizeButton;
 @property DigitizationMode digitizationMode;
 @property AlleyStatusSetting alleyStatusSetting;
 @property (nonatomic) NVDataLoader *nvdl;
@@ -126,10 +126,9 @@
 @property NSUInteger currentLegendTag, pdfCount;
 @property NVColorOption currentColorOption;
 @property (nonatomic) NVDigitizerView *nvdv;
-@property (nonatomic) CrimeData *cd;
-@property (nonatomic) CrimeData *cdUpdate;
+@property (nonatomic) CrimeData *cd, *cdUpdate;
 @property (nonatomic) NSMutableString *dataString;
-@property BOOL splitPlatView, legendMinimized, keepZoomExtents, grayscaleMode;
+@property BOOL splitPlatView, keepZoomExtents, grayscaleMode;
 @property int splitPlatDirection, vvpass, currentFile;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
@@ -188,7 +187,7 @@
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = _usePlatView = _keepZoomExtents = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanorama = _splitPlatView = _legendMinimized = _grayscaleMode = NO;
+    _showsPanorama = _splitPlatView = _grayscaleMode = NO;
     _routeMode = @"driving";
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
@@ -387,6 +386,21 @@
     
     [self.view addSubview:_myLocationMarker];
     _markerStyle = [UserDefaults.defaults integerForKey:@"MarkerStyle"];
+    
+    _legendMinimizeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _legendMinimizeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _legendMinimizeButton.backgroundColor = _mapToolbar.backgroundColor;
+    _legendMinimizeButton.layer.borderColor = _mapToolbar.layer.borderColor;
+    _legendMinimizeButton.layer.borderWidth = _mapToolbar.layer.borderWidth;
+    _legendMinimizeButton.layer.cornerRadius = 10.0;
+    _legendMinimizeButton.titleLabel.font = [UIFont boldSystemFontOfSize:24.0];
+    [_legendMinimizeButton setTitle:@"L" forState:UIControlStateNormal];
+    [_legendMinimizeButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [_legendMinimizeButton setTitleColor:UIColor.darkGrayColor forState:UIControlStateHighlighted];
+    
+    [_legendMinimizeButton addTarget:self
+                              action:@selector(expandLegends:)
+                    forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)becameActive:(id)selector
@@ -2699,8 +2713,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_mapView.camera.bearing != 0.0)
         _compass.alpha = 1.0;
     
-    if (![self legendIsExpanded] && ![self alertVisible])
+    if (![self legendIsExpanded] && ![self alertVisible] &&
+        ![self.view.subviews containsObject:_legendMinimizeButton])
+    {
         [self updateLegendPositions];
+    }
     
     if (!_tableView.hidden)
         [_tableView reloadData];
@@ -3239,7 +3256,11 @@ haveVV:
                                    [self.view bringSubviewToFront:nvwv];
                            }
                            
-                           [self updateLegendPositions];
+                           if ([self.view.subviews containsObject:_legendMinimizeButton])
+                               [self.view bringSubviewToFront:_legendMinimizeButton];
+                           
+                           else
+                               [self updateLegendPositions];
                            
                            for (GSSiDatePicker *datePicker in self.view.subviews)
                            {
@@ -3609,6 +3630,35 @@ haveVV:
         [self updateLegendPositions];
 }
 
+- (void)themeLegendDidWantMinimize
+{
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    CGFloat margin = 8.0;
+    
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.hidden = YES;
+    }
+    
+    [self.view addSubview:_legendMinimizeButton];
+    [_legendMinimizeButton constrainTopToAnchor:self.view.topAnchor constant:(statusBarHeight + margin)];
+    [_legendMinimizeButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_legendMinimizeButton constrainWidthToConstant:_compassSize];
+    [_legendMinimizeButton constrainHeightToAnchor:_legendMinimizeButton.widthAnchor];
+}
+
+- (void)expandLegends:(UIButton *)button
+{
+    [_legendMinimizeButton removeFromSuperview];
+    
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.hidden = NO;
+    }
+}
+
 - (void)themeLegendWasDraggedOffRightSide
 {
     if (!_legendsAreOffMap)
@@ -3655,6 +3705,15 @@ haveVV:
     {
         if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
             tlmos.moveLeftView.hidden = hidden;
+    }
+}
+
+- (void)updateMinimizeVisibility:(BOOL)hidden
+{
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.minimizeView.hidden = hidden;
     }
 }
 
@@ -7292,7 +7351,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     [self updateLegendPositions];
 }
 
-- (void) addToProplist
+- (void)addToProplist
 {
     _propertyList = PropertyList.new;
     _propertyList.delegate = self;
@@ -7310,8 +7369,10 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
                                                        repeats:NO];
                    });
 }
-- (void)endProplist:(NSTimer*)timer
+
+- (void)endProplist:(NSTimer *)timer
 {
     _propertyList = nil;
 }
+
 @end

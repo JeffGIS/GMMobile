@@ -23,6 +23,7 @@
 @property (nonatomic) UITapGestureRecognizer *tap;
 @property (nonatomic) UIPanGestureRecognizer *drag;
 @property (nonatomic) UIImageView *deleteView;
+@property CGPoint beginCenter;
 
 @end
 
@@ -257,6 +258,11 @@
     [tlmo.moveLeftView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     tlmo.moveLeftView.contentMode = UIViewContentModeScaleAspectFit;
     
+    tlmo.minimizeView = UIImageView.new;
+    [tlmo setupImageView:tlmo.minimizeView image:@"redMinimize"];
+    [tlmo.minimizeView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    tlmo.minimizeView.contentMode = UIViewContentModeScaleToFill;
+    
     return tlmo;
 }
 
@@ -472,10 +478,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     BOOL inLeftDraggedPos = (frame.origin.x < -_dragMargin);
     BOOL inRightDraggedPos = ((frame.origin.x + frame.size.width) > superview.frame.size.width);
     
+    BOOL inMinimizedPos = (inRightDraggedPos && frame.origin.y < 0.0) &&
+                            CRAPI.sharedInstance.allowLegendMinimize;
+    
+    if (inMinimizedPos)
+    {
+        inRemovalPos = NO;
+        inRightDraggedPos = NO;
+    }
+    
     if (gesture.state == UIGestureRecognizerStateBegan)
     {
         _tableView.layer.borderColor = UIColor.redColor.CGColor;
         _tableView.layer.borderWidth = 6.0;
+        _beginCenter = self.center;
     }
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
@@ -483,51 +499,63 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _tableView.layer.borderColor = UIColor.blackColor.CGColor;
         _tableView.layer.borderWidth = 2.0;
         
-        if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+        if (inMinimizedPos)
         {
-            if (_legend.drawOnMap)
-                inRightDraggedPos = (inRightDraggedPos || inRemovalPos);
+            [_delegate themeLegendDidWantMinimize];
+            self.center = _beginCenter;
             
-            inRemovalPos = NO;
-        }
-        
-        if (inRemovalPos)
-            _legend.drawOnMap = NO;
-        
-        else if (_delegate.themeLegendIsOffMap)
-        {
-            if (inLeftDraggedPos)
-                [_delegate themeLegendWasDraggedOffLeftSide];
+            if ([_delegate respondsToSelector:@selector(updateMinimizeVisibility:)])
+                [_delegate updateMinimizeVisibility:YES];
         }
         
         else
         {
-            if (inRightDraggedPos)
-                [_delegate themeLegendWasDraggedOffRightSide];
+            if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+            {
+                if (_legend.drawOnMap)
+                    inRightDraggedPos = (inRightDraggedPos || inRemovalPos);
+                
+                inRemovalPos = NO;
+            }
+            
+            if (inRemovalPos)
+                _legend.drawOnMap = NO;
+            
+            else if (_delegate.themeLegendIsOffMap)
+            {
+                if (inLeftDraggedPos)
+                    [_delegate themeLegendWasDraggedOffLeftSide];
+            }
             
             else
             {
-                CGFloat yPos = MIN(MAX(frame.origin.y, (statusBarHeight + margin)),
-                                   (superview.frame.size.height - frame.size.height - margin));
-                
-                CGPoint origin = CGPointMake(MAX(frame.origin.x, margin), yPos);
-                
-                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                {
-                    _legend.landscapeMapOrigin = origin;
-                    _legend.isDraggedLandscape = YES;
-                }
+                if (inRightDraggedPos)
+                    [_delegate themeLegendWasDraggedOffRightSide];
                 
                 else
                 {
-                    _legend.portraitMapOrigin = origin;
-                    _legend.isDraggedPortrait = YES;
+                    CGFloat yPos = MIN(MAX(frame.origin.y, (statusBarHeight + margin)),
+                                       (superview.frame.size.height - frame.size.height - margin));
+                    
+                    CGPoint origin = CGPointMake(MAX(frame.origin.x, margin), yPos);
+                    
+                    if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                        UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                    {
+                        _legend.landscapeMapOrigin = origin;
+                        _legend.isDraggedLandscape = YES;
+                    }
+                    
+                    else
+                    {
+                        _legend.portraitMapOrigin = origin;
+                        _legend.isDraggedPortrait = YES;
+                    }
                 }
             }
+            
+            [_delegate themeLegendDidChangeStatus:NO];
         }
-        
-        [_delegate themeLegendDidChangeStatus:NO];
     }
     
     else
@@ -545,6 +573,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
         if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
             deleteHidden = _deleteView.hidden = !inRemovalPos;
+        
+        if ([_delegate respondsToSelector:@selector(updateMinimizeVisibility:)])
+            [_delegate updateMinimizeVisibility:!inMinimizedPos];
         
         if (_delegate.themeLegendIsOffMap)
         {

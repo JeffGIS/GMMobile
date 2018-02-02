@@ -93,6 +93,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 @protocol PropertyListDelegate <NSObject>
 
+@optional
 - (void)PropertyList:(PropertyList *)propList
         returnsValue:(NSString *)value
    forPropertyNumber:(NSInteger)propNum
@@ -100,6 +101,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
           withStatus:(long)status;
 
 - (void)ParcelAddedToPropertyList:(int)status;
+
 @end
 
 @interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate,RHWalkScoreDelegate>

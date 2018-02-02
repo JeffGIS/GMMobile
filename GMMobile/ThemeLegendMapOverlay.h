@@ -28,21 +28,20 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
 - (void)themeLegendWasDraggedOffRightSide;
 - (void)themeLegendWasDraggedOffLeftSide;
+- (void)themeLegendDidWantMinimize;
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation;
 - (BOOL)themeLegendIsOffMap;
-
-@optional
 - (void)clearVectorView;
 - (void)themeLegendWillExpand;
 - (void)themeLegendDidShrink;
 - (void)updateRightArrowVisibility:(BOOL)hidden;
 - (void)updateLeftArrowVisibility:(BOOL)hidden;
+- (void)updateMinimizeVisibility:(BOOL)hidden;
 - (void)themeLegendDidWantResetPositions;
+- (void)zoomToBounds:(MNMXCORD)bounds;
 
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend;
-
-- (void)zoomToBounds:(MNMXCORD)bounds;
 @end
 
 @interface ThemeLegendMapOverlay : UIView
@@ -52,7 +51,7 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) CGFloat rowHeight, width, headerHeight;
 @property NSUInteger currentColorPalette;
-@property (nonatomic) UIImageView *moveRightView, *moveLeftView;
+@property (nonatomic) UIImageView *moveRightView, *moveLeftView, *minimizeView;
 @property CGFloat dragMargin;
 
 + (CGFloat)rowHeight;
