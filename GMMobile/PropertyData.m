@@ -2454,11 +2454,11 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                                                       begWord,endWord];
                                    
                                    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 59);
-                                   
+                                   int nOffsets;
                                    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
                                    {
                                        LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
-                                       int nOffsets = sqlite3_column_int(statement,1);
+                                       nOffsets = sqlite3_column_int(statement,1);
                                        LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
                                        
                                        if (nPartOffsets[ipart] + nOffsets >= MAXOFFSETS)
