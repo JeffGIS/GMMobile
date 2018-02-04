@@ -1631,8 +1631,8 @@ int getThemeOpt(ThemeTypes type)
                 case PFT_PctIndustrial_halfMile:
                 case PFT_PctResidential_Mile:
                 case PFT_PctResidential_halfMile:
-                case PFT_PctCommercial_Mile:
-                case PFT_PctCommercial_halfMile:
+                case PFT_PctRetailCommercial_Mile:
+                case PFT_PctRetailCommercial_halfMile:
                 case PFT_PctOpenSpace_Mile:
                 case PFT_PctOpenSpace_halfMile:
                 case PFT_Stability5yr_halfMile:

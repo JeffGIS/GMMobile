@@ -396,11 +396,93 @@ NSString * GetPropListDirectory (void)
     
     switch (fieldType)
     {
+        case PFT_None:
         case PFT_LatLon:
         case PFT_END:
             break;
         case PFT_UserID:
             name = @"Name";
+            break;
+        case PFT_PctPark_qtrMile:
+            name = @"PCT Parks (Qtr Mile)";
+            break;
+        case PFT_PctPark_halfMile:
+            name = @"PCT Parks (Half Mile)";
+            break;
+        case PFT_PctPark_Mile:
+            name = @"PCT Parks (Mile)";
+            break;
+        case PFT_PctWater_qtrMile:
+            name = @"Water (Qtr Mile)";
+            break;
+        case PFT_PctWater_halfMile:
+            name = @"PCT Water (Half Mile)";
+            break;
+        case PFT_PctWater_Mile:
+            name = @"PCT Water (Mile)";
+            break;
+        case PFT_PctSFResidential_qtrMile:
+            name = @"PCT Single Family Residential (Qtr Mile)";
+            break;
+        case PFT_PctSFResidential_halfMile:
+            name = @"PCT Single Family Residential (Half Mile)";
+            break;
+        case PFT_PctSFResidential_Mile:
+            name = @"PCT Single Family Residential (Mile)";
+            break;
+       case PFT_PctMFResidential_Mile:
+            name = @"PCT Multi Family Residential (Mile)";
+            break;
+        case PFT_PctMFResidential_qtrMile:
+            name = @"PCT Multi Family Residential (Qtr Mile)";
+            break;
+        case PFT_PctMFResidential_halfMile:
+            name = @"PCT Multi Family Residential (Half Mile)";
+            break;
+        case PFT_PctMUResidential_qtrMile:
+            name = @"PCT Mixed Use Residential (Qtr Mile)";
+            break;
+        case PFT_PctMUResidential_halfMile:
+            name = @"PCT Mixed Use Residential (Half Mile)";
+            break;
+        case PFT_PctMUResidential_Mile:
+            name = @"PCT Mixed Use Residential (Mile)";
+            break;
+        case PFT_PctRetailCommercial_qtrMile:
+            name = @"PCT Retail/Commercial (Qtr Mile)";
+            break;
+        case PFT_PctRetailCommercial_halfMile:
+            name = @"PCT Retail/Commercial (Half Mile)";
+            break;
+        case PFT_PctRetailCommercial_Mile:
+            name = @"PCT Retail/Commercial (Mile)";
+            break;
+        case PFT_PctInstitutional_qtrMile:
+            name = @"PCT Institutional (Qtr Mile)";
+            break;
+        case PFT_PctInstitutional_halfMile:
+            name = @"PCT Institutional (Half Mile)";
+            break;
+        case PFT_PctInstitutional_Mile:
+            name = @"PCT Institutional (Mile)";
+            break;
+        case PFT_PctOffice_qtrMile:
+            name = @"PCT Office (Qtr Mile)";
+            break;
+        case PFT_PctOffice_halfMile:
+            name = @"PCT Office (Half Mile)";
+            break;
+        case PFT_PctOffice_Mile:
+            name = @"PCT Office (Mile)";
+            break;
+        case PFT_PctTransportation_qtrMile:
+            name = @"PCT Transportation (Qtr Mile)";
+            break;
+        case PFT_PctTransportation_halfMile:
+            name = @"PCT Transportation (Half Mile)";
+            break;
+        case PFT_PctTransportation_Mile:
+            name = @"PCT Transportation (Mile)";
             break;
         case PFT_PIN:
             name = @"Unique Parcel ID (PIN)";
@@ -540,20 +622,11 @@ NSString * GetPropListDirectory (void)
         case PFT_PctResidential_Mile:
             name = @"PCT Residential (Mile)";
             break;
-        case PFT_PctCommercial_halfMile:
-            name = @"PCT Commercial (Half Mile)";
-            break;
-        case PFT_PctCommercial_Mile:
-            name = @"PCT Commercial (Mile)";
-            break;
         case PFT_PctOpenSpace_qtrMile:
             name = @"PCT Open Space (Qtr Mile)";
             break;
         case PFT_Stability5yr_qtrMile:
             name = @"Stability (5 year Qtr Mile)";
-            break;
-        case PFT_PctCommercial_qtrMile:
-            name = @"PCT Commercial (Qtr Mile)";
             break;
         case PFT_PctIndustrial_qtrMile:
             name = @"PCT Industrial (Qtr Mile)";
@@ -582,9 +655,6 @@ NSString * GetPropListDirectory (void)
         case PFT_Ave_EMV_blockgroup:
             name = @"Average EMV (Block Group)";
             break;
-        case PFT_Ave_EMV_eighthMile:
-            name = @"Average EMV (Eighth Mile)";
-            break;
         case PFT_Ave_EMV_qtrMile:
             name = @"Average EMV (Qtr Mile)";
             break;
@@ -607,7 +677,6 @@ NSString * GetPropListDirectory (void)
             name = @"Bike Description";
             break;
 
-        default:break;
     }
     
     return name;
@@ -704,7 +773,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_Stability15yr_Mile:
         case PFT_PctOpenSpace_Mile:
         case PFT_PctIndustrial_Mile:
-        case PFT_PctCommercial_Mile:
+        case PFT_PctRetailCommercial_Mile:
         case PFT_PctResidential_Mile:
             radius = 1.0;
             break;
@@ -712,7 +781,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_Stability15yr_halfMile:
         case PFT_PctOpenSpace_halfMile:
         case PFT_PctIndustrial_halfMile:
-        case PFT_PctCommercial_halfMile:
+        case PFT_PctRetailCommercial_halfMile:
         case PFT_PctResidential_halfMile:
             radius = 0.5;
             break;
@@ -747,8 +816,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctResidential_halfMile:
             bt = PBT_Residential;
             break;
-        case PFT_PctCommercial_Mile:
-        case PFT_PctCommercial_halfMile:
+        case PFT_PctRetailCommercial_Mile:
+        case PFT_PctRetailCommercial_halfMile:
             bt = PBT_Commercial;
             break;
         default:
@@ -1605,27 +1674,23 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                      numComputes:(float)nComputes
 {
     {
-        DATA_FROM_PARCELS *values_eighthMile = DATA_FROM_PARCELS.new;
-        DATA_FROM_PARCELS *values_quarterMile = DATA_FROM_PARCELS.new;
+        DATA_FROM_PARCELS *values_Mile = DATA_FROM_PARCELS.new;
+        DATA_FROM_PARCELS *values_qtrMile = DATA_FROM_PARCELS.new;
         DATA_FROM_PARCELS *values_halfMile = DATA_FROM_PARCELS.new;
-        DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
-        DATA_FROM_BLOCKS *values_block_quarterMile = DATA_FROM_BLOCKS.new;
+//        DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_BLOCKS *values_block_qtrMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_halfMile = DATA_FROM_BLOCKS.new;
-        DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
-        DATA_FROM_LANDUSE *values_landUse_quarterMile = DATA_FROM_LANDUSE.new;
+//        DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
+        DATA_FROM_LANDUSE *values_landUse_qtrMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_halfMile = DATA_FROM_LANDUSE.new;
-        
-        [_rhCompute computeValuesFromParcelsInCircle:values_eighthMile
-                                         forProperty:propNum
-                                            inCircle:1
-                                              totEMV:(int)_totEMV
-                                             useDesc:(LPSTR)_usedesc.UTF8String];
+        DATA_FROM_LANDUSE *values_landUse_Mile = DATA_FROM_LANDUSE.new;
+
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-        [_rhCompute computeValuesFromParcelsInCircle:values_quarterMile
+        [_rhCompute computeValuesFromParcelsInCircle:values_qtrMile
                                          forProperty:propNum
                                             inCircle:2
                                               totEMV:(int)_totEMV
@@ -1648,17 +1713,28 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        [_rhCompute computeValuesFromBlocksInCircle:values_block_eighthMile
-                                        forProperty:propNum
-                                           inCircle:1];
-        
+        [_rhCompute computeValuesFromParcelsInCircle:values_Mile
+                                         forProperty:propNum
+                                            inCircle:4
+                                              totEMV:(int)_totEMV
+                                             useDesc:(LPSTR)_usedesc.UTF8String];
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        [_rhCompute computeValuesFromBlocksInCircle:values_block_quarterMile
+/*        [_rhCompute computeValuesFromBlocksInCircle:values_block_eighthMile
+                                        forProperty:propNum
+                                           inCircle:1];
+        
+        nComputes++;*/
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        
+        [_rhCompute computeValuesFromBlocksInCircle:values_block_qtrMile
                                         forProperty:propNum
                                            inCircle:2];
         
@@ -1678,17 +1754,17 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
+/*        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
                                          forProperty:propNum
                                             inCircle:1];
         
-        nComputes++;
+        nComputes++;*/
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_quarterMile
+        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_qtrMile
                                          forProperty:propNum
                                             inCircle:2];
         
@@ -1703,6 +1779,11 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                                             inCircle:3];
         
         nComputes++;
+        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_Mile
+                                         forProperty:propNum
+                                            inCircle:4];
+        
+        nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
@@ -1711,20 +1792,76 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         _dbid = [self next_id];
         if (_haveWalkScoreValues > 0)
         {
-            [self addInt:_valuesFromWalkScore.walkScore    withCode:PFT_WalkScore];
+            [self addInt:_valuesFromWalkScore.walkScore       withCode:PFT_WalkScore];
             [self addInt:_valuesFromWalkScore.transitScore    withCode:PFT_TransitScore];
-            [self addInt:_valuesFromWalkScore.bikeScore    withCode:PFT_BikeScore];
+            [self addInt:_valuesFromWalkScore.bikeScore       withCode:PFT_BikeScore];
             [self addString:_valuesFromWalkScore.walkDescription    withCode:PFT_WalkDescription];
             [self addString:_valuesFromWalkScore.transitDescription    withCode:PFT_TransitDescription];
             [self addString:_valuesFromWalkScore.bikeDescription    withCode:PFT_BikeDescription];
         }
         _valuesFromWalkScore.delegate = nil;
-        //[self addInt:values_eigthMile.stability_5yr    withCode:PFT_Stability5yr_eigthMile];
-        //[self addInt:values_eigthMile.stability_15yr    withCode:PFT_Stability15yr_eigthMile];
-        [self addInt:values_quarterMile.stability_5yr    withCode:PFT_Stability5yr_qtrMile];
-        [self addInt:values_quarterMile.stability_15yr    withCode:PFT_Stability15yr_qtrMile];
+        [self addInt:values_qtrMile.stability_5yr    withCode:PFT_Stability5yr_qtrMile];
+        [self addInt:values_qtrMile.stability_15yr    withCode:PFT_Stability15yr_qtrMile];
         [self addInt:values_halfMile.stability_5yr    withCode:PFT_Stability5yr_halfMile];
         [self addInt:values_halfMile.stability_15yr    withCode:PFT_Stability15yr_halfMile];
+        [self addInt:values_Mile.stability_5yr    withCode:PFT_Stability5yr_Mile];
+        [self addInt:values_Mile.stability_15yr    withCode:PFT_Stability15yr_Mile];
+
+        [self addInt:values_landUse_qtrMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_qtrMile];
+        [self addInt:values_landUse_qtrMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_qtrMile];
+        [self addInt:values_landUse_qtrMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_qtrMile];
+        int totPCT = values_landUse_qtrMile.PCT_SingleFamilyResidential + values_landUse_qtrMile.PCT_MultiFamilyResidential + values_landUse_qtrMile.PCT_MixedUseResidential;
+        [self addInt:totPCT withCode:PFT_PctResidential_qtrMile];
+        
+        [self addInt:values_landUse_halfMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_halfMile];
+        [self addInt:values_landUse_halfMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_halfMile];
+        [self addInt:values_landUse_halfMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_halfMile];
+        totPCT = values_landUse_halfMile.PCT_SingleFamilyResidential + values_landUse_halfMile.PCT_MultiFamilyResidential + values_landUse_halfMile.PCT_MixedUseResidential;
+        [self addInt:totPCT withCode:PFT_PctResidential_halfMile];
+
+        [self addInt:values_landUse_Mile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_Mile];
+        [self addInt:values_landUse_Mile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_Mile];
+        [self addInt:values_landUse_Mile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_Mile];
+        totPCT = values_landUse_Mile.PCT_SingleFamilyResidential + values_landUse_Mile.PCT_MultiFamilyResidential + values_landUse_Mile.PCT_MixedUseResidential;
+        [self addInt:totPCT withCode:PFT_PctResidential_Mile];
+        
+        [self addInt:values_landUse_qtrMile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_qtrMile];
+        [self addInt:values_landUse_halfMile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_halfMile];
+        [self addInt:values_landUse_Mile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_Mile];
+        
+        [self addInt:values_landUse_qtrMile.PCT_Office withCode:PFT_PctOffice_qtrMile];
+        [self addInt:values_landUse_halfMile.PCT_Office withCode:PFT_PctOffice_halfMile];
+        [self addInt:values_landUse_Mile.PCT_Office withCode:PFT_PctOffice_Mile];
+        
+        [self addInt:values_landUse_qtrMile.PCT_Industrial withCode:PFT_PctIndustrial_qtrMile];
+        [self addInt:values_landUse_halfMile.PCT_Industrial withCode:PFT_PctIndustrial_halfMile];
+        [self addInt:values_landUse_Mile.PCT_Industrial withCode:PFT_PctIndustrial_Mile];
+        
+        [self addInt:values_landUse_qtrMile.PCT_Institutional withCode:PFT_PctInstitutional_qtrMile];
+        [self addInt:values_landUse_halfMile.PCT_Institutional withCode:PFT_PctInstitutional_halfMile];
+        [self addInt:values_landUse_Mile.PCT_Institutional withCode:PFT_PctInstitutional_Mile];
+        
+        totPCT = values_landUse_qtrMile.PCT_HighwayRailway + values_landUse_qtrMile.PCT_Airport;
+        [self addInt:totPCT withCode:PFT_PctTransportation_qtrMile];
+        totPCT = values_landUse_halfMile.PCT_HighwayRailway + values_landUse_halfMile.PCT_Airport;
+        [self addInt:totPCT withCode:PFT_PctTransportation_halfMile];
+        totPCT = values_landUse_Mile.PCT_HighwayRailway + values_landUse_Mile.PCT_Airport;
+        [self addInt:totPCT withCode:PFT_PctTransportation_Mile];
+
+        [self addInt:values_landUse_qtrMile.PCT_ParkRecPreserve withCode:PFT_PctPark_qtrMile];
+        [self addInt:values_landUse_halfMile.PCT_ParkRecPreserve withCode:PFT_PctPark_halfMile];
+        [self addInt:values_landUse_Mile.PCT_ParkRecPreserve withCode:PFT_PctPark_Mile];
+        
+        [self addInt:values_landUse_qtrMile.PCT_Water withCode:PFT_PctWater_qtrMile];
+        [self addInt:values_landUse_halfMile.PCT_Water withCode:PFT_PctWater_halfMile];
+        [self addInt:values_landUse_Mile.PCT_Water withCode:PFT_PctWater_Mile];
+        
+        totPCT = values_landUse_qtrMile.PCT_ParkRecPreserve + values_landUse_qtrMile.PCT_Agriculture + values_landUse_qtrMile.PCT_Undeveloped + values_landUse_qtrMile.PCT_Water;
+        [self addInt:totPCT withCode:PFT_PctOpenSpace_qtrMile];
+        totPCT = values_landUse_halfMile.PCT_ParkRecPreserve + values_landUse_halfMile.PCT_Agriculture + values_landUse_halfMile.PCT_Undeveloped + values_landUse_halfMile.PCT_Water;
+        [self addInt:totPCT withCode:PFT_PctOpenSpace_halfMile];
+        totPCT = values_landUse_Mile.PCT_ParkRecPreserve + values_landUse_Mile.PCT_Agriculture + values_landUse_Mile.PCT_Undeveloped + values_landUse_Mile.PCT_Water;
+        [self addInt:totPCT withCode:PFT_PctOpenSpace_Mile];
 
         if (_opened)
             [self commitTransaction];

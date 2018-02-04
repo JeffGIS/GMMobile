@@ -44,7 +44,7 @@
                        [_popover showAfter:0.1
                                  withTitle:@"Computing RiteHome Values"];
                    });
-    int numDist = 3;
+    int numDist = 4;
     float totComputes = 5 * numDist + 1 + 7;
     float nComputes = 0;
     for (int idist = 0; idist < numDist; idist++)

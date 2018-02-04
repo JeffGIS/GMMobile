@@ -51,7 +51,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.currentGeoid = 2743000;
     
 #ifdef DEBUG
-    CRAPI.sharedInstance.resetPropList = NO;
+    CRAPI.sharedInstance.resetPropList = YES;
     CRAPI.sharedInstance.resetFieldList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
 #endif

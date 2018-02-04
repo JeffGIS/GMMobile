@@ -421,7 +421,7 @@ Top:
     int circleId = circleID - 1;
     _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
     
-    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_CensusBlocks,circleID];
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)MBL_CensusBlocks,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
     BOOL opened = [_propData open];
     rtn = [self computeBlockValues:values
@@ -441,7 +441,7 @@ Top:
     int circleId = circleID - 1;
     _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
     
-    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_LandUse,circleID];
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)MBL_LandUse,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
     BOOL opened = [_propData open];
     rtn = [self computeLandUseValues:values
