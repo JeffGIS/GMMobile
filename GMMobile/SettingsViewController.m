@@ -1050,13 +1050,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)launchMaintenanceModule:(id)sender
 {
-    NSString *CRISDetailURL = @"CRISDetail://";
-    
     [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
     [SharedDefaults.defaults saveInteger:85 forKey:@"DetailCurrentIntersection"];
+    NSURL *url = [NSURL URLWithString:@"CRISDetail://"];
+    UIApplication *app = UIApplication.sharedApplication;
     
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    if ([app canOpenURL:url])
+        [app openURL:url options:@{} completionHandler:nil];
     
     else
     {

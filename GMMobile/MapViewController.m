@@ -5017,18 +5017,20 @@ didCompleteWithError:(NSError *)error
 
 - (void)perform3DFlyAround
 {
-    NSString *flyOverURL = @"NVFlyover://";
     [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
+    NSURL *url = [NSURL URLWithString:@"NVFlyover://"];
+    UIApplication *app = UIApplication.sharedApplication;
     
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
+    if ([app canOpenURL:url])
+        [app openURL:url options:@{} completionHandler:nil];
     
     else
     {
-        flyOverURL = @"https://itunes.apple.com/us/app/newvision-flyover/id1105410284";
+        NSURL *url = [NSURL URLWithString:@"https://itunes.apple.com/us/app/newvision-flyover/id1105410284"];
+        UIApplication *app = UIApplication.sharedApplication;
         
-        if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
-            [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
+        if ([app canOpenURL:url])
+            [app openURL:url options:@{} completionHandler:nil];
         
         else
         {
@@ -7203,11 +7205,12 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchAlleyWallApp
 {
-    NSString *AlleyWallURL = @"NVAlleyWalls://";
     [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
+    NSURL *url = [NSURL URLWithString:@"NVAlleyWalls://"];
+    UIApplication *app = UIApplication.sharedApplication;
     
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:AlleyWallURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:AlleyWallURL]];
+    if ([app canOpenURL:url])
+        [app openURL:url options:@{} completionHandler:nil];
     
     else
     {
@@ -7222,10 +7225,11 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchNVCRISDetail
 {
-    NSString *CRISDetailURL = @"CRISDetail://";
+    NSURL *url = [NSURL URLWithString:@"CRISDetail://"];
+    UIApplication *app = UIApplication.sharedApplication;
     
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    if ([app canOpenURL:url])
+        [app openURL:url options:@{} completionHandler:nil];
     
     else
     {
