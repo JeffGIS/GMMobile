@@ -67,14 +67,7 @@
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,
-    NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,
-    UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate,NVGeocoderDelegate,
-    GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,
-    NVAlertViewDelegate,MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,
-    PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,
-    NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,
-    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate,PropertyListDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaViewDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -212,7 +205,30 @@
     _firstTimeAppear = _firstTimeMap = YES;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = _headingCount = 0;
-    _target = CLLocationCoordinate2DMake(44.97, -93.27);
+    
+    NSString *key = [NSString stringWithFormat:@"MapViewZoom_%@",
+                     CRAPI.sharedInstance.stateID];
+    
+    CGFloat zoom = [UserDefaults.defaults CGFloatForKey:key];
+    
+    key = [NSString stringWithFormat:@"MapViewTargetLat_%@",
+           CRAPI.sharedInstance.stateID];
+    
+    CGFloat lat = [UserDefaults.defaults CGFloatForKey:key];
+    
+    key = [NSString stringWithFormat:@"MapViewTargetLon_%@",
+           CRAPI.sharedInstance.stateID];
+    
+    CGFloat lon = [UserDefaults.defaults CGFloatForKey:key];
+    
+    if (zoom && lat && lon)
+        _target = CLLocationCoordinate2DMake(lat, lon);
+    
+    else
+    {
+        _target = CLLocationCoordinate2DMake(44.97, -93.27);
+        zoom = 12.0;
+    }
     
     _mapView = GMSMapView.new;
     _mapView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -221,7 +237,7 @@
     _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
-    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:12.0];
+    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:zoom];
     [self.view addSubview:_mapView];
     [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
@@ -2571,6 +2587,21 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     }
     
     [self updateMarkerPosition];
+    
+    NSString *key = [NSString stringWithFormat:@"MapViewZoom_%@",
+                     CRAPI.sharedInstance.stateID];
+    
+    [UserDefaults.defaults saveCGFloat:position.zoom forKey:key];
+    
+    key = [NSString stringWithFormat:@"MapViewTargetLat_%@",
+           CRAPI.sharedInstance.stateID];
+    
+    [UserDefaults.defaults saveCGFloat:position.target.latitude forKey:key];
+    
+    key = [NSString stringWithFormat:@"MapViewTargetLon_%@",
+           CRAPI.sharedInstance.stateID];
+    
+    [UserDefaults.defaults saveCGFloat:position.target.longitude forKey:key];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -7316,6 +7347,11 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     if (viewController == self && ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
         [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingFullscreen];
+    
+    NSString *key = [NSString stringWithFormat:@"CurrentTabBarVC_%@",
+                     CRAPI.sharedInstance.stateID];
+    
+    [UserDefaults.defaults saveString:viewController.restorationIdentifier forKey:key];
 }
 
 - (void)vectorViewRefresh
