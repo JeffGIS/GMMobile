@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -23,40 +21,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NVMobileIcon1024.png" translatesAutoresizingMaskIntoConstraints="NO" id="577-3y-h6k">
-                                <rect key="frame" x="60" y="188" width="648" height="648"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="577-3y-h6k" secondAttribute="height" multiplier="1:1" id="mgp-v8-xj6"/>
-                                </constraints>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="NVMobileLaunchScreen.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="vlo-dR-2Ce">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NewVision Mobile" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="pkF-Av-ODh">
-                                <rect key="frame" x="60" y="844" width="648" height="172"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="577-3y-h6k" secondAttribute="trailing" constant="40" id="2Ls-9W-i9O"/>
-                            <constraint firstItem="pkF-Av-ODh" firstAttribute="trailing" secondItem="577-3y-h6k" secondAttribute="trailing" id="5Ah-ra-MX8"/>
-                            <constraint firstItem="pkF-Av-ODh" firstAttribute="leading" secondItem="577-3y-h6k" secondAttribute="leading" id="BAZ-o8-nwI"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="pkF-Av-ODh" secondAttribute="bottom" constant="8" id="Klq-aY-UpD"/>
-                            <constraint firstItem="pkF-Av-ODh" firstAttribute="top" secondItem="577-3y-h6k" secondAttribute="bottom" constant="8" id="PUh-in-3xo"/>
-                            <constraint firstItem="577-3y-h6k" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="40" id="RWA-NV-Kis"/>
-                            <constraint firstItem="577-3y-h6k" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="40" id="b3V-w9-hsr"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" relation="greaterThanOrEqual" secondItem="577-3y-h6k" secondAttribute="bottom" constant="40" id="cva-7H-9e5"/>
-                            <constraint firstItem="577-3y-h6k" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="gps-eK-WGE"/>
-                            <constraint firstItem="577-3y-h6k" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="zky-mY-0qe"/>
-                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="53" y="375"/>
+            <point key="canvasLocation" x="52.34375" y="375"/>
         </scene>
     </scenes>
     <resources>
-        <image name="NVMobileIcon1024.png" width="1024" height="1024"/>
+        <image name="NVMobileLaunchScreen.jpg" width="1536" height="2048"/>
     </resources>
 </document>
