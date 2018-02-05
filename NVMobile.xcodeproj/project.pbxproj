@@ -243,6 +243,7 @@
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
 		EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */; };
+		EBEC8A8F2028FBEA00741FA6 /* RiteHomeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBEC8A8E2028FBE900741FA6 /* RiteHomeLogo.png */; };
 		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A201BE791C400E0C1B3 /* Theme.m */; };
 		EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */; };
@@ -600,6 +601,7 @@
 		EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PlanimetricData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBD6B8A91BC1CE1200BACC89 /* Destinations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Destinations.h; sourceTree = "<group>"; };
 		EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Destinations.m; sourceTree = "<group>"; };
+		EBEC8A8E2028FBE900741FA6 /* RiteHomeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = RiteHomeLogo.png; path = ../../../Dropbox/AppImages/RiteHomeLogo.png; sourceTree = "<group>"; };
 		EBF1356E1AE282A30046990F /* ConfigurationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationControl.h; sourceTree = "<group>"; };
 		EBF1356F1AE282A30046990F /* ConfigurationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ConfigurationControl.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBFC2A1F1BE791C400E0C1B3 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
@@ -709,6 +711,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBEC8A8E2028FBE900741FA6 /* RiteHomeLogo.png */,
 				699070A02024FDDC0033354D /* redMinimize.png */,
 				69EE923820127B9A00A610D6 /* VideoTabItem.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
@@ -1340,6 +1343,7 @@
 				692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */,
+				EBEC8A8F2028FBEA00741FA6 /* RiteHomeLogo.png in Resources */,
 				BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				69FDA4361EE7838A00BA9735 /* glossary.png in Resources */,
