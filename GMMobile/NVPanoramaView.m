@@ -17,6 +17,17 @@
 @implementation NVPanoramaView
 
 + (BOOL)showPanoramaAtCoord:(CLLocationCoordinate2D)coord
+             lookingAtCoord:(CLLocationCoordinate2D)lookAtcoord
+                     inView:(UIView *)view
+                   delegate:(id)delegate
+                     tabBar:(UITabBar *)tabBar
+{
+    BOOL rtn = NO;
+    
+    rtn = [NVPanoramaView showPanoramaAtCoord:lookAtcoord inView:view delegate:delegate tabBar:tabBar];
+    return rtn;
+}
++ (BOOL)showPanoramaAtCoord:(CLLocationCoordinate2D)coord
                      inView:(UIView *)view
                    delegate:(id)delegate
                      tabBar:(UITabBar *)tabBar
@@ -43,7 +54,7 @@
     
     [view addSubview:panView];
     [panView constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:tabBar.frame.size.height];
-    [panView moveNearCoordinate:coord];
+    [panView moveNearCoordinate:coord radius:100];
     
     UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissPan.translatesAutoresizingMaskIntoConstraints = NO;

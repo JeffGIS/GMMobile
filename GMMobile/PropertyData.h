@@ -122,8 +122,10 @@ typedef NS_ENUM(NSInteger, ActionOption)
 - (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
                                 streetName:(NSString *)matchChar;
 
-- (LLPOINT)getPointForPID:(NSString *)PID;
+- (LLPOINT) getPointForPID:(NSString *)PID;
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
+- (LLPOINT) getPointOnStreetForPID:(NSString *)PID;
++ (CLLocationCoordinate2D) pointOnStreetForPID:(NSString *)PID;
 
 - (int)pickPID:(LLPOINT *)pt
  useVisibility:(BOOL)useVis

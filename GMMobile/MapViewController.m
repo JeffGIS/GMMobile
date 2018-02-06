@@ -4797,7 +4797,9 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showStreetView
 {
-    if ([NVPanoramaView showPanoramaAtCoord:_selectedPIDCoords
+    CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID];
+    if ([NVPanoramaView showPanoramaAtCoord:pointOnStreet
+                             lookingAtCoord:_selectedPIDCoords
                                      inView:self.view
                                    delegate:self
                                      tabBar:self.tabBarController.tabBar])
@@ -6724,8 +6726,8 @@ didSelectPDFButtonWithText:(NSString *)text
             _selectedPID = title;
             
             _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record",
-                         @"Display Google Street View", @"Display Bing Streetside", @"Zoom to Census Area",
-                         @"Parcel Text", @"Color Parcels", @"Set as Target Parcel", @"Perform 3D Fly Around",
+                         @"Display Google Street View", @"Display Bing Streetside",
+                         @"Set as Target Parcel", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Trip Time Profile"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];

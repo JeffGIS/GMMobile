@@ -329,6 +329,25 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     return pt;
 }
 
+- (LLPOINT) getPointOnStreetForPID:(NSString *)PID
+{
+    LLPOINT pt = [self getPointForPID:PID];
+    
+    
+    return pt;
+}
++ (CLLocationCoordinate2D) pointOnStreetForPID:(NSString *)PID
+{
+    PropertyData *pd = PropertyData.new;
+    
+    LLPOINT llpt = [pd getPointOnStreetForPID:PID];
+    CLLocationCoordinate2D pt;
+    pt.latitude = llpt.lat;
+    pt.longitude = llpt.lon;
+    return pt;
+}
+
+
 - (MNMXCORD)getBoundsForPID:(NSString *)PID
 {
     MNMXCORD bounds = {0};
