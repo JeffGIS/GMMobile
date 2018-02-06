@@ -776,15 +776,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
                    morePages:(BOOL)morePages
 {
-    NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
-    NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filePath];
-    [fileHandle seekToEndOfFile];
-    
-    [fileHandle writeData:[CRAPI.sharedInstance.rhSearchSqlCommands
-                           dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    [fileHandle closeFile];
-    
     _numListings += items.count;
     RHSearchDatabase *rhsd = RHSearchDatabase.new;
     [rhsd updateDatabaseForSearchItems:items];
@@ -793,6 +784,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         if (_numZips < _zips.count)
         {
+            [self updateSqlCmdFile];
             CRAPI.sharedInstance.rhCurrentZip = _zips[_numZips++].intValue;
             [self searchPropsForZip];
         }
@@ -800,8 +792,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         else
         {
             [rhsd deleteOldItems];
+            [self updateSqlCmdFile];
             
             [NSOperationQueue.mainQueue addOperationWithBlock:^ {
+                NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
                 
                 _push = FTPDataPush.push;
                 _push.delegate = self;
@@ -820,6 +814,33 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [NSThread sleepForTimeInterval:RH_QUERY_INTERVAL];
             [self performListingsSearch];
         }
+    }
+}
+
+- (void)updateSqlCmdFile
+{
+    NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
+    NSError *error = nil;
+    
+    if (![NSFileManager.defaultManager fileExistsAtPath:filePath])
+    {
+        [CRAPI.sharedInstance.rhSearchSqlCommands writeToFile:filePath
+                                                   atomically:YES
+                                                     encoding:NSUTF8StringEncoding
+                                                        error:&error];
+        
+        if (error) {showAlert(@"ERROR: RHSearchSqlCommands File could not be written.");}
+    }
+    
+    else
+    {
+        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filePath];
+        [fileHandle seekToEndOfFile];
+        
+        [fileHandle writeData:[CRAPI.sharedInstance.rhSearchSqlCommands
+                               dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [fileHandle closeFile];
     }
 }
 
