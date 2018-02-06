@@ -51,9 +51,21 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.currentGeoid = 2743000;
     
 #ifdef DEBUG
-    CRAPI.sharedInstance.resetPropList = YES;
-    CRAPI.sharedInstance.resetFieldList = NO;
-    CRAPI.sharedInstance.resetDestinations = NO;
+    if ([UIDevice.currentDevice.name isEqualToString:@"Bill's iPad Air"] ||
+        [UIDevice.currentDevice.name isEqualToString:@"WildBill's iPhone"] ||
+        [UIDevice.currentDevice.name isEqualToString:@"GSSiRental006"])
+    {
+        CRAPI.sharedInstance.resetPropList = NO;
+        CRAPI.sharedInstance.resetFieldList = NO;
+        CRAPI.sharedInstance.resetDestinations = NO;
+    }
+    
+    else
+    {
+        CRAPI.sharedInstance.resetPropList = YES;
+        CRAPI.sharedInstance.resetFieldList = NO;
+        CRAPI.sharedInstance.resetDestinations = NO;
+    }
 #endif
     
     UIUserNotificationType nTypes =

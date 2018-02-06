@@ -751,6 +751,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
         [_popoverView showAfter:0.0 withTitle:@""];
         CRAPI.sharedInstance.rhCurrentZip = _zips.firstObject.intValue;
+        CRAPI.sharedInstance.rhSearchSqlCommands = NSMutableString.string;
         [self searchPropsForZip];
     }
     
@@ -777,11 +778,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _numListings += items.count;
     RHSearchDatabase *rhsd = RHSearchDatabase.new;
     [rhsd updateDatabaseForSearchItems:items];
-    
-    NSLog(@"zip: %i, time: %i; %i total, %i added, %i modified, %i ignored, %i errors",
-          CRAPI.sharedInstance.rhCurrentZip, CRAPI.sharedInstance.rhUpdateTime, _numListings,
-          CRAPI.sharedInstance.rhItemsAdded, CRAPI.sharedInstance.rhItemsModified,
-          CRAPI.sharedInstance.rhItemsIgnored, CRAPI.sharedInstance.rhErrors);
     
     if (!morePages)
     {
@@ -815,7 +811,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 [results appendString:oldResults];
             
             if (!results.length)
-                [results appendString:@"START\tRUNNING\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED\tERRORS"];
+                [results appendString:@"STARTTIME\tRUNNING\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED\tERRORS"];
             
             [results appendString:[NSString stringWithFormat:@"\r\n%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i",
                                    CRAPI.sharedInstance.rhUpdateTime, runningTime, count2, CRAPI.sharedInstance.rhItemsAdded,
@@ -827,13 +823,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                              encoding:NSUTF8StringEncoding
                                 error:&error];
             
+            filePath = [NSString stringWithFormat:@"%@/RHSearchSqlCommands_%d.txt",
+                        UserDefaults.defaults.localFilePath, CRAPI.sharedInstance.rhUpdateTime];
+            
+            [CRAPI.sharedInstance.rhSearchSqlCommands writeToFile:filePath
+                                                       atomically:YES
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:&error];
+            
             [NSOperationQueue.mainQueue addOperationWithBlock:^ {
                 
                 _push = FTPDataPush.push;
                 _push.delegate = self;
                 [_popoverView updateProgress:0.0];
                 _push.popover = _popoverView;
-                _popoverView.title = @"Upload RHSearch.txt";
+                _popoverView.title = @"Upload RHSearchSqlCommands File";
                 
                 [_push sendFile:filePath.lastPathComponent
                   fromDirectory:filePath.stringByDeletingLastPathComponent
