@@ -3797,13 +3797,15 @@ haveVV:
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UILabel *headerLabel = [[UILabel alloc] init];
-    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, [self getHeaderHeight]);
+    CGFloat height = [self getHeaderHeight];
+    UILabel *headerLabel = UILabel.new;
+    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, height);
     headerLabel.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 21.0), 21.0)];
     headerLabel.textColor = UIColor.yellowColor;
     headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
     headerLabel.adjustsFontSizeToFitWidth = YES;
+    headerLabel.userInteractionEnabled = YES;
     
     switch (_tableViewSetting)
     {
@@ -3811,10 +3813,27 @@ viewForHeaderInSection:(NSInteger)section
             headerLabel.numberOfLines = 1;
             headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.optionsTitle];
             break;
-        case PropertyTableViewSettingPropertyReport:
+        case PropertyTableViewSettingPropertyReport:{
             headerLabel.numberOfLines = 2;
             headerLabel.text = @"Property Report for\nSecond Quarter 2017";
-            break;
+            
+            CGFloat origin = (height * 0.15);
+            height *= 0.7;
+            TableViewCellButton *clearMarker = [TableViewCellButton buttonWithType:UIButtonTypeCustom];
+            clearMarker.frame = CGRectMake(origin, origin, height, height);
+            clearMarker.backgroundColor = UIColor.whiteColor;
+            clearMarker.imageEdgeInsets = UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0);
+            clearMarker.layer.cornerRadius = 8.0;
+            
+            [clearMarker setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"clearMarkers" ofType:@"png"]]
+                         forState:UIControlStateNormal];
+            
+            [clearMarker addTarget:self
+                            action:@selector(prepareToRemoveMarker)
+                  forControlEvents:UIControlEventTouchUpInside];
+            
+            [headerLabel addSubview:clearMarker];
+            break;}
         default:break;
     }
     
@@ -3958,7 +3977,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             [clearMarker setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"clearMarkers" ofType:@"png"]]
                          forState:UIControlStateNormal];
             
-            [clearMarker addTarget:self action:@selector(prepareToRemoveMarker) forControlEvents:UIControlEventTouchUpInside];
+            [clearMarker addTarget:self
+                            action:@selector(prepareToRemoveMarker)
+                  forControlEvents:UIControlEventTouchUpInside];
+            
             [cell.contentView addSubview:clearMarker];
             xOrigin += (margin * 4.0);
             NSArray *items = nil;
