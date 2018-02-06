@@ -735,10 +735,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (hasNetwork())
     {
         CRAPI.sharedInstance.rhUpdateTime = NSDate.date.timeIntervalSince1970;
-        CRAPI.sharedInstance.rhItemsModified = 0;
-        CRAPI.sharedInstance.rhItemsAdded = 0;
-        CRAPI.sharedInstance.rhItemsIgnored = 0;
-        CRAPI.sharedInstance.rhErrors = 0;
         
         NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
         
@@ -751,7 +747,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
         [_popoverView showAfter:0.0 withTitle:@""];
         CRAPI.sharedInstance.rhCurrentZip = _zips.firstObject.intValue;
-        CRAPI.sharedInstance.rhSearchSqlCommands = NSMutableString.string;
+        
+        CRAPI.sharedInstance.rhSearchFilePath =
+        [NSString stringWithFormat:@"%@/RHSearchSqlCommands_%d.txt",
+         UserDefaults.defaults.localFilePath, CRAPI.sharedInstance.rhUpdateTime];
+        
         [self searchPropsForZip];
     }
     
@@ -761,6 +761,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)searchPropsForZip
 {
+    CRAPI.sharedInstance.rhSearchSqlCommands = NSMutableString.string;
     RHSearch *search = [RHSearch searchWithDelegate:self];
     [search getItemsForZip];
     
@@ -775,6 +776,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
                    morePages:(BOOL)morePages
 {
+    NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
+    NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filePath];
+    [fileHandle seekToEndOfFile];
+    
+    [fileHandle writeData:[CRAPI.sharedInstance.rhSearchSqlCommands
+                           dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    [fileHandle closeFile];
+    
     _numListings += items.count;
     RHSearchDatabase *rhsd = RHSearchDatabase.new;
     [rhsd updateDatabaseForSearchItems:items];
@@ -789,47 +799,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         else
         {
-            int count1 = rhsd.numberOfItems;
             [rhsd deleteOldItems];
-            int count2 = rhsd.numberOfItems;
-            int itemsDeleted = (count1 - count2);
-            int currentTime = NSDate.date.timeIntervalSince1970;
-            int runningTime = (currentTime - CRAPI.sharedInstance.rhUpdateTime);
-            
-            NSError *error = nil;
-            
-            NSString *filePath = [NSString stringWithFormat:@"%@/RHSearchResults.txt",
-                                  UserDefaults.defaults.localFilePath];
-            
-            NSMutableString *results = NSMutableString.string;
-            
-            NSString *oldResults = [NSString stringWithContentsOfFile:filePath
-                                                             encoding:NSUTF8StringEncoding
-                                                                error:&error];
-            
-            if (!error)
-                [results appendString:oldResults];
-            
-            if (!results.length)
-                [results appendString:@"STARTTIME\tRUNNING\tTOTAL\tADDED\tMODIFIED\tDELETED\tIGNORED\tERRORS"];
-            
-            [results appendString:[NSString stringWithFormat:@"\r\n%i\t%i\t%i\t%i\t%i\t%i\t%i\t%i",
-                                   CRAPI.sharedInstance.rhUpdateTime, runningTime, count2, CRAPI.sharedInstance.rhItemsAdded,
-                                   CRAPI.sharedInstance.rhItemsModified, itemsDeleted, CRAPI.sharedInstance.rhItemsIgnored,
-                                   CRAPI.sharedInstance.rhErrors]];
-            
-            [results.copy writeToFile:filePath
-                           atomically:YES
-                             encoding:NSUTF8StringEncoding
-                                error:&error];
-            
-            filePath = [NSString stringWithFormat:@"%@/RHSearchSqlCommands_%d.txt",
-                        UserDefaults.defaults.localFilePath, CRAPI.sharedInstance.rhUpdateTime];
-            
-            [CRAPI.sharedInstance.rhSearchSqlCommands writeToFile:filePath
-                                                       atomically:YES
-                                                         encoding:NSUTF8StringEncoding
-                                                            error:&error];
             
             [NSOperationQueue.mainQueue addOperationWithBlock:^ {
                 
@@ -843,7 +813,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                   fromDirectory:filePath.stringByDeletingLastPathComponent
                          toFile:filePath.lastPathComponent
                     toDirectory:@"RiteHome"
-                 deleteWhenDone:NO
+                 deleteWhenDone:YES
                  appendFileName:NO];
             }];
             
@@ -855,11 +825,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)searchDidReceiveError:(NSString *)error
 {
-    CRAPI.sharedInstance.rhErrors++;
-    
     [NSOperationQueue.mainQueue addOperationWithBlock:^ {
-        _popoverView.title = [NSString stringWithFormat:@"RHSearch ERROR (%i)...waiting",
-                              CRAPI.sharedInstance.rhErrors];
+        _popoverView.title = @"RHSearch ERROR...waiting";
     }];
     
     [NSThread sleepForTimeInterval:RH_ERROR_INTERVAL];
