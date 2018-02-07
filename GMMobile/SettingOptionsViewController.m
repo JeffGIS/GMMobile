@@ -746,7 +746,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _numZips = 0;
 
         [_popoverView showAfter:0.0 withTitle:@""];
-        CRAPI.sharedInstance.rhCurrentZip = _zips.firstObject.intValue;
+        CRAPI.sharedInstance.rhCurrentZip = _zips[_numZips++].intValue;
         
         CRAPI.sharedInstance.rhSearchFilePath =
         [NSString stringWithFormat:@"%@/RHSearchSqlCommands_%d.txt",
@@ -819,28 +819,30 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)updateSqlCmdFile
 {
-    NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
-    NSError *error = nil;
+    NSMutableString *cmds = CRAPI.sharedInstance.rhSearchSqlCommands;
     
-    if (![NSFileManager.defaultManager fileExistsAtPath:filePath])
+    if (cmds.length)
     {
-        [CRAPI.sharedInstance.rhSearchSqlCommands writeToFile:filePath
-                                                   atomically:YES
-                                                     encoding:NSUTF8StringEncoding
-                                                        error:&error];
+        NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
+        NSError *error = nil;
         
-        if (error) {showAlert(@"ERROR: RHSearchSqlCommands File could not be written.");}
-    }
-    
-    else
-    {
-        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filePath];
-        [fileHandle seekToEndOfFile];
+        if (![NSFileManager.defaultManager fileExistsAtPath:filePath])
+        {
+            [cmds writeToFile:filePath
+                   atomically:YES
+                     encoding:NSUTF8StringEncoding
+                        error:&error];
+            
+            if (error) {showAlert(@"ERROR: RHSearchSqlCommands File could not be written.");}
+        }
         
-        [fileHandle writeData:[CRAPI.sharedInstance.rhSearchSqlCommands
-                               dataUsingEncoding:NSUTF8StringEncoding]];
-        
-        [fileHandle closeFile];
+        else
+        {
+            NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:filePath];
+            [fileHandle seekToEndOfFile];
+            [fileHandle writeData:[cmds dataUsingEncoding:NSUTF8StringEncoding]];
+            [fileHandle closeFile];
+        }
     }
 }
 
