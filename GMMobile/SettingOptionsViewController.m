@@ -24,7 +24,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate,GSSiPopoverViewDelegate,RHSearchDelegate>
+@interface SettingOptionsViewController () <GLKViewDelegate, NVSynchronizeDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, NVCalibrationControllerDelegate, UITableViewDataSource, UITableViewDelegate, NVTextAlertDelegate, NVAlertViewDelegate, FTPDataPushDelegate, NVTextViewAlertDelegate, GSSiPopoverViewDelegate, RHSearchDelegate, GeoMasterServerDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -45,6 +45,7 @@
 @property (nonatomic) NVKeyboard *keyboard;
 @property (nonatomic) GSSiPopoverView *popoverView;
 @property (nonatomic, copy) NSArray<NSString *> *zips;
+@property (nonatomic) GeoMasterServer *GMServer;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;
@@ -726,6 +727,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Search Realtor Listings"])
     {
+        int updateTime = (int)[UserDefaults.defaults integerForKey:@"RHUpdateTime"];
+        CRAPI.sharedInstance.rhUpdateTime = MAX(updateTime, 1);
         [self performListingsSearch];
     }
 }
@@ -734,8 +737,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (hasNetwork())
     {
-        CRAPI.sharedInstance.rhUpdateTime = NSDate.date.timeIntervalSince1970;
-        
         NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
         
         NSString *text = [NSString stringWithContentsOfFile:filePath
@@ -792,7 +793,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         else
         {
             [rhsd deleteOldItems];
-            [self updateSqlCmdFile];
             
             [NSOperationQueue.mainQueue addOperationWithBlock:^ {
                 NSString *filePath = CRAPI.sharedInstance.rhSearchFilePath;
@@ -812,6 +812,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             }];
             
             [NSThread sleepForTimeInterval:RH_QUERY_INTERVAL];
+            CRAPI.sharedInstance.rhUpdateTime++;
+            
+            [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.rhUpdateTime
+                                        forKey:@"RHUpdateTime"];
+            
             [self performListingsSearch];
         }
     }
@@ -1026,7 +1031,48 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                   filePath:(NSString *)pathint
 {
     [_push.popover hide];
-    NSLog(@"Upload complete!");
+    
+    if (status == FTPStatusOK)
+    {
+        _GMServer = GeoMasterServer.open;
+        _GMServer.delegate = self;
+        [_GMServer initCommunication:5.0];
+    }
+}
+
+- (void)GMServerDidOpen:(GeoMasterServer *)server
+{
+    NSString *msg = [NSString stringWithFormat:@"$M(LoadRHSearchFile,%d",
+                     CRAPI.sharedInstance.rhUpdateTime];
+    
+    [_GMServer sendMessage:msg];
+    NSLog(@"GMServer Query: %@", msg);
+}
+
+- (void)GMServer:(GeoMasterServer *)server
+ didReceiveError:(NSString *)error
+      withStatus:(long)status
+{
+    [self closeGMServer];
+}
+
+- (void)GMServer:(GeoMasterServer *)server
+didReceiveMessage:(NSString *)message
+      withStatus:(long)status
+{
+    [self closeGMServer];
+}
+
+- (void)closeGMServer
+{
+    if (_GMServer)
+    {
+        [_popoverView hide];
+        [_GMServer closeServer];
+        _GMServer.delegate = nil;
+    }
+    
+    _GMServer = nil;
 }
 
 - (void)contactPicker:(NVContactPicker *)contactPicker
