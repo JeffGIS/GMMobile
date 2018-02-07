@@ -10,24 +10,26 @@
 
 @property (nonatomic, weak) id <NVPanoramaViewDelegate> viewDelegate;
 @property (nonatomic) GMSMarker *marker;
-@property CLLocationCoordinate2D pickedCoord, origCoord;
+@property CLLocationCoordinate2D pickedCoord, lookAtCoord;
 
 @end
 
 @implementation NVPanoramaView
 
 + (BOOL)showPanoramaAtCoord:(CLLocationCoordinate2D)coord
-             lookingAtCoord:(CLLocationCoordinate2D)lookAtcoord
                      inView:(UIView *)view
                    delegate:(id)delegate
                      tabBar:(UITabBar *)tabBar
 {
-    BOOL rtn = NO;
-    
-    rtn = [NVPanoramaView showPanoramaAtCoord:lookAtcoord inView:view delegate:delegate tabBar:tabBar];
-    return rtn;
+    return [NVPanoramaView showPanoramaAtCoord:coord
+                                lookingAtCoord:coord
+                                        inView:view
+                                      delegate:delegate
+                                        tabBar:tabBar];
 }
+
 + (BOOL)showPanoramaAtCoord:(CLLocationCoordinate2D)coord
+             lookingAtCoord:(CLLocationCoordinate2D)lookAtCoord
                      inView:(UIView *)view
                    delegate:(id)delegate
                      tabBar:(UITabBar *)tabBar
@@ -50,7 +52,7 @@
     panView.translatesAutoresizingMaskIntoConstraints = NO;
     panView.alpha = 0.0;
     panView.pickedCoord = CLLocationCoordinate2DMake(0.0, 0.0);
-    panView.origCoord = coord;
+    panView.lookAtCoord = lookAtCoord;
     
     [view addSubview:panView];
     [panView constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:tabBar.frame.size.height];
@@ -112,14 +114,14 @@
    didMoveToPanorama:(GMSPanorama *)panorama
       nearCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    CLLocationDirection heading = getHeading(panorama.coordinate, coordinate);
+    CLLocationDirection heading = getHeading(panorama.coordinate, _lookAtCoord);
     
     view.camera = [GMSPanoramaCamera cameraWithHeading:heading
                                                  pitch:0.0
                                                   zoom:1.0
                                                    FOV:90.0];
     
-    _marker = [GMSMarker markerWithPosition:_origCoord];
+    _marker = [GMSMarker markerWithPosition:_lookAtCoord];
     _marker.panoramaView = view;
 }
 

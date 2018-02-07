@@ -4820,6 +4820,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)showStreetView
 {
     CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID];
+    
     if ([NVPanoramaView showPanoramaAtCoord:pointOnStreet
                              lookingAtCoord:_selectedPIDCoords
                                      inView:self.view
