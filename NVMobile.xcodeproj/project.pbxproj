@@ -14,7 +14,6 @@
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		6918B2261E9F4D270091C434 /* clockIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6918B2251E9F4D270091C434 /* clockIcon.png */; };
-		69192D5A202A914A00DF347D /* NVMobileLaunchScreen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69192D59202A914900DF347D /* NVMobileLaunchScreen.jpg */; };
 		691B5DCC1E520E3300C90383 /* landuse.slt in Resources */ = {isa = PBXBuildFile; fileRef = 69D2C7EF1E5209CC0040FCF9 /* landuse.slt */; settings = {ASSET_TAGS = (landuse, ); }; };
 		691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; };
 		691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; };
@@ -215,6 +214,7 @@
 		EB10EEFA1F93AF6B006A6938 /* CreateBatchCrimeMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
+		EB2B3B69202A953500495081 /* NVMobileLaunchScreen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */ = {isa = PBXBuildFile; fileRef = EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
@@ -310,7 +310,6 @@
 		690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6918B2251E9F4D270091C434 /* clockIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clockIcon.png; sourceTree = "<group>"; };
-		69192D59202A914900DF347D /* NVMobileLaunchScreen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = NVMobileLaunchScreen.jpg; path = ../../../Documents/NVMobileLaunchScreen.jpg; sourceTree = "<group>"; };
 		691BC0FF1F755319007E0423 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NVSdwkIcon1024.png; sourceTree = "<group>"; };
 		6924B4351D37BDC8007C6C76 /* trackLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackLocation.png; sourceTree = "<group>"; };
@@ -548,6 +547,7 @@
 		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShapeFileDisplay.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NVMobileLaunchScreen.jpg; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinnesotaGame.h; sourceTree = "<group>"; };
@@ -712,6 +712,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A9CBF20C1A81558C006AC88E /* arrow.png */,
@@ -770,7 +771,6 @@
 				6948ED2D1EC50A5500809632 /* NVCrimeIcon1024.jpg */,
 				6948ED2F1EC50A6600809632 /* NVMetroIcon1024.png */,
 				6948ED331EC50D7A00809632 /* NVMobileIcon1024.png */,
-				69192D59202A914900DF347D /* NVMobileLaunchScreen.jpg */,
 				691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */,
 				697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */,
 				69E2E7E21FD864E800050D10 /* pdfIcon.png */,
@@ -1373,7 +1373,7 @@
 				69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
-				69192D5A202A914A00DF347D /* NVMobileLaunchScreen.jpg in Resources */,
+				EB2B3B69202A953500495081 /* NVMobileLaunchScreen.jpg in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,
 				69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */,
 				69FD71391FE2FB3400EAFDEF /* VideoStopIcon.png in Resources */,
