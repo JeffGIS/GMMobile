@@ -1042,7 +1042,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)GMServerDidOpen:(GeoMasterServer *)server
 {
-    NSString *msg = [NSString stringWithFormat:@"$M(LoadRHSearchFile,%d",
+    NSString *msg = [NSString stringWithFormat:@"$M(LoadRHSearchFile,%d)",
                      CRAPI.sharedInstance.rhUpdateTime];
     
     [_GMServer sendMessage:msg];
