@@ -240,6 +240,7 @@
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
+		EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
@@ -595,6 +596,7 @@
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
 		EBADB96A1BFB70E7006FB31B /* Themes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themes.h; sourceTree = "<group>"; };
 		EBADB96B1BFB70E7006FB31B /* Themes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Themes.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RiteHomeLogo.png; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
 		EBCA6C251A934D15003F7FB8 /* BoundaryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoundaryData.h; sourceTree = "<group>"; };
@@ -712,6 +714,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */,
 				EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
@@ -1283,6 +1286,7 @@
 				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				6948ED2E1EC50A5500809632 /* NVCrimeIcon1024.jpg in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
+				EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */,
 				694F93B51C30475500723155 /* questionMark.png in Resources */,
 				692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,

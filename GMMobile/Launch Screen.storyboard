@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="834" height="1112"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NVMobileLaunchScreen.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="gIS-dn-ecB">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="RiteHomeLogo.png" translatesAutoresizingMaskIntoConstraints="NO" id="gIS-dn-ecB">
                                 <rect key="frame" x="0.0" y="20" width="834" height="1092"/>
                             </imageView>
                         </subviews>
@@ -38,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NVMobileLaunchScreen.jpg" width="1536" height="2048"/>
+        <image name="RiteHomeLogo.png" width="511" height="267"/>
     </resources>
 </document>
