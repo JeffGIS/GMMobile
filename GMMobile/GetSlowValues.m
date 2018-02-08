@@ -93,6 +93,28 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
+        [self computeValuesFromMap:popover
+                      aroundLatLon:latlon
+                        withRadius:circleRadiusInMeters[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_VotingDistricts];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+        [self computeValuesFromMap:popover
+                      aroundLatLon:latlon
+                        withRadius:circleRadiusInMeters[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_StreetCenterlines];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:circleRadiusInMeters[idist]
@@ -198,7 +220,9 @@
             _areaType = @"CENTRACT";
             [self createColorByIDTable];
             break;
-        default:break;
+        default:
+            return;
+            break;
     }
     
     [self displayMapit:context
