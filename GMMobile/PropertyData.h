@@ -85,6 +85,12 @@ typedef NS_ENUM(NSInteger, ActionOption)
 @property BOOL exempt;
 @end
 
+@interface StreetPoint : NSObject
+@property NSString * streetName;
+@property double dist;
+@property double x,y;
+@end
+
 @interface PropertyData : NSObject
 
 @property (nonatomic, weak) id <PropertyDataDelegate> delegate;

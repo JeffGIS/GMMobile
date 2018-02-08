@@ -182,7 +182,7 @@ Top:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
-            if (pd.parcelDatasetVersion >= 3)
+            if (pd.parcelDatasetVersion >= 4)
                 rtn = YES;
         }
             break;
