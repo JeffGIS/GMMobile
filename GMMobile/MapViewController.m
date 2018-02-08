@@ -4908,7 +4908,11 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showStreetside
 {
+    CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID];
+    
+    
     NVStreetSideController *nvssc = [NVStreetSideController presentStreetSideInController:self
+                                                                             atCoordinate:pointOnStreet
                                                                       lookingAtCoordinate:_selectedPIDCoords];
 #pragma unused(nvssc)
 }
