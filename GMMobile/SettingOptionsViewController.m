@@ -764,6 +764,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CRAPI.sharedInstance.rhSearchSqlCommands = NSMutableString.string;
     RHSearch *search = [RHSearch searchWithDelegate:self];
+    
+    if (_numZips > 1)
+        [NSThread sleepForTimeInterval:RH_QUERY_INTERVAL];
+    
     [search getItemsForZip];
     
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
