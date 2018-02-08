@@ -1,40 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="ipad10_5" orientation="portrait">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="GeorgiaBoldItalic.ttf">
+            <string>Georgia-BoldItalic</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
+                        <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="834" height="1112"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="RiteHomeLogo.png" translatesAutoresizingMaskIntoConstraints="NO" id="gIS-dn-ecB">
-                                <rect key="frame" x="0.0" y="20" width="834" height="1092"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="RiteHomeLogo.png" translatesAutoresizingMaskIntoConstraints="NO" id="577-3y-h6k">
+                                <rect key="frame" x="128.5" y="256.5" width="511" height="511"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="577-3y-h6k" secondAttribute="height" multiplier="1:1" id="mgp-v8-xj6"/>
+                                </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="From GSSi" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="pkF-Av-ODh">
+                                <rect key="frame" x="128.5" y="775.5" width="511" height="240.5"/>
+                                <fontDescription key="fontDescription" name="Georgia-BoldItalic" family="Georgia" pointSize="38"/>
+                                <color key="textColor" red="0.14379311650118506" green="0.1978149027373409" blue="0.67013439119170992" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="gIS-dn-ecB" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" id="awR-BA-wJU"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="gIS-dn-ecB" secondAttribute="trailing" id="fhQ-b6-IHO"/>
-                            <constraint firstItem="gIS-dn-ecB" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" id="sho-l7-tTA"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="gIS-dn-ecB" secondAttribute="bottom" id="stq-8z-ock"/>
+                            <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="577-3y-h6k" secondAttribute="trailing" constant="40" id="2Ls-9W-i9O"/>
+                            <constraint firstItem="pkF-Av-ODh" firstAttribute="trailing" secondItem="577-3y-h6k" secondAttribute="trailing" id="5Ah-ra-MX8"/>
+                            <constraint firstItem="pkF-Av-ODh" firstAttribute="leading" secondItem="577-3y-h6k" secondAttribute="leading" id="BAZ-o8-nwI"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="pkF-Av-ODh" secondAttribute="bottom" constant="8" id="Klq-aY-UpD"/>
+                            <constraint firstItem="pkF-Av-ODh" firstAttribute="top" secondItem="577-3y-h6k" secondAttribute="bottom" constant="8" id="PUh-in-3xo"/>
+                            <constraint firstItem="577-3y-h6k" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="40" id="RWA-NV-Kis"/>
+                            <constraint firstItem="577-3y-h6k" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="40" id="b3V-w9-hsr"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" relation="greaterThanOrEqual" secondItem="577-3y-h6k" secondAttribute="bottom" constant="40" id="cva-7H-9e5"/>
+                            <constraint firstItem="577-3y-h6k" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="gps-eK-WGE"/>
+                            <constraint firstItem="577-3y-h6k" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="zky-mY-0qe"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="52" y="374.66266866566718"/>
+            <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
     <resources>
