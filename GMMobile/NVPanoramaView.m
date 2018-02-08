@@ -11,6 +11,7 @@
 @property (nonatomic, weak) id <NVPanoramaViewDelegate> viewDelegate;
 @property (nonatomic) GMSMarker *marker;
 @property CLLocationCoordinate2D pickedCoord, lookAtCoord;
+@property UITabBar *tabBar;
 
 @end
 
@@ -53,9 +54,10 @@
     panView.alpha = 0.0;
     panView.pickedCoord = CLLocationCoordinate2DMake(0.0, 0.0);
     panView.lookAtCoord = lookAtCoord;
+    panView.tabBar = tabBar;
     
     [view addSubview:panView];
-    [panView constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:tabBar.frame.size.height];
+    [panView constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [panView moveNearCoordinate:coord radius:100];
     
     UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -64,26 +66,32 @@
     dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
     
     else
-        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:44.0];
     
     dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
     dismissPan.titleLabel.layer.shadowOpacity = 1.0;
-    dismissPan.titleLabel.layer.shadowRadius = 3.0;
+    dismissPan.titleLabel.layer.shadowRadius = 2.0;
     dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
     [dismissPan setTitle:@"< Return" forState:UIControlStateNormal];
     [dismissPan setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [dismissPan setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
     
     [panView addSubview:dismissPan];
-    [dismissPan constrainLeadingToAnchor:panView.leadingAnchor constant:20.0];
-    [dismissPan constrainTopToAnchor:panView.topAnchor constant:20.0];
-    [dismissPan addTarget:panView action:@selector(dismissPanTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [dismissPan constrainLeadingToAnchor:panView.leadingAnchor constant:10.0];
+    [dismissPan constrainTopToAnchor:panView.topAnchor constant:10.0];
+    
+    [dismissPan addTarget:panView
+                   action:@selector(dismissPanTapped:)
+         forControlEvents:UIControlEventTouchUpInside];
     
     [UIView animateWithDuration:0.25 animations:^{
         panView.alpha = 1.0;
+        panView.tabBar.alpha = 0.5;
+    } completion:^(BOOL finished) {
+        panView.tabBar.userInteractionEnabled = NO;
     }];
     
     return YES;
@@ -101,13 +109,19 @@
         [UIView animateWithDuration:0.25
                          animations:^{
                              self.alpha = 0.0;
+                             _tabBar.alpha = 1.0;
                          } completion:^(BOOL finished) {
                              [self removeFromSuperview];
+                             _tabBar.userInteractionEnabled = YES;
                          }];
     }
     
     else
+    {
+        _tabBar.alpha = 1.0;
+        _tabBar.userInteractionEnabled = YES;
         [self removeFromSuperview];
+    }
 }
 
 - (void)panoramaView:(GMSPanoramaView *)view
