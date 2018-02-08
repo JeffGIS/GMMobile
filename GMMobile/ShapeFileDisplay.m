@@ -365,7 +365,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             case SanitaryManhole:
                                 if (hlist)
                                 {
-                                    if (findClosestPoint (&llpt,&minpt,&mind,&pickPoint))
+                                    if (findClosestPointll (&llpt,&minpt,&mind,&pickPoint))
                                     {
                                         minRef = (int)_dc.refno;
                                         minPlatID = _dc.string2;
@@ -599,7 +599,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     {
                                         for (int i = 0; i < psCShape->nVertices; i++)
                                         {
-                                            if (findClosestPoint (&llpoints[i],&minpt,&mind,&pickPoint))
+                                            if (findClosestPointll (&llpoints[i],&minpt,&mind,&pickPoint))
                                             {
                                                 minRef = (int)_dc.refno;
                                                 minPlatID = _dc.string2;
@@ -710,7 +710,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     }
                                     if (PICK_POINT_ON_LINE(pickPoint, bnds, &pickedPoint, psCShape->nVertices, llpoints))
                                     {
-                                        if (findClosestPoint (&pickedPoint, &minpt, &mind, &pickPoint))
+                                        if (findClosestPointll (&pickedPoint, &minpt, &mind, &pickPoint))
                                         {
                                             nPicked++;
                                             minRef = (int)_dc.refno;

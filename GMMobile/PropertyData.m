@@ -74,6 +74,11 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 
 @end
 
+@implementation StreetPoint
+
+@end
+
+
 @interface PropertyData ()
 
 @property (nonatomic) GSSiPopoverView *popover;
@@ -329,11 +334,181 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     return pt;
 }
 
+- (NSArray *) getStreetPointsNearPoint:(LLPOINT) pt
+                          withinRadius:(double) radius
+{
+    NSMutableArray * array = NSMutableArray.new;
+    BOOL opened = [self open];
+    DPOINT ptg;
+    LatLongToPixelXYd(pt.lat, pt.lon, 21, &ptg.x,&ptg.y);
+
+    MNMXCORD latlonBounds = BoundsFromLLPointAndDist(pt,radius);
+    MNMXCORD pixelBounds = LLBoundsToPixelBounds (&latlonBounds,21);
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints, numLoops;
+    DPOINT pickedPoint,minpt;
+    double mind = DBL_MAX;
+    NSString * minStreet = @"";
+    int nPicked = 0;
+    
+    NSString * query = [NSString stringWithFormat:@"SELECT CLINE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM CENTER_LINE,CENTER_LINE_index WHERE CENTER_LINE.id=CENTER_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             latlonBounds.xmn, latlonBounds.xmx, latlonBounds.ymn, latlonBounds.ymx];
+    
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 42);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        
+        LPSTR pCline = (LPSTR)sqlite3_column_text(statement,i++);
+        NSString * cline = [NSString stringWithUTF8String:pCline];
+        NSString * streetName = textBefore(cline, @":");
+        NSString * speedLimit = textAfter(cline, @":");
+        
+        BasePt.x = sqlite3_column_double(statement,i++);
+        BasePt.y = sqlite3_column_double(statement,i++);
+        numPoints = sqlite3_column_int(statement,i++);
+        numLoops = sqlite3_column_int(statement,i++);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+        //int nBlobBytes = sqlite3_column_bytes(statement,5);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
+        //nBlobBytes = sqlite3_column_bytes(statement,6);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        double x,y;
+
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                LatLongToPixelXYd(llpoints[i].y, llpoints[i].x, 21, &x,&y);
+                llpoints[i].x = x;
+                llpoints[i].y = y;
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            LatLongToPixelXYd(llpoints[i].y, llpoints[i].x, 21, &x,&y);
+            llpoints[i].x = x;
+            llpoints[i].y = y;
+        }
+        if (PICK_POINT_ON_LINE(ptg, pixelBounds, &pickedPoint, numPoints, llpoints))
+        {
+            double d = ldistp (ptg,pickedPoint);
+            BOOL add = TRUE;
+            int replace = -1;
+            StreetPoint * sp = StreetPoint.new;
+            sp.streetName = streetName;
+            sp.dist = d;
+            sp.x = pickedPoint.x;
+            sp.y = pickedPoint.y;
+            int indx = 0;
+            for (StreetPoint * spa in array)
+            {
+                if ([spa.streetName isEqualToString:sp.streetName])
+                {
+                    if (sp.dist < spa.dist)
+                        replace = indx;
+                    add = FALSE;
+                }
+                indx++;
+            }
+            if (add)
+                [array addObject:sp];
+            if (replace > -1)
+                [array replaceObjectAtIndex:replace withObject:sp];
+        }
+        
+        free (llpoints);
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 43);
+    
+    [self close:opened];
+    
+    return array;
+}
+
+- (BOOL) streetName:(NSString *) name1
+            matches:(NSString *) name2
+           numParts:(int *)nMatchingParts
+{
+    BOOL rtn = FALSE;
+    int nMatch = 0;
+    NSString * nm1 = [name1 lowercaseString];
+    NSString * nm2 = [name2 lowercaseString];
+    NSArray * array1 = [nm1 componentsSeparatedByString:@" "];
+    NSArray * array2 = [nm2 componentsSeparatedByString:@" "];
+    for (NSString * str1 in array1)
+    {
+        for (NSString * str2 in array2)
+        {
+            if ([str1 isEqualToString:str2])
+                nMatch++;
+        }
+    }
+    if (nMatch > *nMatchingParts)
+    {
+        rtn = TRUE;
+        *nMatchingParts = nMatch;
+    }
+    
+    return rtn;
+}
+
 - (LLPOINT) getPointOnStreetForPID:(NSString *)PID
 {
+    NSString * houseAndUnit;
+    NSString * streetName;
+    
     LLPOINT pt = [self getPointForPID:PID];
+    LLPOINT rtn = pt;
+    DPOINT ptg, rtng;
+    LatLongToPixelXYd(pt.lat, pt.lon, 21, &ptg.x,&ptg.y);
+    rtng = ptg;
     
-    
+    [self getAddressForPID:PID
+           houseNumAndUnit:&houseAndUnit
+                streetName:&streetName
+                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+    NSArray * streetPoints = [self getStreetPointsNearPoint:pt
+                             withinRadius:100];
+    BOOL haveMatchingStreet = FALSE;
+    int nMatchingParts = 0;
+    for (StreetPoint *sp in streetPoints)
+    {
+        if ([self streetName:streetName
+                     matches:sp.streetName
+                    numParts:&nMatchingParts])
+        {
+            rtng.x = sp.x;
+            rtng.y = sp.y;
+            haveMatchingStreet = TRUE;
+        }
+    }
+    if (!haveMatchingStreet)
+    {
+        double mind = DBL_MAX;
+        for (StreetPoint * sp in streetPoints)
+        {
+            double d = LDIST(sp.x, sp.y, ptg.x, ptg.y);
+            if (d < mind)
+            {
+                mind = d;
+                rtng.x = sp.x;
+                rtng.y = sp.y;
+            }
+        }
+    }
+    PixelXYToLatLongd(rtng.x, rtng.y, 21, &pt.lat, &pt.lon);
     return pt;
 }
 + (CLLocationCoordinate2D) pointOnStreetForPID:(NSString *)PID
