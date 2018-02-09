@@ -677,6 +677,9 @@ NSString * GetPropListDirectory (void)
             name = @"Bike Description";
             break;
 
+        case PFT_StreetSpeedLimit:
+            name = @"Street Speed Limit";
+            break;
     }
     
     return name;
@@ -1580,6 +1583,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             _haveWalkScoreValues = -1;
         }
     }
+    int speed;
+    [propData getPointOnStreetForPID:PID speed:&speed];
     char cenBlock[20];
     strcpy (cenBlock, cenblock.UTF8String);
     cenBlock[12] = 0;
@@ -1643,7 +1648,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_blockgroup.medianBuiltYear withCode:PFT_MedianBuiltYear_blockgroup];
     [self addInt:values_blockgroup.stability_5yr   withCode:PFT_Stability5yr_blockgroup];
     [self addInt:values_blockgroup.stability_15yr  withCode:PFT_Stability15yr_blockgroup];
-    
+    [self addInt:speed                             withCode:PFT_StreetSpeedLimit];
+
     rtn = YES;
     
     _slowValues = [[GetSlowValues alloc]init];

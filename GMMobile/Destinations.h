@@ -3,6 +3,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "PropertyListFields.h"
 #import <MapKit/MapKit.h>
 
 @interface Destination : NSObject
@@ -54,6 +55,6 @@
 - (void)updateDestination:(Destination*)dest;
 
 - (CGFloat)totalValueForProperty:(NSInteger)propNum
-                          ofType:(int)type;
+                          ofType:(PropFieldType)type;
 
 @end

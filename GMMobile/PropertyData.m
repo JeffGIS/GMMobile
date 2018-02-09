@@ -407,6 +407,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
             int replace = -1;
             StreetPoint * sp = StreetPoint.new;
             sp.streetName = streetName;
+            sp.speed = (int)speedLimit.integerValue;
             sp.dist = d;
             sp.x = pickedPoint.x;
             sp.y = pickedPoint.y;
@@ -473,12 +474,13 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 }
 
 - (LLPOINT) getPointOnStreetForPID:(NSString *)PID
+                             speed:(int *)pSpeed
 {
     NSString * houseAndUnit;
     NSString * streetName;
+    int speed = 0;
     
     LLPOINT pt = [self getPointForPID:PID];
-    LLPOINT rtn = pt;
     DPOINT ptg, rtng;
     LatLongToPixelXYd(pt.lat, pt.lon, 21, &ptg.x,&ptg.y);
     rtng = ptg;
@@ -488,7 +490,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
                 streetName:&streetName
                           city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
     NSArray * streetPoints = [self getStreetPointsNearPoint:pt
-                             withinRadius:100];
+                             withinRadius:75];
     BOOL haveMatchingStreet = FALSE;
     int nMatchingParts = 0;
     double matchDist = DBL_MAX;
@@ -502,6 +504,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         {
             rtng.x = sp.x;
             rtng.y = sp.y;
+            speed = sp.speed;
             haveMatchingStreet = TRUE;
         }
     }
@@ -516,17 +519,23 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
                 mind = d;
                 rtng.x = sp.x;
                 rtng.y = sp.y;
+                speed = sp.speed;
             }
         }
     }
     PixelXYToLatLongd(rtng.x, rtng.y, 21, &pt.lat, &pt.lon);
+    if (pSpeed)
+        *pSpeed = speed;
     return pt;
 }
 + (CLLocationCoordinate2D) pointOnStreetForPID:(NSString *)PID
+                                         speed:(int *)pSpeed
+
 {
     PropertyData *pd = PropertyData.new;
     
-    LLPOINT llpt = [pd getPointOnStreetForPID:PID];
+    LLPOINT llpt = [pd getPointOnStreetForPID:PID
+                                        speed:pSpeed];
     CLLocationCoordinate2D pt;
     pt.latitude = llpt.lat;
     pt.longitude = llpt.lon;

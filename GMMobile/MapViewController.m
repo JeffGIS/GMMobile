@@ -4812,7 +4812,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showStreetView
 {
-    CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID];
+    CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID
+                                                                       speed:nil];
     
     if ([NVPanoramaVC presentPanoramaInController:self
                                           atCoord:pointOnStreet
@@ -4900,7 +4901,8 @@ didReturnWithCoord:(CLLocationCoordinate2D)coordinate
 
 - (void)showStreetside
 {
-    CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID];
+    CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID
+                                                                       speed:nil];
     
     
     NVStreetSideController *nvssc = [NVStreetSideController presentStreetSideInController:self

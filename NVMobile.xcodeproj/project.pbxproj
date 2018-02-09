@@ -549,6 +549,7 @@
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShapeFileDisplay.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NVMobileLaunchScreen.jpg; sourceTree = "<group>"; };
+		EB2B3B6C202E226800495081 /* PropertyListFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyListFields.h; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinnesotaGame.h; sourceTree = "<group>"; };
@@ -936,6 +937,7 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
+				EB2B3B6C202E226800495081 /* PropertyListFields.h */,
 			);
 			name = Model;
 			sourceTree = "<group>";

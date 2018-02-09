@@ -87,6 +87,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 
 @interface StreetPoint : NSObject
 @property NSString * streetName;
+@property int speed;
 @property double dist;
 @property double x,y;
 @end
@@ -130,8 +131,10 @@ typedef NS_ENUM(NSInteger, ActionOption)
 
 - (LLPOINT) getPointForPID:(NSString *)PID;
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
-- (LLPOINT) getPointOnStreetForPID:(NSString *)PID;
-+ (CLLocationCoordinate2D) pointOnStreetForPID:(NSString *)PID;
+- (LLPOINT) getPointOnStreetForPID:(NSString *)PID
+                             speed:(int *)pSpeed;
++ (CLLocationCoordinate2D) pointOnStreetForPID:(NSString *)PID
+                                         speed:(int *)pSpeed;
 
 - (int)pickPID:(LLPOINT *)pt
  useVisibility:(BOOL)useVis
