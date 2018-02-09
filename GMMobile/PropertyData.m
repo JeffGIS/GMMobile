@@ -439,6 +439,8 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 
 - (BOOL) streetName:(NSString *) name1
             matches:(NSString *) name2
+               dist:(double)dist
+          matchDist:(double *)matchDist
            numParts:(int *)nMatchingParts
 {
     BOOL rtn = FALSE;
@@ -459,8 +461,14 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     {
         rtn = TRUE;
         *nMatchingParts = nMatch;
+        *matchDist = dist;
     }
-    
+    else if (nMatch == *nMatchingParts && dist < *matchDist)
+    {
+        rtn = TRUE;
+        *matchDist = dist;
+    }
+
     return rtn;
 }
 
@@ -483,10 +491,13 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
                              withinRadius:100];
     BOOL haveMatchingStreet = FALSE;
     int nMatchingParts = 0;
+    double matchDist = DBL_MAX;
     for (StreetPoint *sp in streetPoints)
     {
         if ([self streetName:streetName
                      matches:sp.streetName
+                        dist:sp.dist
+                   matchDist:&matchDist
                     numParts:&nMatchingParts])
         {
             rtng.x = sp.x;
