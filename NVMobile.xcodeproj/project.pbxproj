@@ -79,6 +79,7 @@
 		6991ED2F1FA9115F007306B2 /* redX.png in Resources */ = {isa = PBXBuildFile; fileRef = 6991ED2E1FA9115F007306B2 /* redX.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
+		699D81B8202D89F800E1A5C2 /* NVPanoramaVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 699D81B7202D89F800E1A5C2 /* NVPanoramaVC.m */; };
 		699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699F33BB1D6232AE0074BDFD /* WebKit.framework */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
@@ -92,7 +93,6 @@
 		69CE5BF51FF68AD7007D5D1F /* returnIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE5BF21FF68AD6007D5D1F /* returnIcon.png */; };
 		69CE5BF61FF68AD7007D5D1F /* advertiseIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
-		69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69D4C3061F06BA1700051E1C /* NVPanoramaView.m */; };
 		69D625551FA3F1F6008D6F08 /* hsvPause.png in Resources */ = {isa = PBXBuildFile; fileRef = 69D625521FA3F1F6008D6F08 /* hsvPause.png */; };
 		69D625561FA3F1F6008D6F08 /* hsvStop.png in Resources */ = {isa = PBXBuildFile; fileRef = 69D625531FA3F1F6008D6F08 /* hsvStop.png */; };
 		69D625571FA3F1F6008D6F08 /* hsvPlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 69D625541FA3F1F6008D6F08 /* hsvPlay.png */; };
@@ -379,6 +379,8 @@
 		6991ED2E1FA9115F007306B2 /* redX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redX.png; sourceTree = "<group>"; };
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
+		699D81B6202D89F800E1A5C2 /* NVPanoramaVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NVPanoramaVC.h; sourceTree = "<group>"; };
+		699D81B7202D89F800E1A5C2 /* NVPanoramaVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NVPanoramaVC.m; sourceTree = "<group>"; };
 		699F33BB1D6232AE0074BDFD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
@@ -395,8 +397,6 @@
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69D2C7EF1E5209CC0040FCF9 /* landuse.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = landuse.slt; sourceTree = "<group>"; };
-		69D4C3051F06BA1700051E1C /* NVPanoramaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVPanoramaView.h; sourceTree = "<group>"; };
-		69D4C3061F06BA1700051E1C /* NVPanoramaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPanoramaView.m; sourceTree = "<group>"; };
 		69D625521FA3F1F6008D6F08 /* hsvPause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hsvPause.png; sourceTree = "<group>"; };
 		69D625531FA3F1F6008D6F08 /* hsvStop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hsvStop.png; sourceTree = "<group>"; };
 		69D625541FA3F1F6008D6F08 /* hsvPlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hsvPlay.png; sourceTree = "<group>"; };
@@ -991,8 +991,8 @@
 				69366E021C542A6700E79AA7 /* NVPageController.m */,
 				69366DFE1C542A4B00E79AA7 /* NVPageView.h */,
 				69366DFF1C542A4B00E79AA7 /* NVPageView.m */,
-				69D4C3051F06BA1700051E1C /* NVPanoramaView.h */,
-				69D4C3061F06BA1700051E1C /* NVPanoramaView.m */,
+				699D81B6202D89F800E1A5C2 /* NVPanoramaVC.h */,
+				699D81B7202D89F800E1A5C2 /* NVPanoramaVC.m */,
 				69E0BB811DBE522A003555DD /* NVSpreadsheetDelegate.h */,
 				69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
@@ -1436,13 +1436,13 @@
 				EB68767F201A48E000C6728B /* RiteHomeCompute.m in Sources */,
 				EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
-				69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */,
 				BB12E2341E9565130063FE4A /* NVCrimeListDelegate.m in Sources */,
 				69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */,
 				69E8C4321F1057E7001F2995 /* NVGeocoder.m in Sources */,
 				EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,
+				699D81B8202D89F800E1A5C2 /* NVPanoramaVC.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
 				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,
 				EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */,

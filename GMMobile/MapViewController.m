@@ -24,7 +24,7 @@
 #import "NVMetroSettingsVC.h"
 #import "CCodeLibrary/NVPager.h"
 #import "CCodeLibrary/NVSendEmail.h"
-#import "NVPanoramaView.h"
+#import "NVPanoramaVC.h"
 #import "CCodeLibrary/SidewalkData.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "NVGeocoder.h"
@@ -67,14 +67,7 @@
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,
-    NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,
-    UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate,NVGeocoderDelegate,
-    GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,
-    NVAlertViewDelegate,MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,
-    PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,
-    NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,
-    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate,PropertyListDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -4821,20 +4814,19 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 {
     CLLocationCoordinate2D pointOnStreet = [PropertyData pointOnStreetForPID:_selectedPID];
     
-    if ([NVPanoramaView showPanoramaAtCoord:pointOnStreet
-                             lookingAtCoord:_selectedPIDCoords
-                                     inView:self.view
-                                   delegate:self
-                                     tabBar:self.tabBarController.tabBar])
+    if ([NVPanoramaVC presentPanoramaInController:self
+                                          atCoord:pointOnStreet
+                                   lookingAtCoord:_selectedPIDCoords
+                                         delegate:self])
     {
         _showsPanorama = YES;
     }
 }
 
-- (void)panoramaView:(NVPanoramaView *)panoramaView
-  didReturnWithCoord:(CLLocationCoordinate2D)coordinate
+- (void)panoramaVC:(NVPanoramaVC *)panoramaVC
+didReturnWithCoord:(CLLocationCoordinate2D)coordinate
 {
-    [panoramaView hide:YES];
+    [panoramaVC dismissViewControllerAnimated:YES completion:nil];
     _showsPanorama = NO;
     
     if (coordinate.latitude && coordinate.longitude)
