@@ -1154,6 +1154,11 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         dataTable = [NSString stringWithFormat:@"PROPINFO"];
         isParcel = YES;
     }
+    else if ([type isEqualToString:@"VOTING"])
+    {
+        polyTable = [NSString stringWithFormat:@"VOTING_POLY"];
+        dataTable = [NSString stringWithFormat:@"VOTING_DATA"];
+    }
     else if ([type isEqualToString:@"BLOCKGROUP_ACS"])
     {
         polyTable = [NSString stringWithFormat:@"CENSUSBLOCKGROUPPOLY"];

@@ -220,6 +220,10 @@
             _areaType = @"CENTRACT";
             [self createColorByIDTable];
             break;
+        case MBL_VotingDistricts:
+            _areaType = @"VOTING";
+            [self createColorByIDTable];
+            break;
         default:
             return;
             break;
@@ -594,6 +598,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             [_bd displayCensusAreas:context
                                type:@"PARCEL"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
+        }
+            break;
+        case MBL_VotingDistricts:
+        {
+            [_bd displayCensusAreas:context
+                               type:@"VOTING"
              displayCharacteristics:dc
                           llCorners:latlonCornerPoints
                            LLBounds:platlonBounds

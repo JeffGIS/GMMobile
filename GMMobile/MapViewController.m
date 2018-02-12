@@ -1288,7 +1288,7 @@
         _mapView.mapType = kGMSTypeHybrid;
         [_locationManager requestLocation];
     }
-    
+    [self themeLegendDidWantMinimize];
 }
 #pragma mark - EndOfViewDidAppear
 
