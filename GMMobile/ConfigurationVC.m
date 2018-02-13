@@ -4,6 +4,7 @@
 #import "ConfigurationVC.h"
 #import "NVMetroSettings.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "CCodeLibrary/CRAPI.h"
 
 @interface ConfigurationVC () <UITableViewDelegate,UITableViewDataSource>
 
@@ -12,6 +13,7 @@
 @property (nonatomic) UITableView *tableView, *zoomLevelsTV;
 @property (nonatomic) NSMutableArray *configurations;
 @property (nonatomic, copy) NSArray<NSNumber *> *zoomLevels;
+@property (nonatomic, copy) NSArray<NSNumber *> *configAtZoomLevel;
 
 @end
 
@@ -22,6 +24,10 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+}
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     _configurations = NSMutableArray.array;
     [_configurations addObject:@"Basic Parcel Text\nNo Coloring|0"];
     [_configurations addObject:@"Basic Parcel Text\nColoring by Total EMV|1"];
@@ -30,15 +36,17 @@
     [_configurations addObject:@"Owner Name Text\nColoring by Homestead Status|4"];
     [_configurations addObject:@"Land Value Text\nColoring By Land Value per Acre|5"];
     [_configurations addObject:@"Owner/Land EMV/Acres/Land EMV Text\nColoring By Land Value per Acre|6"];
-    
-    _zoomLevels = @[@21,@20,@19,@18,@17,@16,@15,@14,@13,@12,@11,@10,@9];
-    
+    [_configurations addObject:@"No Text\nColoring By Population per Sq Mile|7"];
+
+    _zoomLevels        = @[@21,@20,@19,@18,@17,@16,@15,@14,@13,@12,@11,@10,@9];
+    _configAtZoomLevel = @[@ 0,@ 0,@ 1,@ 8,@ 8,@ 8,@ 8,@ 8,@ 8,@ 7,@ 7,@ 7,@7];
+
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         _rowHeight = 48.0;
         _font = [UIFont boldSystemFontOfSize:16.0];
         _headerFont = [UIFont boldSystemFontOfSize:24.0];
-        _zoomLevelsFont = [UIFont systemFontOfSize:14.0];
+        _zoomLevelsFont = [UIFont boldSystemFontOfSize:14.0];
         _margin = 8.0;
     }
     
@@ -47,13 +55,13 @@
         _rowHeight = 64.0;
         _font = [UIFont boldSystemFontOfSize:26.0];
         _headerFont = [UIFont boldSystemFontOfSize:40.0];
-        _zoomLevelsFont = [UIFont systemFontOfSize:22.0];
+        _zoomLevelsFont = [UIFont boldSystemFontOfSize:22.0];
         _margin = 20.0;
     }
     
     [self setupTableViews];
-}
 
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -277,6 +285,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 [NVMetroSettings.sharedInstance currentTextSelection:4];
                 NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustCountPerAcre;
                 break;
+            case 7://No Text\nColoring By Population per Sq Mile
+                NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+                optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+                [NVMetroSettings.sharedInstance setCurrentValue:4];
+                optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+                //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
+                [NVMetroSettings.sharedInstance currentTextSelection:4];
+                NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustCountPerAcre;
+                break;
         }
     }
     
@@ -291,7 +308,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"CustomCell";
     UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    
+
+    cell.textLabel.textColor = UIColor.blackColor;
+    cell.backgroundColor = UIColor.whiteColor;
+
     if (tableView == _tableView)
     {
         if (!cell)
@@ -317,10 +337,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         cell.textLabel.text = _zoomLevels[indexPath.row].stringValue;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = _zoomLevelsFont;
+        float currentZoom = CRAPI.sharedInstance.currentZoom;
+        float cellZoom = _zoomLevels[indexPath.row].integerValue;
+        float diffZoom = cellZoom - currentZoom;
+        if (diffZoom >= 0 && diffZoom < 1)
+        {
+            cell.backgroundColor = UIColor.redColor;
+            cell.textLabel.textColor = UIColor.blueColor;
+        }
+        cell.textLabel.textColor = UIColor.blueColor;
     }
-    
-    cell.textLabel.textColor = UIColor.blackColor;
-    cell.backgroundColor = UIColor.whiteColor;
     
     return cell;
 }

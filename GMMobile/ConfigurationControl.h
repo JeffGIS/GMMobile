@@ -111,5 +111,6 @@ visibleAtZoom:(CGFloat)zoom
  visibleAtZoom:(CGFloat)zoom;
 
 - (void)clearCompareModeForLegendsOtherThanLegend:(ThemeLegend *)legend;
+- (void)setZoom:(float)zoom;
 
 @end

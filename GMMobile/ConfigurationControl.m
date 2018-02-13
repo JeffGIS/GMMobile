@@ -871,4 +871,7 @@ visibleAtZoom:(CGFloat)zoom
     }
 }
 
+- (void)setZoom:(float)zoom;
+{
+}
 @end

@@ -679,7 +679,7 @@
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
-    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+    [self setZoom:_mapView.camera.zoom];
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     
     if (_fromSpreadsheet)
@@ -749,6 +749,15 @@
         [_tableView reloadData];
 }
 
+- (void)setZoom:(float)zoom
+{
+    CRAPI.sharedInstance.currentZoom = zoom;
+    if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        [ConfigurationControl.sharedInstance setZoom:zoom];
+    }
+
+}
 - (void)updateCompassPosition:(BOOL)animated
 {
     if (animated)
@@ -960,7 +969,7 @@
     
     [self vectorViewRefresh];
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+    [self setZoom:_mapView.camera.zoom];
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
@@ -1737,8 +1746,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         default:break;
     }
     
-    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
-    
+     [self setZoom:_mapView.camera.zoom];
+
     if (highlightList.count)
     {
         PickedItem *pi = [PickedItem nearestPickedItem:highlightList];
@@ -3104,7 +3113,8 @@ haveVV:
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
     [_vectorView setRegion:_mapView.projection.visibleRegion];
-    CRAPI.sharedInstance.currentZoom = _vectorViewZoom;
+    [self setZoom:_vectorViewZoom];
+
     _vectorView.zoom = _vectorViewZoom;
     
     NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
