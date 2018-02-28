@@ -62,7 +62,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     else
     {
-        CRAPI.sharedInstance.resetPropList = YES;
+        CRAPI.sharedInstance.resetPropList = NO;
         CRAPI.sharedInstance.resetFieldList = NO;
         CRAPI.sharedInstance.resetDestinations = NO;
     }
