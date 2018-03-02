@@ -93,6 +93,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
+        /*
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:circleRadiusInMeters[idist]
@@ -104,6 +105,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
+         */
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:circleRadiusInMeters[idist]
