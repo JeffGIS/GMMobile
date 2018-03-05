@@ -991,7 +991,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                        int  numRequests = 0;
                        _keepGoing = YES;
                        
-                       while (_keepGoing && fgetstring(line, 32, fid))
+                       while (_keepGoing && fgetstringF(line, 32, fid))
                        {
                            MKTileOverlayPath top;
                            top.contentScaleFactor = 1;
