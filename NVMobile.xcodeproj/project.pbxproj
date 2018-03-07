@@ -214,7 +214,6 @@
 		EB10EEFA1F93AF6B006A6938 /* CreateBatchCrimeMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
-		EB2B3B69202A953500495081 /* NVMobileLaunchScreen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */ = {isa = PBXBuildFile; fileRef = EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
@@ -446,7 +445,6 @@
 		69FD71371FE2FB3400EAFDEF /* VideoStopIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VideoStopIcon.png; sourceTree = "<group>"; };
 		69FDA4331EE77D4600BA9735 /* versionHistory.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = versionHistory.png; sourceTree = "<group>"; };
 		69FDA4351EE7838A00BA9735 /* glossary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glossary.png; sourceTree = "<group>"; };
-		69FDC1ED2029124400E68403 /* NVMobileLaunchScreen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NVMobileLaunchScreen.jpg; sourceTree = "<group>"; };
 		69FDC1F12029141F00E68403 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapIt.png; sourceTree = "<group>"; };
 		69FEC8961CA9AD0F002BF231 /* whiteMapItWithX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapItWithX.png; sourceTree = "<group>"; };
@@ -548,7 +546,6 @@
 		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShapeFileDisplay.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NVMobileLaunchScreen.jpg; sourceTree = "<group>"; };
 		EB2B3B6C202E226800495081 /* PropertyListFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyListFields.h; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -716,7 +713,6 @@
 			isa = PBXGroup;
 			children = (
 				EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */,
-				EB2B3B68202A953400495081 /* NVMobileLaunchScreen.jpg */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A9CBF20C1A81558C006AC88E /* arrow.png */,
@@ -1055,7 +1051,6 @@
 				690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */,
 				A9C837291A65B27C005EC4FA /* Frameworks */,
 				EB5521CA1A61B6A8008CE2D1 /* Products */,
-				EBE77969202A76CA006EC3CD /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1100,14 +1095,6 @@
 				694FB1EE1C58846F005410F6 /* Localizable.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		EBE77969202A76CA006EC3CD /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				69FDC1ED2029124400E68403 /* NVMobileLaunchScreen.jpg */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		EBFC2A1E1BE668BD00E0C1B3 /* Themes */ = {
@@ -1379,7 +1366,6 @@
 				69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
-				EB2B3B69202A953500495081 /* NVMobileLaunchScreen.jpg in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,
 				69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */,
 				69FD71391FE2FB3400EAFDEF /* VideoStopIcon.png in Resources */,
