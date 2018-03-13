@@ -287,6 +287,7 @@
     
     _locationManager = CLLocationManager.new;
     _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
         [_locationManager requestWhenInUseAuthorization];
