@@ -126,6 +126,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     if (error)
         NSLog(@"AVAudioSession set category ERROR: %@", error.localizedDescription);
+    
     HardCodedConfigs appID = NUMHardCodedConfigs;
     
     if ([bundleID isEqualToString:@"com.gssi.newvisionmetro"])
