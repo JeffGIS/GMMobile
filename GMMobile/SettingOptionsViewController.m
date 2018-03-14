@@ -21,10 +21,11 @@
 #import "CCodeLibrary/HotSpotVideoVC.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/RiteHome.h"
+#import "CCodeLibrary/HeightCalculator.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <GLKViewDelegate, NVSynchronizeDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, NVCalibrationControllerDelegate, UITableViewDataSource, UITableViewDelegate, NVTextAlertDelegate, NVAlertViewDelegate, FTPDataPushDelegate, NVTextViewAlertDelegate, GSSiPopoverViewDelegate, RHSearchDelegate, GeoMasterServerDelegate>
+@interface SettingOptionsViewController () <GLKViewDelegate, NVSynchronizeDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, NVCalibrationControllerDelegate, UITableViewDataSource, UITableViewDelegate, NVTextAlertDelegate, NVAlertViewDelegate, FTPDataPushDelegate, NVTextViewAlertDelegate, GSSiPopoverViewDelegate, RHSearchDelegate, GeoMasterServerDelegate, HeightCalculatorDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -129,7 +130,8 @@
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
-                  @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Search Realtor Listings"];
+                  @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Search Realtor Listings",
+                  @"Test Height Calculator"];
     
     [_tableView reloadData];
 }
@@ -731,6 +733,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.rhUpdateTime = MAX(updateTime, 1);
         [self performListingsSearch];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test Height Calculator"])
+    {
+        [self testHeightCalculator];
+    }
+}
+
+- (void)testHeightCalculator
+{
+    [HeightCalculator presentHeightCalculatorInController:self delegate:self];
+}
+
+- (void)heightCalculator:(HeightCalculator *)heightCalculator
+          returnedHeight:(double)height
+{
+    [heightCalculator dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)performListingsSearch
