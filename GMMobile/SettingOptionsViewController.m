@@ -747,7 +747,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)heightCalculator:(HeightCalculator *)heightCalculator
-          returnedHeight:(double)height
+          returnedHeight:(float)height
 {
     [heightCalculator dismissViewControllerAnimated:YES completion:nil];
 }

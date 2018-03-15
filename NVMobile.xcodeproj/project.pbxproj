@@ -81,6 +81,8 @@
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
 		699D81B8202D89F800E1A5C2 /* NVPanoramaVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 699D81B7202D89F800E1A5C2 /* NVPanoramaVC.m */; };
 		699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699F33BB1D6232AE0074BDFD /* WebKit.framework */; };
+		69AEAC79205AF0FC0016DB15 /* finalBeep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 69AEAC77205AF0FC0016DB15 /* finalBeep.mp3 */; };
+		69AEAC7A205AF0FC0016DB15 /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 69AEAC78205AF0FC0016DB15 /* beep.mp3 */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
 		69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */; };
@@ -381,6 +383,8 @@
 		699D81B6202D89F800E1A5C2 /* NVPanoramaVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NVPanoramaVC.h; sourceTree = "<group>"; };
 		699D81B7202D89F800E1A5C2 /* NVPanoramaVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NVPanoramaVC.m; sourceTree = "<group>"; };
 		699F33BB1D6232AE0074BDFD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		69AEAC77205AF0FC0016DB15 /* finalBeep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = finalBeep.mp3; sourceTree = "<group>"; };
+		69AEAC78205AF0FC0016DB15 /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
 		69B46EFD1BC215F100BB7724 /* destinations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = destinations.png; sourceTree = "<group>"; };
@@ -699,6 +703,15 @@
 				6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */,
 			);
 			name = HelpFiles;
+			sourceTree = "<group>";
+		};
+		69AEAC74205AF0E50016DB15 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				69AEAC78205AF0FC0016DB15 /* beep.mp3 */,
+				69AEAC77205AF0FC0016DB15 /* finalBeep.mp3 */,
+			);
+			name = Sounds;
 			sourceTree = "<group>";
 		};
 		69E2E7E41FD86E4900050D10 /* NVCrime */ = {
@@ -1079,6 +1092,7 @@
 			children = (
 				696FA9831FE842A500E727DE /* zipcodes.txt */,
 				69D7939A1F84A28400556F73 /* NVMobile_VersionHistory.pdf */,
+				69AEAC74205AF0E50016DB15 /* Sounds */,
 				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
@@ -1314,6 +1328,7 @@
 				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
 				6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */,
 				692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */,
+				69AEAC7A205AF0FC0016DB15 /* beep.mp3 in Resources */,
 				A95EC7E01B21FC280031B903 /* greenPlusSign.png in Resources */,
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
@@ -1339,6 +1354,7 @@
 				694D99F81FAA396A0023FD37 /* redArrowRight.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				6991ED2F1FA9115F007306B2 /* redX.png in Resources */,
+				69AEAC79205AF0FC0016DB15 /* finalBeep.mp3 in Resources */,
 				697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */,
 				69F177481D7A0C6800741C68 /* GoogleMaps.bundle in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
