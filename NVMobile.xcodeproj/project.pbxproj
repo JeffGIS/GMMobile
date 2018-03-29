@@ -71,6 +71,7 @@
 		697EEE651E93FF110057CAC0 /* SampleCurbRamp1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 697EEE641E93FF110057CAC0 /* SampleCurbRamp1.jpg */; };
 		697EEE691E93FF1B0057CAC0 /* SampleCurbRamp2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */; };
 		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
+		698BD6A4206D21F700DC7B6E /* NVMobileLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 698BD6A3206D21F700DC7B6E /* NVMobileLaunchScreen.storyboard */; };
 		698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */; };
 		698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
@@ -137,7 +138,7 @@
 		69FD71391FE2FB3400EAFDEF /* VideoStopIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FD71371FE2FB3400EAFDEF /* VideoStopIcon.png */; };
 		69FDA4341EE77D4600BA9735 /* versionHistory.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FDA4331EE77D4600BA9735 /* versionHistory.png */; };
 		69FDA4361EE7838A00BA9735 /* glossary.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FDA4351EE7838A00BA9735 /* glossary.png */; };
-		69FDC1F22029141F00E68403 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69FDC1F12029141F00E68403 /* Launch Screen.storyboard */; };
+		69FDC1F22029141F00E68403 /* RiteHomeLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69FDC1F12029141F00E68403 /* RiteHomeLaunchScreen.storyboard */; };
 		69FEC88D1CA9A53E002BF231 /* whiteMapIt.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */; };
 		69FEC8971CA9AD0F002BF231 /* whiteMapItWithX.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FEC8961CA9AD0F002BF231 /* whiteMapItWithX.png */; };
 		A905063A1A75DF5A00288850 /* map.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506391A75DF5A00288850 /* map.png */; };
@@ -371,6 +372,7 @@
 		698664EE1CC2A0AD001E848F /* NVMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NVMobile.entitlements; path = ../NVMobile.entitlements; sourceTree = "<group>"; };
 		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
+		698BD6A3206D21F700DC7B6E /* NVMobileLaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NVMobileLaunchScreen.storyboard; sourceTree = "<group>"; };
 		698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dismissKeyboard.png; sourceTree = "<group>"; };
 		698ED6371DF8E8C00032FEA5 /* NVMetroSettingsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettingsVC.h; sourceTree = "<group>"; };
 		698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettingsVC.m; sourceTree = "<group>"; };
@@ -449,7 +451,7 @@
 		69FD71371FE2FB3400EAFDEF /* VideoStopIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VideoStopIcon.png; sourceTree = "<group>"; };
 		69FDA4331EE77D4600BA9735 /* versionHistory.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = versionHistory.png; sourceTree = "<group>"; };
 		69FDA4351EE7838A00BA9735 /* glossary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glossary.png; sourceTree = "<group>"; };
-		69FDC1F12029141F00E68403 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		69FDC1F12029141F00E68403 /* RiteHomeLaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = RiteHomeLaunchScreen.storyboard; sourceTree = "<group>"; };
 		69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapIt.png; sourceTree = "<group>"; };
 		69FEC8961CA9AD0F002BF231 /* whiteMapItWithX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapItWithX.png; sourceTree = "<group>"; };
 		A90506391A75DF5A00288850 /* map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map.png; sourceTree = "<group>"; };
@@ -955,7 +957,8 @@
 			isa = PBXGroup;
 			children = (
 				EB5521D91A61B6A8008CE2D1 /* Main.storyboard */,
-				69FDC1F12029141F00E68403 /* Launch Screen.storyboard */,
+				698BD6A3206D21F700DC7B6E /* NVMobileLaunchScreen.storyboard */,
+				69FDC1F12029141F00E68403 /* RiteHomeLaunchScreen.storyboard */,
 				69483EF51EC5080E00F5C09A /* Images.xcassets */,
 			);
 			name = View;
@@ -1364,7 +1367,7 @@
 				BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */,
 				BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
-				69FDC1F22029141F00E68403 /* Launch Screen.storyboard in Resources */,
+				69FDC1F22029141F00E68403 /* RiteHomeLaunchScreen.storyboard in Resources */,
 				69FDA4361EE7838A00BA9735 /* glossary.png in Resources */,
 				69E2E7E11FD8628000050D10 /* ytIcon.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
@@ -1393,6 +1396,7 @@
 				BB8B96991E8568CA00B6A9F7 /* Assault.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */,
+				698BD6A4206D21F700DC7B6E /* NVMobileLaunchScreen.storyboard in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
@@ -1635,7 +1639,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = RiteHomeIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = NVMobileIcon;
 				CODE_SIGN_ENTITLEMENTS = NVMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1664,7 +1668,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = RiteHomeIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = NVMobileIcon;
 				CODE_SIGN_ENTITLEMENTS = NVMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
