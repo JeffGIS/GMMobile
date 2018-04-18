@@ -53,7 +53,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 #ifdef DEBUG
     if ([UIDevice.currentDevice.name isEqualToString:@"Bill’s iPad Air"] ||
         [UIDevice.currentDevice.name isEqualToString:@"WildBill’s iPhone"] ||
-        [UIDevice.currentDevice.name isEqualToString:@"GSSiRental006"])
+        [UIDevice.currentDevice.name isEqualToString:@"GSSiRental005"])
     {
         CRAPI.sharedInstance.resetPropList = NO;
         CRAPI.sharedInstance.resetFieldList = NO;
