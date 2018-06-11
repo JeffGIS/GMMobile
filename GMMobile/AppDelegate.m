@@ -51,8 +51,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.currentGeoid = 2743000;
     
 #ifdef DEBUG
-    if ([UIDevice.currentDevice.name isEqualToString:@"Bill’s iPad Air"] ||
-        [UIDevice.currentDevice.name isEqualToString:@"WildBill’s iPhone"] ||
+    if ([UIDevice.currentDevice.name isEqualToString:@"WildBill iPad Air"] ||
+        [UIDevice.currentDevice.name isEqualToString:@"WildBill iPhone"] ||
         [UIDevice.currentDevice.name isEqualToString:@"GSSiRental005"])
     {
         CRAPI.sharedInstance.resetPropList = NO;
