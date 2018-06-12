@@ -857,6 +857,12 @@
     {
         NSMutableArray *viewsArray = NSMutableArray.array;
         
+        for (UIView *views in _mapView.subviews)
+        {
+            if ([views.description containsString:@"GMSUISettingsView"])
+                views.hidden = YES;
+        }
+        
         if ([self.view.subviews containsObject:[self.view viewWithTag:77777]])
             [viewsArray addObject:[self.view viewWithTag:77777]];
         
