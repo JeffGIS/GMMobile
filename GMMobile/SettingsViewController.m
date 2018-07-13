@@ -1252,6 +1252,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     NSString *toDir = [NSString stringWithFormat:@"NVMobile/UploadedDatabases/%i/%i",CRAPI.sharedInstance.currentManageriPad,CRAPI.sharedInstance.currentiPadWithinManager];
    // NSString * sendToServerFile = [awd databasePath];
     NSString * sendToServerFile = [NSString stringWithFormat:@"%@/MASTER/rampdata.txt",UserDefaults.defaults.sharedFilePath];
+    sendToServerFile = [CrimeData crimeDataPath];
 
     NSString *file = [sendToServerFile lastPathComponent];
     NSString *fromDir = [sendToServerFile stringByDeletingLastPathComponent];
