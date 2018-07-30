@@ -437,24 +437,6 @@ void checkLLBounds (MNMXCORD * bounds)
                                 }
                                 
                                 if ([self keepGoing] &&
-                                    [ConfigurationControl.sharedInstance layer:HCLayerSidewalkPoints
-                                                                 visibleAtZoom:_zoom
-                                                                       andPass:passID])
-                                {
-                                    SidewalkData *sdwkd = SidewalkData.new;
-                                    sdwkd.processingID = _displayID;
-                                    sdwkd.zoom = _zoom;
-                                    
-                                    if ([self keepGoing])
-                                    {
-                                        [sdwkd displaySdwkPoint:_context
-                                                      llCorners:&_latlonCornerPoints
-                                                       llBounds:&_latlonBounds
-                                                     viewBounds:&_viewBounds];
-                                    }
-                                }
-                                
-                                if ([self keepGoing] &&
                                     [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
                                                                  visibleAtZoom:_zoom
                                                                        andPass:passID])

@@ -93,8 +93,8 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt, *selectedBA;
-@property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo, selectedSdwkRefNo;
-@property (nonatomic, copy) NSString *selectedCensusBoundaryType, *selectedSdwk, *currentAddress;
+@property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo;
+@property (nonatomic, copy) NSString *selectedCensusBoundaryType, *currentAddress;
 @property int selectedMGVSanMH, selectedMGVSanPipe;
 @property NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
@@ -399,14 +399,7 @@
 
 - (void)becameActive:(id)selector
 {
-    if ([CRAPI.sharedInstance.sourceApp isEqualToString:@"CRISDetailSdwk"])
-    {
-        [UserDefaults.defaults saveNSInteger:(HCConfigSidewalk + 1) forKey:@"CurrentConfig"];
-        [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
-        self.tabBarController.tabBar.hidden = YES;
-    }
-    
-    else if (CRAPI.sharedInstance.setToAlleyWalls)
+    if (CRAPI.sharedInstance.setToAlleyWalls)
     {
         [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
@@ -710,11 +703,8 @@
     
     else
     {
-        if (![CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionsidewalk"] &&
-            ![CRAPI.sharedInstance.sourceApp isEqualToString:@"CRISDetailSdwk"])
-        {
-            self.tabBarController.tabBar.hidden = NO;
-        }
+        self.tabBarController.tabBar.hidden = NO;
+
         
         if (_legendsAreOffMap)
             [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
@@ -1734,16 +1724,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
             [planData pickAlleyLine:llpickPt  atZoom:_mapView.camera.zoom highlightList:highlightList];
             break;}
-        case HCConfigSidewalk:{
-            if ([ConfigurationControl.sharedInstance layer:HCLayerSidewalkPoints
-                                             visibleAtZoom:_vectorViewZoom
-                                                   andPass:PickPass])
-            {
-                SidewalkData *sdwkd = SidewalkData.new;
-                sdwkd.zoom = _mapView.camera.zoom;
-                [sdwkd pickSdwkPoint:llpickPt highlightList:highlightList];
-            }
-            break;}
         case HCConfigMinnesotaGame:{
             PropertyData *propData = PropertyData.new;
             propData.zoom = _mapView.camera.zoom;
@@ -1850,13 +1830,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 marker.snippet = pi.symbolName;
                 marker.type = MarkerInfoWindowTypeCensusBoundary;
                 break;
-            case SidewalkPoint:
-                _selectedSdwkRefNo = pi.refno;
-                _selectedSdwk = pi.identifier;
-                marker.title = _selectedSdwk;
-                marker.snippet = pi.symbolName;
-                marker.type = MarkerInfoWindowTypeSdwk;
-                break;
             default:break;
         }
         
@@ -1927,9 +1900,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case MarkerInfoWindowTypeBA:
                 _selectedBA = marker.title;
-                break;
-            case MarkerInfoWindowTypeSdwk:
-                _selectedSdwk = marker.title;
                 break;
             default:break;
         }
@@ -2082,61 +2052,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case DigitizationModeSewer:
                 break;
-            case DigitizationModeSidewalkPointNew:{
-                CLLocationCoordinate2D positionpid = position;
-                SidewalkData *sdwkd = SidewalkData.new;
-                PropertyData *propData = PropertyData.new;
-                NSString *houseAndUnit = @"";
-                NSString *streetName = @"";
-                NSString *nearPID = [propData getNearestPID:&positionpid];
-                
-                if (nearPID)
-                {
-                    [propData getAddressForPID:nearPID
-                               houseNumAndUnit:&houseAndUnit
-                                    streetName:&streetName
-                                          city:nil
-                                     ownerName:nil
-                                  taxpayerName:nil
-                                   censusBlock:nil
-                                       useDesc:nil
-                                      saleDate:nil
-                                     saleValue:nil
-                                     yearBuilt:nil
-                                        totEMV:nil
-                                       landEMV:nil
-                                       bldgEMV:nil
-                                        totTAX:nil
-                                       specAss:nil
-                                         acres:nil];
-                    
-                    _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
-                    NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:position delegate:self];
-#pragma unused(geocoder)
-                }
-                
-                if (![sdwkd createNewSdwkPointAtLocation:position
-                                               withHouse:houseAndUnit
-                                               andStreet:streetName])
-                {
-                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                                      delegate:CRAPI.sharedInstance
-                                                                         title:@"Failed to Create Sidewalk Point"
-                                                               buttonTextArray:@[@"OK"]
-                                                              destructiveIndex:0];
-#pragma unused(alert)
-                }
-                
-                else
-                {
-                    [self vectorViewRefresh];
-                    _noneSelected = NO;
-                }
-                break;}
-            case DigitizationModeSidewalkPointMove:
-                [self moveSdwkPointToCoord:position];
-                break;
-            default:break;
+             default:break;
         }
         
         [UIView animateWithDuration:0.25
@@ -4490,16 +4406,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self performSelector:@selector(movePoint) withObject:nil afterDelay:0.3];
     }
     
-    else if ([text isEqualToString:@"Delete Sidewalk Point"])
-    {
-        [self deleteSdwkPoint];
-    }
-    
-    else if ([text isEqualToString:@"Edit Sidewalk Point Attributes"])
-    {
-        [self editSdwkAttributes];
-    }
-    
     [self deselectTableViewRow];
     [self dismissTableView];
 }
@@ -4846,73 +4752,6 @@ didReturnWithCoord:(CLLocationCoordinate2D)coordinate
     [panoramaVC dismissViewControllerAnimated:YES completion:nil];
     _showsPanorama = NO;
     
-    if (coordinate.latitude && coordinate.longitude)
-        [self moveSdwkPointToCoord:coordinate];
-}
-
-- (void)moveSdwkPointToCoord:(CLLocationCoordinate2D)coord
-{
-    CLLocationCoordinate2D positionpid = coord;
-    SidewalkData *sdwkd = SidewalkData.new;
-    PropertyData *propData = PropertyData.new;
-    NSString *houseAndUnit = @"";
-    NSString *streetName = @"";
-    NSString *nearPID = [propData getNearestPID:&positionpid];
-    
-    if (nearPID)
-    {
-        [propData getAddressForPID:nearPID
-                   houseNumAndUnit:&houseAndUnit
-                        streetName:&streetName
-                              city:nil
-                         ownerName:nil
-                      taxpayerName:nil
-                       censusBlock:nil
-                           useDesc:nil
-                          saleDate:nil
-                         saleValue:nil
-                         yearBuilt:nil
-                            totEMV:nil
-                           landEMV:nil
-                           bldgEMV:nil
-                            totTAX:nil
-                           specAss:nil
-                             acres:nil];
-        
-        _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
-        NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:coord delegate:self];
-#pragma unused(geocoder)
-    }
-    
-    if (![sdwkd moveSdwkPoint:_selectedSdwkRefNo
-                   toLocation:coord
-                    withHouse:houseAndUnit
-                    andStreet:streetName])
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:CRAPI.sharedInstance
-                                                             title:@"Failed to Create Sidewalk Point"
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-#pragma unused(alert)
-    }
-    
-    else
-    {
-        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:coord zoom:_mapView.camera.zoom];
-        GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
-        [_mapView moveCamera:update];
-        MarkerButton *marker = _markerArray.lastObject;
-        marker.position = coord;
-        marker.title = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
-        _infoWindow.marker = marker;
-        
-        marker.center = CGPointMake(_digitizerTargetView.center.x,
-                                    (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
-        
-        [self updateInfoWindowPosition];
-        [self vectorViewRefresh];
-    }
 }
 
 - (void)showStreetside
@@ -5202,24 +5041,6 @@ didCompleteWithError:(NSError *)error
     [self performSelector:@selector(launchAlleyWallApp) withObject:nil afterDelay:0.3];
 }
 
-- (void)deleteSdwkPoint
-{
-    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                      delegate:self
-                                                         title:@"Do You Wish to Delete This Sidewalk Point?"
-                                               buttonTextArray:@[@"YES", @"NO"]
-                                              destructiveIndex:1];
-    
-    alert.identifier = @"DeleteSdwkAlert";
-}
-
-- (void)editSdwkAttributes
-{
-    [SharedDefaults.defaults saveInteger:(int)_selectedSdwkRefNo forKey:@"SidewalkAttributes"];
-    [SharedDefaults.defaults saveString:@"NVMobileSdwk" forKey:@"SourceApplication"];
-    [self performSelector:@selector(launchNVCRISDetail) withObject:nil afterDelay:0.3];
-}
-
 - (void)viewWallPhotos
 {
     NSString *title = [NSString stringWithFormat:@"Photos for AlleyWall %@", _selectedAlleyWall];
@@ -5456,18 +5277,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
-            [self removePreviousInfoWindow];
-            [self removeMarker];
-            [self vectorViewRefresh];
-        }
-    }
-    
-    else if ([alertView.identifier isEqualToString:@"DeleteSdwkAlert"])
-    {
-        if (buttonIndex == 0)
-        {
-            SidewalkData *sdwkd = SidewalkData.new;
-            [sdwkd deleteSdwkPoint:_selectedSdwkRefNo];
             [self removePreviousInfoWindow];
             [self removeMarker];
             [self vectorViewRefresh];
@@ -6821,13 +6630,6 @@ didSelectPDFButtonWithText:(NSString *)text
                 _options = newArray.copy;
             }
             
-            break;
-        case MarkerInfoWindowTypeSdwk:
-            _selectedSdwk = title;
-            _selectedSdwkRefNo = refno;
-            
-            _options = @[@"", @"Move Sidewalk Point", @"Delete Sidewalk Point", @"Edit Sidewalk Point Attributes",
-                         @"Display Google Street View", @"Display Bing Streetside"];
             break;
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
