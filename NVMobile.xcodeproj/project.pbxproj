@@ -1183,7 +1183,7 @@
 				KnownAssetTags = (
 					landuse,
 				);
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = GSSi;
 				TargetAttributes = {
 					EB5521C81A61B6A8008CE2D1 = {
