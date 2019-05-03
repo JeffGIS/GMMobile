@@ -2651,7 +2651,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                            
                            for (ipart = 0; ipart < nParts; ipart++)
                            {
-                               if (PartLen[ipart] >= Trigger)
+                               if (PartLen[ipart] >= max (2,Trigger))
                                {
                                    char endWord[12] = {0};
                                    char begWord[12] = {0};
@@ -2691,7 +2691,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                                    
                                    if (!nPartOffsets[ipart])
                                        GetNext = FALSE;
-                               }
+                                   }
                                
                                else
                                    nPartOffsets[ipart] = INT_MAX;
