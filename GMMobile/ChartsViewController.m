@@ -122,7 +122,7 @@
 
 - (void)setupPropReport
 {
-    CombinedChartView *chart = CombinedChartView.new;
+    /*CombinedChartView *chart = CombinedChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.xAxis.labelPosition = XAxisLabelPositionBottom;
     chart.backgroundColor = UIColor.whiteColor;
@@ -214,12 +214,12 @@
     data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
     chart.data = data;
     chart.xAxis.axisMinimum = (chart.chartXMin - 0.5);
-    chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);
+    chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);*/
 }
 
 - (void)setupPieCensusData
 {
-    PieChartView *chart = PieChartView.new;
+    /*PieChartView *chart = PieChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
     chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@", _areaType,_geoid];
@@ -258,12 +258,12 @@
     dataSet.colors = colorsArray.copy;
     dataSet.valueFont = [UIFont systemFontOfSize:18.0];
     PieChartData *data = [[PieChartData alloc] initWithDataSet:dataSet];
-    chart.data = data;
+    chart.data = data;*/
 }
 
 - (void)setupBarCensusData
 {
-    CombinedChartView *chart = CombinedChartView.new;
+    /*CombinedChartView *chart = CombinedChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
@@ -376,12 +376,12 @@
     chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
     chart.descriptionFont = [UIFont systemFontOfSize:20.0];
     chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@\nMales:%.0f, Females:%.0f, Total:%.0f",
-                                   _areaType, _geoid, totalMales, totalFemales, totalTotals];
+                                   _areaType, _geoid, totalMales, totalFemales, totalTotals];*/
 }
 
 - (void)setupRouting
 {
-    _routingCandleStickChart = CandleStickChartView.new;
+    /*_routingCandleStickChart = CandleStickChartView.new;
     _routingCandleStickChart.translatesAutoresizingMaskIntoConstraints = NO;
     _routingCandleStickChart.backgroundColor = UIColor.whiteColor;
     _routingCandleStickChart.legend.font = [UIFont systemFontOfSize:16.0];
@@ -444,7 +444,7 @@
         dataTask.taskDescription = [NSString stringWithFormat:@"%i", _queryCount];
         [dataTask resume];
         _queryCount++;
-    }
+    }*/
 }
 
 - (NSURL *)durationQueryURLWithTime:(int)time
@@ -476,7 +476,7 @@
           dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data
 {
-    [session invalidateAndCancel];
+    /*[session invalidateAndCancel];
     NSInteger index = dataTask.taskDescription.integerValue;
     BOOL isValid = NO;
     
@@ -565,12 +565,12 @@
             theDataTask.taskDescription = [NSString stringWithFormat:@"%i", (int)index];
             [theDataTask resume];
         }
-    }
+    }*/
 }
 
 - (void)setupTimeLine
 {
-    _timeLineChart = BarChartView.new;
+    /*_timeLineChart = BarChartView.new;
     _timeLineChart.translatesAutoresizingMaskIntoConstraints = NO;
     _timeLineChart.backgroundColor = UIColor.whiteColor;
     _timeLineChart.legend.font = [UIFont systemFontOfSize:16.0];
@@ -649,14 +649,14 @@
                                                                     wedDataSet, thursDataSet, friDataSet, satDataSet]];
     
     tlData.barWidth =  ((tlData.xMax - tlData.xMin) / 100.0);
-    _timeLineChart.data = tlData;
+    _timeLineChart.data = tlData;*/
 }
 
 - (void)chartValueSelected:(ChartViewBase *)chartView
                      entry:(ChartDataEntry *)entry
                  highlight:(ChartHighlight *)highlight
 {
-    if (![self.view.subviews containsObject:_alert])
+    /*if (![self.view.subviews containsObject:_alert])
     {
         int refno = [(NSNumber *)entry.data intValue];
         
@@ -682,13 +682,13 @@
             _alert.tag = refno;
             _currentEntry = entry;
         }
-    }
+    }*/
 }
 
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    switch (buttonIndex)
+    /*switch (buttonIndex)
     {
         case 1:{//display report
             NSString *reportText = [CrimeData reportForControlNumber:alertView.tag];
@@ -732,7 +732,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         default:break;
     }
     
-    [alertView hideLargeAlertView:YES];
+    [alertView hideLargeAlertView:YES];*/
 }
 
 @end
