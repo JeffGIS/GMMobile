@@ -151,7 +151,7 @@ static int pageWidthFactor = 1;
             if (bmData)
                 free (bmData);
             ConfigurationControl.sharedInstance.currentApp = saveConfig;
-            PDFPage *page = PDFPage.new;
+            PDFPageNV *page = PDFPageNV.new;
             page.pageWidth = 2550;//8.5 inches X 300 DPI
             page.pageHeight = 3300;//11 inches X 300 DPI
             PDFPageImage *mainImage = PDFPageImage.new;
