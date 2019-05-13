@@ -508,10 +508,15 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             if (first)
             {
                 //CRAPI.sharedInstance.selectBoundaryFromMapType = @"Seven County Metro Area";
-                CRAPI.sharedInstance.currentOverallBoundaryName = @"7 County Metro Area";
-                CRAPI.sharedInstance.currentOverallBoundaryType = @"Seven County Metro Area";
+                CRAPI.sharedInstance.currentOverallBoundaryName = @"";//@"7 County Metro Area";
+                CRAPI.sharedInstance.currentOverallBoundaryType = @"";//@"Seven County Metro Area";
                 //NVMetroSettings.sharedInstance.currentTextOption = [NVMetroSettings.sharedInstance textOptionsForAreas];
-                CRAPI.sharedInstance.currentOverallBoundaryRefno = 1050000037;
+                CRAPI.sharedInstance.currentOverallBoundaryRefno = 0;//1050000037;
+                NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+               
+                [NVMetroSettings.sharedInstance setCurrentValue:0];
+                [NVMetroSettings.sharedInstance currentTextSelection:2];
+
             }
         case HCConfigFromSpreadsheet:
             if (first)

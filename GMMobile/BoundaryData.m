@@ -2279,6 +2279,7 @@ NextPass:
     NSString * keyval;
     NSString * pickedName;
     int numLoops;
+    MNMXCORD llBounds={0};
     NSString * key = areaType;
     NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     BOOL opened = [self open];
@@ -2324,6 +2325,8 @@ NextPass:
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
         keyval = [NSString stringWithUTF8String:pkeyval];
         refno = sqlite3_column_int(statement,7);
+        InitDBounds(&llBounds);
+
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -2334,6 +2337,7 @@ NextPass:
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
+                AddPointToDBounds(&llBounds, &llpoints[i]);
             }
         }
         
@@ -2342,7 +2346,8 @@ NextPass:
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
-        }
+            AddPointToDBounds(&llBounds, &llpoints[i]);
+       }
         DPOINT dp;
         dp = LLPointToDPoint (point);
         if (POINT_IN_AREAD(dp, numPoints, llpoints, 1, 0, 0, 0))
@@ -2364,6 +2369,7 @@ NextPass:
         pi.refno = pickedRefno;
         pi.pickedPoint = LLPointToDPoint(point);
         pi.itemType = itemType;
+        pi.llbounds = llBounds;
     }
     return pi;
 }

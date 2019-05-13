@@ -77,7 +77,7 @@
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearWhenDeselected, legendsAreOffMap, showsPanorama, usePlatView;
-@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
+@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists,firstTimeZoomToCentract;
 @property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedSanMain, *selectedPlat, *routeMode;
 @property int selectedPlatRefno, nVectorViews;
 @property CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
@@ -203,6 +203,7 @@
     [PipeTrace removeTrace];
     
     _firstTimeAppear = _firstTimeMap = YES;
+    _firstTimeZoomToCentract = YES;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = _headingCount = 0;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
@@ -1276,7 +1277,12 @@
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
     
-    if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries || _fromSpreadsheet || _firstTimeAppear || _keepZoomExtents)
+    _firstTimeZoomToCentract = YES;
+    if (_firstTimeAppear && _firstTimeZoomToCentract)
+    {
+        [self startTrackingUserLocation];
+    }
+    else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries || _fromSpreadsheet || _firstTimeAppear || _keepZoomExtents)
     {
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
@@ -1471,10 +1477,10 @@
 {
 
     [self stopTrackingUserLocation];
+    CGFloat mapAdj = 0.0;
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
     NSString *boundaryType = CRAPI.sharedInstance.currentOverallBoundaryTable;
-    CGFloat mapAdj = 0.0;
     _keepZoomExtents = YES;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
@@ -1514,7 +1520,11 @@
 
         }
     }
-    
+    [self zoomToActualBounds:bounds adjust:mapAdj];
+}
+- (void)zoomToActualBounds:(MNMXCORD)bounds
+                    adjust:(CGFloat)mapAdj
+{
     if (BoundsWidth(&bounds) > 0)
     {
         _northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
@@ -1583,16 +1593,19 @@
 
 - (void)zoomToBounds:(MNMXCORD)bounds
 {
-    CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
-    CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
-    _keepZoomExtents = NO;
-    GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
-                                                                            coordinate:southwest];
-    
-    GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
-                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
-    
-    [_mapView animateToCameraPosition:camera];
+    if (BoundsWidth(&bounds) > 0)
+    {
+        CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
+        CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
+        _keepZoomExtents = NO;
+        GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
+                                                                                coordinate:southwest];
+        
+        GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
+                                                       insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+        
+        [_mapView animateToCameraPosition:camera];
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -5599,7 +5612,26 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
         [_mapView moveCamera:update];
     }
-    
+    else if (_firstTimeZoomToCentract)
+    {
+        LLPOINT llpickPt;
+        llpickPt.lat = _currentLocation.latitude;
+        llpickPt.lon = _currentLocation.longitude;
+        PickedItem *pi = [BoundaryData.new pickBoundaryArea:llpickPt type:@"BLOCK"];
+        _firstTimeZoomToCentract = NO;
+
+        if (pi)
+        {
+           /* CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+            CRAPI.sharedInstance.currentOverallBoundaryName = pi.identifier;
+            CRAPI.sharedInstance.currentOverallBoundaryType = pi.symbolName;
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)pi.refno;*/
+            CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+            [self zoomToActualBounds:pi.llbounds
+                              adjust:0];
+        }
+
+    }
     else if (_animateToLocation)
     {
         if (_locationCount < 2)
