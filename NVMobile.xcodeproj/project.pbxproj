@@ -1180,7 +1180,7 @@
 				KnownAssetTags = (
 					landuse,
 				);
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1030;
 				ORGANIZATIONNAME = GSSi;
 				TargetAttributes = {
 					EB5521C81A61B6A8008CE2D1 = {
@@ -1216,7 +1216,7 @@
 			};
 			buildConfigurationList = EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "NVMobile" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
