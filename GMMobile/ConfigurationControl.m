@@ -473,7 +473,10 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     
     return sharedInstance;
 }
-
+- (void) setCurrentApp:(HardCodedConfigs)currentApp
+{
+    _currentApp = currentApp;
+}
 - (BOOL)setApp:(HardCodedConfigs)appID
 {
     BOOL rtn = YES;

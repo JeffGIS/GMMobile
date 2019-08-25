@@ -67,7 +67,7 @@ NUMHardCodedLayers};
 
 @property NSMutableArray *appList, *legendList;
 @property HardCodedConfigs legendApp;
-@property HardCodedConfigs currentApp;
+@property (nonatomic)HardCodedConfigs currentApp;
 @property BOOL wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;

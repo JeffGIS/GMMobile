@@ -108,7 +108,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         _cenfileName = @"censusdata.slt";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
-        _multiValueFile = [NSString stringWithFormat:@"%@/changevalues.bin", _documentsDirectory];
+        _multiValueFile = [NSString stringWithFormat:@"%@/changeValues.bin", _documentsDirectory];
         
     }
     return self;
@@ -656,7 +656,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
             break;
             
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME >= '%@' AND STREETNAME < '%@' AND BLDG_NUM = %i",
+            query = [NSString stringWithFormat:@"SELECT ANUMBER,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME >= '%@' AND STREETNAME < '%@' AND ANUMBER = %i",
                      matchChar.uppercaseString, lastName.uppercaseString, houseNumber];
             break;
     }
@@ -913,7 +913,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     if (totEMV)
         *totEMV = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT]  FROM PROPINFO Where PIN = '%@'",
+    NSString *query = [NSString stringWithFormat:@"SELECT [ANUMBER],[STREETNAME],[CTU_NAME],[CENBLOCK],[USECLASS1],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT]  FROM PROPINFO Where PIN = '%@'",
                        PID];
     sqlite3_stmt *statement = NULL;
     
@@ -924,7 +924,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         int i=0;
         LPSTR bldgnum = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR street = (LPSTR)sqlite3_column_text(statement, i++);
-        LPSTR unit = (LPSTR)sqlite3_column_text(statement, i++);
+        //LPSTR unit = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR cityc = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR cenblockc = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR usedescc = (LPSTR)sqlite3_column_text(statement, i++);
@@ -942,7 +942,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         int yearBuild = sqlite3_column_int(statement, i++);
         if (yearBuilt)
             *yearBuilt = yearBuild;
-        *houseAndUnit = [NSString stringWithFormat:@"%s%s",bldgnum,unit];
+        *houseAndUnit = [NSString stringWithFormat:@"%s",bldgnum];//,unit];
         *streetName = [NSString stringWithUTF8String:street];
         if (city)
             *city = [self noNullString:cityc];
@@ -1849,7 +1849,7 @@ Exit:
     double saleVal, specAssmt;
     int numLinked;
     
-    NSString *query = [NSString stringWithFormat:@"SELECT PIN,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES, OWNER_NAME,TAX_NAME,BLDG_NUM,SALE_DATE,SALE_VALUE, NUMLINKEDPARCELS FROM PROPINFO WHERE PROPINFO.LINKEDPARCEL = '%@'",pid];
+    NSString *query = [NSString stringWithFormat:@"SELECT PIN,ACRES_POLY,HOMESTEAD,USECLASS1,USECLASS2,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES, OWNER_NAME,TAX_NAME,ANUMBER,SALE_DATE,SALE_VALUE, NUMLINKEDPARCELS FROM PROPINFO WHERE PROPINFO.LINKEDPARCEL = '%@'",pid];
     
     SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
@@ -1884,33 +1884,40 @@ Exit:
     
     double emvTotal;
     double emvLand;
-    LPSTR homeStead, useCode, useDesc, taxExempt, owner, taxName, bldgNum, unit;
-    LPSTR saleDate;
+    LPSTR homeStead, useCode, useDesc, taxExempt, owner, taxName, bldgNum, unit, unitType;
+    LPSTR saleDate, streetName, city, bldnum;
     double saleVal, specAssmt;
-    
-    NSString *query = [NSString stringWithFormat:@"SELECT PIN,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES, OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,UNIT_INFO,CITY,SALE_DATE,SALE_VALUE FROM PROPINFO WHERE PROPINFO.LINKEDPARCEL = '%@'",pid];
+
+    NSString *query = [NSString stringWithFormat:@"SELECT PIN,HOMESTEAD,USECLASS1,USECLASS2,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES, OWNER_NAME,TAX_NAME,ANUMBER,SUB_TYPE1,SUB_ID1,STREETNAME,CTU_NAME,SALE_DATE,SALE_VALUE FROM PROPINFO WHERE PROPINFO.LINKEDPARCEL = '%@'",pid];
     
     SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         PropertyDataExtract * pde = PropertyDataExtract.new;
-        
-        LPSTR pid = (LPSTR)sqlite3_column_text(statement, 0);
+        int i=0;
+        LPSTR pid = (LPSTR)sqlite3_column_text(statement, i++);
         pde.PIN = [NSString stringWithUTF8String:pid];
         //PID = [NSString stringWithUTF8String:pid];
-        homeStead = (LPSTR)sqlite3_column_text(statement, 2);
-        useCode = (LPSTR)sqlite3_column_text(statement, 3);
-        useDesc = (LPSTR)sqlite3_column_text(statement, 4);
-        taxExempt = (LPSTR)sqlite3_column_text(statement, 5);
-        emvTotal = (CGFloat)sqlite3_column_double(statement, 6);
-        emvLand = (CGFloat)sqlite3_column_double(statement, 7);
-        specAssmt = (CGFloat)sqlite3_column_double(statement, 8);
-        owner = (LPSTR)sqlite3_column_text(statement, 9);
-        taxName = (LPSTR)sqlite3_column_text(statement, 10);
-        unit = (LPSTR)sqlite3_column_text(statement, 12);
-        pde.unit = [NSString stringWithUTF8String:unit];
-        saleDate = (LPSTR)sqlite3_column_text(statement, 13);
+        homeStead = (LPSTR)sqlite3_column_text(statement, i++);
+        useCode = (LPSTR)sqlite3_column_text(statement, i++);
+        useDesc = (LPSTR)sqlite3_column_text(statement, i++);
+        taxExempt = (LPSTR)sqlite3_column_text(statement, i++);
+        emvTotal = (CGFloat)sqlite3_column_double(statement, i++);
+        emvLand = (CGFloat)sqlite3_column_double(statement, i++);
+        specAssmt = (CGFloat)sqlite3_column_double(statement, i++);
+        owner = (LPSTR)sqlite3_column_text(statement, i++);
+        taxName = (LPSTR)sqlite3_column_text(statement, i++);
+        bldnum = (LPSTR)sqlite3_column_text(statement, i++);
+        unitType = (LPSTR)sqlite3_column_text(statement, i++);
+        unit = (LPSTR)sqlite3_column_text(statement, i++);
+        if (*unitType)
+            pde.unit = [NSString stringWithFormat:@"%s %s",unitType,unit];
+        else
+            pde.unit = [NSString stringWithUTF8String:unit];
+        streetName = (LPSTR)sqlite3_column_text(statement, i++);
+        city = (LPSTR)sqlite3_column_text(statement, i++);
+        saleDate = (LPSTR)sqlite3_column_text(statement, i++);
         saleVal = (CGFloat)sqlite3_column_double(statement, 14);
         [array addObject:pde];
     }
@@ -1979,7 +1986,7 @@ Exit:
         case PROJECT_METROGIS:
             //homeSteadCode = 'Y';
             //taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES,OWNER_NAME,TAX_NAME,BLDG_NUM,SALE_DATE,SALE_VALUE, NUMLINKEDPARCELS, \
+            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USECLASS1,USECLASS2,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES,OWNER_NAME,TAX_NAME,ANUMBER,SALE_DATE,SALE_VALUE, NUMLINKEDPARCELS, \
                      PARCELPOLY_index.minX,PARCELPOLY_index.maxX,PARCELPOLY_index.minY,PARCELPOLY_index.maxY\
                      FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PARCELPOLY_index.maxX>=%f AND PARCELPOLY_index.minX<=%f AND PARCELPOLY_index.maxY>=%f AND PARCELPOLY_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -2325,7 +2332,7 @@ Exit:
             
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD,OWN_ADD_L1,OWN_ADD_L2,OWN_ADD_L3,TAX_ADD_L1,TAX_ADD_L2,TAX_ADD_L3,MULTIYEAROFFSET FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+            NSString *query = [NSString stringWithFormat:@"SELECT ANUMBER,STREETNAME,SUB_TYPE1,SUB_ID1,CTU_NAME,POSTCOMM,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USECLASS1,USECLASS2,USECLASS3,USECLASS4,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD,OWN_ADD_L1,OWN_ADD_L2,OWN_ADD_L3,TAX_ADD_L1,TAX_ADD_L2,TAX_ADD_L3,MULTIYEAROFFSET FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
             SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 56);
@@ -2334,44 +2341,46 @@ Exit:
              */
             if (sqlite3_step(statement) == SQLITE_ROW)
             {
-                LPSTR house = (LPSTR)sqlite3_column_text(statement,0);
-                LPSTR street = (LPSTR)sqlite3_column_text(statement, 1);
-                LPSTR unit = (LPSTR)sqlite3_column_text(statement, 2);
-                LPSTR city = (LPSTR)sqlite3_column_text(statement, 3);
-                LPSTR cityUSPS = (LPSTR)sqlite3_column_text(statement, 4);
-                LPSTR zipcode = (LPSTR)sqlite3_column_text(statement, 5);
-                LPSTR zip4 = (LPSTR)sqlite3_column_text(statement, 6);
-                LPSTR platName = (LPSTR)sqlite3_column_text(statement, 7);
-                LPSTR block = (LPSTR)sqlite3_column_text(statement, 8);
-                LPSTR lot = (LPSTR)sqlite3_column_text(statement, 9);
-                CGFloat acresPoly = sqlite3_column_double(statement, 10);
-                CGFloat acresDeed = sqlite3_column_double(statement, 11);
-                LPSTR UseDesc1 = (LPSTR)sqlite3_column_text(statement, 12);
-                LPSTR UseDesc2 = (LPSTR)sqlite3_column_text(statement, 13);
-                LPSTR UseDesc3 = (LPSTR)sqlite3_column_text(statement, 14);
-                LPSTR UseDesc4 = (LPSTR)sqlite3_column_text(statement, 15);
-                LPSTR multiUses = (LPSTR)sqlite3_column_text(statement,16);
-                LPSTR landMark = (LPSTR)sqlite3_column_text(statement, 17);
-                LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 18);
-                LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, 19);
-                CGFloat landEMV = sqlite3_column_double(statement, 20);
-                CGFloat bldgEMV = sqlite3_column_double(statement, 21);
-                CGFloat totalEMV = sqlite3_column_double(statement, 22);
-                CGFloat taxCapac = sqlite3_column_double(statement, 23);
-                CGFloat totalTax = sqlite3_column_double(statement, 24);
-                CGFloat specAsses = sqlite3_column_double(statement, 25);
-                LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 26);
-                CGFloat saleValue = sqlite3_column_double(statement, 27);
-                LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement,28);
-                LPSTR taxName = (LPSTR)sqlite3_column_text(statement, 29);
-                LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 30);
-                LPSTR ownerAdd1 = (LPSTR)sqlite3_column_text(statement, 31);
-                LPSTR ownerAdd2 = (LPSTR)sqlite3_column_text(statement, 32);
-                LPSTR ownerAdd3 = (LPSTR)sqlite3_column_text(statement, 33);
-                LPSTR taxAdd1 = (LPSTR)sqlite3_column_text(statement, 34);
-                LPSTR taxAdd2 = (LPSTR)sqlite3_column_text(statement, 35);
-                LPSTR taxAdd3 = (LPSTR)sqlite3_column_text(statement, 36);
-                int multiYearOffset = sqlite3_column_int(statement, 37);
+                int i=0;
+                LPSTR house = (LPSTR)sqlite3_column_text(statement,i++);
+                LPSTR street = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR unitType = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR unit = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR city = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR cityUSPS = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR zipcode = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR zip4 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR platName = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR block = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR lot = (LPSTR)sqlite3_column_text(statement, i++);
+                CGFloat acresPoly = sqlite3_column_double(statement, i++);
+                CGFloat acresDeed = sqlite3_column_double(statement, i++);
+                LPSTR UseDesc1 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR UseDesc2 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR UseDesc3 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR UseDesc4 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR multiUses = (LPSTR)sqlite3_column_text(statement,i++);
+                LPSTR landMark = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, i++);
+                CGFloat landEMV = sqlite3_column_double(statement, i++);
+                CGFloat bldgEMV = sqlite3_column_double(statement, i++);
+                CGFloat totalEMV = sqlite3_column_double(statement, i++);
+                CGFloat taxCapac = sqlite3_column_double(statement, i++);
+                CGFloat totalTax = sqlite3_column_double(statement, i++);
+                CGFloat specAsses = sqlite3_column_double(statement,i++);
+                LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, i++);
+                CGFloat saleValue = sqlite3_column_double(statement, i++);
+                LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement,i++);
+                LPSTR taxName = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR homestead = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR ownerAdd1 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR ownerAdd2 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR ownerAdd3 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR taxAdd1 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR taxAdd2 = (LPSTR)sqlite3_column_text(statement, i++);
+                LPSTR taxAdd3 = (LPSTR)sqlite3_column_text(statement, i++);
+                int multiYearOffset = sqlite3_column_int(statement, i++);
                 strcpy (censusBlock,cenBlock);
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
@@ -2393,7 +2402,7 @@ Exit:
                 line = [NSString stringWithFormat:@"Street:%s", street];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Unit:%s", unit];
+                line = [NSString stringWithFormat:@"Unit:%s %s", unitType,unit];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"City:%s", city];
@@ -2718,7 +2727,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                                    delim = ',';
                                }
                                
-                               NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
+                               NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,ANUMBER,STREETNAME,CTU_NAME, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                                                   inList];
                                BoundaryData * bd = BoundaryData.new;
                                SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 61);

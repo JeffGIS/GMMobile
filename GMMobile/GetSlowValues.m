@@ -227,6 +227,7 @@
             [self createColorByIDTable];
             break;
         default:
+            ConfigurationControl.sharedInstance.currentApp = saveConfig;
             return;
             break;
     }
