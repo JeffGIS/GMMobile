@@ -93,7 +93,7 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-        /*
+        
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:circleRadiusInMeters[idist]
@@ -105,7 +105,18 @@
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
-         */
+        [self computeValuesFromMap:popover
+                      aroundLatLon:latlon
+                        withRadius:circleRadiusInMeters[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_StreetCenterlines];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+
         [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:circleRadiusInMeters[idist]
@@ -224,6 +235,11 @@
             break;
         case MBL_VotingDistricts:
             _areaType = @"VOTING";
+            [self createColorByIDTable];
+            break;
+        case MBL_StreetCenterlines:
+            ConfigurationControl.sharedInstance.currentApp = saveConfig;
+            _areaType = @"CENTERLINES";
             [self createColorByIDTable];
             break;
         default:
@@ -611,8 +627,21 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             break;
         case MBL_VotingDistricts:
         {
+            break;
             [_bd displayCensusAreas:context
                                type:@"VOTING"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
+            break;
+        }
+        case MBL_StreetCenterlines:
+        {
+            [_bd displayCensusAreas:context
+                               type:@"CENTERLINES"
              displayCharacteristics:dc
                           llCorners:latlonCornerPoints
                            LLBounds:platlonBounds

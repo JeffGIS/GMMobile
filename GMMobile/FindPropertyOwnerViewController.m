@@ -46,9 +46,9 @@
     [options addObject:@"Add to Map"];
     [options addObject:@"Clear and Add to Map"];
     [options addObject:@"Add to New Property List"];
-    
-    for (NSString *props in PropertyList.getPropertyLists)
-        [options addObject:[NSString stringWithFormat:@"Add to %@", props]];
+    NSString *currentPropList = [PropertyList getCurrentPropertyListName];
+    if (currentPropList.length)
+        [options addObject:[NSString stringWithFormat:@"Add to %@", currentPropList]];
     
     return options.copy;
 }

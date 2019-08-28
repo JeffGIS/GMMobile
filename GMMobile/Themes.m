@@ -47,8 +47,8 @@
     ConfigurationControl.sharedInstance.legendApp = ConfigurationControl.sharedInstance.currentApp;
     
     _themeList = NSMutableArray.array;
-    
-    switch (ConfigurationControl.sharedInstance.currentApp)
+    HardCodedConfigs ap = ConfigurationControl.sharedInstance.currentApp;
+    switch (ap)
     {
         case HCConfigFromSpreadsheet:
         case HCConfigFromSlowValues:

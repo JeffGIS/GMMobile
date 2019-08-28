@@ -1134,6 +1134,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         [cd close:opened];
     }
     BOOL isParcel = NO;
+    BOOL isVoting = NO;
+    BOOL isCenterline = NO;
     NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
     if ([themes containsColorByRefTheme])
         field = @"";
@@ -1156,14 +1158,21 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     }
     else if ([type isEqualToString:@"VOTING"])
     {
-        polyTable = [NSString stringWithFormat:@"VOTING_POLY"];
-        dataTable = [NSString stringWithFormat:@"VOTING_DATA"];
+        polyTable = [NSString stringWithFormat:@"VOTING_POLY2018"];
+        dataTable = [NSString stringWithFormat:@"VOTING_DATA2018"];
+        isVoting = YES;
     }
     else if ([type isEqualToString:@"BLOCKGROUP_ACS"])
     {
         polyTable = [NSString stringWithFormat:@"CENSUSBLOCKGROUPPOLY"];
         dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUSBLOCKGROUPACS"];
         type = @"BLOCKGROUP";
+    }
+    else if ([type isEqualToString:@"CENTERLINES"])
+    {
+        polyTable = [NSString stringWithFormat:@"CENTER_LINE"];
+        dataTable = nil;
+        isCenterline = YES;
     }
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
@@ -1322,6 +1331,26 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_DEED,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
             }
+            else if (isVoting)
+            {
+                
+                query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                         platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+                _totRecords = [self getQueryCount:query];
+                query = [NSString stringWithFormat:@"SELECT %@.id,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PCTID = %@PCTID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                         platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,polyTable,dataTable];
+                
+            }
+            else if (isCenterline)
+            {
+                
+                query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                         platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+                _totRecords = [self getQueryCount:query];
+                query = [NSString stringWithFormat:@"SELECT %@.id,CLINE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                         platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+                
+            }
             else
             {
                 
@@ -1358,6 +1387,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     }
     if  ([self continueProcessing])
     {
+        NSString *StreetName = @"";
+        int SpeedLimit = 0;
         CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
         SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
         _currentRec = 0;
@@ -1370,6 +1401,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         }
         while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
+            double landArea = 0;
             if (!_currentRec)
                 CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
             int i = 0;
@@ -1377,29 +1409,32 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             long long ID = sqlite3_column_int64(statement,i++);
             dc.refno = ID;
             double dataValue = 0;
-            NSArray * tempArray = [field componentsSeparatedByString:@","];
-            for (int ival = 0;ival < tempArray.count;ival++)
+            if (!isCenterline)
             {
-                double v = 0;
-                LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
-                if (!strcmp (type,"CHAR(1)"))
+                landArea = sqlite3_column_double(statement,i++);
+                NSArray * tempArray = [field componentsSeparatedByString:@","];
+                for (int ival = 0;ival < tempArray.count;ival++)
                 {
-                    LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
-                    if (atob (cval))
-                        v = 1;
+                    double v = 0;
+                    LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
+                    if (!strcmp (type,"CHAR(1)"))
+                    {
+                        LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
+                        if (atob (cval))
+                            v = 1;
+                    }
+                    else if (!strcmp (type,"INT"))
+                    {
+                        v = sqlite3_column_int(statement,i++);
+                    }
+                    else
+                    {
+                        v = sqlite3_column_double(statement,i++);
+                        valuesAreInteger = FALSE;
+                    }
+                    dataValue += v;
                 }
-                else if (!strcmp (type,"INT"))
-                {
-                    v = sqlite3_column_int(statement,i++);
-                }
-                else
-                {
-                    v = sqlite3_column_double(statement,i++);
-                    valuesAreInteger = FALSE;
-                }
-                dataValue += v;
             }
-            double landArea = sqlite3_column_double(statement,i++);
             if (isParcel)
             {
                 if (landArea < max (minDisplayAreaInAcres,MIN_PARCEL_ACRES))
@@ -1419,6 +1454,23 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 }
                 if (![NVMetroSettings.sharedInstance wantUseCode:genUseCode])
                     goto SkipRecord;
+            }
+            else if (isVoting)
+            {
+                LPSTR cline = (LPSTR)sqlite3_column_text(statement,i++);
+                NSString *cl = [NSString stringWithUTF8String:cline];
+            }
+            else if (isCenterline)
+            {
+                LPSTR cline = (LPSTR)sqlite3_column_text(statement,i++);
+                LPSTR pColon = strrchr (cline,':');
+                if (pColon)
+                {
+                    *pColon++ = 0;
+                    StreetName = [NSString stringWithUTF8String:cline];
+                    SpeedLimit = atoi (pColon);
+                }
+                NSString *cl = [NSString stringWithUTF8String:cline];
             }
             else
             {
