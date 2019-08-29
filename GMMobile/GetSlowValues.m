@@ -625,23 +625,22 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         pointInArea:pia];
         }
             break;
-        case MBL_VotingDistricts:
+        case MBL_StreetCenterlines:
         {
-            break;
             [_bd displayCensusAreas:context
-                               type:@"VOTING"
+                               type:@"CENTERLINES"
              displayCharacteristics:dc
                           llCorners:latlonCornerPoints
                            LLBounds:platlonBounds
                          viewBounds:pvBounds
                              themes:themes
                         pointInArea:pia];
-            break;
         }
-        case MBL_StreetCenterlines:
+            break;
+        case MBL_VotingDistricts:
         {
-            [_bd displayCensusAreas:context
-                               type:@"CENTERLINES"
+             [_bd displayCensusAreas:context
+                               type:@"VOTING"
              displayCharacteristics:dc
                           llCorners:latlonCornerPoints
                            LLBounds:platlonBounds
