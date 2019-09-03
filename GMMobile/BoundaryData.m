@@ -233,8 +233,8 @@
     }
     if (mask)
     {
-        UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
-        
+        UIColor *maskColor = [UIColor colorWithRed:0.05 green:0.1 blue:0.15 alpha:mask];
+        //maskColor = [UIColor blueColor];
         CreateMask(&llpoints, &numPoints,pvbounds,TRUE);
         [self fillUseCode:context
                   nPoints:numPoints
@@ -714,13 +714,14 @@
 }
 
 
--(void) displayLandUse:(CGContextRef)context
+-(void) displayRoads:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 displayCharacteristics:(DisplayCharacteristics *)dc
                 themes:(Themes*)themes
            pointInArea:(PointInArea *)pia
+           baseLayer:(MapitBaseLayer) baseLayer
 {
     NSString *query = @"";
     //NSString *querys;
@@ -736,37 +737,72 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     BOOL opened = [self open];
     
-    switch (CRAPI.sharedInstance.project)
+    switch (baseLayer)
     {
-        case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LANDUSEDB.LANDUSE.id FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+        case MBL_StreetCenterlines:
+            query = [NSString stringWithFormat:@"SELECT CENTER_LINE.id FROM CENTER_LINE,CENTER_LINE_index WHERE CENTER_LINE.id=CENTER_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             _totRecords = [self getQueryCount:query];
             [CRAPI.sharedInstance updateProgress:-1
                                          current:0
                                            range:1
                                        numRanges:1];
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,CLINE FROM CENTER_LINE,CENTER_LINE_index WHERE CENTER_LINE.id=CENTER_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
+            break;
+        case MBL_Roads:
+            query = [NSString stringWithFormat:@"SELECT ROADS_LINE.id FROM ROADS_LINE,ROADS_LINE_index WHERE ROADS_LINE.id=ROADS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            _totRecords = [self getQueryCount:query];
+            [CRAPI.sharedInstance updateProgress:-1
+                                         current:0
+                                           range:1
+                                       numRanges:1];
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,FUNCLASS FROM ROADS_LINE,ROADS_LINE_index WHERE ROADS_LINE.id=ROADS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            break;
+
     }
     
     SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        BasePt.x = sqlite3_column_double(statement,0);
-        BasePt.y = sqlite3_column_double(statement,1);
-        numPoints = sqlite3_column_int(statement,2);
-        numLoops = sqlite3_column_int(statement,3);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-        int nBlobBytes = sqlite3_column_bytes(statement,4);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
-        //nBlobBytes = sqlite3_column_bytes(statement,5);
+        int i = 0;
+        BasePt.x = sqlite3_column_double(statement,i++);
+        BasePt.y = sqlite3_column_double(statement,i++);
+        numPoints = sqlite3_column_int(statement,i++);
+        numLoops = sqlite3_column_int(statement,i++);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+        int nBlobBytes = sqlite3_column_bytes(statement,i);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-        useCode = sqlite3_column_int(statement,6);
-        dc.iValue = useCode;
-        
+        switch (baseLayer)
+        {
+            case MBL_StreetCenterlines:
+            {
+                LPSTR cLine = (LPSTR)sqlite3_column_text(statement,i++);
+                int speed = 30;
+                LPSTR pColon = strrchr (cLine,':');
+                if (pColon)
+                {
+                    *pColon++ = 0;
+                    speed = atoi (pColon);
+                    speed = IDNINT (speed / 5.0) * 5;
+                    speed = min (max (15,speed),70);
+                }
+                dc.iValue = speed;
+                dc.width = 1;
+            }
+                break;
+            case MBL_Roads:
+            {
+                int funClass = sqlite3_column_int(statement,i++);
+                dc.iValue = funClass;
+                dc.width = 1;
+            }
+                break;
+        }
         int np = 0;
         //if (abs(numPoints)<108000)
         {
@@ -808,19 +844,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                  compareClass:nil] != DO_NOT_DISPLAY_ITEM)
         {
             
-            [self fillUseCode:context
-                      nPoints:np
-                       points:llpoints
-                    withColor:dc.fillColor.CGColor
-                    lineColor:nil
-                    lineWidth:0];
-            /*[self drawUseCode:context
+            [self drawRoad:context
                       nPoints:np
                        nLoops:numLoops
                       partLen:polyPartLen
                        points:llpoints
                     withColor:dc.penColor.CGColor
-                     andWidth:dc.width];*/
+                     andWidth:dc.width];
         }
         }
         free (llpoints);
@@ -835,7 +865,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     [self close:opened];
 }
 
-- (void)drawUseCode:(CGContextRef)context
+- (void)drawRoad:(CGContextRef)context
              nPoints:(int)np
               nLoops:(int)nLoops
              partLen:(int *)pPartLen
@@ -843,7 +873,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
            withColor:(CGColorRef)color
            andWidth:(CGFloat)width
 {
-    CGContextSetLineWidth(context, width);
+    CGContextSetLineWidth(context, width*3);
     
     if (nLoops > 1)
     {
@@ -931,6 +961,184 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
     }
 }
+-(void) displayLandUse:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+                themes:(Themes*)themes
+           pointInArea:(PointInArea *)pia
+{
+    NSString *query = @"";
+    //NSString *querys;
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints, useCode;
+    int numLoops;
+    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+    
+    BOOL opened = [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT LANDUSEDB.LANDUSE.id FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            _totRecords = [self getQueryCount:query];
+            [CRAPI.sharedInstance updateProgress:-1
+                                         current:0
+                                           range:1
+                                       numRanges:1];
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    _currentRec = 0;
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        numPoints = sqlite3_column_int(statement,2);
+        numLoops = sqlite3_column_int(statement,3);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
+        //nBlobBytes = sqlite3_column_bytes(statement,5);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        useCode = sqlite3_column_int(statement,6);
+        dc.iValue = useCode;
+        
+        int np = 0;
+        //if (abs(numPoints)<108000)
+        {
+            if (numPoints < 0)
+            {
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
+                {
+                    llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                    /* if (np)
+                     {
+                     if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                     np++;
+                     }
+                     else*/
+                    np++;
+                }
+            }
+            
+            else for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                /* if (np)
+                 {
+                 if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                 np++;
+                 }
+                 else*/
+                np++;
+            }
+            if ([themes setDisplayCharacteristics:dc
+                                        displayID:_processingID
+                                     compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+            {
+                
+                [self fillUseCode:context
+                          nPoints:np
+                           points:llpoints
+                        withColor:dc.fillColor.CGColor
+                        lineColor:nil
+                        lineWidth:0];
+                /*[self drawUseCode:context
+                 nPoints:np
+                 nLoops:numLoops
+                 partLen:polyPartLen
+                 points:llpoints
+                 withColor:dc.penColor.CGColor
+                 andWidth:dc.width];*/
+            }
+        }
+        free (llpoints);
+        [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
+                                     current:(NSInteger)++_currentRec
+                                       range:0
+                                   numRanges:1];
+        
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
+    [self close:opened];
+}
+
+- (void)drawUseCode:(CGContextRef)context
+            nPoints:(int)np
+             nLoops:(int)nLoops
+            partLen:(int *)pPartLen
+             points:(LPDPOINT)pPoints
+          withColor:(CGColorRef)color
+           andWidth:(CGFloat)width
+{
+    CGContextSetLineWidth(context, width);
+    
+    if (nLoops > 1)
+    {
+        int ip = 0;
+        //int ii;
+        
+        for (int loop = 0; loop < nLoops; loop++)
+        {
+            CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
+            ip++;
+            //ii = pPartLen[loop];
+            
+            for (int i = 1; i < pPartLen[loop]; i++)
+            {
+                CGContextAddLineToPoint(context, pPoints[ip].x, pPoints[ip].y);
+                ip++;
+            }
+            
+            if (loop)
+                ip++;
+            
+            if (!CGContextIsPathEmpty(context))
+            {
+                CGContextSetStrokeColorWithColor(context,color);
+                CGContextDrawPath(context, kCGPathStroke);
+            }
+        }
+        
+        //ii = ip;
+    }
+    
+    else
+    {
+        CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
+        
+        for (int i = 1; i < np; i++)
+            CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+        
+        CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
+        
+        if (!CGContextIsPathEmpty(context))
+        {
+            CGContextSetStrokeColorWithColor(context,color);
+            CGContextDrawPath(context, kCGPathStroke);
+        }
+    }
+}
+
 - (BOOL) createSortedValuesTable
 {
     BOOL rtn = FALSE;
@@ -1135,9 +1343,6 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     }
     BOOL isParcel = NO;
     BOOL isVoting = NO;
-    BOOL isCenterline = NO;
-    BOOL isRoads = NO;
-Top:
     {
         NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
         if ([themes containsColorByRefTheme])
@@ -1171,18 +1376,7 @@ Top:
             dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUSBLOCKGROUPACS"];
             type = @"BLOCKGROUP";
         }
-        else if ([type isEqualToString:@"CENTERLINES"])
-        {
-            polyTable = [NSString stringWithFormat:@"CENTER_LINE"];
-            dataTable = nil;
-            isCenterline = YES;
-        }
-        else if ([type isEqualToString:@"ROADS"])
-        {
-            polyTable = [NSString stringWithFormat:@"ROADS_LINE"];
-            dataTable = nil;
-            isRoads = YES;
-        }
+
         CloseTRANS2P(&_pTranLLtoView);
         CloseTRANS2P(&_pTranViewtoLL);
         double minValue=DBL_MAX, maxValue=DBL_MIN;
@@ -1337,7 +1531,7 @@ Top:
                     query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                     _totRecords = [self getQueryCount:query];
-                    query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_DEED,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                    query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_POLY,ACRES_DEED,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
                 }
                 else if (isVoting)
@@ -1348,26 +1542,6 @@ Top:
                     _totRecords = [self getQueryCount:query];
                     query = [NSString stringWithFormat:@"SELECT %@.id,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PCTID = %@.VTDID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,polyTable,dataTable];
-                    
-                }
-                else if (isCenterline)
-                {
-                    
-                    query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
-                             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-                    _totRecords = [self getQueryCount:query];
-                    query = [NSString stringWithFormat:@"SELECT %@.id,CLINE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
-                             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-                    
-                }
-                else if (isRoads)
-                {
-                    
-                    query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
-                             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-                    _totRecords = [self getQueryCount:query];
-                    query = [NSString stringWithFormat:@"SELECT %@.id,FUNCLASS,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
-                             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                     
                 }
                 else
@@ -1406,8 +1580,6 @@ Top:
         }
         if  ([self continueProcessing])
         {
-            NSString *StreetName = @"";
-            int SpeedLimit = 0;
             CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
             SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
             _currentRec = 0;
@@ -1421,7 +1593,6 @@ Top:
             while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 double landArea = 0;
-                int FunClass = 0;
                 if (!_currentRec)
                     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
                 int i = 0;
@@ -1429,7 +1600,7 @@ Top:
                 long long ID = sqlite3_column_int64(statement,i++);
                 dc.refno = ID;
                 double dataValue = 0;
-                if (!isCenterline && !isRoads)
+               
                 {
                     landArea = sqlite3_column_double(statement,i++);
                     NSArray * tempArray = [field componentsSeparatedByString:@","];
@@ -1478,22 +1649,6 @@ Top:
                 else if (isVoting)
                 {
                     LPSTR cline = (LPSTR)sqlite3_column_text(statement,i++);
-                    NSString *cl = [NSString stringWithUTF8String:cline];
-                }
-                else if (isRoads)
-                {
-                    FunClass = sqlite3_column_int(statement,i++);
-                }
-                else if (isCenterline)
-                {
-                    LPSTR cline = (LPSTR)sqlite3_column_text(statement,i++);
-                    LPSTR pColon = strrchr (cline,':');
-                    if (pColon)
-                    {
-                        *pColon++ = 0;
-                        StreetName = [NSString stringWithUTF8String:cline];
-                        SpeedLimit = atoi (pColon);
-                    }
                     NSString *cl = [NSString stringWithUTF8String:cline];
                 }
                 else
@@ -1721,13 +1876,6 @@ Top:
             _iPass++;
         }
         [self close:opened];
-        if (isCenterline)
-        {
-            isCenterline = NO;
-            isRoads = YES;
-            type = @"ROADS";
-            goto Top;
-        }
     }
     return;
 }

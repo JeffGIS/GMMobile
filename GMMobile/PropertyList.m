@@ -1480,34 +1480,34 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 }
 
 - (void) addString:(NSString*)value
-          withCode:(int)code
+          withCode:(PropFieldType)code
 {
     NSString * dataBlob = [self stringToBlob:value];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
 }
 - (void) addDouble:(double)value
-          withCode:(int)code
+          withCode:(PropFieldType)code
 {
     NSString * dataBlob = [self doubleToBlob:value];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 - (void) addInt:(int)value
-       withCode:(int)code
+       withCode:(PropFieldType)code
 {
     NSString * dataBlob = [self intToBlob:value];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 - (void) addLLPoints:(LLPOINT*)pidPoint
            numPoints:(int)np
-            withCode:(int)code
+            withCode:(PropFieldType)code
 {
     NSString *dataBlob = [self llpointsToBlob:pidPoint
                                     numPoints:np];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",_dbid++,_PropNum,code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 

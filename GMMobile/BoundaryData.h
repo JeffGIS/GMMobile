@@ -75,6 +75,15 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 themes:(Themes*)themes
            pointInArea:(PointInArea *)pia;
 
+-(void) displayRoads:(CGContextRef)context
+           llCorners:(CORNERPOINTS *) latlonCornerPoints
+            LLBounds:(MNMXCORD *)platlonBounds
+          viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+              themes:(Themes*)themes
+         pointInArea:(PointInArea *)pia           baseLayer:(MapitBaseLayer) baseLayer;
+
+
 -(void)displayCensusAreas:(CGContextRef)context
                      type:(NSString *)type
    displayCharacteristics:(DisplayCharacteristics*)dc

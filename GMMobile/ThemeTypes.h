@@ -44,6 +44,8 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     MetroLandUseTheme,
     ColorByRefnoTheme,
     PublicHuntingLandsTheme,
+    MetroRoadsTheme,
+    MetroCenterlineTheme,
     NoTheme,
 };
 

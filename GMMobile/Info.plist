@@ -58,8 +58,10 @@
 	<string>Get location for field survey</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Create user initiated audio content</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Get photos from field survey</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Get photos from field survey</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Debug value calculation</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.com.gssi.newvisionmobile</key>

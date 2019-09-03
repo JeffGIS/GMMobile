@@ -17,7 +17,7 @@
 #import "CCodeLibrary/NVDateRange.h"
 #import "CCodeLibrary/SidewalkData.h"
 
-static int ii=0;
+
 
 @interface VectorView ()
 

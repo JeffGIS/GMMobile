@@ -55,6 +55,10 @@
         {
             if (ConfigurationControl.sharedInstance.currentMapitBaseLayer == MBL_LandUse)
                 thm = [self createTheme:MetroLandUseTheme];
+            else if (ConfigurationControl.sharedInstance.currentMapitBaseLayer == MBL_Roads)
+                thm = [self createTheme:MetroRoadsTheme];
+            else if (ConfigurationControl.sharedInstance.currentMapitBaseLayer == MBL_StreetCenterlines)
+                thm = [self createTheme:MetroCenterlineTheme];
             else
                 thm = [self createTheme:ColorByRefnoTheme];
             [_themeList addObject:thm];
@@ -142,6 +146,14 @@
                 if (NVMetroSettings.sharedInstance.currentFeatureValue)
                 {
                     thm = [self createTheme:MetroLandUseTheme];
+                    [_themeList addObject:thm];
+                }
+            }
+            else if (NVMetroSettings.sharedInstance.currentFeature == CPFCenterlines)
+            {
+                if (NVMetroSettings.sharedInstance.currentFeatureValue)
+                {
+                    thm = [self createTheme:MetroRoadsTheme];
                     [_themeList addObject:thm];
                 }
             }

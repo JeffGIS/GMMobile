@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, CPFeatures)
     CPFTracts,
     CPFVoterDistricts,
     CPFSchoolDistricts,
+    CPFCenterlines,
     CPFeaturesCount
 };
 

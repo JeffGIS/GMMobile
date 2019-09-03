@@ -122,7 +122,7 @@
                         withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
-                         baseLayer:MBL_StreetCenterlines];
+                         baseLayer:MBL_Roads];
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
@@ -238,9 +238,12 @@
             [self createColorByIDTable];
             break;
         case MBL_StreetCenterlines:
-            ConfigurationControl.sharedInstance.currentApp = saveConfig;
             _areaType = @"CENTERLINES";
-            [self createColorByIDTable];
+            _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+            break;
+        case MBL_Roads:
+            _areaType = @"ROADS";
+            _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
             break;
         default:
             ConfigurationControl.sharedInstance.currentApp = saveConfig;
@@ -279,12 +282,12 @@ displayCharacteristics:dc
         
     }*/
     
-    if (baseLayer != MBL_LandUse)
+    if (baseLayer != MBL_LandUse && baseLayer != MBL_StreetCenterlines && baseLayer != MBL_Roads)
     {
         _maxColors = theme.totNumItems;
         wantColors = nil;
     }
-
+    
     colorCounts = calloc ((_maxColors+1),sizeof(int));
     COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
     int count = 0;
@@ -362,17 +365,20 @@ displayCharacteristics:dc
         CGContextRelease(context);
     if (_colorConversionContext)
         CGContextRelease(_colorConversionContext);
-/*     NSString * file = CRAPI.sharedInstance.extractFile;
-    BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
-    if (rtn)
-        NSLog(@"Image written");
-    UIImage *image = [UIImage imageWithContentsOfFile:file];
- [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
-    UIImageWriteToSavedPhotosAlbum(image,
-                                   nil,
-                                   nil,
-                                   nil);
-*/
+    if (baseLayer == MBL_StreetCenterlines || baseLayer == MBL_Roads)
+    {
+        NSString * file = CRAPI.sharedInstance.extractFile;
+        BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
+        if (rtn)
+            NSLog(@"Image written");
+        UIImage *image = [UIImage imageWithContentsOfFile:file];
+        ii = 1;
+        /*[UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
+        UIImageWriteToSavedPhotosAlbum(image,
+                                       nil,
+                                       nil,
+                                       nil);*/
+    }
     CGColorSpaceRelease(colorSpace);
     if (bmData)
         free (bmData);
@@ -627,17 +633,30 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             break;
         case MBL_StreetCenterlines:
         {
-            [_bd displayCensusAreas:context
-                               type:@"CENTERLINES"
-             displayCharacteristics:dc
-                          llCorners:latlonCornerPoints
-                           LLBounds:platlonBounds
-                         viewBounds:pvBounds
-                             themes:themes
-                        pointInArea:pia];
+            [_bd displayRoads:context
+                    llCorners:latlonCornerPoints
+                     LLBounds:platlonBounds
+                   viewBounds:pvBounds
+       displayCharacteristics:dc
+                       themes:themes
+                  pointInArea:pia
+                    baseLayer:baseLayer];
+       }
+            break;
+        case MBL_Roads:
+        {
+            [_bd displayRoads:context
+                    llCorners:latlonCornerPoints
+                     LLBounds:platlonBounds
+                   viewBounds:pvBounds
+       displayCharacteristics:dc
+                       themes:themes
+                  pointInArea:pia
+                    baseLayer:baseLayer];
         }
             break;
         case MBL_VotingDistricts:
+            break;
         {
              [_bd displayCensusAreas:context
                                type:@"VOTING"

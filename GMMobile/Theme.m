@@ -13,7 +13,7 @@
 #import "NVMetroSettings.h"
 
 @implementation Theme
-static int ii=0;
+
 - (id)init
 {
     self = [super init];
@@ -366,6 +366,71 @@ static int ii=0;
                 [PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            [thm adjustClassTitles];
+            break;
+        case MetroRoadsTheme:
+/*
+            100 = Principal Arterial
+            211 = A-minor Augmentor
+            212 = A-Minor Reliever
+            213 = A-Minor Expander
+            214 = A-Minor Connector
+            220 = Other Arterial
+            310 = Major Collector
+            320 = Minor Collector
+            999 = New / Under Review*
+ */
+            thm.setColor = YES;
+            thm.showSymbolAsBarChart = NO;
+            thm.legend.appendClassCount = YES;
+            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
+            thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 0;
+            class = [ThemeClass createWithTitle:@"Principal Arterial"];
+            class.values = @[@"100"];
+            class.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Other Arterial    "];
+            class.values = @[@"211",@"212",@"213",@"214",@"220"];
+            class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Major Collector   "];
+            class.values = @[@"310"];
+            class.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Minor Collector   "];
+            class.values = @[@"320"];
+            class.color = [UIColor colorWithRed:1 green:1 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+                        
+            [thm adjustClassTitles];
+            break;
+        case MetroCenterlineTheme:
+            thm.setColor = YES;
+            thm.showSymbolAsBarChart = NO;
+            thm.legend.appendClassCount = YES;
+            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
+            thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 0;
+            for (int speed = 15;speed <= 70;speed += 5)
+            {
+                float pct = speed/100.0;
+                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%i miles per hour",speed]];
+                class.values = @[[NSString stringWithFormat:@"%i",speed]];
+                if (speed < 35)
+                    class.color = [UIColor colorWithRed:pct green:pct blue:pct alpha:PropListAlpha];
+                else if (speed < 50)
+                    class.color = [UIColor colorWithRed:0 green:pct blue:0 alpha:PropListAlpha];
+                else
+                    class.color = [UIColor colorWithRed:pct green:0 blue:0 alpha:PropListAlpha];
+                [thm.classes addObject:class];thm.numDesiredClasses++;
+            }
             
             [thm adjustClassTitles];
             break;
@@ -1673,6 +1738,64 @@ int getThemeOpt(ThemeTypes type)
                                               dc:dc
                                         testPass:test])
                             rtn = DISPLAY_ITEM;
+                        if (!val)
+                            val = 0;
+                        break;
+                    }
+                    val++;
+                }
+                
+            }
+                break;
+            case MetroRoadsTheme:
+            {
+                val = 0;
+                rtn = DO_NOT_DISPLAY_ITEM;
+                for (ThemeClass *cls in _classes)
+                {
+                    if ([self classValues:cls.values containInteger:dc.iValue])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                        {
+                            rtn = DISPLAY_ITEM;
+                            if (!test)
+                            {
+                                dc.width = 1;
+                                dc.penColor = dc.fillColor;
+                            }
+                        }
+                        if (!val)
+                            val = 0;
+                        break;
+                    }
+                    val++;
+                }
+                
+            }
+                break;
+            case MetroCenterlineTheme:
+            {
+                val = 0;
+                rtn = DO_NOT_DISPLAY_ITEM;
+                for (ThemeClass *cls in _classes)
+                {
+                    if ([self classValues:cls.values containInteger:dc.iValue])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                        {
+                            rtn = DISPLAY_ITEM;
+                            if (!test)
+                            {
+                                dc.width = 1;
+                                dc.penColor = dc.fillColor;
+                            }
+                        }
                         if (!val)
                             val = 0;
                         break;
