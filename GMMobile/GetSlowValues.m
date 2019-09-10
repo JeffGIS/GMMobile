@@ -101,33 +101,37 @@
                            useDesc:usedescIN
                          baseLayer:MBL_VotingDistricts];
         nComputes++;
-        dispatch_async(dispatch_get_main_queue(),
-                       ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
-        [self computeValuesFromMap:popover
-                      aroundLatLon:latlon
-                        withRadius:circleRadiusInMeters[idist]
-                        distanceID:idist
-                           useDesc:usedescIN
-                         baseLayer:MBL_StreetCenterlines];
-        nComputes++;
+        if (idist == 2)
+        {
+            dispatch_async(dispatch_get_main_queue(),
+                           ^{
+                               [_popover updateProgress:nComputes/totComputes];
+                           });
+            [self computeDistanceWeightedScoreFromMap:popover
+                                         aroundLatLon:latlon
+                                           withRadius:circleRadiusInMeters[idist]
+                                           distanceID:idist
+                                            baseLayer:MBL_StreetCenterlines];
+            nComputes++;
+        }
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover updateProgress:nComputes/totComputes];
                        });
 
-        [self computeValuesFromMap:popover
-                      aroundLatLon:latlon
-                        withRadius:circleRadiusInMeters[idist]
-                        distanceID:idist
-                           useDesc:usedescIN
-                         baseLayer:MBL_Roads];
-        nComputes++;
-        dispatch_async(dispatch_get_main_queue(),
-                       ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+        if (idist == -2)
+        {
+            [self computeDistanceWeightedScoreFromMap:popover
+                                         aroundLatLon:latlon
+                                           withRadius:circleRadiusInMeters[idist]
+                                           distanceID:idist
+                                            baseLayer:MBL_Roads];
+            nComputes++;
+            dispatch_async(dispatch_get_main_queue(),
+                           ^{
+                               [_popover updateProgress:nComputes/totComputes];
+                           });
+        }
        [self computeValuesFromMap:popover
                       aroundLatLon:latlon
                         withRadius:circleRadiusInMeters[idist]
@@ -386,6 +390,226 @@ displayCharacteristics:dc
         free (_colorConversionBmData);
     ConfigurationControl.sharedInstance.currentApp = saveConfig;
 }
+double pixelWeight (int irow, int icol,float **pWeights)
+{
+    double weight = 1;
+    float *weights = *pWeights;
+
+    static int nrows, ncols;
+    
+    if (!weights)
+    {
+        nrows = irow;
+        ncols = icol;
+        POINT centerpt = {icol/2,irow/2};
+        POINT pt = {0,irow/2};
+        double d = idist (centerpt,pt);
+        double radius = d;
+        
+        *pWeights = (float*)malloc (nrows * ncols * sizeof(float)+4);
+        weights = *pWeights;
+        for (int row = 0;row < nrows;row++)
+            for (int col = 0;col < ncols;col++)
+            {
+                int index = row * ncols + col;
+                pt.x = col;
+                pt.y = row;
+                d = idist (centerpt,pt);
+                if (d > radius)
+                    weights[index] = 0;
+                else
+                    weights[index] = (radius - d) / radius;
+            }
+    }
+    else
+    {
+        int index = irow * ncols + icol;
+        weight = weights[index];
+    }
+    return weight;
+}
+- (void)computeDistanceWeightedScoreFromMap:(GSSiPopoverView*)popover
+                aroundLatLon:(LLPOINT)latlon
+                  withRadius:(double)radius
+                  distanceID:(int)idist
+                   baseLayer:(MapitBaseLayer)baseLayer
+
+{
+    void *bmData = NULL;
+    _baseLayer = baseLayer;
+    _iDist = idist;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    int width = 1024;
+    int height = 1024;
+    CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
+    CGContextSetAllowsAntialiasing(context, NO);
+    CGContextSetShouldAntialias(context, NO);
+    _colorConversionContext = createBitmapContext(10,10,colorSpace, &_colorConversionBmData);
+    CGContextSetAllowsAntialiasing(_colorConversionContext, NO);
+    CGContextSetShouldAntialias(_colorConversionContext, NO);
+    
+    DisplayCharacteristics *dc = DisplayCharacteristics.new;
+    MNMXCORD latlonBounds;
+    MNMXCORD viewBounds;
+    
+    viewBounds.xmn = 0;
+    viewBounds.ymn = height;
+    viewBounds.xmx = width;
+    viewBounds.ymx = 0;
+    CORNERPOINTS cornerPoints = CornerPointsFromLatLonAndDist (latlon,radius);
+    LLCORNERPOINTS latlonCornerPoints = LLCornerPointsFromCornerPoints (&cornerPoints);
+    
+    latlonBounds = CornerPointBounds (&cornerPoints);
+    _totPixelsInRect = width * height;
+    _squareMetersInRect = LLRectInSQMeters (latlonCornerPoints);
+    _squareMetersInCircle = circleRadiusInMeters[idist] * circleRadiusInMeters[idist] * PY;
+    _squareMetersPerPixel = _squareMetersInRect / _totPixelsInRect;
+    
+    Themes * themes = [[Themes alloc]init];
+    themes.displayID = CRAPI.sharedInstance.keepProcessing;
+    HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
+    ConfigurationControl.sharedInstance.currentApp = HCConfigFromSlowValues;
+    ConfigurationControl.sharedInstance.currentMapitBaseLayer = baseLayer;
+    [themes setAppThemes:nil
+            outputFactor:1];
+    
+    Theme * theme = themes.themeList[0];
+    theme.getSlowValues = self;
+    COLORREF_RGB4 *wantColors = nil;
+    
+    dc.width = 0;
+    _bd = [[BoundaryData alloc] init];
+    
+    switch (baseLayer)
+    {
+        case MBL_LandUse:
+            _areaType = @"LANDUSE";
+            _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+            break;
+        case MBL_StreetCenterlines:
+            _areaType = @"CENTERLINES";
+            _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+            break;
+        case MBL_Roads:
+            _areaType = @"ROADS";
+            _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+            break;
+        default:
+            ConfigurationControl.sharedInstance.currentApp = saveConfig;
+            return;
+            break;
+    }
+    
+    [self displayMapit:context
+             baseLayer:baseLayer
+displayCharacteristics:dc
+             llCorners:&cornerPoints
+              LLBounds:&latlonBounds
+            viewBounds:&viewBounds
+                themes:themes
+           pointInArea:nil];
+    double metersPerPixel = [_bd displayCircularBoundaryAt:latlon
+                                                withRadius:radius
+                                                 lineWidth:0
+                                                    asMask:1
+                                                 inContext:context
+                                                 llCorners:&cornerPoints
+                                                  LLBounds:&latlonBounds
+                                                viewBounds:&viewBounds];
+    
+    int *colorCounts = calloc ((_maxColors+1),sizeof(int));
+    double *classValues = calloc ((_maxColors+1),sizeof(double));
+    float *pixelWeights = 0;
+    COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
+    int count = 0;
+    int iClass = 0;
+    double totPct=0;
+    double weightedValue = 0;
+    for (ThemeClass *tc in theme.classes)
+    {
+        classValues[iClass++]=tc.aveValue;
+    }
+    iClass = _maxColors;
+    COLORREF_RGB4 lastColor = *pColor;
+    COLORREF_RGB4 maskColor = *pColor;
+    _totMaskPixels = 0;
+    pixelWeight(width,height,&pixelWeights);
+    for (int irow = 0;irow < height;irow++)
+    {
+        for (int icol = 0;icol < width;icol++)
+        {
+            if (*(LPUINT)pColor == *(LPUINT)&lastColor)
+            {
+                count++;
+            }
+            else
+            {
+                if (*(LPUINT)&lastColor == *(LPUINT)&maskColor)
+                    _totMaskPixels += count;
+                iClass = [self countColors:&lastColor
+                           wantColors:wantColors
+                               counts:colorCounts
+                                count:count];
+                lastColor = *pColor;
+                iClass = [self countColors:&lastColor
+                                wantColors:wantColors
+                                    counts:colorCounts
+                                     count:0];
+                if (iClass < 10)
+                    ii = 1;
+                lastColor = *pColor;
+                count = 1;
+            }
+            double cv = classValues[iClass];
+            double pw = pixelWeight(irow,icol,&pixelWeights);
+            weightedValue += classValues[iClass] * pixelWeight(irow,icol,&pixelWeights);
+            pColor++;
+        }
+    }
+    if (*(LPUINT)&lastColor == *(LPUINT)&maskColor)
+        _totMaskPixels += count;
+
+    double r = width / 2;
+    int pixInCircle = PY * r * r;
+    double area = (radius * radius * PY) / 1000.0;
+    int maskPixels = _totPixelsInRect - pixInCircle;
+    _totPixelsInCircle = _totPixelsInRect - _totMaskPixels;
+    weightedValue /= area;
+    switch (baseLayer)
+    {
+        case MBL_StreetCenterlines:
+            [_delegate addIntegerToProplist:IDNINT(weightedValue) withCode:PFT_SpeedFactor];
+            break;
+    }
+    if (context)
+        CGContextRelease(context);
+    if (_colorConversionContext)
+        CGContextRelease(_colorConversionContext);
+    if (baseLayer == MBL_StreetCenterlines)// || baseLayer == MBL_Roads)
+    {
+        NSString * file = CRAPI.sharedInstance.extractFile;
+        BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
+        if (rtn)
+            NSLog(@"Image written");
+        UIImage *image = [UIImage imageWithContentsOfFile:file];
+        ii = 1;
+        /*[UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
+         UIImageWriteToSavedPhotosAlbum(image,
+         nil,
+         nil,
+         nil);*/
+    }
+    CGColorSpaceRelease(colorSpace);
+    if (bmData)
+        free (bmData);
+    if (_colorConversionBmData)
+        free (_colorConversionBmData);
+    free (colorCounts);
+    free (classValues);
+    free (pixelWeights);
+    ConfigurationControl.sharedInstance.currentApp = saveConfig;
+}
+
 
 - (int) getColorsFromTheme:(Theme*)theme
                     colors:(COLORREF_RGB4**)pclrs
@@ -454,7 +678,7 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     return nColors+1;
 }
 
-- (void) countColors:(COLORREF_RGB4*)color
+- (int) countColors:(COLORREF_RGB4*)color
           wantColors:(COLORREF_RGB4*)wantColors
               counts:(LPINT)colorCounts
                count:(int)count
@@ -478,18 +702,18 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
         if (*(LPINT)color == *(LPINT)&wantColors[i])
         {
             colorCounts[i] += count;
-            return;
+            return i;
         }
         if (color->cRed == wantColors[i].cRed &&
             color->cGreen == wantColors[i].cGreen &&
             color->cBlue == wantColors[i].cBlue)
         {
             colorCounts[i] += count;
-            return;
+            return i;
         }
     }
     colorCounts[_maxColors] += count;
-    return;
+    return _maxColors;
 }
 - (BOOL) createColorByIDTable
 {

@@ -398,7 +398,7 @@ Top:
     _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
 
     
-    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %i AND Distance = %i",propNum,MBL_Parcels,circleID];
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)MBL_Parcels,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement_PID, 0), _propList.database);
     BOOL opened = [_propData open];
     rtn = [self computeParcelValues:values

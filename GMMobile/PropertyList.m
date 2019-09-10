@@ -242,8 +242,7 @@ NSString * GetPropListDirectory (void)
 {
     BOOL opened = [self open];
     
-    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
-    CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC, FieldType ASC);\
+    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432), PRIMARY KEY (PropNum,FieldType));\
     CREATE TABLE IF NOT EXISTS PropertyVideo (videoID INTEGER PRIMARY KEY,PropNum INTEGER,Title CHAR(256), Type INT, Cost REAL, Notes CHAR(4096), VideoFileName CHAR(256), StartTime FLOAT, EndTime FLOAT);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
@@ -676,9 +675,14 @@ NSString * GetPropListDirectory (void)
         case PFT_BikeDescription:
             name = @"Bike Description";
             break;
-
         case PFT_StreetSpeedLimit:
             name = @"Street Speed Limit";
+            break;
+        case PFT_SpeedFactor:
+            name = @"Speed Factor";
+            break;
+        case PFT_TrafficFactor:
+            name = @"Traffic Factor";
             break;
     }
     
@@ -1483,7 +1487,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
           withCode:(PropFieldType)code
 {
     NSString * dataBlob = [self stringToBlob:value];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyList VALUES (%i,%li,%i,X'%@');",_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
 }
@@ -1491,14 +1495,14 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
           withCode:(PropFieldType)code
 {
     NSString * dataBlob = [self doubleToBlob:value];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyList VALUES (%i,%li,%i,X'%@');",_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 - (void) addInt:(int)value
        withCode:(PropFieldType)code
 {
     NSString * dataBlob = [self intToBlob:value];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyList VALUES (%i,%li,%i,X'%@');",_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 - (void) addLLPoints:(LLPOINT*)pidPoint
@@ -1507,7 +1511,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {
     NSString *dataBlob = [self llpointsToBlob:pidPoint
                                     numPoints:np];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%li,%i,X'%@');",_dbid++,_PropNum,(long)code,_PropVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO PropertyList VALUES (%i,%li,%i,X'%@');",_PropNum,(long)code,_PropVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 }
 
@@ -1949,4 +1953,16 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     return array.copy;
 }
+
+- (void) addDoubleToProplist:(double)value
+                    withCode:(PropFieldType)code
+{
+    [self addDouble:value   withCode:code];
+}
+- (void) addIntegerToProplist:(int)value
+                    withCode:(PropFieldType)code
+{
+    [self addInt:value   withCode:code];
+}
+
 @end

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "PropertyListFields.h"
 
 #define OneMileInMeters 5280 * FTM
 static double circleRadiusInMiles[4] = {1.0 / 8,1.0 / 4,1.0 / 2,1.0};
@@ -21,6 +22,11 @@ static double circleRadiusInMeters[4] = {OneMileInMeters / 8,OneMileInMeters / 4
                       totComputes:(float)totComputes
                       numComputes:(float)nComputes;
 - (BOOL)executePropListCommand:(NSString*)cmd;
+- (void) addIntegerToProplist:(int)value
+                    withCode:(PropFieldType)code;
+- (void) addDoubleToProplist:(double)value
+                    withCode:(PropFieldType)code;
+
 @end
 
 @interface GetSlowValues : NSObject<GSSiPopoverViewDelegate>

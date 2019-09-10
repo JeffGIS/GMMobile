@@ -195,7 +195,7 @@
     return KEY;
 }
 
--(void)displayCircularBoundaryAt:(LLPOINT)pt
+-(double)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radiusInMeters
                        lineWidth:(CGFloat)lineWidth
                           asMask:(CGFloat)mask
@@ -204,16 +204,25 @@
                         LLBounds:(MNMXCORD *)platlonBounds
                       viewBounds:(MNMXCORD *)pvbounds
 {
+    //returns meters per pixel
     int numPoints = 257;
     
     LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
     double ainc = (HALFPI * 4) / (numPoints-1);
     double az = PY;
+    DPOINT midPoint;
+    double metersPerPixel;
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+    llpoints[0].x = pt.lon;
+    llpoints[0].y = pt.lat;
+    llpoints[0] = TranDPOINTP(&llpoints[0], _pTranLLtoView);
+    llpoints[1] = NewLatLong(pt.lat, pt.lon, radiusInMeters, 0);
+    llpoints[1] = TranDPOINTP(&llpoints[1], _pTranLLtoView);
+    metersPerPixel = ldistpp(&llpoints[0], &llpoints[1]);
     
     for (int i=0;i<numPoints-1;i++,az+=ainc)
     {
@@ -246,7 +255,7 @@
     }
     
     free(llpoints);
-   
+    return metersPerPixel;
 }
 
 -(void)displayMapitBoundary:(CGContextRef)context

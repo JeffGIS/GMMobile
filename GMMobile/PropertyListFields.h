@@ -107,8 +107,8 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_TransitDescription,
     PFT_BikeDescription,
     PFT_StreetSpeedLimit,
-    PFT_AverageSpeedLimit,
-    PFT_AverageTrafficVolume,
+    PFT_SpeedFactor,
+    PFT_TrafficFactor,
     PFT_END,
 };
 typedef NS_ENUM(NSInteger, PropBaseType)

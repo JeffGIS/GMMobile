@@ -429,6 +429,7 @@
                     class.color = [UIColor colorWithRed:0 green:pct blue:0 alpha:PropListAlpha];
                 else
                     class.color = [UIColor colorWithRed:pct green:0 blue:0 alpha:PropListAlpha];
+                class.aveValue = speed;
                 [thm.classes addObject:class];thm.numDesiredClasses++;
             }
             
@@ -1526,6 +1527,7 @@ int getThemeOpt(ThemeTypes type)
 {
     BOOL rtn = FALSE;
     
+    dc.iClass = class;
     if (class >= 0 && class < _numDesiredClasses)
     {
         ThemeClass *cls =  _classes[class];

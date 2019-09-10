@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, TextFromOption)
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
--(void)displayCircularBoundaryAt:(LLPOINT)pt
+-(double)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radius
                        lineWidth:(CGFloat)lineWidth
                           asMask:(CGFloat)mask
