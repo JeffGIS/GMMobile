@@ -51,6 +51,7 @@
 #import "CCodeLibrary/FTPDirectoryList.h"
 #import "CCodeLibrary/YTPlayerView.h"
 #import "CCodeLibrary/RiteHome.h"
+#import "CCodeLibrary/NVEmailFileList.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -406,7 +407,6 @@
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
         CRAPI.sharedInstance.setToAlleyWalls = NO;
     }
-    
     [self vectorViewRefresh];
 }
 
@@ -5855,7 +5855,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectEmailPDF
 {
-    [self emailPDF:YES];
+    [NVEmailFileList sendFileList:self];
+    //[self emailPDF:YES];
 }
 
 - (void)mapToolbarDidSelectHelpButton

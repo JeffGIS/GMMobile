@@ -101,7 +101,7 @@
                            useDesc:usedescIN
                          baseLayer:MBL_VotingDistricts];
         nComputes++;
-        if (idist == 2)
+        if (idist == 1)
         {
             dispatch_async(dispatch_get_main_queue(),
                            ^{
@@ -435,6 +435,7 @@ double pixelWeight (int irow, int icol,float **pWeights)
                    baseLayer:(MapitBaseLayer)baseLayer
 
 {
+    BOOL wantDebugFile = NO;
     void *bmData = NULL;
     _baseLayer = baseLayer;
     _iDist = idist;
@@ -517,6 +518,8 @@ displayCharacteristics:dc
                                                   LLBounds:&latlonBounds
                                                 viewBounds:&viewBounds];
     
+    LPTRANDATA pTranViewtoLL = STRANBoundsToCornersP(&cornerPoints, &viewBounds);
+
     int *colorCounts = calloc ((_maxColors+1),sizeof(int));
     double *classValues = calloc ((_maxColors+1),sizeof(double));
     float *pixelWeights = 0;
@@ -534,6 +537,11 @@ displayCharacteristics:dc
     COLORREF_RGB4 maskColor = *pColor;
     _totMaskPixels = 0;
     pixelWeight(width,height,&pixelWeights);
+    if (wantDebugFile)
+    {
+        [CRAPI.sharedInstance clearDebugFile];
+        [CRAPI.sharedInstance addToDebugFile:@"LON\tLAT\tVAL\tWEIGHT"];
+    }
     for (int irow = 0;irow < height;irow++)
     {
         for (int icol = 0;icol < width;icol++)
@@ -562,7 +570,18 @@ displayCharacteristics:dc
             }
             double cv = classValues[iClass];
             double pw = pixelWeight(irow,icol,&pixelWeights);
-            weightedValue += classValues[iClass] * pixelWeight(irow,icol,&pixelWeights);
+            double wval = classValues[iClass] * pixelWeight(irow,icol,&pixelWeights);;
+            if (wval)
+            {
+                weightedValue += wval;
+                if (wantDebugFile)
+                {
+                    DPOINT screenPt = {icol,height-irow};
+                    DPOINT llPt = TranDPOINTP(&screenPt, pTranViewtoLL);
+                    NSString *line = [NSString stringWithFormat:@"%f\t%f\t%.1f\t%f",llPt.x,llPt.y,cv,pw];
+                    [CRAPI.sharedInstance addToDebugFile:line];
+                }
+            }
             pColor++;
         }
     }
@@ -598,6 +617,8 @@ displayCharacteristics:dc
          nil,
          nil,
          nil);*/
+        if (wantDebugFile)
+            [CRAPI.sharedInstance sendDebugFile];
     }
     CGColorSpaceRelease(colorSpace);
     if (bmData)
@@ -607,6 +628,7 @@ displayCharacteristics:dc
     free (colorCounts);
     free (classValues);
     free (pixelWeights);
+    CloseTRANS2P(&pTranViewtoLL);
     ConfigurationControl.sharedInstance.currentApp = saveConfig;
 }
 

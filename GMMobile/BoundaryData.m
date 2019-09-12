@@ -255,6 +255,8 @@
     }
     
     free(llpoints);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     return metersPerPixel;
 }
 
@@ -270,6 +272,8 @@
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
 }
 
 
@@ -375,6 +379,8 @@
  
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
 }
 
 - (void)drawBoundary:(CGContextRef)context
@@ -871,6 +877,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     [self close:opened];
 }
 
@@ -921,7 +929,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         for (int i = 1; i < np; i++)
             CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
         
-        CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
+        //CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
         
         if (!CGContextIsPathEmpty(context))
         {
@@ -1088,6 +1096,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     [self close:opened];
 }
 
@@ -1886,6 +1896,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         }
         [self close:opened];
     }
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     return;
 }
 
@@ -2036,7 +2048,9 @@ NextPass:
         goto NextPass;
     
     [self close:opened];
-    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+
     return nLoaded;
 }
 
@@ -2158,6 +2172,8 @@ NextPass:
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     [self close:opened];
     
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     return nLoaded;
     
 }
@@ -2461,7 +2477,9 @@ NextPass:
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     [self close:opened];
-    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+
     return nLoaded;
     
 }
