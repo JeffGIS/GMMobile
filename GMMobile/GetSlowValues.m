@@ -101,7 +101,7 @@
                            useDesc:usedescIN
                          baseLayer:MBL_VotingDistricts];
         nComputes++;
-        if (idist == 1)
+        if (idist == 0)
         {
             dispatch_async(dispatch_get_main_queue(),
                            ^{
@@ -418,7 +418,10 @@ double pixelWeight (int irow, int icol,float **pWeights)
                 if (d > radius)
                     weights[index] = 0;
                 else
-                    weights[index] = (radius - d) / radius;
+                {
+                    double w = (radius - d) / radius;
+                    weights[index] = w * w * w;
+                }
             }
     }
     else
@@ -435,7 +438,7 @@ double pixelWeight (int irow, int icol,float **pWeights)
                    baseLayer:(MapitBaseLayer)baseLayer
 
 {
-    BOOL wantDebugFile = NO;
+    BOOL wantDebugFile = YES;
     void *bmData = NULL;
     _baseLayer = baseLayer;
     _iDist = idist;
@@ -454,8 +457,8 @@ double pixelWeight (int irow, int icol,float **pWeights)
     MNMXCORD viewBounds;
     
     viewBounds.xmn = 0;
-    viewBounds.ymn = height;
-    viewBounds.xmx = width;
+    viewBounds.ymn = height-1;
+    viewBounds.xmx = width-1;
     viewBounds.ymx = 0;
     CORNERPOINTS cornerPoints = CornerPointsFromLatLonAndDist (latlon,radius);
     LLCORNERPOINTS latlonCornerPoints = LLCornerPointsFromCornerPoints (&cornerPoints);
@@ -530,7 +533,7 @@ displayCharacteristics:dc
     double weightedValue = 0;
     for (ThemeClass *tc in theme.classes)
     {
-        classValues[iClass++]=tc.aveValue;
+        classValues[iClass++]=tc.aveValue*tc.aveValue;
     }
     iClass = _maxColors;
     COLORREF_RGB4 lastColor = *pColor;
@@ -539,8 +542,19 @@ displayCharacteristics:dc
     pixelWeight(width,height,&pixelWeights);
     if (wantDebugFile)
     {
-        [CRAPI.sharedInstance clearDebugFile];
-        [CRAPI.sharedInstance addToDebugFile:@"LON\tLAT\tVAL\tWEIGHT"];
+        [CRAPI.sharedInstance openDebugFile:[NSString stringWithFormat:@"%i",_propNum]];
+        DPOINT screenPt = {width/2,height/2};
+        DPOINT llPt = TranDPOINTP(&screenPt, pTranViewtoLL);
+        NSString *line = [NSString stringWithFormat:@"[CENTER]=%f\t%f;",llPt.x,llPt.y];
+        [CRAPI.sharedInstance writeToDebugFile:line];
+        line = [NSString stringWithFormat:@"[MetersPerPixel]=%f;",metersPerPixel];
+        [CRAPI.sharedInstance writeToDebugFile:line];
+        line = [NSString stringWithFormat:@"Corner Points:%f %f %f %f %f %f %f %f;",cornerPoints.nearLeft.x,cornerPoints.farLeft.x,cornerPoints.farRight.x,cornerPoints.nearRight.x,cornerPoints.nearLeft.y,cornerPoints.farLeft.y,cornerPoints.farRight.y,cornerPoints.nearRight.y];
+        [CRAPI.sharedInstance writeToDebugFile:line];
+        line = [NSString stringWithFormat:@"Viewbounds:%f %f %f %f;",viewBounds.xmn,viewBounds.xmx,viewBounds.ymn,viewBounds.ymx];
+        [CRAPI.sharedInstance writeToDebugFile:line];
+
+        [CRAPI.sharedInstance writeToDebugFile:@"LON\tLAT\tVAL\tWEIGHT\tSCREENx\tSCREENy"];
     }
     for (int irow = 0;irow < height;irow++)
     {
@@ -578,8 +592,8 @@ displayCharacteristics:dc
                 {
                     DPOINT screenPt = {icol,height-irow};
                     DPOINT llPt = TranDPOINTP(&screenPt, pTranViewtoLL);
-                    NSString *line = [NSString stringWithFormat:@"%f\t%f\t%.1f\t%f",llPt.x,llPt.y,cv,pw];
-                    [CRAPI.sharedInstance addToDebugFile:line];
+                    NSString *line = [NSString stringWithFormat:@"%f\t%f\t%.1f\t%f\t%f\t%f",llPt.x,llPt.y,cv,pw,screenPt.x,screenPt.y];
+                    [CRAPI.sharedInstance writeToDebugFile:line];
                 }
             }
             pColor++;
@@ -618,7 +632,10 @@ displayCharacteristics:dc
          nil,
          nil);*/
         if (wantDebugFile)
+        {
+            [CRAPI.sharedInstance closeDebugFile];
             [CRAPI.sharedInstance sendDebugFile];
+        }
     }
     CGColorSpaceRelease(colorSpace);
     if (bmData)

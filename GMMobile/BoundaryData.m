@@ -223,6 +223,7 @@
     llpoints[1] = NewLatLong(pt.lat, pt.lon, radiusInMeters, 0);
     llpoints[1] = TranDPOINTP(&llpoints[1], _pTranLLtoView);
     metersPerPixel = ldistpp(&llpoints[0], &llpoints[1]);
+    metersPerPixel = radiusInMeters / metersPerPixel;
     
     for (int i=0;i<numPoints-1;i++,az+=ainc)
     {
@@ -762,7 +763,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                          current:0
                                            range:1
                                        numRanges:1];
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,CLINE FROM CENTER_LINE,CENTER_LINE_index WHERE CENTER_LINE.id=CENTER_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,CLINE FROM CENTER_LINE,CENTER_LINE_index WHERE CENTER_LINE.id=CENTER_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",// AND CLINE = '52nd Street East:30'",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             break;
         case MBL_Roads:
