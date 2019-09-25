@@ -438,7 +438,7 @@ double pixelWeight (int irow, int icol,float **pWeights)
                    baseLayer:(MapitBaseLayer)baseLayer
 
 {
-    BOOL wantDebugFile = YES;
+    BOOL wantDebugFile = NO;
     void *bmData = NULL;
     _baseLayer = baseLayer;
     _iDist = idist;
