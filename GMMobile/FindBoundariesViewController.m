@@ -448,14 +448,22 @@
             if (_boundaryList.count)
             {
                 cell.textLabel.text = _boundaryList[indexPath.row];
-                cell.textLabel.textColor = UIColor.blackColor;
+                if (@available(iOS 13.0, *)) {
+                    cell.textLabel.textColor = UIColor.labelColor;
+                } else {
+                    cell.textLabel.textColor = UIColor.blackColor;
+                }
                 cell.userInteractionEnabled = YES;
             }
             
             else
             {
                 cell.textLabel.text = @"No Boundaries Types available";
-                cell.textLabel.textColor = UIColor.grayColor;
+                if (@available(iOS 13.0, *)) {
+                    cell.textLabel.textColor = UIColor.secondaryLabelColor;
+                } else {
+                    cell.textLabel.textColor = UIColor.grayColor;
+                }
                 cell.userInteractionEnabled = NO;
             }
         }
@@ -465,15 +473,22 @@
             if (_otherAreas.count)
             {
                 cell.textLabel.text = _otherAreas[indexPath.row];
-                cell.textLabel.textColor = UIColor.blackColor;
+                if (@available(iOS 13.0, *)) {
+                    cell.textLabel.textColor = UIColor.labelColor;
+                } else {
+                    cell.textLabel.textColor = UIColor.blackColor;
+                }
                 cell.userInteractionEnabled = YES;
             }
             
             else
             {
                 cell.textLabel.text = @"No Boundaries Types available";
-                cell.textLabel.textColor = UIColor.grayColor;
-                cell.userInteractionEnabled = NO;
+                if (@available(iOS 13.0, *)) {
+                    cell.textLabel.textColor = UIColor.secondaryLabelColor;
+                } else {
+                    cell.textLabel.textColor = UIColor.grayColor;
+                }                cell.userInteractionEnabled = NO;
             }
         }
         
@@ -503,8 +518,11 @@
             else
             {
                 cell.textLabel.text = @"No Boundaries available";
-                cell.textLabel.textColor = UIColor.grayColor;
-                cell.userInteractionEnabled = NO;
+                if (@available(iOS 13.0, *)) {
+                    cell.textLabel.textColor = UIColor.secondaryLabelColor;
+                } else {
+                    cell.textLabel.textColor = UIColor.grayColor;
+                }                cell.userInteractionEnabled = NO;
             }
         }
     }

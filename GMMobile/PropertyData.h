@@ -104,6 +104,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 @property (nonatomic, copy) NSString *multiValueFile;
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *cenpath;
+@property (nonatomic, copy) NSString *yearAndQuarter;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property long long fileSize;

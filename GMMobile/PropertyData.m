@@ -190,14 +190,28 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     
     SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    if (sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR ver = (LPSTR)sqlite3_column_text(statement, 0);
         _version = [NSString stringWithUTF8String:ver];
     }
     
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
-    return _version;
+    
+    query = [NSString stringWithFormat:@"SELECT YearAndQuarter FROM VERSION"];
+        
+    if (SQLitePrepare(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
+    {
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            LPSTR yandq = (LPSTR)sqlite3_column_text(statement, 0);
+            _yearAndQuarter = [NSString stringWithUTF8String:yandq];
+        }
+        SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    }
+    else
+        _yearAndQuarter = @"Second Quarter 2019";
+return _version;
 }
 
 - (int)parcelDatasetVersion

@@ -575,8 +575,16 @@
     {
         cell.textLabel.text = textBeforeTab(_propOwnerList[indexPath.row]);
         cell.detailTextLabel.text = textAfterLastTab(_propOwnerList[indexPath.row]);
-        cell.textLabel.textColor = UIColor.blackColor;
-        cell.detailTextLabel.textColor = UIColor.blackColor;
+        if (@available(iOS 13.0, *)) {
+            cell.textLabel.textColor = UIColor.labelColor;
+        } else {
+            cell.textLabel.textColor = UIColor.darkGrayColor;
+        }
+        if (@available(iOS 13.0, *)) {
+            cell.detailTextLabel.textColor = UIColor.secondaryLabelColor;
+        } else {
+            cell.detailTextLabel.textColor = UIColor.blackColor;
+        }
         cell.userInteractionEnabled = YES;
     }
     

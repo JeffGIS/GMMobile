@@ -132,6 +132,7 @@
 @property (nonatomic) YTPlayerView *youTubePlayer;
 @property (nonatomic) UIButton *ytReturnButton;
 @property PropertyList *propertyList;
+@property NSString * propYearAndQuarter;
 
 @end
 
@@ -610,6 +611,7 @@
             
             PropertyData *propData = [[PropertyData alloc] init];
             
+            _propYearAndQuarter = propData.yearAndQuarter;
             LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
             MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
             
@@ -1654,6 +1656,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 case CPFParcels_RES:
                 case CPFParcels_COM:{
                     PropertyData *propData = PropertyData.new;
+                    _propYearAndQuarter = propData.yearAndQuarter;
                     propData.zoom = _mapView.camera.zoom;
                     [propData pickParcel:&llpickPt highlightList:highlightList];
                     break;}
@@ -3753,7 +3756,7 @@ viewForHeaderInSection:(NSInteger)section
             break;
         case PropertyTableViewSettingPropertyReport:{
             headerLabel.numberOfLines = 2;
-            headerLabel.text = @"Property Report for\nSecond Quarter 2017";
+            headerLabel.text = [NSString stringWithFormat:@"Property Report for\n%@",_propYearAndQuarter];
             
             CGFloat origin = (height * 0.15);
             height *= 0.7;
@@ -4195,6 +4198,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             if (_infoWindow.marker.type == MarkerInfoWindowTypePID)
             {
                 PropertyData *propData = [[PropertyData alloc] init];
+                _propYearAndQuarter = propData.yearAndQuarter;
                 bounds = [propData getBoundsForPID:_selectedPID];
             
                 llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
@@ -4681,6 +4685,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 {
     PropertyData *pd = PropertyData.new;
     _propertyReport = [pd getReport:PDSettingDefault forPID:_selectedPID];
+    _propYearAndQuarter = pd.yearAndQuarter;
     _tableViewSetting = PropertyTableViewSettingPropertyReport;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.allowsSelection = NO;
