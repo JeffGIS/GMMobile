@@ -2205,7 +2205,8 @@ NextPass:
 
     CGFloat fontSize = 32.0 * screenScale;
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
-    
+    char totalFieldValue[MAX_NVM_TEXT_FIELDS][32];
+    char countText[32];
     BOOL opened = [self open];
     BOOL isParcel = FALSE;
     int  fieldLoc = 0;
@@ -2233,7 +2234,7 @@ NextPass:
         isParcel = TRUE;
         NSString * fields = to.fields;
         fieldLoc = 9;
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,LINKEDPARCEL,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
     {
@@ -2260,6 +2261,7 @@ NextPass:
     CRAPI.sharedInstance.lastAreaText = NSMutableArray.new;
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
+        LPSTR linkedParcel=0;
         int *polyPartLen;
         NSNumber *textFormat[MAX_NVM_TEXT_FIELDS];
         int i=0;
@@ -2287,6 +2289,8 @@ NextPass:
         refno = sqlite3_column_int(statement,i++);
 
         _acres = sqlite3_column_double(statement,i++);
+        if (isParcel)
+            linkedParcel = (LPSTR)sqlite3_column_text(statement,i++);
         int nTextFields = 0;
         i = fieldLoc;
         for (int iField=0;iField<to.numTextFields;iField++)
@@ -2299,6 +2303,75 @@ NextPass:
                     ;
                 else
                     nTextFields++;
+            }
+        }
+        if (linkedParcel && *linkedParcel)
+        {
+            NSString * fields = to.fields;
+            sqlite3_stmt *statement = NULL;
+            int i = 0;
+            query = [NSString stringWithFormat:@"SELECT %@,PIN FROM PROPINFO  WHERE LINKEDPARCEL = '%s'",fields,linkedParcel];
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
+
+            INT64 intTot[MAX_NVM_TEXT_FIELDS] = {0};
+            double dvalTot[MAX_NVM_TEXT_FIELDS] = {0};
+            int count = 0;
+            for (int iField=0;iField<to.numTextFields;iField++)
+            {
+                pTextValue[iField] = countText;
+                textFormat[iField] = [NSNumber numberWithInt:1];
+            }
+
+            while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+            {
+                count++;
+                for (int iField=0;iField<to.numTextFields;iField++)
+                {
+                    LPSTR val = (LPSTR)sqlite3_column_text(statement,iField);
+                    LPSTR nam = (LPSTR)sqlite3_column_name(statement,iField);
+                    if (!stricmp (nam,"EMV_TOTAL"))
+                    {
+                        INT64 ival = sqlite3_column_int64(statement,iField);
+                        intTot[iField] += ival;
+                        textFormat[iField] = [NSNumber numberWithInt:2];
+                    }
+                    else
+                    {
+                        switch (sqlite3_column_type(statement,iField))
+                        {
+                            case SQLITE_INTEGER:
+                            {
+                                INT64 ival = sqlite3_column_int64(statement,iField);
+                                intTot[iField] += ival;
+                            }
+                                break;
+                            case SQLITE_FLOAT:
+                            {
+                                double dval = sqlite3_column_double(statement,iField);
+                                dvalTot[iField] += dval;
+                            }
+                                break;
+                            case SQLITE_TEXT:
+                            case SQLITE_BLOB:
+                            case SQLITE_NULL:
+                                pTextValue[iField] = countText;
+                                textFormat[iField] = [NSNumber numberWithInt:1];
+
+                                break;
+                        }
+                    }
+                    i++;
+                }
+            }
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
+            sprintf (countText,"%i Units",count);
+            for (int iField=0;iField<to.numTextFields;iField++)
+            {
+                if (textFormat[iField] == [NSNumber numberWithInt:2])
+                {
+                    sprintf (totalFieldValue[iField],"%ii",intTot[iField]);
+                    pTextValue[iField] = totalFieldValue[iField];
+                }
             }
         }
         int numNewPoints = 0;
