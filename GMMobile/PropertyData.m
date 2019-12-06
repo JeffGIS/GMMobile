@@ -1913,26 +1913,29 @@ Exit:
         LPSTR pid = (LPSTR)sqlite3_column_text(statement, i++);
         pde.PIN = [NSString stringWithUTF8String:pid];
         //PID = [NSString stringWithUTF8String:pid];
-        homeStead = (LPSTR)sqlite3_column_text(statement, i++);
-        useCode = (LPSTR)sqlite3_column_text(statement, i++);
-        useDesc = (LPSTR)sqlite3_column_text(statement, i++);
-        taxExempt = (LPSTR)sqlite3_column_text(statement, i++);
-        emvTotal = (CGFloat)sqlite3_column_double(statement, i++);
-        emvLand = (CGFloat)sqlite3_column_double(statement, i++);
-        specAssmt = (CGFloat)sqlite3_column_double(statement, i++);
-        owner = (LPSTR)sqlite3_column_text(statement, i++);
-        taxName = (LPSTR)sqlite3_column_text(statement, i++);
-        bldnum = (LPSTR)sqlite3_column_text(statement, i++);
-        unitType = (LPSTR)sqlite3_column_text(statement, i++);
-        unit = (LPSTR)sqlite3_column_text(statement, i++);
-        if (*unitType)
-            pde.unit = [NSString stringWithFormat:@"%s %s",unitType,unit];
-        else
-            pde.unit = [NSString stringWithUTF8String:unit];
-        streetName = (LPSTR)sqlite3_column_text(statement, i++);
-        city = (LPSTR)sqlite3_column_text(statement, i++);
-        saleDate = (LPSTR)sqlite3_column_text(statement, i++);
-        saleVal = (CGFloat)sqlite3_column_double(statement, 14);
+        pde.homeStead = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.useCode = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.useDesc = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.taxExempt = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.emvTotal = sqlite3_column_double(statement, i++);
+        pde.emvLand = sqlite3_column_double(statement, i++);
+        pde.specAssmt = (CGFloat)sqlite3_column_double(statement, i++);
+        pde.ownerName = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.taxName = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.bldgNum = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.unitType = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        if (!pde.unitType.length)
+        {
+            if (pde.useDesc.length)
+                pde.unitType = pde.useDesc;
+            else
+                pde.unitType = pde.useCode;
+        }
+        pde.unit = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.streetName = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.city = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.saleDate = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, i++)];
+        pde.saleVal = (CGFloat)sqlite3_column_double(statement, 14);
         [array addObject:pde];
     }
     SQLOKpd(SQLiteFinalize(statement), _database, 47);

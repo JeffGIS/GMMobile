@@ -6588,11 +6588,11 @@ didSelectPDFButtonWithText:(NSString *)text
                         if ([unitName isEqualToString:@""] || [unitName isEqualToString:@" "])
                         {
                             NSUInteger index = ([_linkedList indexOfObject:ped] + 1);
-                            unitName = [NSString stringWithFormat:@"Select Unit %lu", (unsigned long)index];
+                            unitName = [NSString stringWithFormat:@"Select Unit %lu\n%@: %@", (unsigned long)index,ped.unitType,[CRAPI.sharedInstance.dollarFmt stringFromNumber:[NSNumber numberWithDouble:ped.emvTotal]]];
                         }
                         
                         else
-                            unitName = [NSString stringWithFormat:@"Select Unit %@", unitName];
+                            unitName = [NSString stringWithFormat:@"Select Unit %@\n%@: %@", unitName,ped.unitType,[CRAPI.sharedInstance.dollarFmt stringFromNumber:[NSNumber numberWithDouble:ped.emvTotal]]];
                         
                         [unitList addObject:unitName];
                     }
@@ -6602,6 +6602,7 @@ didSelectPDFButtonWithText:(NSString *)text
                                                                                          title:@"Multi-Unit Property Options"
                                                                                      textArray:unitList
                                                                                  includeCancel:YES];
+                    nvptv.allowsSubtitle = YES;
 #pragma unused(nvptv)
                     return;
                 }

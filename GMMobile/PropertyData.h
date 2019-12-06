@@ -68,6 +68,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 @property NSString* bldgNum;
 @property NSString* streetName;
 @property NSString* unit;
+@property NSString* unitType;
 @property NSString* city;
 @end
 

@@ -2233,7 +2233,7 @@ NextPass:
     {
         isParcel = TRUE;
         NSString * fields = to.fields;
-        fieldLoc = 9;
+        fieldLoc = 10;
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,LINKEDPARCEL,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
@@ -2297,7 +2297,7 @@ NextPass:
         {
             pTextValue[nTextFields] = (LPSTR)sqlite3_column_text(statement,i++);
             textFormat[nTextFields] = to.formats[iField];
-            if (pTextValue[nTextFields] && *pTextValue[nTextFields])
+            if (pTextValue[nTextFields] && strlen(pTextValue[nTextFields]))
             {
                 if (nTextFields && !strcmp (pTextValue[nTextFields],pTextValue[nTextFields-1]))
                     ;
@@ -2369,7 +2369,7 @@ NextPass:
             {
                 if (textFormat[iField] == [NSNumber numberWithInt:2])
                 {
-                    sprintf (totalFieldValue[iField],"%ii",intTot[iField]);
+                    sprintf (totalFieldValue[iField],"%llii",intTot[iField]);
                     pTextValue[iField] = totalFieldValue[iField];
                 }
             }
