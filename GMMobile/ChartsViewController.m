@@ -123,11 +123,17 @@
 - (void)setupPropReport
 {
     CombinedChartView *chart = CombinedChartView.new;
+    chart.chartDescription.enabled = NO;
+    
+    chart.drawGridBackgroundEnabled = NO;
+    chart.drawBarShadowEnabled = NO;
+    chart.highlightFullBarEnabled = NO;
+
     chart.translatesAutoresizingMaskIntoConstraints = NO;
-    //chart.xAxis.labelPosition = XAxisLabelPositionBottom;
+    chart.xAxis.labelPosition = XAxisLabelPositionBottom;
     chart.backgroundColor = UIColor.whiteColor;
-    //chart.chartDescription.text = @"";
-    //chart.legend.font = [UIFont systemFontOfSize:16.0];
+    chart.chartDescription.text = @"";
+    chart.legend.font = [UIFont systemFontOfSize:16.0];
     
     [self.view addSubview:chart];
     [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
@@ -145,15 +151,15 @@
     {
         PropertyHistory *ph = (PropertyHistory *)_propHistoryArray[i];
         double year = (ph.year + 0.5);
-        //ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvTotal];
-        //ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvLand];
-        //ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvBldg];
-        //ChartDataEntry *totalTax = [[ChartDataEntry alloc] initWithX:year y:ph.totalTax];
+        ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvTotal];
+        ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvLand];
+        ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvBldg];
+        ChartDataEntry *totalTax = [[ChartDataEntry alloc] initWithX:year y:ph.totalTax];
         
-//        [emvTotals addObject:emvTotalEntry];
-//        [emvLands addObject:emvLandEntry];
-//        [emvBldgs addObject:emvBldgEntry];
-//        [totalTaxs addObject:totalTax];
+        [emvTotals addObject:emvTotalEntry];
+        [emvLands addObject:emvLandEntry];
+        [emvBldgs addObject:emvBldgEntry];
+        [totalTaxs addObject:totalTax];
         
         if ((ph.saleVal > 0) && (ph.saleVal != _currentSaleVal))
         {
@@ -165,8 +171,8 @@
             
             if (saledate >= 2004.5)
             {
-                //BarChartDataEntry *saleValEntry = [[BarChartDataEntry alloc] initWithX:saledate y:_currentSaleVal];
-                //[saleVals addObject:saleValEntry];
+                BarChartDataEntry *saleValEntry = [[BarChartDataEntry alloc] initWithX:saledate y:_currentSaleVal];
+                [saleVals addObject:saleValEntry];
             }
         }
     }
@@ -175,34 +181,34 @@
     numFormatter.numberStyle = kCFNumberFormatterCurrencyStyle;
     numFormatter.maximumFractionDigits = 0;
     ChartDefaultValueFormatter *chartFormatter = ChartDefaultValueFormatter.new;
-    //chartFormatter.formatter = numFormatter;
+    chartFormatter.formatter = numFormatter;
     
-    //LineChartDataSet *emvTotalData = [[LineChartDataSet alloc] initWithValues:emvTotals label:@"Total EMV"];
-    //emvTotalData.color = UIColor.blueColor;
-    //emvTotalData.circleColor = UIColor.blackColor;
-    //emvTotalData.circleHoleColor = UserDefaults.defaults.appleGray;
-    //emvTotalData.lineWidth = 6.0;
-    //emvTotalData.valueFormatter = chartFormatter;
+    LineChartDataSet *emvTotalData = [[LineChartDataSet alloc] initWithEntries:emvTotals label:@"Total EMV"];
+    emvTotalData.color = UIColor.blueColor;
+    emvTotalData.circleColor = UIColor.blackColor;
+    emvTotalData.circleHoleColor = UserDefaults.defaults.appleGray;
+    emvTotalData.lineWidth = 6.0;
+    emvTotalData.valueFormatter = chartFormatter;
     
-    //LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithValues:emvLands label:@"Land EMV"];
-    //emvLandData.color = UIColor.greenColor;
-    //emvLandData.circleColor = UIColor.blackColor;
-    //emvLandData.circleHoleColor = UserDefaults.defaults.appleGray;
-    //emvLandData.lineWidth = 6.0;
-    //emvLandData.valueFormatter = chartFormatter;
+    LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithEntries:emvLands label:@"Land EMV"];
+    emvLandData.color = UIColor.greenColor;
+    emvLandData.circleColor = UIColor.blackColor;
+    emvLandData.circleHoleColor = UserDefaults.defaults.appleGray;
+    emvLandData.lineWidth = 6.0;
+    emvLandData.valueFormatter = chartFormatter;
     
-   /* LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithValues:emvBldgs label:@"Building EMV"];
+    LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithEntries:emvBldgs label:@"Building EMV"];
     emvBldgData.color = UIColor.redColor;
     emvBldgData.circleColor = UIColor.blackColor;
     emvBldgData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvBldgData.lineWidth = 6.0;
-    emvBldgData.valueFormatter = chartFormatter;*/
+    emvBldgData.valueFormatter = chartFormatter;
     
-   // BarChartDataSet *saleValData = [[BarChartDataSet alloc] initWithValues:saleVals label:@"Sale Values"];
-    //saleValData.color = [UIColor colorWithWhite:0.0 alpha:0.3];
-    //saleValData.valueFormatter = chartFormatter;
+    BarChartDataSet *saleValData = [[BarChartDataSet alloc] initWithEntries:saleVals label:@"Sale Values"];
+    saleValData.color = [UIColor colorWithWhite:0.0 alpha:0.3];
+    saleValData.valueFormatter = chartFormatter;
     
-    /*LineChartDataSet *totalTaxData = [[LineChartDataSet alloc] initWithValues:totalTaxs label:@"Total Tax"];
+    LineChartDataSet *totalTaxData = [[LineChartDataSet alloc] initWithEntries:totalTaxs label:@"Total Tax"];
     totalTaxData.color = UIColor.orangeColor;
     totalTaxData.circleColor = UIColor.blackColor;
     totalTaxData.circleHoleColor = UserDefaults.defaults.appleGray;
@@ -210,11 +216,11 @@
     totalTaxData.valueFormatter = chartFormatter;
     
     CombinedChartData *data = CombinedChartData.new;
-    //data.lineData = [[LineChartData alloc] initWithDataSets:@[emvTotalData, emvBldgData, emvLandData, totalTaxData]];
-    //data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
-    //chart.data = data;
-    //chart.xAxis.axisMinimum = (chart.chartXMin - 0.5);
-    //chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);*/
+    data.lineData = [[LineChartData alloc] initWithDataSets:@[emvTotalData, emvBldgData, emvLandData, totalTaxData]];
+    data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
+    chart.data = data;
+    chart.xAxis.axisMinimum = (chart.chartXMin - 0.5);
+    chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);
 }
 
 - (void)setupPieCensusData
