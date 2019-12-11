@@ -2152,7 +2152,7 @@ Exit:
         pIntsInit = pInts = (LPINT)malloc(nYears * 8 * 4);
         fseek(fid, offset, SEEK_SET);
         BigReadF(fid, &compressedSize, 4);
-        pCompressed = malloc(compressedSize);
+        pCompressed = malloc(compressedSize+2);
         BigReadF(fid, pCompressed, compressedSize);
         fclose(fid);
         decompressedSize = DecompressBinaryRecordUnsafe((LPBYTE)pInts, pCompressed, compressedSize);
