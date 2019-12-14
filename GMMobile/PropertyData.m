@@ -78,6 +78,10 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
 
 @end
 
+@implementation SalesData
+
+@end
+
 
 @interface PropertyData ()
 
@@ -2194,7 +2198,8 @@ Exit:
             ph.specAsses = pYearly[iyear].SPEC_ASSES;
             ph.saledate = pYearly[iyear].SALE_YEAR;
             ph.saleVal = pYearly[iyear].SALE_VALUE;
-            [values addObject:ph];
+            if (ph.emvTotal || ph.totalTax)
+                [values addObject:ph];
         }
         
         free (pYearly);
@@ -2202,6 +2207,61 @@ Exit:
         free (pCompressed);
     }
     
+    [self close:opened];
+    return values.copy;
+}
+- (NSArray *)getSalesHistoryForPropMatching:(NSString *)PID
+                                 inAreaType:(NSString *)areaType
+{
+    BOOL opened = [self open];
+    NSMutableArray *values = NSMutableArray.array;
+    NSString *useDesc = @"";
+    NSString * censusBlock=@"";
+    sqlite3_stmt *statement = NULL;
+
+    NSString *query = [NSString stringWithFormat:@"SELECT USECLASS1, CENBLOCK FROM PROPINFO WHERE PIN = '%@'",PID];
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR usedesc = (LPSTR)sqlite3_column_text(statement, 0);
+        useDesc = [NSString stringWithUTF8String:usedesc];
+        LPSTR cblock = (LPSTR)sqlite3_column_text(statement, 1);
+        censusBlock = [NSString stringWithUTF8String:cblock];
+    }
+    SQLOKpd(SQLiteFinalize(statement), _database, 47);
+    
+
+    if ([areaType isEqualToString:@"BLOCKGROUP"])
+    {
+        censusBlock = [censusBlock substringToIndex:12];
+        query = [NSString stringWithFormat:@"SELECT PIN,SALE_DATE,SALE_VALUE, EMV_TOTAL FROM PROPINFO WHERE USECLASS1 = '%@' AND (CENBLOCK>='%@000' AND CENBLOCK<='%@999')",useDesc,censusBlock,censusBlock];
+    }
+    else if ([areaType isEqualToString:@"BLOCK"])
+        query = [NSString stringWithFormat:@"SELECT PIN,SALE_DATE,SALE_VALUE, EMV_TOTAL  FROM PROPINFO WHERE USECLASS1 = '%@' AND CENBLOCK='%@'",useDesc,censusBlock];
+    else
+        goto Exit;
+    
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        SalesData *sd = SalesData.new;
+        
+        LPSTR val = (LPSTR)sqlite3_column_text(statement, 0);
+        sd.PIN = [NSString stringWithUTF8String:val];
+        val = (LPSTR)sqlite3_column_text(statement, 1);
+        sd.date = atoi (val);
+        val = (LPSTR)sqlite3_column_text(statement, 2);
+        sd.saleVal = atoi (val);
+        val = (LPSTR)sqlite3_column_text(statement, 3);
+        sd.totalEMV = atoi (val);
+        if (sd.saleVal > 0)
+            [values addObject:sd];
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 47);
+    
+Exit:
     [self close:opened];
     return values.copy;
 }
@@ -2514,8 +2574,6 @@ Exit:
                 
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
-                
-                //SQLOKpd(SQLiteFinalize(statement),_database, 57);
                 
                 RiteHomeCompute *rhCompute = RiteHomeCompute.new;
                 rhCompute.propData = self;

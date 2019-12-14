@@ -3991,6 +3991,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self showPropHistory];
     }
     
+    else if ([text isEqualToString:@"Sales History (Block)"])
+    {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingSalesHistoryBlock forKey:@"PIDOption"];
+        [self showSalesHistory];
+    }
+    
     else if ([text isEqualToString:@"Zillow Property Record"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingZillow forKey:@"PIDOption"];
@@ -4698,6 +4704,14 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 {
     ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypePropReport];
     chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:_selectedPID];
+    [self presentViewController:chartsVC animated:YES completion:nil];
+}
+
+- (void)showSalesHistory
+{
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeSalesHistory];
+    chartsVC.salesHistoryArray = [PropertyData.new getSalesHistoryForPropMatching:_selectedPID
+                                                                      inAreaType:@"BLOCK"];
     [self presentViewController:chartsVC animated:YES completion:nil];
 }
 
@@ -6610,7 +6624,7 @@ didSelectPDFButtonWithText:(NSString *)text
             
             _selectedPID = title;
             
-            _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record",
+            _options = @[@"", @"Property Report", @"Property History", @"Sales History (Block)", @"Zillow Property Record",
                          @"Display Google Street View", @"Display Bing Streetside",
                          @"Set as Target Parcel", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Trip Time Profile"];

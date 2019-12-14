@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
 {
     ChartsViewTypeDefault,
     ChartsViewTypePropReport,
+    ChartsViewTypeSalesHistory,
     ChartsViewTypeCensusDataPie,
     ChartsViewTypeCensusDataBar,
     ChartsViewTypeCensusDataLine,
@@ -23,6 +24,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
 @interface ChartsViewController : UIViewController
 
 @property (nonatomic, copy) NSArray *propHistoryArray;
+@property (nonatomic, copy) NSArray *salesHistoryArray;
 @property CLLocationCoordinate2D toDestination, fromDestination;
 @property (nonatomic, copy) NSString *areaType, *geoid;
 @property int startTime, endTime, interval;

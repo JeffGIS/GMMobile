@@ -93,6 +93,13 @@ typedef NS_ENUM(NSInteger, ActionOption)
 @property double x,y;
 @end
 
+@interface SalesData : NSObject
+@property int date;
+@property int saleVal;
+@property int totalEMV;
+@property NSString * PIN;
+@end
+
 @interface PropertyData : NSObject
 
 @property (nonatomic, weak) id <PropertyDataDelegate> delegate;
@@ -195,7 +202,9 @@ typedef NS_ENUM(NSInteger, ActionOption)
                                numPoints:(int *)numPoints
                                 numLoops:(int *)numLoops
                              polyPartLen:(int **)polyPartLen;
--(NSArray*)getLinkedParcels:(NSString*)pid;
+- (NSArray*)getLinkedParcels:(NSString*)pid;
 
+- (NSArray*)getSalesHistoryForPropMatching:(NSString *)PID
+                                inAreaType:(NSString *)areaType;
 
 @end

@@ -10,6 +10,8 @@ typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
     PropertyTableViewSettingOptions,
     PropertyTableViewSettingPropertyReport,
     PropertyTableViewSettingPropertyHistory,
+    PropertyTableViewSettingSalesHistoryBlock,
+    PropertyTableViewSettingSalesHistoryBlockGroup,
     PropertyTableViewSettingCountyRecord,
     PropertyTableViewSettingZillow,
     PropertyTableViewSettingStreetView,

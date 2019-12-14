@@ -64,6 +64,7 @@
     self.view.backgroundColor = UserDefaults.defaults.appleGray;
     _currentSaleVal = 0;
     
+    self.title = @"Property and Sales Data";
     _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _returnButton.translatesAutoresizingMaskIntoConstraints = NO;
     _returnButton.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
@@ -100,6 +101,9 @@
         case ChartsViewTypeTimeLine:
             [self setupTimeLine];
             break;
+        case ChartsViewTypeSalesHistory:
+            [self setupSalesHistory];
+            break;
         default:
             break;
     }
@@ -123,8 +127,8 @@
 - (void)setupPropReport
 {
     CombinedChartView *chart = CombinedChartView.new;
-    chart.chartDescription.enabled = NO;
-    
+    chart.chartDescription.enabled = YES;
+    chart.delegate = self;
     chart.drawGridBackgroundEnabled = NO;
     chart.drawBarShadowEnabled = NO;
     chart.highlightFullBarEnabled = NO;
@@ -133,6 +137,7 @@
     chart.xAxis.labelPosition = XAxisLabelPositionBottom;
     chart.backgroundColor = UIColor.whiteColor;
     chart.chartDescription.text = @"";
+    chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
     
     [self.view addSubview:chart];
@@ -183,32 +188,32 @@
     ChartDefaultValueFormatter *chartFormatter = ChartDefaultValueFormatter.new;
     chartFormatter.formatter = numFormatter;
     
-    LineChartDataSet *emvTotalData = [[LineChartDataSet alloc] initWithEntries:emvTotals label:@"Total EMV"];
+    LineChartDataSet *emvTotalData = [[LineChartDataSet alloc] initWithEntries:emvTotals label:@"Total EMV      "];
     emvTotalData.color = UIColor.blueColor;
     emvTotalData.circleColor = UIColor.blackColor;
     emvTotalData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvTotalData.lineWidth = 6.0;
     emvTotalData.valueFormatter = chartFormatter;
     
-    LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithEntries:emvLands label:@"Land EMV"];
+    LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithEntries:emvLands label:@"Land EMV      "];
     emvLandData.color = UIColor.greenColor;
     emvLandData.circleColor = UIColor.blackColor;
     emvLandData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvLandData.lineWidth = 6.0;
     emvLandData.valueFormatter = chartFormatter;
     
-    LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithEntries:emvBldgs label:@"Building EMV"];
+    LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithEntries:emvBldgs label:@"Building EMV      "];
     emvBldgData.color = UIColor.redColor;
     emvBldgData.circleColor = UIColor.blackColor;
     emvBldgData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvBldgData.lineWidth = 6.0;
     emvBldgData.valueFormatter = chartFormatter;
     
-    BarChartDataSet *saleValData = [[BarChartDataSet alloc] initWithEntries:saleVals label:@"Sale Values"];
-    saleValData.color = [UIColor colorWithWhite:0.0 alpha:0.3];
+    BarChartDataSet *saleValData = [[BarChartDataSet alloc] initWithEntries:saleVals label:@"Sale Values      "];
+    saleValData.color = UIColor.blackColor;
     saleValData.valueFormatter = chartFormatter;
     
-    LineChartDataSet *totalTaxData = [[LineChartDataSet alloc] initWithEntries:totalTaxs label:@"Total Tax"];
+    LineChartDataSet *totalTaxData = [[LineChartDataSet alloc] initWithEntries:totalTaxs label:@"Total Tax      "];
     totalTaxData.color = UIColor.orangeColor;
     totalTaxData.circleColor = UIColor.blackColor;
     totalTaxData.circleHoleColor = UserDefaults.defaults.appleGray;
@@ -218,6 +223,7 @@
     CombinedChartData *data = CombinedChartData.new;
     data.lineData = [[LineChartData alloc] initWithDataSets:@[emvTotalData, emvBldgData, emvLandData, totalTaxData]];
     data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
+    [data.barData setValueFont:[UIFont fontWithName:@"HelveticaNeue-Bold" size:14.f]];
     chart.data = data;
     chart.xAxis.axisMinimum = (chart.chartXMin - 0.5);
     chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);
@@ -263,6 +269,123 @@
     //dataSet.valueFont = [UIFont systemFontOfSize:18.0];
     //PieChartData *data = [[PieChartData alloc] initWithDataSet:dataSet];
     //chart.data = data;
+}
+- (void)setupSalesHistory
+{
+    BarChartView *chart = BarChartView.new;
+    chart.translatesAutoresizingMaskIntoConstraints = NO;
+    chart.backgroundColor = UIColor.whiteColor;
+    chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
+    chart.legend.font = [UIFont systemFontOfSize:16.0];
+    chart.pinchZoomEnabled = NO;
+    chart.dragEnabled = NO;
+    chart.scaleXEnabled = NO;
+    chart.scaleYEnabled = NO;
+    
+    [self.view addSubview:chart];
+    [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [chart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    
+    CensusData *cd = CensusData.new;
+    NSArray *males = [cd getCensusChartFieldValues:CAVMalesByAge areaType:_areaType geoID:_geoid];
+    NSArray *females = [cd getCensusChartFieldValues:CAVFemalesByAge areaType:_areaType geoID:_geoid];
+    NSMutableArray *totalsArray = NSMutableArray.array;
+    NSMutableArray *malesArray = NSMutableArray.array;
+    NSMutableArray *femalesArray = NSMutableArray.array;
+    double totalTotals = 0, totalMales = 0, totalFemales = 0;
+    double totalSumAge = 0, malesSumAge = 0, femalesSumAge = 0;
+    double largestValue = 0, barWidth = 1.5;
+    
+    for (int i = 0; i < males.count; i++)
+    {
+        NSString *label = textBefore(males[i], @"\x03");
+        NSArray *tokens = [label componentsSeparatedByString:@" "];
+        double last = [tokens[2] doubleValue];
+        double age = 0;
+        
+        if ([tokens containsObject:@"to"])
+        {
+            double first = [tokens[0] doubleValue];
+            age = ((first + last) / 2.0);
+        }
+        
+        else
+            age = (last + 2);
+        
+        double malesValue = [textAfter(males[i], @"\x03") doubleValue];
+        double femalesValue = [textAfter(females[i], @"\x03") doubleValue];
+        double totalValue = (malesValue + femalesValue);
+        largestValue = MAX(largestValue, totalValue);
+        totalTotals += totalValue;
+        totalMales += malesValue;
+        totalFemales += femalesValue;
+        totalSumAge += (totalValue * age);
+        malesSumAge += (malesValue * age);
+        femalesSumAge += (femalesValue * age);
+        
+        BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:age y:totalValue];
+        [totalsArray addObject:data];
+        data = [[BarChartDataEntry alloc] initWithX:(age - barWidth) y:malesValue];
+        [malesArray addObject:data];
+        data = [[BarChartDataEntry alloc] initWithX:(age + barWidth) y:femalesValue];
+        [femalesArray addObject:data];
+    }
+    
+    double totalMean = (totalSumAge / totalTotals);
+    double malesMean = (malesSumAge / totalMales);
+    double femalesMean = (femalesSumAge / totalFemales);
+    double topOfChart = (largestValue * 1.1);
+    NSArray *meanDashPattern = @[([NSNumber numberWithInt:4]), ([NSNumber numberWithInt:2])];
+    
+    //BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@"Total"];
+    //totalSet.color = NVColor.darkGreenColor;
+    //BarChartDataSet *maleSet = [[BarChartDataSet alloc] initWithValues:malesArray.copy label:@"Male"];
+    //maleSet.color = NVColor.blueColor;
+    //BarChartDataSet *femaleSet = [[BarChartDataSet alloc] initWithValues:femalesArray.copy label:@"Female"];
+    //femaleSet.color = NVColor.deepPinkColor;
+    
+    ChartDataEntry *totalMean1 = [[ChartDataEntry alloc] initWithX:totalMean y:topOfChart];
+    ChartDataEntry *totalMean2 = [[ChartDataEntry alloc] initWithX:totalMean y:0];
+    //LineChartDataSet *totalMeanSet = [[LineChartDataSet alloc] initWithValues:@[totalMean1, totalMean2] label:@""];
+    //totalMeanSet.color = NVColor.darkGreenColor;
+    //totalMeanSet.lineWidth = 2.0;
+    //totalMeanSet.lineDashLengths = meanDashPattern;
+    //totalMeanSet.drawCirclesEnabled = NO;
+    
+    ChartDataEntry *malesMean1 = [[ChartDataEntry alloc] initWithX:malesMean y:topOfChart];
+    ChartDataEntry *malesMean2 = [[ChartDataEntry alloc] initWithX:malesMean y:0];
+    //LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[malesMean1, malesMean2] label:@""];
+    //malesMeanSet.color = NVColor.blueColor;
+    //malesMeanSet.lineWidth = 2.0;
+    //malesMeanSet.lineDashLengths = meanDashPattern;
+    //malesMeanSet.drawCirclesEnabled = NO;
+    
+    ChartDataEntry *femalesMean1 = [[ChartDataEntry alloc] initWithX:femalesMean y:topOfChart];
+    ChartDataEntry *femalesMean2 = [[ChartDataEntry alloc] initWithX:femalesMean y:0];
+    //LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[femalesMean1, femalesMean2] label:@""];
+    //femalesMeanSet.color = NVColor.deepPinkColor;
+    //femalesMeanSet.lineWidth = 2.0;
+    //femalesMeanSet.lineDashLengths = meanDashPattern;
+    //femalesMeanSet.drawCirclesEnabled = NO;
+    
+    /*CombinedChartData *data = CombinedChartData.new;
+    data.lineData = [[LineChartData alloc] initWithDataSets:@[totalMeanSet, malesMeanSet, femalesMeanSet]];
+    data.barData = [[BarChartData alloc] initWithDataSets:@[totalSet, maleSet, femaleSet]];
+    data.barData.barWidth = barWidth;
+    data.drawValues = NO;
+    chart.drawOrder = @[([NSNumber numberWithInt:(CombinedChartDrawOrderLine)]), ([NSNumber numberWithInt:CombinedChartDrawOrderBar])];
+    chart.data = data;*/
+    
+    chart.xAxis.axisMinimum = (chart.chartXMin - barWidth);
+    chart.xAxis.axisMaximum = (chart.chartXMax + barWidth);
+    chart.xAxis.labelCount = 18;
+    chart.leftAxis.axisMaximum = (largestValue * 1.1);
+    chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
+    chart.chartDescription.font = [UIFont systemFontOfSize:20.0];
+    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@\nMales:%.0f, Females:%.0f, Total:%.0f",
+                                   _areaType, _geoid, totalMales, totalFemales, totalTotals];
 }
 
 - (void)setupBarCensusData
@@ -660,7 +783,8 @@
                      entry:(ChartDataEntry *)entry
                  highlight:(ChartHighlight *)highlight
 {
-    /*if (![self.view.subviews containsObject:_alert])
+    ii=1;
+    if (![self.view.subviews containsObject:_alert])
     {
         int refno = [(NSNumber *)entry.data intValue];
         
@@ -686,7 +810,7 @@
             _alert.tag = refno;
             _currentEntry = entry;
         }
-    }*/
+    }
 }
 
 - (void)alertView:(NVAlertView *)alertView
