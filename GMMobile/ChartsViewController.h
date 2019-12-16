@@ -46,5 +46,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
                                       color:(NVColor *)color;
 
 + (instancetype)chartViewWithType:(ChartsViewType)type;
++ (instancetype)chartViewWithType:(ChartsViewType)type
+                          andData:(NSArray *)data;
 
 @end

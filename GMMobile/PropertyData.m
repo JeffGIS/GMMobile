@@ -2126,17 +2126,33 @@ Exit:
     NSMutableArray *values = NSMutableArray.array;
     LPYEARLYVALUES pYearly;
     int nYears =  0, firstYear = 0, lastYear = 0, offset = 0;
+    int saleDate = 0, saleValue=0, EMVTotal=0, EMVLand=0,EMVBldg=0,totalTax= 0, taxCapacity = 0,specAsses = 0, homestead;
     BOOL opened = [self open];
     
     sqlite3_stmt *statement = NULL;
     
-    NSString *query = [NSString stringWithFormat:@"SELECT MULTIYEAROFFSET FROM PROPINFO WHERE PIN = '%@'",PID];
+    NSString *query = [NSString stringWithFormat:@"SELECT MULTIYEAROFFSET,SALE_DATE,SALE_VALUE, EMV_TOTAL,EMV_LAND,EMV_BLDG,HOMESTEAD,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES FROM PROPINFO WHERE PIN = '%@'",PID];
     
     SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
-        offset = sqlite3_column_int(statement, 0);
-    
+    {
+        PropertyHistory *ph = PropertyHistory.new;
+
+        int i=0;
+        offset = sqlite3_column_int(statement, i++);
+        ph.saledate = sqlite3_column_int(statement, i++);
+        ph.saleVal = sqlite3_column_int(statement, i++);
+        ph.emvTotal = sqlite3_column_int(statement, i++);
+        ph.emvLand= sqlite3_column_int(statement, i++);
+        ph.emvBldg = sqlite3_column_int(statement, i++);
+        ph.homestead = sqlite3_column_int(statement, i++);
+        ph.taxCapacity = sqlite3_column_int(statement, i++);
+        ph.totalTax = sqlite3_column_int(statement, i++);
+        ph.specAsses = sqlite3_column_int(statement, i++);
+        ph.year = CURRENT_EXTRACT_DATE / 10000;
+        [values addObject:ph];
+    }
     SQLOKpd(SQLiteFinalize(statement), _database, 47);
     
     if (offset)
@@ -2198,7 +2214,7 @@ Exit:
             ph.specAsses = pYearly[iyear].SPEC_ASSES;
             ph.saledate = pYearly[iyear].SALE_YEAR;
             ph.saleVal = pYearly[iyear].SALE_VALUE;
-            if (ph.emvTotal || ph.totalTax)
+            if (ph.emvTotal && ph.totalTax)
                 [values addObject:ph];
         }
         
@@ -2209,6 +2225,37 @@ Exit:
     
     [self close:opened];
     return values.copy;
+}
+
+int dayOfYear (NSString *sdate)
+{
+// Calculate Day of the Year
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyyMMdd"];
+    NSDate *dateFromString = [dateFormatter dateFromString:sdate];
+    int daysSince2000 = dateFromString.timeIntervalSince1970;
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSUInteger dayOfYear = [gregorian ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitYear forDate:dateFromString];
+    return dayOfYear;
+}
+int DaysSince1970 (NSString *sdate)
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyyMMdd"];
+    NSDate *dateFromString = [dateFormatter dateFromString:sdate];
+    int daysSince1970 = dateFromString.timeIntervalSince1970;
+    daysSince1970 /= (24 * 60 * 60);
+    return daysSince1970;
+}
+
+int DaysSince2004(NSString *sdate)
+{
+    static int i2004 = 0;
+    
+    if (!i2004)
+        i2004 = DaysSince1970 (@"20040101");
+    int days = DaysSince1970(sdate);
+    return days - i2004;                           
 }
 - (NSArray *)getSalesHistoryForPropMatching:(NSString *)PID
                                  inAreaType:(NSString *)areaType
@@ -2246,17 +2293,32 @@ Exit:
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         SalesData *sd = SalesData.new;
-        
         LPSTR val = (LPSTR)sqlite3_column_text(statement, 0);
         sd.PIN = [NSString stringWithUTF8String:val];
         val = (LPSTR)sqlite3_column_text(statement, 1);
-        sd.date = atoi (val);
+        sd.date = [NSString stringWithUTF8String:val];
         val = (LPSTR)sqlite3_column_text(statement, 2);
         sd.saleVal = atoi (val);
         val = (LPSTR)sqlite3_column_text(statement, 3);
         sd.totalEMV = atoi (val);
         if (sd.saleVal > 0)
-            [values addObject:sd];
+        {
+            int saleYear = sd.date.integerValue / 10000;
+            if (saleYear > 2003)
+            {
+                sd.daysSince2004 = DaysSince2004 (sd.date);
+
+                NSArray * propHistory = [self getParcelHistory:sd.PIN];
+                for (PropertyHistory *ph in propHistory)
+                {
+                    if (ph.year == saleYear)
+                    {
+                        sd.totalEMV = ph.emvTotal;
+                    }
+                }
+                [values addObject:sd];
+            }
+        }
     }
     
     SQLOKpd(SQLiteFinalize(statement), _database, 47);
@@ -2409,7 +2471,7 @@ Exit:
             
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT ANUMBER,STREETNAME,SUB_TYPE1,SUB_ID1,CTU_NAME,POSTCOMM,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USECLASS1,USECLASS2,USECLASS3,USECLASS4,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD,OWN_ADD_L1,OWN_ADD_L2,OWN_ADD_L3,TAX_ADD_L1,TAX_ADD_L2,TAX_ADD_L3,MULTIYEAROFFSET FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+            NSString *query = [NSString stringWithFormat:@"SELECT ANUMBER,STREETNAME,SUB_TYPE1,SUB_ID1,CTU_NAME,POSTCOMM,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USECLASS1,USECLASS2,USECLASS3,USECLASS4,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,YEAR_BUILT,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD,OWN_ADD_L1,OWN_ADD_L2,OWN_ADD_L3,TAX_ADD_L1,TAX_ADD_L2,TAX_ADD_L3,MULTIYEAROFFSET FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
             SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 56);
@@ -2442,6 +2504,7 @@ Exit:
                 LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, i++);
                 CGFloat landEMV = sqlite3_column_double(statement, i++);
                 CGFloat bldgEMV = sqlite3_column_double(statement, i++);
+                LPSTR  yearBuilt = (LPSTR)sqlite3_column_text(statement, i++);
                 CGFloat totalEMV = sqlite3_column_double(statement, i++);
                 CGFloat taxCapac = sqlite3_column_double(statement, i++);
                 CGFloat totalTax = sqlite3_column_double(statement, i++);
@@ -2503,9 +2566,6 @@ Exit:
                 line = [NSString stringWithFormat:@":%s", taxAdd3];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
-                [report addObject:line];
-                
                 /* if (acresPoly > 0 && landEMV > 0)
                  {
                  line = [NSString stringWithFormat:@"Land EMV per Acre:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV/acresPoly]]];
@@ -2518,7 +2578,13 @@ Exit:
                 line = [NSString stringWithFormat:@"Sale Value:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)saleValue]]];
                 [report addObject:line];
                 
+                line = [NSString stringWithFormat:@"Year Built:%s", yearBuilt];
+                [report addObject:line];
+                
                 line = [NSString stringWithFormat:@"Building EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)bldgEMV]]];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Total EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalEMV]]];

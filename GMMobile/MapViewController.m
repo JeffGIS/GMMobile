@@ -4709,9 +4709,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showSalesHistory
 {
-    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeSalesHistory];
-    chartsVC.salesHistoryArray = [PropertyData.new getSalesHistoryForPropMatching:_selectedPID
-                                                                      inAreaType:@"BLOCK"];
+    NSArray *salesData = [PropertyData.new getSalesHistoryForPropMatching:_selectedPID
+                                                               inAreaType:@"BLOCK"];
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeSalesHistory
+                                                                     andData:salesData];
     [self presentViewController:chartsVC animated:YES completion:nil];
 }
 

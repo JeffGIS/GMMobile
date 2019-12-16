@@ -8,6 +8,8 @@
 #import "CCodeLibrary/NVDestinationOptions.h"
 #import "CCodeLibrary/NVTextVC.h"
 #import "CrimeList.h"
+#import <Charts/Charts.h>
+
 @import Charts;
 
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate,ChartViewDelegate,NVAlertViewDelegate>
@@ -33,6 +35,13 @@
     ChartsViewController *chartsVC = ChartsViewController.new;
     chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     chartsVC.type = type;
+    return chartsVC;
+}
++ (instancetype)chartViewWithType:(ChartsViewType)type
+                          andData:(NSArray *)data
+{
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:type];
+    chartsVC.salesHistoryArray = data;
     return chartsVC;
 }
 
@@ -64,8 +73,7 @@
     self.view.backgroundColor = UserDefaults.defaults.appleGray;
     _currentSaleVal = 0;
     
-    self.title = @"Property and Sales Data";
-    _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+     _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _returnButton.translatesAutoresizingMaskIntoConstraints = NO;
     _returnButton.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
     _returnButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -126,6 +134,8 @@
 
 - (void)setupPropReport
 {
+    self.title = @"Property and Sales Data";
+
     CombinedChartView *chart = CombinedChartView.new;
     chart.chartDescription.enabled = YES;
     chart.delegate = self;
@@ -272,15 +282,18 @@
 }
 - (void)setupSalesHistory
 {
+    self.title = @"Block Sales History";
+
     BarChartView *chart = BarChartView.new;
+    chart.delegate = self;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
-    chart.pinchZoomEnabled = NO;
-    chart.dragEnabled = NO;
-    chart.scaleXEnabled = NO;
-    chart.scaleYEnabled = NO;
+    chart.pinchZoomEnabled = YES;
+    chart.dragEnabled = YES;
+    chart.scaleXEnabled = YES;
+    chart.scaleYEnabled = YES;
     
     [self.view addSubview:chart];
     [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
@@ -288,57 +301,63 @@
     [chart constrainTopToAnchor:_returnButton.bottomAnchor];
     [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
-    CensusData *cd = CensusData.new;
-    NSArray *males = [cd getCensusChartFieldValues:CAVMalesByAge areaType:_areaType geoID:_geoid];
-    NSArray *females = [cd getCensusChartFieldValues:CAVFemalesByAge areaType:_areaType geoID:_geoid];
-    NSMutableArray *totalsArray = NSMutableArray.array;
-    NSMutableArray *malesArray = NSMutableArray.array;
-    NSMutableArray *femalesArray = NSMutableArray.array;
-    double totalTotals = 0, totalMales = 0, totalFemales = 0;
-    double totalSumAge = 0, malesSumAge = 0, femalesSumAge = 0;
-    double largestValue = 0, barWidth = 1.5;
-    
-    for (int i = 0; i < males.count; i++)
+    NSMutableArray *saleValueArray = NSMutableArray.array;
+    NSMutableArray *emvArray = NSMutableArray.array;
+    double totalTotals = 0;
+    double largestValue = 0;
+    BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:0 y:0];
+    [saleValueArray addObject:data];
+    for (SalesData *sd in _salesHistoryArray)
     {
-        NSString *label = textBefore(males[i], @"\x03");
-        NSArray *tokens = [label componentsSeparatedByString:@" "];
-        double last = [tokens[2] doubleValue];
-        double age = 0;
-        
-        if ([tokens containsObject:@"to"])
-        {
-            double first = [tokens[0] doubleValue];
-            age = ((first + last) / 2.0);
-        }
-        
-        else
-            age = (last + 2);
-        
-        double malesValue = [textAfter(males[i], @"\x03") doubleValue];
-        double femalesValue = [textAfter(females[i], @"\x03") doubleValue];
-        double totalValue = (malesValue + femalesValue);
-        largestValue = MAX(largestValue, totalValue);
-        totalTotals += totalValue;
-        totalMales += malesValue;
-        totalFemales += femalesValue;
-        totalSumAge += (totalValue * age);
-        malesSumAge += (malesValue * age);
-        femalesSumAge += (femalesValue * age);
-        
-        BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:age y:totalValue];
-        [totalsArray addObject:data];
-        data = [[BarChartDataEntry alloc] initWithX:(age - barWidth) y:malesValue];
-        [malesArray addObject:data];
-        data = [[BarChartDataEntry alloc] initWithX:(age + barWidth) y:femalesValue];
-        [femalesArray addObject:data];
+        BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:sd.daysSince2004 y:sd.saleVal];
+        largestValue = MAX(largestValue, sd.saleVal);
+        totalTotals += sd.saleVal;
+        [saleValueArray addObject:data];
+        data = [[BarChartDataEntry alloc] initWithX:sd.daysSince2004 y:sd.totalEMV];
+        [emvArray addObject:data];
+        largestValue = MAX(largestValue, sd.totalEMV);
     }
     
-    double totalMean = (totalSumAge / totalTotals);
-    double malesMean = (malesSumAge / totalMales);
-    double femalesMean = (femalesSumAge / totalFemales);
+    double barWidth = 2000;
+    BarChartDataSet *set1 = nil;
+    BarChartDataSet *set2 = nil;
+    if (chart.data.dataSetCount > 0)
+    {
+        set1 = (BarChartDataSet *)chart.data.dataSets[0];
+        [set1 replaceEntries: saleValueArray];
+        [chart.data notifyDataChanged];
+        [chart notifyDataSetChanged];
+    }
+    else
+    {
+        set1 = [[BarChartDataSet alloc] initWithEntries:saleValueArray label:@"Sale Price"];
+        //[set1 setColors:ChartColorTemplates.colorful];
+        set1.drawIconsEnabled = NO;
+        set2 = [[BarChartDataSet alloc] initWithEntries:emvArray label:@"Estimated Market Value"];
+        //[set2 setColors:ChartColorTemplates.material];
+        set2.drawIconsEnabled = NO;
+        set1.colors = @[NVColor.darkGreenColor];
+        set2.colors = @[NVColor.redColor];
+        set1.barBorderWidth = 5;
+        set1.barBorderColor = NVColor.darkGreenColor;
+        NSMutableArray *dataSets = [[NSMutableArray alloc] init];
+        [dataSets addObject:set1];
+        [dataSets addObject:set2];
+
+        BarChartData *data = [[BarChartData alloc] initWithDataSets:dataSets];
+        [data setValueFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:12.f]];
+        
+        barWidth = (data.xMax - data.xMin) / 100;
+        set1.barBorderWidth = barWidth / 10;
+        data.barWidth = barWidth;
+        
+        chart.data = data;
+    }
     double topOfChart = (largestValue * 1.1);
     NSArray *meanDashPattern = @[([NSNumber numberWithInt:4]), ([NSNumber numberWithInt:2])];
-    
+    double totalMean = 0;
+    if (_salesHistoryArray.count)
+        totalMean = totalTotals/_salesHistoryArray.count;
     //BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@"Total"];
     //totalSet.color = NVColor.darkGreenColor;
     //BarChartDataSet *maleSet = [[BarChartDataSet alloc] initWithValues:malesArray.copy label:@"Male"];
@@ -354,16 +373,16 @@
     //totalMeanSet.lineDashLengths = meanDashPattern;
     //totalMeanSet.drawCirclesEnabled = NO;
     
-    ChartDataEntry *malesMean1 = [[ChartDataEntry alloc] initWithX:malesMean y:topOfChart];
-    ChartDataEntry *malesMean2 = [[ChartDataEntry alloc] initWithX:malesMean y:0];
+    //ChartDataEntry *malesMean1 = [[ChartDataEntry alloc] initWithX:malesMean y:topOfChart];
+    //ChartDataEntry *malesMean2 = [[ChartDataEntry alloc] initWithX:malesMean y:0];
     //LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[malesMean1, malesMean2] label:@""];
     //malesMeanSet.color = NVColor.blueColor;
     //malesMeanSet.lineWidth = 2.0;
     //malesMeanSet.lineDashLengths = meanDashPattern;
     //malesMeanSet.drawCirclesEnabled = NO;
     
-    ChartDataEntry *femalesMean1 = [[ChartDataEntry alloc] initWithX:femalesMean y:topOfChart];
-    ChartDataEntry *femalesMean2 = [[ChartDataEntry alloc] initWithX:femalesMean y:0];
+    //ChartDataEntry *femalesMean1 = [[ChartDataEntry alloc] initWithX:femalesMean y:topOfChart];
+    //ChartDataEntry *femalesMean2 = [[ChartDataEntry alloc] initWithX:femalesMean y:0];
     //LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[femalesMean1, femalesMean2] label:@""];
     //femalesMeanSet.color = NVColor.deepPinkColor;
     //femalesMeanSet.lineWidth = 2.0;
@@ -380,12 +399,12 @@
     
     chart.xAxis.axisMinimum = (chart.chartXMin - barWidth);
     chart.xAxis.axisMaximum = (chart.chartXMax + barWidth);
-    chart.xAxis.labelCount = 18;
+    chart.xAxis.labelCount = 10;
     chart.leftAxis.axisMaximum = (largestValue * 1.1);
     chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
     chart.chartDescription.font = [UIFont systemFontOfSize:20.0];
-    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@\nMales:%.0f, Females:%.0f, Total:%.0f",
-                                   _areaType, _geoid, totalMales, totalFemales, totalTotals];
+    chart.chartDescription.text = [NSString stringWithFormat:@"Block Sales History"];
+
 }
 
 - (void)setupBarCensusData
@@ -778,6 +797,30 @@
     tlData.barWidth =  ((tlData.xMax - tlData.xMin) / 100.0);
     _timeLineChart.data = tlData;*/
 }
+- (void)chartViewDidEndPanning:(ChartViewBase *)chartView
+{
+    [chartView notifyDataSetChanged];
+    [chartView setNeedsDisplay];
+}
+ 
+ // Called when nothing has been selected or an "un-select" has been made.
+ //@objc optional func chartValueNothingSelected(_ chartView: ChartViewBase)
+ 
+ // Callbacks when the chart is scaled / zoomed via pinch zoom gesture.
+ //@objc optional func chartScaled(_ chartView: ChartViewBase, scaleX: CGFloat, scaleY: CGFloat)
+- (void)chartScaled:(ChartViewBase *)chartView scaleX:(CGFloat)x scaleY:(CGFloat)y
+ {
+     [chartView setNeedsDisplay];
+ }
+
+ // Callbacks when the chart is moved / translated via drag gesture.
+ //@objc optional func chartTranslated(_ chartView: ChartViewBase, dX: CGFloat, dY: CGFloat)
+- (void) chartTranslated:(ChartViewBase *)chartView  dX: (CGFloat)x dY: (CGFloat)y
+ {
+     [chartView setNeedsDisplay];
+ }
+ // Callbacks when Animator stops animating
+ //@objc optional func chartView(_ chartView: ChartViewBase, animatorDidStop animator: Animator)
 
 - (void)chartValueSelected:(ChartViewBase *)chartView
                      entry:(ChartDataEntry *)entry

@@ -7,6 +7,8 @@
 @import CoreGraphics;
 #import <CoreText/CoreText.h>
 
+#define CURRENT_EXTRACT_DATE 20191001
+
 typedef NS_ENUM(NSInteger, PropDataOption)
 {
     PDSettingDefault,
@@ -94,7 +96,8 @@ typedef NS_ENUM(NSInteger, ActionOption)
 @end
 
 @interface SalesData : NSObject
-@property int date;
+@property NSString * date;
+@property int daysSince2004;
 @property int saleVal;
 @property int totalEMV;
 @property NSString * PIN;
