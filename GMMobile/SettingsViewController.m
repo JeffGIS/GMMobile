@@ -7,7 +7,7 @@
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32
-#define USE_TEST_SERVER YES
+#define USE_TEST_SERVER NO
 
 @interface SettingsViewController ()
 
@@ -183,6 +183,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
                                    if (dataType == GetDatabaseSettingHunting)
                                        toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
+                                   if (dataType == GetDatabaseSettingNVMetro)
+                                       toDirectory = UserDefaults.defaults.nonBackedUpFilePath;
+                                   if (dataType == GetDatabaseSettingCensus)
+                                       toDirectory = UserDefaults.defaults.nonBackedUpFilePath;
                                    if (dataType == GetDatabaseSettingCrimes)
                                    {
                                        CrimeData * cd = [[CrimeData alloc] init];
@@ -698,7 +702,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 - (IBAction)loadNVMetro:(id)sender
 {
-    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
     //NSString *fileName = @"MetroGIS_database.gcf";
     NSString *fileName = @"MetroGIS_propfiles.gcf";
     

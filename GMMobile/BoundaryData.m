@@ -1622,7 +1622,6 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 double dataValue = 0;
                
                 {
-                    landArea = sqlite3_column_double(statement,i++);
                     NSArray * tempArray = [field componentsSeparatedByString:@","];
                     for (int ival = 0;ival < tempArray.count;ival++)
                     {
@@ -1645,6 +1644,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                         }
                         dataValue += v;
                     }
+                    landArea = sqlite3_column_double(statement,i++);
+
                 }
                 if (isParcel)
                 {

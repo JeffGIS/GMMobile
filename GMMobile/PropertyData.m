@@ -107,7 +107,7 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
     
     if (self)
     {
-        _documentsDirectory = UserDefaults.defaults.sharedFilePath;
+        _documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
         _fileName = @"PropertyData.slt";
         _cenfileName = @"censusdata.slt";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];

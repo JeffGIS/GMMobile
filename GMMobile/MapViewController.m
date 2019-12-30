@@ -3994,9 +3994,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Sales History (Block)"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingSalesHistoryBlock forKey:@"PIDOption"];
-        [self showSalesHistory];
+        [self showSalesHistory:@"BLOCK"];
     }
-    
+    else if ([text isEqualToString:@"Sales History (Block Group)"])
+    {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingSalesHistoryBlockGroup forKey:@"PIDOption"];
+        [self showSalesHistory:@"BLOCKGROUP"];
+    }
+
     else if ([text isEqualToString:@"Zillow Property Record"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingZillow forKey:@"PIDOption"];
@@ -4707,10 +4712,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     [self presentViewController:chartsVC animated:YES completion:nil];
 }
 
-- (void)showSalesHistory
+- (void)showSalesHistory:(NSString *)type
 {
     NSArray *salesData = [PropertyData.new getSalesHistoryForPropMatching:_selectedPID
-                                                               inAreaType:@"BLOCK"];
+                                                               inAreaType:type];
     ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeSalesHistory
                                                                      andData:salesData];
     [self presentViewController:chartsVC animated:YES completion:nil];
@@ -6625,7 +6630,7 @@ didSelectPDFButtonWithText:(NSString *)text
             
             _selectedPID = title;
             
-            _options = @[@"", @"Property Report", @"Property History", @"Sales History (Block)", @"Zillow Property Record",
+            _options = @[@"", @"Property Report", @"Property History", @"Sales History (Block)", @"Sales History (Block Group)", @"Zillow Property Record",
                          @"Display Google Street View", @"Display Bing Streetside",
                          @"Set as Target Parcel", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Trip Time Profile"];
