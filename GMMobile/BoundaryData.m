@@ -29,7 +29,7 @@
     
     if (self)
     {
-        _documentsDirectory = UserDefaults.defaults.sharedFilePath;
+        _documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
         _path = [NSBundle.mainBundle pathForResource:@"areapoly"
                                               ofType:@"slt"];
         _MinnesotaPath = [NSBundle.mainBundle pathForResource:@"MinnesotaData"
