@@ -31,8 +31,8 @@ typedef NS_ENUM(int, LandUseClassification)
 
 @interface DATA_FROM_PARCELS : NSObject
 @property  int  nMatchingProperties;
-@property  int  stability_5yr,
-stability_15yr,
+@property  int  stability_5yr, activity_5yr,
+stability_15yr, activity_15yr,
 rankTotEMV,
 pctHomestead,
 medianBuiltYear,

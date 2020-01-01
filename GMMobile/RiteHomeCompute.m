@@ -23,7 +23,7 @@
 
 +(NSString *) parcelFieldList
 {
-    NSString * list = @"ACRES_POLY,USECLASS1,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE, OWNER_NAME, TAX_NAME";
+    NSString * list = @"PIN, ACRES_POLY,USECLASS1,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE, OWNER_NAME, TAX_NAME";
     return list;
 }
 
@@ -39,7 +39,7 @@
     double sumEMV=0;
     double sumAcres=0;
     int medianEMV=0;
-    int now = 2017;
+    int now = _propData.year;
     int nowMinus5 = now - 5,nowMinus10 = now - 10,nowMinus15 = now - 15,nowMinus25 = now - 25;
     int numNewerThan25 = 0;
     int numNewerThan10 = 0;
@@ -47,6 +47,7 @@
 
     int myTotEMV = totEMV;
     int nAge = 0, nSales5yr = 0, nSales15yr = 0;
+    int nAdditionalSales5yr = 0, nAdditionalSales15yr = 0;
     int minSale = INT_MAX;
     CGFloat totYears = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
@@ -59,6 +60,8 @@ Top:
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         int i=0;
+        LPSTR pin = (LPSTR)sqlite3_column_text(statement, i++);
+        NSString * PIN = [NSString stringWithUTF8String:pin];
         CGFloat acres = sqlite3_column_double(statement,i++);
         LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, i++);
@@ -88,13 +91,28 @@ Top:
             if (*saleDate)
             {
                 int date = atoi (saleDate);
+                int lastDate = date;
                 minSale = min (minSale,date);
-                date /= 10000;
-                if (date >= nowMinus5)
+                int idate = date / 10000;
+                if (idate >= nowMinus5)
                     nSales5yr++;
-                if (date >= nowMinus15)
+                if (idate >= nowMinus15)
                     nSales15yr++;
+                NSArray * propHistory = [_propData getParcelHistory:PIN];
+                for (PropertyHistory *ph in propHistory)
+                {
+                    if (ph.saleVal > 0 && ph.saledate != date && ph.saledate != lastDate)
+                    {
+                        int idate = ph.saledate / 10000;
+                        if (idate >= nowMinus5)
+                            nAdditionalSales5yr++;
+                        if (idate >= nowMinus15)
+                            nAdditionalSales15yr++;
+                    }
+                    lastDate = ph.saledate;
+                }
             }
+            
             if (yrBuilt > 1800)
             {
                 if (yrBuilt > nowMinus25)
@@ -135,6 +153,8 @@ Top:
     {
         values.stability_5yr  = IDNINT(100.0-(100.0 * nSales5yr) / values.nMatchingProperties);
         values.stability_15yr = IDNINT(100.0-(100.0 * nSales15yr) / values.nMatchingProperties);
+        values.activity_5yr  = IDNINT((100.0 * (nSales5yr+nAdditionalSales5yr)) / values.nMatchingProperties);
+        values.activity_15yr = IDNINT((100.0 * nSales15yr+nAdditionalSales15yr) / values.nMatchingProperties);
         values.pctNoTax = IDNINT((100.0 * numNoTax) / values.nMatchingProperties);
         values.pctHomestead  = IDNINT((100.0 * nHomestead) / totProp);
     }

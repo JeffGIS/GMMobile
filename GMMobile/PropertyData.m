@@ -210,6 +210,8 @@ int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
         {
             LPSTR yandq = (LPSTR)sqlite3_column_text(statement, 0);
             _yearAndQuarter = [NSString stringWithUTF8String:yandq];
+            LPSTR pYear = strrchr (yandq,' ');
+            _year = atoi (pYear);
         }
         SQLOKpd(SQLiteFinalize(statement), _database, 7);
     }
@@ -2150,7 +2152,7 @@ Exit:
         ph.taxCapacity = sqlite3_column_int(statement, i++);
         ph.totalTax = sqlite3_column_int(statement, i++);
         ph.specAsses = sqlite3_column_int(statement, i++);
-        ph.year = CURRENT_EXTRACT_DATE / 10000;
+        ph.year = _year;
         [values addObject:ph];
     }
     SQLOKpd(SQLiteFinalize(statement), _database, 47);
@@ -2293,17 +2295,20 @@ int DaysSince2004(NSString *sdate)
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         SalesData *sd = SalesData.new;
+        int lastDate = 0;
         LPSTR val = (LPSTR)sqlite3_column_text(statement, 0);
-        sd.PIN = [NSString stringWithUTF8String:val];
+        NSString * PIN = [NSString stringWithUTF8String:val];
+        sd.PIN = PIN;
         val = (LPSTR)sqlite3_column_text(statement, 1);
         sd.date = [NSString stringWithUTF8String:val];
+        lastDate = (int)sd.date.integerValue;
         val = (LPSTR)sqlite3_column_text(statement, 2);
         sd.saleVal = atoi (val);
         val = (LPSTR)sqlite3_column_text(statement, 3);
         sd.totalEMV = atoi (val);
         if (sd.saleVal > 0)
         {
-            int saleYear = sd.date.integerValue / 10000;
+            int saleYear = (int)sd.date.integerValue / 10000;
             if (saleYear > 2003)
             {
                 sd.daysSince2004 = DaysSince2004 (sd.date);
@@ -2315,6 +2320,21 @@ int DaysSince2004(NSString *sdate)
                     {
                         sd.totalEMV = ph.emvTotal;
                     }
+                    if (ph.saleVal > 0 && ph.saledate != sd.date.integerValue && ph.saledate != lastDate)
+                    {
+                        int saleYear = (int)ph.saledate / 10000;
+                        if (saleYear > 2003)
+                        {
+                            SalesData *sd2 = SalesData.new;
+                            sd2.PIN = PIN;
+                            sd2.saleVal = ph.saleVal;
+                            sd2.date = [NSString stringWithFormat:@"%i",ph.saledate];
+                            sd2.daysSince2004 = DaysSince2004 (sd2.date);
+                            sd2.totalEMV = ph.emvTotal;
+                            [values addObject:sd2];
+                        }
+                    }
+                    lastDate = ph.saledate;
                 }
                 [values addObject:sd];
             }

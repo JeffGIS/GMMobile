@@ -7,7 +7,9 @@
 @import CoreGraphics;
 #import <CoreText/CoreText.h>
 
-#define CURRENT_EXTRACT_DATE 20191001
+#define CURRENT_EXTRACT_DATE @"20191001"
+
+int DaysSince2004(NSString *sdate);
 
 typedef NS_ENUM(NSInteger, PropDataOption)
 {
@@ -116,6 +118,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *cenpath;
 @property (nonatomic, copy) NSString *yearAndQuarter;
+@property int year;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property long long fileSize;

@@ -317,7 +317,10 @@
         [emvArray addObject:data];
         largestValue = MAX(largestValue, sd.totalEMV);
     }
-    
+    int daysSinceStart = DaysSince2004 (CURRENT_EXTRACT_DATE);
+    data = [[BarChartDataEntry alloc] initWithX:daysSinceStart y:0];
+    [saleValueArray addObject:data];
+
     double barWidth = 2000;
     BarChartDataSet *set1 = nil;
     BarChartDataSet *set2 = nil;

@@ -549,6 +549,18 @@ NSString * GetPropListDirectory (void)
         case PFT_Stability15yr_blockgroup:
             name = @"Stability (15 year Block Group)";
             break;
+        case PFT_Activity5yr_block:
+            name = @"Activity (5 year Block)";
+            break;
+        case PFT_Activity5yr_blockgroup:
+            name = @"Activity (5 year Block Group)";
+            break;
+        case PFT_Activity15yr_block:
+            name = @"Activity (15 year Block)";
+            break;
+        case PFT_Activity15yr_blockgroup:
+            name = @"Activity (15 year Block Group)";
+            break;
         case PFT_Stability5yr_Mile:
             name = @"Stability (5 year Mile)";
             break;
@@ -1646,12 +1658,16 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_block.medianBuiltYear withCode:PFT_MedianBuiltYear_block];
     [self addInt:values_block.stability_5yr   withCode:PFT_Stability5yr_block];
     [self addInt:values_block.stability_15yr  withCode:PFT_Stability15yr_block];
-    
+    [self addInt:values_block.activity_5yr   withCode:PFT_Activity5yr_block];
+    [self addInt:values_block.activity_15yr  withCode:PFT_Activity15yr_block];
+
     [self addInt:values_blockgroup.rankTotEMV      withCode:PFT_RankEMV_blockgroup];
     [self addInt:values_blockgroup.pctHomestead    withCode:PFT_PctHomestead_blockgroup];
     [self addInt:values_blockgroup.medianBuiltYear withCode:PFT_MedianBuiltYear_blockgroup];
     [self addInt:values_blockgroup.stability_5yr   withCode:PFT_Stability5yr_blockgroup];
     [self addInt:values_blockgroup.stability_15yr  withCode:PFT_Stability15yr_blockgroup];
+    [self addInt:values_blockgroup.activity_5yr   withCode:PFT_Activity5yr_blockgroup];
+    [self addInt:values_blockgroup.activity_15yr  withCode:PFT_Activity15yr_blockgroup];
     [self addInt:speed                             withCode:PFT_StreetSpeedLimit];
 
     rtn = YES;

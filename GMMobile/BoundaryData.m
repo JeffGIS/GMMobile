@@ -1570,7 +1570,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                     query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                     _totRecords = [self getQueryCount:query];
-                    query = [NSString stringWithFormat:@"SELECT %@.id,LANDAREA,LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,HHTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                    query = [NSString stringWithFormat:@"SELECT %@.id,LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,HHTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
                     
                 }
@@ -1585,7 +1585,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 {
                     /*            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];*/
-                    query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM SORTEDVALUES,%@,%@  WHERE %@.id= SORTEDVALUES.ID AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
+                    query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,ACRES_DEED,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM SORTEDVALUES,%@,%@  WHERE %@.id= SORTEDVALUES.ID AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
                              dataTable,polyTable];
                 }
                 else
@@ -1598,6 +1598,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 }
             }
         }
+
         if  ([self continueProcessing])
         {
             CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
@@ -1613,6 +1614,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 double landArea = 0;
+                double deedArea = 0;
                 if (!_currentRec)
                     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
                 int i = 0;
@@ -1622,29 +1624,33 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 double dataValue = 0;
                
                 {
-                    NSArray * tempArray = [field componentsSeparatedByString:@","];
-                    for (int ival = 0;ival < tempArray.count;ival++)
+                    if (field.length > 0)
                     {
-                        double v = 0;
-                        LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
-                        if (!strcmp (type,"CHAR(1)"))
+                        NSArray * tempArray = [field componentsSeparatedByString:@","];
+                        for (int ival = 0;ival < tempArray.count;ival++)
                         {
-                            LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
-                            if (atob (cval))
-                                v = 1;
+                            double v = 0;
+                            LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
+                            if (!strcmp (type,"CHAR(1)"))
+                            {
+                                LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
+                                if (atob (cval))
+                                    v = 1;
+                            }
+                            else if (!strcmp (type,"INT"))
+                            {
+                                v = sqlite3_column_int(statement,i++);
+                            }
+                            else
+                            {
+                                v = sqlite3_column_double(statement,i++);
+                                valuesAreInteger = FALSE;
+                            }
+                            dataValue += v;
                         }
-                        else if (!strcmp (type,"INT"))
-                        {
-                            v = sqlite3_column_int(statement,i++);
-                        }
-                        else
-                        {
-                            v = sqlite3_column_double(statement,i++);
-                            valuesAreInteger = FALSE;
-                        }
-                        dataValue += v;
                     }
                     landArea = sqlite3_column_double(statement,i++);
+                    deedArea = sqlite3_column_double(statement,i++);
 
                 }
                 if (isParcel)
@@ -1674,7 +1680,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 }
                 else
                 {
-                    waterArea = sqlite3_column_double(statement,i++);
+                    waterArea = deedArea;
                     totalPop = sqlite3_column_double(statement,i++);
                     totalHousingUnits = sqlite3_column_double(statement,i++);
                     totalHouseholds = sqlite3_column_double(statement,i++);
