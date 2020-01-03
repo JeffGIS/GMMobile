@@ -1525,7 +1525,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
                 }
                 
-                query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,minX,maxX,minY,maxY FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+                query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,ACRES_DEED,PROPINFO.PIN,GENUSECODE,HOMESTEAD,minX,maxX,minY,maxY FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
             }
             else

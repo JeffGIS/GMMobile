@@ -2800,7 +2800,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                        LPINT partOffsets[MAXPARTS], partoff;
                        int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
                        LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-                       int Trigger = 1, nHits = 0;
+                       int Trigger = 3, nHits = 0;
                        //int nowner;
                        BOOL GetNext = TRUE;
                        char Name[66];
@@ -2850,7 +2850,8 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                                        
                                        else
                                        {
-                                           partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*sizeof(int));
+                                           int ii = sizeof(int);
+                                           partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*ii);
                                            partoff = partOffsets[ipart] + nPartOffsets[ipart];
                                            memmove (partoff,pOffsets,nOffsets*sizeof(int));
                                            nPartOffsets[ipart] += nOffsets;
@@ -2890,7 +2891,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                                
                                NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,ANUMBER,STREETNAME,CTU_NAME, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                                                   inList];
-                               BoundaryData * bd = BoundaryData.new;
+                               //BoundaryData * bd = BoundaryData.new;
                                SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 61);
                                
                                while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)

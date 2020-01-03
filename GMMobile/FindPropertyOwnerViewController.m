@@ -52,7 +52,6 @@
     
     return options.copy;
 }
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -87,6 +86,8 @@
 
 - (void)didReceiveMemoryWarning
 {
+    NSLog (@"Memory warning in FindPropertyOwnerViewController");
+
     [super didReceiveMemoryWarning];
 }
 
