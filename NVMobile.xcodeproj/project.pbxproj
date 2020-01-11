@@ -237,7 +237,6 @@
 		EB68767F201A48E000C6728B /* RiteHomeCompute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB68767E201A48E000C6728B /* RiteHomeCompute.m */; };
 		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
 		EB96695C239B6D3A003F3C16 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB966959239B6C33003F3C16 /* Charts.framework */; };
-		EB96695D239B6E60003F3C16 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB966959239B6C33003F3C16 /* Charts.framework */; };
 		EB96695E239B6E60003F3C16 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB966959239B6C33003F3C16 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
@@ -625,7 +624,6 @@
 				6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */,
 				69F1773B1D7A0B7400741C68 /* GooglePlacePicker.framework in Frameworks */,
 				698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */,
-				EB96695D239B6E60003F3C16 /* Charts.framework in Frameworks */,
 				69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */,
 				69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */,
 				69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */,
@@ -1166,7 +1164,7 @@
 				KnownAssetTags = (
 					landuse,
 				);
-				LastUpgradeCheck = 1030;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = GSSi;
 				TargetAttributes = {
 					EB5521C81A61B6A8008CE2D1 = {
@@ -1516,12 +1514,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1570,12 +1570,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

@@ -1634,7 +1634,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
     
     [self addString:PID       withCode:PFT_PIN];
-    [self addString:PID       withCode:PFT_UserID];
+    [self addString:taxpayer      withCode:PFT_UserID];
     [self addString:address   withCode:PFT_Address];
     [self addDouble:_totEMV   withCode:PFT_EMV_TOTAL];
     [self addDouble:landEMV   withCode:PFT_EMV_LAND];
