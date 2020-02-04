@@ -154,7 +154,7 @@ Top:
         values.stability_5yr  = IDNINT(100.0-(100.0 * nSales5yr) / values.nMatchingProperties);
         values.stability_15yr = IDNINT(100.0-(100.0 * nSales15yr) / values.nMatchingProperties);
         values.activity_5yr  = IDNINT((100.0 * (nSales5yr+nAdditionalSales5yr)) / values.nMatchingProperties);
-        values.activity_15yr = IDNINT((100.0 * nSales15yr+nAdditionalSales15yr) / values.nMatchingProperties);
+        values.activity_15yr = IDNINT((100.0 * (nSales15yr+nAdditionalSales15yr)) / values.nMatchingProperties);
         values.pctNoTax = IDNINT((100.0 * numNoTax) / values.nMatchingProperties);
         values.pctHomestead  = IDNINT((100.0 * nHomestead) / totProp);
     }
@@ -166,56 +166,55 @@ Top:
         values.aveBuiltYear = totYears /= nAge;
         values.pctNew_10yr =  (100 * numNewerThan10)  / nAge;
         values.pctNew_25yr = (100 * numNewerThan25) / nAge;
-        [ageArray sortUsingComparator: ^(id obj1, id obj2)
-         {
-             NSNumber *v1 = obj1;
-             NSNumber *v2 = obj2;
-             
-             if (v1 > v2)
-                 return (NSComparisonResult)NSOrderedDescending;
-             
-             if (v1 < v2)
-                 return (NSComparisonResult)NSOrderedAscending;
-             
-             return (NSComparisonResult)NSOrderedSame;
-         }];
+        
+        NSArray *sortedArray = [ageArray sortedArrayUsingComparator: ^(id obj1, id obj2)
+        {
+         
+            if ([obj1 integerValue] > [obj2 integerValue]) {
+                return (NSComparisonResult)NSOrderedDescending;
+            }
+         
+            if ([obj1 integerValue] < [obj2 integerValue]) {
+                return (NSComparisonResult)NSOrderedAscending;
+            }
+            return (NSComparisonResult)NSOrderedSame;
+        }];
         
         int median = (nAge / 2);
-        NSNumber *age1 = (NSNumber *)ageArray[median];
+        NSNumber *age1 = (NSNumber *)sortedArray[median];
         
         if (!(nAge %2))
         {
-            NSNumber *age2 = (NSNumber *)ageArray[median - 1];
+            NSNumber *age2 = (NSNumber *)sortedArray[median - 1];
             values.medianBuiltYear = ((age1.floatValue + age2.floatValue) / 2.0);
         }
         else
             values.medianBuiltYear = age1.intValue;
     }
     
-    [EMVarray sortUsingComparator: ^(id obj1, id obj2)
-     {
-         NSNumber *v1 = obj1;
-         NSNumber *v2 = obj2;
-         
-         if (v1 > v2)
-             return (NSComparisonResult)NSOrderedDescending;
-         
-         if (v1 < v2)
-             return (NSComparisonResult)NSOrderedAscending;
-         
-         return (NSComparisonResult)NSOrderedSame;
-     }];
-    
-    if ([EMVarray count])
+    NSArray *sortedArray = [EMVarray sortedArrayUsingComparator: ^(id obj1, id obj2)
+    {
+        
+        if ([obj1 integerValue] > [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        
+        if ([obj1 integerValue] < [obj2 integerValue]) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+
+    if ([sortedArray count])
     {
         int n=1;
         int myStartRank= -1;
         int myEndRank= -1;
-        int medianN = (int)EMVarray.count / 2;
-        int medianM = EMVarray.count % 2;
+        int medianN = (int)sortedArray.count / 2;
+        int medianM = sortedArray.count % 2;
         //NSNumber *minEMV = array[0];
         //NSNumber *maxEMV = array[array.count - 1];
-        for (NSNumber *EMVvalue in EMVarray)
+        for (NSNumber *EMVvalue in sortedArray)
         {
             if (n == medianN)
                 medianEMV = EMVvalue.intValue;
@@ -235,7 +234,7 @@ Top:
         //aveEMV = sumEMV / [array count];
         //pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
         //pctMedianEMV = ((double)myTotEMV / medianEMV) * 100;
-        values.rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[EMVarray count]);
+        values.rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[sortedArray count]);
     }
     
      return rtn;
@@ -390,6 +389,36 @@ Top:
         query = [NSString stringWithFormat:@"SELECT %@ FROM PROPINFO WHERE CENBLOCK>='%s000' AND CENBLOCK<='%s999'",parcelFieldList,cenBlockIN,cenBlockIN];
     else if (strlen (cenBlockIN) > 12)
         query = [NSString stringWithFormat:@"SELECT %@ FROM PROPINFO WHERE CENBLOCK='%s'",parcelFieldList,cenBlockIN];
+    else
+        return FALSE;
+    
+    BOOL opened = [_propData open];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
+    rtn = [self computeParcelValues:values
+                              totEMV:totEMV
+                             useDesc:usedescIN
+                           statement:statement
+                    PIDListStatement:nil];
+    [_propData close:opened];
+    return rtn;
+}
+
+- (bool)computeValuesFromParcelsInCensus:(DATA_FROM_PARCELS *)values
+                            inCensusArea:(LPSTR)cenBlockIN
+                  orAssociatedCensusArea:(LPSTR)cenBlockAssociated
+                                  onStreet:(NSString *)street
+                                  totEMV:(int)totEMV
+                                 useDesc:(LPSTR) usedescIN
+{
+    bool rtn;
+    sqlite3_stmt *statement = NULL;
+    NSString *query;
+    NSString *parcelFieldList = [RiteHomeCompute parcelFieldList];
+
+    if (strlen (cenBlockIN) == 12)
+        query = [NSString stringWithFormat:@"SELECT %@ FROM PROPINFO WHERE ((CENBLOCK>='%s000' AND CENBLOCK<='%s999') OR (CENBLOCK>='%s000' AND CENBLOCK<='%s999')) AND STREETNAME = '%@'",parcelFieldList,cenBlockIN,cenBlockIN,cenBlockAssociated,cenBlockAssociated,street];
+    else if (strlen (cenBlockIN) > 12)
+        query = [NSString stringWithFormat:@"SELECT %@ FROM PROPINFO WHERE (CENBLOCK='%s' OR CENBLOCK='%s') AND STREETNAME='%@'",parcelFieldList,cenBlockIN,cenBlockAssociated,street];
     else
         return FALSE;
     

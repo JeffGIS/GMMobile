@@ -85,6 +85,13 @@ PCT_Water;
                                   totEMV:(int)totEMV
                                  useDesc:(LPSTR) usedescIN;
 
+- (bool)computeValuesFromParcelsInCensus:(DATA_FROM_PARCELS *)values
+                            inCensusArea:(LPSTR)cenBlockIN
+                  orAssociatedCensusArea:(LPSTR)cenBlockAssociated
+                                onStreet:(NSString *)street
+                                  totEMV:(int)totEMV
+                                 useDesc:(LPSTR) usedescIN;
+
 - (bool)computeValuesFromParcelsInCircle:(DATA_FROM_PARCELS *)values
                              forProperty:(int)propNum
                                 inCircle:(int)circleID

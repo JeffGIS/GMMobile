@@ -525,6 +525,9 @@ NSString * GetPropListDirectory (void)
         case PFT_RankEMV_blockgroup:
             name = @"EMV Rank (Block Group)";
             break;
+        case PFT_RankEMV_blockstreet:
+            name = @"EMV Rank (Block Street)";
+            break;
         case PFT_PctOpenSpace_halfMile:
             name = @"PCT Open space (Half Mile)";
             break;
@@ -543,11 +546,17 @@ NSString * GetPropListDirectory (void)
         case PFT_Stability5yr_blockgroup:
             name = @"Stability (5 year Block Group)";
             break;
+        case PFT_Stability5yr_blockstreet:
+            name = @"Stability (5 year Block Street)";
+            break;
         case PFT_Stability15yr_block:
             name = @"Stability (15 year Block)";
             break;
         case PFT_Stability15yr_blockgroup:
             name = @"Stability (15 year Block Group)";
+            break;
+        case PFT_Stability15yr_blockstreet:
+            name = @"Stability (15 year Block Street)";
             break;
         case PFT_Activity5yr_block:
             name = @"Activity (5 year Block)";
@@ -555,11 +564,17 @@ NSString * GetPropListDirectory (void)
         case PFT_Activity5yr_blockgroup:
             name = @"Activity (5 year Block Group)";
             break;
+        case PFT_Activity5yr_blockstreet:
+            name = @"Activity (5 year Block Street)";
+            break;
         case PFT_Activity15yr_block:
             name = @"Activity (15 year Block)";
             break;
         case PFT_Activity15yr_blockgroup:
             name = @"Activity (15 year Block Group)";
+            break;
+        case PFT_Activity15yr_blockstreet:
+            name = @"Activity (15 year Block Street)";
             break;
         case PFT_Stability5yr_Mile:
             name = @"Stability (5 year Mile)";
@@ -585,23 +600,53 @@ NSString * GetPropListDirectory (void)
         case PFT_PctHomestead_blockgroup:
             name = @"PCT Homestead (Block Group)";
             break;
+        case PFT_PctHomestead_blockstreet:
+            name = @"PCT Homestead (Block Street)";
+            break;
         case PFT_PctHomeOwn_block:
             name = @"PCT Home Ownership (Block)";
             break;
         case PFT_PctHomeOwn_blockgroup:
             name = @"PCT Home Ownership (Block Group)";
             break;
+        case PFT_PctHomeOwn_blockstreet:
+            name = @"PCT Home Ownership (Block Street)";
+            break;
         case PFT_MedianAgePop_block:
             name = @"Median Age Population (Block)";
             break;
         case PFT_MedianAgePop_blockgroup:
-            name = @"Median Age Population (Block Group)";
-            break;
+             name = @"Median Age Population (Block Group)";
+             break;
+        case PFT_MedianAgePop_blockstreet:
+             name = @"Median Age Population (Block Street)";
+             break;
         case PFT_MedianBuiltYear_block:
             name = @"Median Year Built (Block)";
             break;
         case PFT_MedianBuiltYear_blockgroup:
             name = @"Median Year Built (Block Group)";
+            break;
+        case PFT_MedianBuiltYear_blockstreet:
+            name = @"Median Year Built (Block Street)";
+            break;
+        case PFT_AveBuiltYear_block:
+            name = @"Average Year Built (Block)";
+            break;
+        case PFT_PCTNoTax_block:
+            name = @"PCT No Tax (Block)";
+            break;
+        case PFT_PCTNoTax_blockgroup:
+            name = @"PCT No Tax (Block Group)";
+            break;
+        case PFT_PCTNoTax_blockstreet:
+            name = @"PCT No Tax (Block Street)";
+            break;
+        case PFT_AveBuiltYear_blockgroup:
+            name = @"Average Year Built (Block Group)";
+            break;
+        case PFT_AveBuiltYear_blockstreet:
+            name = @"Average Year Built (Block Street)";
             break;
         case PFT_PctChildren_block:
             name = @"PCT Children (Block)";
@@ -1554,6 +1599,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     NSString *streetName = @"";
     NSString *city = @"";
     NSString *cenblock = @"";
+    NSString *cenblockAssociated = @"";
     NSString *owner = @"";
     NSString *taxpayer = @"";
     double landEMV = 0;
@@ -1576,6 +1622,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                          ownerName:&owner
                       taxpayerName:&taxpayer
                        censusBlock:&cenblock
+                           associatedCensusBlock:&cenblockAssociated
                            useDesc:&usedesc
                           saleDate:&saleDate
                          saleValue:&saleValue
@@ -1601,24 +1648,32 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     }
     int speed;
     [propData getPointOnStreetForPID:PID speed:&speed];
-    char cenBlock[20];
-    strcpy (cenBlock, cenblock.UTF8String);
-    cenBlock[12] = 0;
+    char cenBlockGroup[20];
+    strcpy (cenBlockGroup, cenblock.UTF8String);
+    cenBlockGroup[12] = 0;
     _usedesc = usedesc;
     _rhCompute = RiteHomeCompute.new;
     _rhCompute.propData = propData;
     _rhCompute.propList = self;
     DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
     DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
-    
+    DATA_FROM_PARCELS *values_block_street = DATA_FROM_PARCELS.new;
+
     [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
-                                    inCensusArea:(LPSTR)cenBlock
+                                    inCensusArea:(LPSTR)cenBlockGroup
                                           totEMV:(int)_totEMV
                                          useDesc:(LPSTR)_usedesc.UTF8String];
     
     
     [_rhCompute computeValuesFromParcelsInCensus:values_block
                                     inCensusArea:(LPSTR)cenblock.UTF8String
+                                          totEMV:(int)_totEMV
+                                         useDesc:(LPSTR)_usedesc.UTF8String];
+    
+    [_rhCompute computeValuesFromParcelsInCensus:values_block_street
+                                    inCensusArea:(LPSTR)cenBlockGroup
+                          orAssociatedCensusArea:(LPSTR)cenblock.UTF8String
+                                              onStreet:streetName
                                           totEMV:(int)_totEMV
                                          useDesc:(LPSTR)_usedesc.UTF8String];
     
@@ -1656,18 +1711,33 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_block.rankTotEMV      withCode:PFT_RankEMV_block];
     [self addInt:values_block.pctHomestead    withCode:PFT_PctHomestead_block];
     [self addInt:values_block.medianBuiltYear withCode:PFT_MedianBuiltYear_block];
+    [self addInt:values_block.aveBuiltYear withCode:PFT_AveBuiltYear_block];
     [self addInt:values_block.stability_5yr   withCode:PFT_Stability5yr_block];
     [self addInt:values_block.stability_15yr  withCode:PFT_Stability15yr_block];
     [self addInt:values_block.activity_5yr   withCode:PFT_Activity5yr_block];
     [self addInt:values_block.activity_15yr  withCode:PFT_Activity15yr_block];
+    [self addInt:values_block.pctNoTax  withCode:PFT_PCTNoTax_block];
 
     [self addInt:values_blockgroup.rankTotEMV      withCode:PFT_RankEMV_blockgroup];
     [self addInt:values_blockgroup.pctHomestead    withCode:PFT_PctHomestead_blockgroup];
     [self addInt:values_blockgroup.medianBuiltYear withCode:PFT_MedianBuiltYear_blockgroup];
+    [self addInt:values_blockgroup.aveBuiltYear withCode:PFT_AveBuiltYear_blockgroup];
     [self addInt:values_blockgroup.stability_5yr   withCode:PFT_Stability5yr_blockgroup];
     [self addInt:values_blockgroup.stability_15yr  withCode:PFT_Stability15yr_blockgroup];
     [self addInt:values_blockgroup.activity_5yr   withCode:PFT_Activity5yr_blockgroup];
     [self addInt:values_blockgroup.activity_15yr  withCode:PFT_Activity15yr_blockgroup];
+    [self addInt:values_blockgroup.pctNoTax  withCode:PFT_PCTNoTax_blockgroup];
+
+    [self addInt:values_block_street.rankTotEMV      withCode:PFT_RankEMV_blockstreet];
+    [self addInt:values_block_street.pctHomestead    withCode:PFT_PctHomestead_blockstreet];
+    [self addInt:values_block_street.medianBuiltYear withCode:PFT_MedianBuiltYear_blockstreet];
+    [self addInt:values_block_street.aveBuiltYear withCode:PFT_AveBuiltYear_blockstreet];
+    [self addInt:values_block_street.stability_5yr   withCode:PFT_Stability5yr_blockstreet];
+    [self addInt:values_block_street.stability_15yr  withCode:PFT_Stability15yr_blockstreet];
+    [self addInt:values_block_street.activity_5yr   withCode:PFT_Activity5yr_blockstreet];
+    [self addInt:values_block_street.activity_15yr  withCode:PFT_Activity15yr_blockstreet];
+    [self addInt:values_block_street.pctNoTax  withCode:PFT_PCTNoTax_blockstreet];
+
     [self addInt:speed                             withCode:PFT_StreetSpeedLimit];
 
     rtn = YES;
@@ -1678,13 +1748,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     dispatch_async(getSlowValueQue,
                    ^{
-                       [_slowValues computeSlowValues:_PropNum
-                                        dbid:_dbid
+        [self->_slowValues computeSlowValues:self->_PropNum
+                                        dbid:self->_dbid
                                     delegate:self
-                                     popover:_popover
+                                     popover:self->_popover
                                 aroundLatLon:pidPoint
                                      useDesc:(LPSTR)usedesc.UTF8String];
-                   });
+    });
     
     //[self close:opened];
     return rtn;

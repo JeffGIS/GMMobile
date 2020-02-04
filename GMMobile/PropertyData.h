@@ -165,6 +165,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
                ownerName:(NSString **)owner
             taxpayerName:(NSString **)taxpayer
              censusBlock:(NSString **)cenblock
+   associatedCensusBlock:(NSString **)cenblockAssociated
                  useDesc:(NSString **)usedesc
                 saleDate:(NSString **)saleDate
                saleValue:(double *)saleValue

@@ -2005,7 +2005,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
-                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil
+                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil
                                         totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
                     
                     _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
@@ -4734,6 +4734,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                         city:&city
                    ownerName:nil taxpayerName:nil
                  censusBlock:&cenblock
+       associatedCensusBlock:nil
                      useDesc:&usedesc
                     saleDate:nil saleValue:nil
                    yearBuilt:nil

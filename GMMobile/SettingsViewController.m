@@ -7,7 +7,7 @@
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32
-#define USE_TEST_SERVER NO
+#define USE_TEST_SERVER YES
 
 @interface SettingsViewController ()
 
