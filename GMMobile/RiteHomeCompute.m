@@ -284,7 +284,7 @@ Top:
     DATA_FROM_BLOCKS * values = DATA_FROM_BLOCKS.new;
     
     values.totPop = IDNINT (bt.totPop);
-    values.totPopPerSqMile = IDNINT (bt.totPop / _totalAreaInSqMiles);
+    values.popPerSqMile = IDNINT (bt.totPop / _totalAreaInSqMiles);
     if (bt.totHouseholds > 0)
     {
         values.livedAlone = IDNINT (100.0 * bt.totlivedAlone / bt.totHouseholds);

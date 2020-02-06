@@ -1703,6 +1703,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                                           totEMV:(int)_totEMV
                                          useDesc:(LPSTR)_usedesc.UTF8String];
     values_cenblock = [_rhCompute computeValuesFromCensus:(LPSTR)cenblock.UTF8String];
+    values_cenblockgroup = [_rhCompute computeValuesFromCensus:(LPSTR)cenBlockGroup];
 
     _opened = [self open];
     if (_opened)
@@ -1764,6 +1765,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_block_street.activity_5yr   withCode:PFT_Activity5yr_blockstreet];
     [self addInt:values_block_street.activity_15yr  withCode:PFT_Activity15yr_blockstreet];
     [self addInt:values_block_street.pctNoTax  withCode:PFT_PCTNoTax_blockstreet];
+
+    [self addInt:values_cenblock.famNoKids  withCode:PFT_PctFamNoKids_block];
+    [self addInt:values_cenblock.livedAlone withCode:PFT_PctLivedAlone_block];
+    [self addInt:values_cenblock.marrKids withCode:PFT_PctMarrKids_block];
+    [self addInt:values_cenblock.nonFamily withCode:PFT_PctNonFamily_block];
+    [self addInt:values_cenblock.unMarrKids withCode:PFT_PctUnMarrKids_block];
+    [self addInt:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
+    [self addInt:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
+    [self addInt:values_cenblock.pctChildren withCode:PFT_PctChildren_block];
+    [self addInt:values_cenblock.pctSeniors withCode:PFT_PctSenior_block];
+    [self addInt:values_cenblock.totPop withCode:PFT_TotalPop_block];
+    [self addInt:values_cenblock.popPerSqMile withCode:PFT_PopDensity_block];
 
     [self addInt:speed                             withCode:PFT_StreetSpeedLimit];
 

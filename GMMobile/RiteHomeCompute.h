@@ -61,7 +61,7 @@ totmedianChildAge;
 @interface DATA_FROM_BLOCKS : NSObject
 @property  int  nMatchingPropertiesx;
 @property  int  totPop,
-totPopPerSqMile,
+popPerSqMile,
 livedAlone,
 marrKids,
 unMarrKids,
@@ -69,7 +69,9 @@ famNoKids,
 nonFamily,
 medianAge,
 medianAdultAge,
-medianChildAge;
+medianChildAge,
+pctChildren,
+pctSeniors;
 
 @end
 
