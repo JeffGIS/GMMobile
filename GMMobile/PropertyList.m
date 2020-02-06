@@ -649,10 +649,10 @@ NSString * GetPropListDirectory (void)
             name = @"Average Year Built (Block Street)";
             break;
         case PFT_PctChildren_block:
-            name = @"PCT Children (Block)";
+            name = @"PCT HH with Children (Block)";
             break;
         case PFT_PctChildren_blockgroup:
-            name = @"PCT Children (Block Group)";
+            name = @"PCT HH with Children (Block Group)";
             break;
         case PFT_MedianAgeChildren_block:
             name = @"Median Child Age (Block)";
@@ -667,10 +667,10 @@ NSString * GetPropListDirectory (void)
             name = @"Median Adult Age (Block Group)";
             break;
         case PFT_PctSenior_block:
-            name = @"PCT Seniors (Block)";
+            name = @"PCT HH with Seniors (Block)";
             break;
         case PFT_PctSenior_blockgroup:
-            name = @"PCT Seniors (Block Group)";
+            name = @"PCT HH with Seniors (Block Group)";
             break;
         case PFT_PctResidential_halfMile:
             name = @"PCT Residential (Half Mile)";
@@ -760,10 +760,94 @@ NSString * GetPropListDirectory (void)
             name = @"Median Age of Adults (Half Mile)";
             break;
         case PFT_PctSenior_qtrMile:
-            name = @"PCT Seniors (Qtr Mile)";
+            name = @"PCT HH with Seniors (Qtr Mile)";
             break;
         case PFT_PctSenior_halfMile:
-            name = @"PCT Seniors (Half Mile)";
+            name = @"PCT HH with Seniors (Half Mile)";
+            break;
+        case PFT_PctFamNoKids_block:
+            name = @"PCT Family-NoKids (Block)";
+            break;
+        case PFT_PctFamNoKids_blockgroup:
+            name = @"PCT Family-NoKids (Block Group)";
+            break;
+        case PFT_PctFamNoKids_qtrMile:
+            name = @"PCT Family-NoKids (Qtr Mile)";
+            break;
+        case PFT_PctFamNoKids_halfMile:
+            name = @"PCT Family-NoKids (Half Mile)";
+            break;
+        case PFT_PctLivedAlone_block:
+            name = @"PCT Live Alone (Block)";
+            break;
+        case PFT_PctLivedAlone_blockgroup:
+            name = @"PCT Live Alone (Block Group)";
+            break;
+        case PFT_PctLivedAlone_qtrMile:
+            name = @"PCT Live Alone (Qtr Mile)";
+            break;
+        case PFT_PctLivedAlone_halfMile:
+            name = @"PCT Live Alone (Mile)";
+            break;
+        case PFT_PctMarrKids_block:
+            name = @"PCT Married with Kids (Block)";
+            break;
+        case PFT_PctMarrKids_blockgroup:
+            name = @"PCT Married with Kids (Block Group)";
+            break;
+        case PFT_PctMarrKids_qtrMile:
+            name = @"PCT Married with Kids (Qtr Mile)";
+            break;
+        case PFT_PctMarrKids_halfMile:
+            name = @"PCT Married with Kids (Half Mile)";
+            break;
+        case PFT_PctNonFamily_block:
+            name = @"PCT NonFamily HH (Block)";
+            break;
+        case PFT_PctNonFamily_blockgroup:
+            name = @"PCT NonFamily HH (Block Group)";
+            break;
+        case PFT_PctNonFamily_qtrMile:
+            name = @"PCT NonFamily HH (Qtr Mile)";
+            break;
+        case PFT_PctNonFamily_halfMile:
+            name = @"PCT NonFamily HH (Half Mile)";
+            break;
+        case PFT_PctUnMarrKids_block:
+            name = @"PCT UnMarried with Kids (Block)";
+            break;
+        case PFT_PctUnMarrKids_blockgroup:
+            name = @"PCT UnMarried with Kids (Block Group)";
+            break;
+        case PFT_PctUnMarrKids_qtrMile:
+            name = @"PCT UnMarried with Kids (Qtr Mile)";
+            break;
+        case PFT_PctUnMarrKids_halfMile:
+            name = @"PCT UnMarried with Kids (Half Mile)";
+            break;
+        case PFT_TotalPop_block:
+            name = @"Total Population (Block)";
+            break;
+        case PFT_TotalPop_blockgroup:
+            name = @"Total Population (Block Group)";
+            break;
+        case PFT_TotalPop_qtrMile:
+            name = @"Total Population (Qtr Mile)";
+            break;
+        case PFT_TotalPop_halfMile:
+            name = @"Total Population (Half Mile)";
+            break;
+        case PFT_PopDensity_block:
+            name = @"Population Density (Block)";
+            break;
+        case PFT_PopDensity_blockgroup:
+            name = @"Population Density (Block Group)";
+            break;
+        case PFT_PopDensity_qtrMile:
+            name = @"Population Density (Qtr Mile)";
+            break;
+        case PFT_PopDensity_halfMile:
+            name = @"Population Density (Half Mile)";
             break;
     }
     
@@ -1778,7 +1862,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_cenblock.totPop withCode:PFT_TotalPop_block];
     [self addInt:values_cenblock.popPerSqMile withCode:PFT_PopDensity_block];
 
-    [self addInt:speed                             withCode:PFT_StreetSpeedLimit];
+    [self addInt:values_cenblockgroup.famNoKids  withCode:PFT_PctFamNoKids_blockgroup];
+    [self addInt:values_cenblockgroup.livedAlone withCode:PFT_PctLivedAlone_blockgroup];
+    [self addInt:values_cenblockgroup.marrKids withCode:PFT_PctMarrKids_blockgroup];
+    [self addInt:values_cenblockgroup.nonFamily withCode:PFT_PctNonFamily_blockgroup];
+    [self addInt:values_cenblockgroup.unMarrKids withCode:PFT_PctUnMarrKids_blockgroup];
+    [self addInt:values_cenblockgroup.medianAdultAge withCode:PFT_MedianAgeAdults_blockgroup];
+    [self addInt:values_cenblockgroup.medianChildAge withCode:PFT_MedianAgeChildren_blockgroup];
+    [self addInt:values_cenblockgroup.pctChildren withCode:PFT_PctChildren_blockgroup];
+    [self addInt:values_cenblockgroup.pctSeniors withCode:PFT_PctSenior_blockgroup];
+    [self addInt:values_cenblockgroup.totPop withCode:PFT_TotalPop_blockgroup];
+    [self addInt:values_cenblockgroup.popPerSqMile withCode:PFT_PopDensity_blockgroup];
+    [self addInt:speed withCode:PFT_StreetSpeedLimit];
 
     rtn = YES;
     
@@ -1998,6 +2093,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self addInt:totPCT withCode:PFT_PctOpenSpace_Mile];
 
         [self addInt:values_block_qtrMile.medianAdultAge withCode:PFT_MedianAgeAdults_qtrMile];
+        
         [self addInt:values_block_halfMile.medianAdultAge withCode:PFT_MedianAgeAdults_halfMile];
         
         if (_opened)

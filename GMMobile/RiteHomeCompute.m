@@ -245,7 +245,7 @@ Top:
 
 +(NSString *) blockFieldList
 {
-    NSString * list = @"POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY,MEDIANAGE,HHTOTAL";
+    NSString * list = @"GEOG_UNIT,POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY,MEDIANAGE,HHTOTAL,HH_UNDER18,HH_65OVER,HOMEOWNPCT,OWNEROCC,RENTEROCC,VACANT";
     return list;
 }
 
@@ -258,6 +258,7 @@ Top:
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
             int i=0;
+            LPSTR geogunit = (LPSTR)sqlite3_column_text(statement,i++);
             int popTotal = sqlite3_column_int(statement,i++);
             int livedAlone = sqlite3_column_int(statement,i++);
             int marrKids = sqlite3_column_int(statement,i++);
@@ -266,6 +267,13 @@ Top:
             int nonFamily = sqlite3_column_int(statement,i++);
             int medianAge = sqlite3_column_int(statement,i++);
             int numHouseholds = sqlite3_column_int(statement,i++);
+            int hhwithChildren = sqlite3_column_int(statement,i++);
+            int hhwithSeniors = sqlite3_column_int(statement,i++);
+            LPSTR hop = sqlite3_column_text(statement,i);
+            int homeownpct= IDNINT(100.0 * sqlite3_column_double(statement,i++));
+            int owneroccupied = sqlite3_column_int(statement,i++);
+            int renteroccupied = sqlite3_column_int(statement,i++);
+            int vacant = sqlite3_column_int(statement,i++);
             bt.totPop += popTotal * pctOfAreaInCircle;
             bt.totlivedAlone += livedAlone * pctOfAreaInCircle;
             bt.totmarrKids += marrKids * pctOfAreaInCircle;
