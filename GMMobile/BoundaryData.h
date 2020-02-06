@@ -145,5 +145,7 @@ boundsPointInAreas:(PointInAreas*)pias
                         ofType:(NSString*)type
                   areaInMeters:(double*)pArea;
 
++ (double) getAreaForCensusArea:(LPSTR)cenArea;
+
 
 @end

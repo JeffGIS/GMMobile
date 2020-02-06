@@ -42,17 +42,35 @@ pctNew_25yr,
 pctNoTax;
 @end
 
+@interface BLOCK_TOTALS : NSObject
+@property  int  numBlocks;
+@property  double  totPop,
+totHouseholds,
+totPopPerSqMile,
+totlivedAlone,
+totmarrKids,
+totunMarrKids,
+totfamNoKids,
+totnonFamily,
+totmedianAge,
+totmedianAdultAge,
+totmedianChildAge;
+
+@end
+
 @interface DATA_FROM_BLOCKS : NSObject
-@property  int  nMatchingProperties;
+@property  int  nMatchingPropertiesx;
 @property  int  totPop,
 totPopPerSqMile,
-rankTotEMV,
-pctHomestead,
-medianBuiltYear,
-aveBuiltYear,
-pctNew_10yr,
-pctNew_25yr,
-pctNoTax;
+livedAlone,
+marrKids,
+unMarrKids,
+famNoKids,
+nonFamily,
+medianAge,
+medianAdultAge,
+medianChildAge;
+
 @end
 
 @interface DATA_FROM_LANDUSE : NSObject
@@ -77,9 +95,11 @@ PCT_Water;
 
 @property PropertyData *propData;
 @property PropertyList *propList;
-@property double circleAreaInSqMiles;
+@property double totalAreaInSqMiles;
 
 +(NSString *) parcelFieldList;
++(NSString *) blockFieldList;
+
 - (bool)computeValuesFromParcelsInCensus:(DATA_FROM_PARCELS *)values
                             inCensusArea:(LPSTR)cenBlockIN
                                   totEMV:(int)totEMV
@@ -98,13 +118,14 @@ PCT_Water;
                                   totEMV:(int)totEMV
                                  useDesc:(LPSTR) usedescIN;
 
-- (bool)computeValuesFromBlocksInCircle:(DATA_FROM_BLOCKS *)values
-                            forProperty:(int)propNum
-                               inCircle:(int)circleID;
+- (DATA_FROM_BLOCKS *)computeValuesFromBlocksInCircle:(int)circleID
+                                          forProperty:(int)propNum;
 
 - (bool)computeValuesFromLandUseInCircle:(DATA_FROM_LANDUSE *)values
-                            forProperty:(int)propNum
-                               inCircle:(int)circleID;
+                             forProperty:(int)propNum
+                                inCircle:(int)circleID;
+
+- (DATA_FROM_BLOCKS *)computeValuesFromCensus:(LPSTR)blockOrBlockGroup;
 
 @end
 

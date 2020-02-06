@@ -32,8 +32,8 @@ static double circleRadiusInMeters[4] = {OneMileInMeters / 8,OneMileInMeters / 4
 @interface GetSlowValues : NSObject<GSSiPopoverViewDelegate>
 @property (nonatomic, weak) id <GetSlowValuesDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
-//@property BoundaryData *bd;
 @property int maxColors;
+@property int numColorsInTable;
 @property CGContextRef colorConversionContext;
 @property void * colorConversionBmData;
 
@@ -43,7 +43,8 @@ static double circleRadiusInMeters[4] = {OneMileInMeters / 8,OneMileInMeters / 4
                   popover:(GSSiPopoverView*)popover
              aroundLatLon:(LLPOINT)latlon
                   useDesc:(LPSTR) usedescIN;
-- (void) addIDtoColorByIDTable:(UINT)fileAndID
+- (void) addIDtoColorByIDTable:(UINT)ID
+                        inFile:(int)file
                          color:(UIColor*)color;
 
 @end

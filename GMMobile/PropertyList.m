@@ -22,7 +22,7 @@
 @property int dbIsOpen;
 @property NSString *usedesc;
 @property double totEMV;
-@property int dbid;
+//@property int dbid;
 @property int PropNum;
 @property int PropVersion;
 @property RHWalkScore * valuesFromWalkScore;
@@ -246,8 +246,8 @@ NSString * GetPropListDirectory (void)
     CREATE TABLE IF NOT EXISTS PropertyVideo (videoID INTEGER PRIMARY KEY,PropNum INTEGER,Title CHAR(256), Type INT, Cost REAL, Notes CHAR(4096), VideoFileName CHAR(256), StartTime FLOAT, EndTime FLOAT);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
-    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType INT,AreaID INT,Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
-    CREATE INDEX IF NOT EXISTS AreasWithinDistance_index ON AreasWithinDistance (PropNum ASC, AreaType ASC);";
+    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType INT,AreaID INT,FileNum INT,Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
+    CREATE INDEX IF NOT EXISTS AreasWithinDistance_index ON AreasWithinDistance (PropNum ASC, AreaType ASC, Distance ASC);";
     rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
@@ -740,6 +740,30 @@ NSString * GetPropListDirectory (void)
             break;
         case PFT_TrafficFactor:
             name = @"Traffic Factor";
+            break;
+        case PFT_PctChildren_qtrMile:
+            name = @"PCT HH w/Children (Qtr Mile)";
+            break;
+        case PFT_PctChildren_halfMile:
+            name = @"PCT HH w/Children (Half Mile)";
+            break;
+        case PFT_MedianAgeChildren_qtrMile:
+            name = @"Median Age of Children (Qtr Mile)";
+            break;
+        case PFT_MedianAgeAdults_qtrMile:
+            name = @"Median Age of Adults (Qtr Mile)";
+            break;
+        case PFT_MedianAgeChildren_halfMile:
+            name = @"Median Age of Children (Half Mile)";
+            break;
+        case PFT_MedianAgeAdults_halfMile:
+            name = @"Median Age of Adults (Half Mile)";
+            break;
+        case PFT_PctSenior_qtrMile:
+            name = @"PCT Seniors (Qtr Mile)";
+            break;
+        case PFT_PctSenior_halfMile:
+            name = @"PCT Seniors (Half Mile)";
             break;
     }
     
@@ -1658,6 +1682,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
     DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
     DATA_FROM_PARCELS *values_block_street = DATA_FROM_PARCELS.new;
+    DATA_FROM_BLOCKS *values_cenblock = DATA_FROM_BLOCKS.new;
+    DATA_FROM_BLOCKS *values_cenblockgroup = DATA_FROM_BLOCKS.new;
 
     [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
                                     inCensusArea:(LPSTR)cenBlockGroup
@@ -1676,12 +1702,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                                               onStreet:streetName
                                           totEMV:(int)_totEMV
                                          useDesc:(LPSTR)_usedesc.UTF8String];
-    
+    values_cenblock = [_rhCompute computeValuesFromCensus:(LPSTR)cenblock.UTF8String];
+
     _opened = [self open];
     if (_opened)
         [self startTransaction];
     
-    _dbid = [self next_id];
+ //   _dbid = [self next_id];
     _PropNum = [self nextPropNum];
     _PropVersion = [propData propertyDatasetVersion];
     NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
@@ -1749,7 +1776,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     dispatch_async(getSlowValueQue,
                    ^{
         [self->_slowValues computeSlowValues:self->_PropNum
-                                        dbid:self->_dbid
+                                        dbid:0
                                     delegate:self
                                      popover:self->_popover
                                 aroundLatLon:pidPoint
@@ -1830,9 +1857,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        [_rhCompute computeValuesFromBlocksInCircle:values_block_qtrMile
-                                        forProperty:propNum
-                                           inCircle:2];
+       values_block_qtrMile = [_rhCompute computeValuesFromBlocksInCircle:2
+                                                              forProperty:propNum];
         
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
@@ -1840,9 +1866,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        [_rhCompute computeValuesFromBlocksInCircle:values_block_halfMile
-                                        forProperty:propNum
-                                           inCircle:3];
+        values_block_halfMile = [_rhCompute computeValuesFromBlocksInCircle:3
+                                                                forProperty:propNum];
         
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
@@ -1885,7 +1910,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            [_popover updateProgress:nComputes/totComputes];
                        });
         
-        _dbid = [self next_id];
+        //_dbid = [self next_id];
         if (_haveWalkScoreValues > 0)
         {
             [self addInt:_valuesFromWalkScore.walkScore       withCode:PFT_WalkScore];
@@ -1959,6 +1984,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         totPCT = values_landUse_Mile.PCT_ParkRecPreserve + values_landUse_Mile.PCT_Agriculture + values_landUse_Mile.PCT_Undeveloped + values_landUse_Mile.PCT_Water;
         [self addInt:totPCT withCode:PFT_PctOpenSpace_Mile];
 
+        [self addInt:values_block_qtrMile.medianAdultAge withCode:PFT_MedianAgeAdults_qtrMile];
+        [self addInt:values_block_halfMile.medianAdultAge withCode:PFT_MedianAgeAdults_halfMile];
+        
         if (_opened)
             [self commitTransaction];
         dispatch_async(dispatch_get_main_queue(),

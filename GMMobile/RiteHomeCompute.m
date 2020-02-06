@@ -14,6 +14,8 @@
 @end
 @implementation DATA_FROM_LANDUSE
 @end
+@implementation BLOCK_TOTALS
+@end
 
 @implementation RiteHomeCompute
 
@@ -243,25 +245,18 @@ Top:
 
 +(NSString *) blockFieldList
 {
-    NSString * list = @"POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY";
+    NSString * list = @"POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY,MEDIANAGE,HHTOTAL";
     return list;
 }
 
-
-- (bool) computeBlockValues:(DATA_FROM_BLOCKS *)values
-                  statement:(sqlite3_stmt*)statement_BlockList
+- (void) addBlock:(sqlite3_stmt*) statement
+         toTotals:(BLOCK_TOTALS *)bt
+         usingPCT:(double)pctOfAreaInCircle
 {
-    bool rtn = FALSE;
-    sqlite3_stmt *statement = NULL;
-    double totPop = 0;
-    double pctOfAreaInCircle = 1;
-    
-Top:
     if (statement)
     {
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
-            rtn = TRUE;
             int i=0;
             int popTotal = sqlite3_column_int(statement,i++);
             int livedAlone = sqlite3_column_int(statement,i++);
@@ -269,11 +264,49 @@ Top:
             int unMarrKids = sqlite3_column_int(statement,i++);
             int famNoKids = sqlite3_column_int(statement,i++);
             int nonFamily = sqlite3_column_int(statement,i++);
-            
-            totPop += popTotal * pctOfAreaInCircle;
+            int medianAge = sqlite3_column_int(statement,i++);
+            int numHouseholds = sqlite3_column_int(statement,i++);
+            bt.totPop += popTotal * pctOfAreaInCircle;
+            bt.totlivedAlone += livedAlone * pctOfAreaInCircle;
+            bt.totmarrKids += marrKids * pctOfAreaInCircle;
+            bt.totunMarrKids += unMarrKids * pctOfAreaInCircle;
+            bt.totfamNoKids += famNoKids * pctOfAreaInCircle;
+            bt.totnonFamily  += nonFamily * pctOfAreaInCircle;
+            bt.totmedianAge += medianAge * popTotal * pctOfAreaInCircle;
+            bt.totHouseholds += numHouseholds * pctOfAreaInCircle;
         }
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
     }
+    return;
+}
+-(DATA_FROM_BLOCKS *) blockValuesFromBlockTotals:(BLOCK_TOTALS *)bt
+{
+    DATA_FROM_BLOCKS * values = DATA_FROM_BLOCKS.new;
+    
+    values.totPop = IDNINT (bt.totPop);
+    values.totPopPerSqMile = IDNINT (bt.totPop / _totalAreaInSqMiles);
+    if (bt.totHouseholds > 0)
+    {
+        values.livedAlone = IDNINT (100.0 * bt.totlivedAlone / bt.totHouseholds);
+        values.famNoKids = IDNINT (100.0 * bt.totfamNoKids / bt.totHouseholds);
+        values.marrKids = IDNINT (100.0 * bt.totmarrKids / bt.totHouseholds);
+        values.unMarrKids = IDNINT (100.0 * bt.totunMarrKids / bt.totHouseholds);
+        values.nonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
+    }
+    if (bt.totPop > 0)
+        values.medianAge = IDNINT(bt.totmedianAge / bt.totPop);
+    return values;
+}
+- (DATA_FROM_BLOCKS *) computeBlockValues:(sqlite3_stmt*)statement_BlockList
+                                PCTofArea:(double) pctOfAreaInCircle
+{
+    sqlite3_stmt *statement = NULL;
+    BLOCK_TOTALS *bt = BLOCK_TOTALS.new;
+    
+Top:
+    [self addBlock:statement
+          toTotals:bt
+          usingPCT:pctOfAreaInCircle];
     if (statement_BlockList)
     {
         if (sqlite3_step(statement_BlockList) == SQLITE_ROW)
@@ -285,8 +318,8 @@ Top:
                                                      ofType:@"BLOCK"
                                                areaInMeters:&polyArea];
             pctOfAreaInCircle = SQMetersInCircle /polyArea;
-            //            if (pctOfAreaInCircle > 1)
-            //                pctOfAreaInCircle = 1;
+                        if (pctOfAreaInCircle > 1)
+                            pctOfAreaInCircle = 1;
             NSString *blockFieldList = [RiteHomeCompute blockFieldList];
             NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA Where GEOG_UNIT = '%@'",blockFieldList,BLOCK];
             SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
@@ -295,9 +328,8 @@ Top:
         else
             SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement_BlockList),_propList.database);
     }
-    values.totPop = IDNINT (totPop);
-    values.totPopPerSqMile = IDNINT (totPop / _circleAreaInSqMiles);
-    return rtn;
+    DATA_FROM_BLOCKS *values = [self blockValuesFromBlockTotals:bt];
+    return values;
 }
 
 +(NSString *) landUseFieldList
@@ -444,7 +476,7 @@ Top:
     sqlite3_stmt *statement_PID = NULL;
     NSString *query;
     int circleId = circleID - 1;
-    _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
+    _totalAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
 
     
     query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)MBL_Parcels,circleID];
@@ -460,25 +492,52 @@ Top:
     
     return rtn;
 }
-- (bool)computeValuesFromBlocksInCircle:(DATA_FROM_BLOCKS *)values
-                            forProperty:(int)propNum
-                               inCircle:(int)circleID
+- (DATA_FROM_BLOCKS *)computeValuesFromCensus:(LPSTR)blockOrBlockGroup
 {
-    bool rtn;
+    BLOCK_TOTALS *bt = BLOCK_TOTALS.new;
+    
+    sqlite3_stmt *statement = NULL;
+    NSString *query;
+    NSString *blockFieldList = [RiteHomeCompute blockFieldList];
+    
+    if (strlen (blockOrBlockGroup) == 12)
+        query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA WHERE GEOG_UNIT>='%s000' AND GEOG_UNIT<='%s999'",blockFieldList,blockOrBlockGroup,blockOrBlockGroup];
+    else if (strlen (blockOrBlockGroup) > 12)
+        query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",blockFieldList,blockOrBlockGroup];
+    else
+        return FALSE;
+    
+    BOOL opened = [_propData open];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
+    
+    [self addBlock:statement
+          toTotals:bt
+          usingPCT:1.0];
+    [_propData close:opened];
+    double areaInMeters = [BoundaryData getAreaForCensusArea:blockOrBlockGroup];
+    _totalAreaInSqMiles = areaInMeters * SQMILES_PER_SQMETER;
+    DATA_FROM_BLOCKS *values = [self blockValuesFromBlockTotals:bt];
+
+    return values;
+}
+- (DATA_FROM_BLOCKS *)computeValuesFromBlocksInCircle:(int)circleID
+                            forProperty:(int)propNum
+{
+    DATA_FROM_BLOCKS * values = DATA_FROM_BLOCKS.new;
     sqlite3_stmt *statement = NULL;
     NSString *query;
     int circleId = circleID - 1;
-    _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
+    _totalAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
     
     query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)MBL_CensusBlocks,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
     BOOL opened = [_propData open];
-    rtn = [self computeBlockValues:values
-                         statement:statement];
+    values = [self computeBlockValues:statement
+                            PCTofArea:1];
     
     [_propData close:opened];
     
-    return rtn;
+    return values;
 }
 - (bool)computeValuesFromLandUseInCircle:(DATA_FROM_LANDUSE *)values
                             forProperty:(int)propNum
@@ -488,7 +547,7 @@ Top:
     sqlite3_stmt *statement = NULL;
     NSString *query;
     int circleId = circleID - 1;
-    _circleAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
+    _totalAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
     
     query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)MBL_LandUse,circleID];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);

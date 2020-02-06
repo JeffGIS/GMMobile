@@ -27,7 +27,7 @@
 
 @implementation GetSlowValues
 - (void)computeSlowValues:(int)propNum
-                     dbid:(int)dbid
+                     dbid:(int)dbidx
                  delegate:(id)delegate
                   popover:(GSSiPopoverView*)popover
                 aroundLatLon:(LLPOINT)latlon
@@ -350,14 +350,13 @@ displayCharacteristics:dc
         {
             NSString * areaID;
             ThemeClass *tc = theme.classes[i];
-            UINT fileAndID;
+            int fileNum = 0;
             areaID = [tc.title stringByReplacingOccurrencesOfString:@" " withString:@""];
             c = colorCounts[i];
             pct = (double)(c)/_totPixelsInCircle;
             double squareMetersInRadius = pct * _squareMetersInCircle;
             totPct += pct;
-            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%i,%u,%i,%f,%f);",_propNum,_baseLayer,i
-,idist+1,squareMetersInRadius,pct];
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%li,%u,%i,%i,%f,%f);",_propNum,(long)_baseLayer, i,fileNum,idist+1, squareMetersInRadius,pct];
             [_delegate executePropListCommand:cmd];
         }
     }
@@ -759,11 +758,13 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     BOOL rtn = FALSE;
     
     [_bd startTransaction];
-    NSString * cmd = @"DROP TABLE IF EXISTS COLORBYID;CREATE TEMP TABLE COLORBYID (IDFROMCOLOR INTEGER PRIMARY KEY,SOURCEFILEID INT,NUMPIXELS INT);";
+    _numColorsInTable = 1;
+    NSString * cmd = @"DROP TABLE IF EXISTS COLORBYID;CREATE TEMP TABLE COLORBYID (IDFROMCOLOR INTEGER PRIMARY KEY,SOURCEFILEID INT,SOURCEFILENUMBER INT,NUMPIXELS INT);";
     rtn = [_bd executeCmd:(LPSTR)cmd.UTF8String];
     return rtn;
 }
-- (void) addIDtoColorByIDTable:(UINT)fileAndID
+- (void) addIDtoColorByIDTable:(UINT)ID
+                        inFile:(int)fileNum
                          color:(UIColor*)color
 {
     CGRect colorRect;
@@ -784,8 +785,9 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     ii = pColors->cGreen;
     ii = pColors->cRed;
     ii = pColors->cIntensity;
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO COLORBYID VALUES (%u,%i,0)",idFromColor,fileAndID];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO COLORBYID VALUES (%u,%i,%i,0)",idFromColor,ID,fileNum];
     [_bd executeCmd:(LPSTR)cmd.UTF8String];
+    _numColorsInTable++;
 }
 - (void) addPixelsToTable:(UINT)idFromColor
                 numPixels:(int)nPixels
@@ -797,7 +799,8 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
 {
     NSString * query = @"SELECT * FROM COLORBYID";
     sqlite3_stmt *statement = NULL;
-    UINT fileAndID;
+    int fileNum;
+    int ID;
     UINT idFromColor;
     int totPix = 0;
     int pixels;
@@ -807,14 +810,15 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         idFromColor = sqlite3_column_int(statement, 0);
-        fileAndID = sqlite3_column_int(statement, 1);
-        pixels = sqlite3_column_int(statement, 2);
+        ID = sqlite3_column_int(statement, 1);
+        fileNum = sqlite3_column_int(statement, 2);
+        pixels = sqlite3_column_int(statement, 3);
         totPix += pixels;
         if (pixels)
         {
             double pct = (double)pixels / _totPixelsInCircle;
             double squareMetersInRadius = pixels * _squareMetersPerPixel;
-            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%i,%u,%i,%f,%f);",_propNum,_baseLayer,fileAndID,_iDist+1,squareMetersInRadius,pct];
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,%li,%i,%i,%i,%f,%f);",_propNum,(long)_baseLayer,ID,fileNum,_iDist+1,squareMetersInRadius,pct];
             [_delegate executePropListCommand:cmd];
         }
     }

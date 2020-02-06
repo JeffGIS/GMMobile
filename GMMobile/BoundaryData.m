@@ -166,7 +166,32 @@
     SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0),_database);
 }
 
-+ (NSString *) getKeyforPolyid:(int)polyID
++ (double) getAreaForCensusArea:(LPSTR)cenArea
+{
+    NSString * type  = @"BLOCKGROUP";
+    double area = 0;
+    if (strlen (cenArea)> 12)
+        type = @"BLOCK";
+    NSString * query = [NSString stringWithFormat:@"SELECT area FROM CENSUS%@POLY Where %@ = '%s'",type,type,cenArea];
+    
+    sqlite3_stmt *statement = NULL;
+    BoundaryData *bad = [[BoundaryData alloc]init];
+    
+    BOOL opened = [bad open];
+
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(bad.database, query.UTF8String, -1, &statement, 0), bad.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        area = sqlite3_column_double(statement, 0);
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), bad.database);
+    [bad close:opened];
+
+    return area;
+ }
+ + (NSString *) getKeyforPolyid:(int)polyID
                         ofType:(NSString*)type
                   areaInMeters:(double*)pArea
 {

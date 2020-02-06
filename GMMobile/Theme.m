@@ -1682,10 +1682,11 @@ int getThemeOpt(ThemeTypes type)
             {
                 if (!test)
                 {
-                    UINT fileAndID = (UINT)dc.refno;
-                    dc.fillColor = UIColorFromInt (fileAndID);
+                    UINT ID = (UINT)dc.refno;
+                    dc.fillColor = UIColorFromInt (_getSlowValues.numColorsInTable);
                     _totNumItems++;
-                    [_getSlowValues addIDtoColorByIDTable:fileAndID
+                    [_getSlowValues addIDtoColorByIDTable:ID
+                                                   inFile:0
                                                     color:dc.fillColor];
                 }
                 rtn = DISPLAY_ITEM;
