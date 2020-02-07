@@ -269,8 +269,8 @@ Top:
             int numHouseholds = sqlite3_column_int(statement,i++);
             int hhwithChildren = sqlite3_column_int(statement,i++);
             int hhwithSeniors = sqlite3_column_int(statement,i++);
-            LPSTR hop = sqlite3_column_text(statement,i);
-            int homeownpct= IDNINT(100.0 * sqlite3_column_double(statement,i++));
+            double hop = sqlite3_column_double(statement,i++);
+            int homeownpct= IDNINT(100.0 * hop);
             int owneroccupied = sqlite3_column_int(statement,i++);
             int renteroccupied = sqlite3_column_int(statement,i++);
             int vacant = sqlite3_column_int(statement,i++);
@@ -281,6 +281,11 @@ Top:
             bt.totfamNoKids += famNoKids * pctOfAreaInCircle;
             bt.totnonFamily  += nonFamily * pctOfAreaInCircle;
             bt.totmedianAge += medianAge * popTotal * pctOfAreaInCircle;
+            bt.tothhwithChildren += hhwithChildren;
+            bt.tothhwithSeniors += hhwithSeniors;
+            bt.totowneroccupied += owneroccupied;
+            bt.totrenteroccupied += renteroccupied;
+            bt.totvacant += vacant;
             bt.totHouseholds += numHouseholds * pctOfAreaInCircle;
         }
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
@@ -292,6 +297,7 @@ Top:
     DATA_FROM_BLOCKS * values = DATA_FROM_BLOCKS.new;
     
     values.totPop = IDNINT (bt.totPop);
+    values.totHouseholds = bt.totHouseholds;
     values.popPerSqMile = IDNINT (bt.totPop / _totalAreaInSqMiles);
     if (bt.totHouseholds > 0)
     {
@@ -299,6 +305,12 @@ Top:
         values.famNoKids = IDNINT (100.0 * bt.totfamNoKids / bt.totHouseholds);
         values.marrKids = IDNINT (100.0 * bt.totmarrKids / bt.totHouseholds);
         values.unMarrKids = IDNINT (100.0 * bt.totunMarrKids / bt.totHouseholds);
+        values.nonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
+        values.pctWithChildren = IDNINT (100.0 * bt.tothhwithChildren / bt.totHouseholds);
+        values.pctWithSeniors = IDNINT (100.0 * bt.tothhwithSeniors / bt.totHouseholds);
+        values.pctOwneroccupied = IDNINT (100.0 * bt.totowneroccupied / bt.totHouseholds);
+        values.pctRenteroccupied = IDNINT (100.0 * bt.totrenteroccupied / bt.totHouseholds);
+        values.pctVacant = IDNINT (100.0 * bt.totvacant / bt.totHouseholds);
         values.nonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
     }
     if (bt.totPop > 0)

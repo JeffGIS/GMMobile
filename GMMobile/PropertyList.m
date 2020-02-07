@@ -603,15 +603,6 @@ NSString * GetPropListDirectory (void)
         case PFT_PctHomestead_blockstreet:
             name = @"PCT Homestead (Block Street)";
             break;
-        case PFT_PctHomeOwn_block:
-            name = @"PCT Home Ownership (Block)";
-            break;
-        case PFT_PctHomeOwn_blockgroup:
-            name = @"PCT Home Ownership (Block Group)";
-            break;
-        case PFT_PctHomeOwn_blockstreet:
-            name = @"PCT Home Ownership (Block Street)";
-            break;
         case PFT_MedianAgePop_block:
             name = @"Median Age Population (Block)";
             break;
@@ -848,6 +839,54 @@ NSString * GetPropListDirectory (void)
             break;
         case PFT_PopDensity_halfMile:
             name = @"Population Density (Half Mile)";
+            break;
+        case PFT_PctOwnerOccupied_block:
+            name = @"PCT Owner Occupied (Block)";
+            break;
+        case PFT_PctOwnerOccupied_blockgroup:
+            name = @"PCT Owner Occupied (Block Group)";
+            break;
+        case PFT_PctOwnerOccupied_qtrMile:
+            name = @"PCT Owner Occupied (Qtr Mile)";
+            break;
+        case PFT_PctOwnerOccupied_halfMile:
+            name = @"PCT Owner Occupied (Mile)";
+            break;
+        case PFT_PctRenterOccupied_block:
+            name = @"PCT Renter Occupied (Block)";
+            break;
+        case PFT_PctRenterOccupied_blockgroup:
+            name = @"PCT Renter Occupied (Block Group)";
+            break;
+        case PFT_PctRenterOccupied_qtrMile:
+            name = @"PCT Renter Occupied (Qtr Mile)";
+            break;
+        case PFT_PctRenterOccupied_halfMile:
+            name = @"PCT Renter Occupied (Half Mile)";
+            break;
+        case PFT_PctVacant_block:
+            name = @"PCT Vacant (Block)";
+            break;
+        case PFT_PctVacant_blockgroup:
+            name = @"PCT Vacant (Block Group)";
+            break;
+        case PFT_PctVacant_qtrMile:
+            name = @"PCT Vacant (Qtr Mile)";
+            break;
+        case PFT_PctVacant_halfMile:
+            name = @"PCT Vacant (Half Mile)";
+            break;
+        case PFT_TotalHouseholds_block:
+            name = @"Total Households (Block)";
+            break;
+        case PFT_TotalHouseholds_blockgroup:
+            name = @"Total Households (Block Group)";
+            break;
+        case PFT_TotalHouseholds_qtrMile:
+            name = @"Total Households (Qtr Mile)";
+            break;
+        case PFT_TotalHouseholds_halfMile:
+            name = @"Total Households (Half Mile)";
             break;
     }
     
@@ -1857,8 +1896,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_cenblock.unMarrKids withCode:PFT_PctUnMarrKids_block];
     [self addInt:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
     [self addInt:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
-    [self addInt:values_cenblock.pctChildren withCode:PFT_PctChildren_block];
-    [self addInt:values_cenblock.pctSeniors withCode:PFT_PctSenior_block];
+    [self addInt:values_cenblock.pctWithChildren withCode:PFT_PctChildren_block];
+    [self addInt:values_cenblock.pctWithSeniors withCode:PFT_PctSenior_block];
+    [self addInt:values_cenblock.pctOwneroccupied withCode:PFT_PctOwnerOccupied_block];
+    [self addInt:values_cenblock.pctRenteroccupied withCode:PFT_PctRenterOccupied_block];
+    [self addInt:values_cenblock.pctVacant withCode:PFT_PctVacant_block];
+    [self addInt:values_cenblock.totHouseholds withCode:PFT_TotalHouseholds_block];
     [self addInt:values_cenblock.totPop withCode:PFT_TotalPop_block];
     [self addInt:values_cenblock.popPerSqMile withCode:PFT_PopDensity_block];
 
@@ -1869,12 +1912,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:values_cenblockgroup.unMarrKids withCode:PFT_PctUnMarrKids_blockgroup];
     [self addInt:values_cenblockgroup.medianAdultAge withCode:PFT_MedianAgeAdults_blockgroup];
     [self addInt:values_cenblockgroup.medianChildAge withCode:PFT_MedianAgeChildren_blockgroup];
-    [self addInt:values_cenblockgroup.pctChildren withCode:PFT_PctChildren_blockgroup];
-    [self addInt:values_cenblockgroup.pctSeniors withCode:PFT_PctSenior_blockgroup];
+    [self addInt:values_cenblockgroup.pctWithChildren withCode:PFT_PctChildren_blockgroup];
+    [self addInt:values_cenblockgroup.pctWithSeniors withCode:PFT_PctSenior_blockgroup];
+    [self addInt:values_cenblockgroup.pctOwneroccupied withCode:PFT_PctOwnerOccupied_blockgroup];
+    [self addInt:values_cenblockgroup.pctRenteroccupied withCode:PFT_PctRenterOccupied_blockgroup];
+    [self addInt:values_cenblockgroup.pctVacant withCode:PFT_PctVacant_blockgroup];
     [self addInt:values_cenblockgroup.totPop withCode:PFT_TotalPop_blockgroup];
+    [self addInt:values_cenblockgroup.totHouseholds withCode:PFT_TotalHouseholds_blockgroup];
     [self addInt:values_cenblockgroup.popPerSqMile withCode:PFT_PopDensity_blockgroup];
+    
     [self addInt:speed withCode:PFT_StreetSpeedLimit];
 
+    int numValues = PFT_END;
     rtn = YES;
     
     _slowValues = [[GetSlowValues alloc]init];

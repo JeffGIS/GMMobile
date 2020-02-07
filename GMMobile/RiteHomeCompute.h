@@ -52,6 +52,11 @@ totmarrKids,
 totunMarrKids,
 totfamNoKids,
 totnonFamily,
+tothhwithChildren,
+tothhwithSeniors,
+totowneroccupied,
+totrenteroccupied,
+totvacant,
 totmedianAge,
 totmedianAdultAge,
 totmedianChildAge;
@@ -61,6 +66,7 @@ totmedianChildAge;
 @interface DATA_FROM_BLOCKS : NSObject
 @property  int  nMatchingPropertiesx;
 @property  int  totPop,
+totHouseholds,
 popPerSqMile,
 livedAlone,
 marrKids,
@@ -70,8 +76,12 @@ nonFamily,
 medianAge,
 medianAdultAge,
 medianChildAge,
-pctChildren,
-pctSeniors;
+pctWithChildren,
+pctWithSeniors,
+pctOwneroccupied,
+pctRenteroccupied,
+pctVacant;
+
 
 @end
 
