@@ -888,6 +888,18 @@ NSString * GetPropListDirectory (void)
         case PFT_TotalHouseholds_halfMile:
             name = @"Total Households (Half Mile)";
             break;
+        case PFT_AveHouseholdSize_block:
+            name = @"Ave Household Size (Block)";
+            break;
+        case PFT_AveHouseholdSize_blockgroup:
+            name = @"Ave Household Size (Block Group)";
+            break;
+        case PFT_AveHouseholdSize_qtrMile:
+            name = @"Ave Household Size (Qtr Mile)";
+            break;
+        case PFT_AveHouseholdSize_halfMile:
+            name = @"Ave Household Size (Half Mile)";
+            break;
     }
     
     return name;
@@ -1005,7 +1017,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field
 {
-    PropBaseType bt=0;
+    PropBaseType bt=PBT_Residential;
     
     switch (field)
     {
@@ -1069,6 +1081,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_SPEC_ASSESSMENT:
         case PFT_LastSalePrice:
             rtn = VTDollars;
+            break;
+        case PFT_AveHouseholdSize_block:
+        case PFT_AveHouseholdSize_blockgroup:
+        case PFT_AveHouseholdSize_qtrMile:
+        case PFT_AveHouseholdSize_halfMile:
+            rtn = VTDoubleOneDecimal;
             break;
         default:
             rtn = VTInteger;
@@ -1309,6 +1327,10 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 value = [NSString stringWithFormat:@"%f",dval];
                 break;
+            case VTDoubleOneDecimal:
+                dval = *(double*)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithFormat:@"%.1f",dval];
+                break;
             case VTAcres:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
@@ -1336,6 +1358,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     switch (type)
     {
         case VTDouble:
+        case VTDoubleOneDecimal:
         case VTAcres:
         case VTDollars:
         {
@@ -1368,6 +1391,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                     num = [[NSNumber alloc] initWithDouble:totval];
                     value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
                     break;
+                case VTDoubleOneDecimal:
+                    value = [NSString stringWithFormat:@"%.1f",totval];
+                    break;
+                case VTDouble:
+                    value = [NSString stringWithFormat:@"%f",totval];
+                    break;
                 default:
                     break;
             }
@@ -1387,6 +1416,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             break;
             
         case VTDouble:
+        case VTDoubleOneDecimal:
         case VTAcres:
         case VTDollars:
         {
@@ -1421,6 +1451,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                     case VTAcres:
                         num = [[NSNumber alloc] initWithDouble:totval];
                         value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
+                        break;
+                    case VTDoubleOneDecimal:
+                        value = [NSString stringWithFormat:@"%.1f",totval];
+                        break;
+                    case VTDouble:
+                        value = [NSString stringWithFormat:@"%f",totval];
                         break;
                     default:
                         break;

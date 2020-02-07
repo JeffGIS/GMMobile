@@ -46,6 +46,7 @@ pctNoTax;
 @property  int  numBlocks;
 @property  double  totPop,
 totHouseholds,
+aveHHSize,
 totPopPerSqMile,
 totlivedAlone,
 totmarrKids,
@@ -60,11 +61,48 @@ totvacant,
 totmedianAge,
 totmedianAdultAge,
 totmedianChildAge;
+@property double
+M_0_4,
+M_5_9,
+M_10_14,
+M_15_19,
+M_20_24,
+M_25_29,
+M_30_34,
+M_35_39,
+M_40_44,
+M_45_49,
+M_50_54,
+M_55_59,
+M_60_64,
+M_65_69,
+M_70_74,
+M_75_79,
+M_80_84,
+M_OVER85,
+F_0_4,
+F_5_9,
+F_10_14,
+F_15_19,
+F_20_24,
+F_25_29,
+F_30_34,
+F_35_39,
+F_40_44,
+F_45_49,
+F_50_54,
+F_55_59,
+F_60_64,
+F_65_69,
+F_70_74,
+F_75_79,
+F_80_84,
+F_OVER85;
 
 @end
 
 @interface DATA_FROM_BLOCKS : NSObject
-@property  int  nMatchingPropertiesx;
+@property  double aveHHSize;
 @property  int  totPop,
 totHouseholds,
 popPerSqMile,
@@ -73,15 +111,19 @@ marrKids,
 unMarrKids,
 famNoKids,
 nonFamily,
-medianAge,
-medianAdultAge,
-medianChildAge,
 pctWithChildren,
 pctWithSeniors,
 pctOwneroccupied,
 pctRenteroccupied,
 pctVacant;
-
+@property double
+medianAge,
+medianAdultAge,
+medianAdultAgeMale,
+medianAdultAgeFemale,
+medianChildAge,
+medianChildAgeMale,
+medianChildAgeFemale;
 
 @end
 

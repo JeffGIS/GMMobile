@@ -245,7 +245,9 @@ Top:
 
 +(NSString *) blockFieldList
 {
-    NSString * list = @"GEOG_UNIT,POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY,MEDIANAGE,HHTOTAL,HH_UNDER18,HH_65OVER,HOMEOWNPCT,OWNEROCC,RENTEROCC,VACANT";
+    NSString * list = @"GEOG_UNIT,POPTOTAL,LIVEDALONE,MARRKIDS,UNMARRKIDS,FAMNOKIDS,NONFAMILY,MEDIANAGE,HHTOTAL,AVGHHSIZE,HH_UNDER18,HH_65OVER,HOMEOWNPCT,OWNEROCC,RENTEROCC,VACANT,\
+    M_0_4,M_5_9,M_10_14,M_15_19,M_20_24,M_25_29,M_30_34,M_35_39,M_40_44,M_45_49,M_50_54,M_55_59,M_60_64,M_65_69,M_70_74,M_75_79,M_80_84,M_OVER85,\
+    F_0_4,F_5_9,F_10_14,F_15_19,F_20_24,F_25_29,F_30_34,F_35_39,F_40_44,F_45_49,F_50_54,F_55_59,F_60_64,F_65_69,F_70_74,F_75_79,F_80_84,F_OVER85";
     return list;
 }
 
@@ -267,6 +269,7 @@ Top:
             int nonFamily = sqlite3_column_int(statement,i++);
             int medianAge = sqlite3_column_int(statement,i++);
             int numHouseholds = sqlite3_column_int(statement,i++);
+            double aveHHSize =sqlite3_column_double(statement,i++);
             int hhwithChildren = sqlite3_column_int(statement,i++);
             int hhwithSeniors = sqlite3_column_int(statement,i++);
             double hop = sqlite3_column_double(statement,i++);
@@ -274,6 +277,44 @@ Top:
             int owneroccupied = sqlite3_column_int(statement,i++);
             int renteroccupied = sqlite3_column_int(statement,i++);
             int vacant = sqlite3_column_int(statement,i++);
+            int M_0_4 = sqlite3_column_int(statement,i++);
+            int M_5_9 = sqlite3_column_int(statement,i++);
+            int M_10_14 = sqlite3_column_int(statement,i++);
+            int  M_15_19 = sqlite3_column_int(statement,i++);
+            int M_20_24 = sqlite3_column_int(statement,i++);
+            int M_25_29 = sqlite3_column_int(statement,i++);
+            int M_30_34 = sqlite3_column_int(statement,i++);
+            int M_35_39 = sqlite3_column_int(statement,i++);
+            int M_40_44 = sqlite3_column_int(statement,i++);
+            int M_45_49 = sqlite3_column_int(statement,i++);
+            int M_50_54 = sqlite3_column_int(statement,i++);
+            int M_55_59 = sqlite3_column_int(statement,i++);
+            int M_60_64 = sqlite3_column_int(statement,i++);
+            int M_65_69 = sqlite3_column_int(statement,i++);
+            int M_70_74 = sqlite3_column_int(statement,i++);
+            int M_75_79 = sqlite3_column_int(statement,i++);
+            int M_80_84 = sqlite3_column_int(statement,i++);
+            int M_OVER85 = sqlite3_column_int(statement,i++);
+            int F_0_4 = sqlite3_column_int(statement,i++);
+            int F_5_9 = sqlite3_column_int(statement,i++);
+            int F_10_14 = sqlite3_column_int(statement,i++);
+            int F_15_19 = sqlite3_column_int(statement,i++);
+            int F_20_24 = sqlite3_column_int(statement,i++);
+            int F_25_29 = sqlite3_column_int(statement,i++);
+            int F_30_34 = sqlite3_column_int(statement,i++);
+            int F_35_39 = sqlite3_column_int(statement,i++);
+            int F_40_44 = sqlite3_column_int(statement,i++);
+            int F_45_49 = sqlite3_column_int(statement,i++);
+            int F_50_54 = sqlite3_column_int(statement,i++);
+            int F_55_59 = sqlite3_column_int(statement,i++);
+            int F_60_64 = sqlite3_column_int(statement,i++);
+            int F_65_69 = sqlite3_column_int(statement,i++);
+            int F_70_74 = sqlite3_column_int(statement,i++);
+            int F_75_79 = sqlite3_column_int(statement,i++);
+            int F_80_84 = sqlite3_column_int(statement,i++);
+            int F_OVER85 = sqlite3_column_int(statement,i++);
+
+            bt.numBlocks++;
             bt.totPop += popTotal * pctOfAreaInCircle;
             bt.totlivedAlone += livedAlone * pctOfAreaInCircle;
             bt.totmarrKids += marrKids * pctOfAreaInCircle;
@@ -281,16 +322,174 @@ Top:
             bt.totfamNoKids += famNoKids * pctOfAreaInCircle;
             bt.totnonFamily  += nonFamily * pctOfAreaInCircle;
             bt.totmedianAge += medianAge * popTotal * pctOfAreaInCircle;
-            bt.tothhwithChildren += hhwithChildren;
-            bt.tothhwithSeniors += hhwithSeniors;
-            bt.totowneroccupied += owneroccupied;
-            bt.totrenteroccupied += renteroccupied;
-            bt.totvacant += vacant;
+            bt.tothhwithChildren += hhwithChildren * pctOfAreaInCircle;;
+            bt.tothhwithSeniors += hhwithSeniors * pctOfAreaInCircle;;
+            bt.totowneroccupied += owneroccupied * pctOfAreaInCircle;;
+            bt.totrenteroccupied += renteroccupied * pctOfAreaInCircle;;
+            bt.totvacant += vacant * pctOfAreaInCircle;;
             bt.totHouseholds += numHouseholds * pctOfAreaInCircle;
+            bt.aveHHSize += aveHHSize * numHouseholds * pctOfAreaInCircle;
+            bt.M_0_4 = M_0_4  * pctOfAreaInCircle;
+            bt.M_5_9 = M_5_9 * pctOfAreaInCircle;
+            bt.M_10_14 = M_10_14 * pctOfAreaInCircle;
+            bt.M_15_19 = M_15_19 * pctOfAreaInCircle;
+            bt.M_20_24 = M_20_24 * pctOfAreaInCircle;
+            bt.M_25_29 = M_25_29 * pctOfAreaInCircle;
+            bt.M_30_34 = M_30_34 * pctOfAreaInCircle;
+            bt.M_35_39 = M_35_39 * pctOfAreaInCircle;
+            bt.M_40_44 = M_40_44 * pctOfAreaInCircle;
+            bt.M_45_49 = M_45_49 * pctOfAreaInCircle;
+            bt.M_50_54 = M_50_54 * pctOfAreaInCircle;
+            bt.M_55_59 = M_55_59 * pctOfAreaInCircle;
+            bt.M_60_64 = M_60_64 * pctOfAreaInCircle;
+            bt.M_65_69 = M_65_69 * pctOfAreaInCircle;
+            bt.M_70_74 = M_70_74 * pctOfAreaInCircle;
+            bt.M_75_79 = M_75_79 * pctOfAreaInCircle;
+            bt.M_80_84 = M_80_84 * pctOfAreaInCircle;
+            bt.M_OVER85 = M_OVER85 * pctOfAreaInCircle;
+            bt.F_0_4 = F_0_4 * pctOfAreaInCircle;
+            bt.F_5_9 = F_5_9 * pctOfAreaInCircle;
+            bt.F_10_14 = F_10_14 * pctOfAreaInCircle;
+            bt.F_15_19 = F_15_19 * pctOfAreaInCircle;
+            bt.F_20_24 = F_20_24 * pctOfAreaInCircle;
+            bt.F_25_29 = F_25_29 * pctOfAreaInCircle;
+            bt.F_30_34 = F_30_34 * pctOfAreaInCircle;
+            bt.F_35_39 = F_35_39 * pctOfAreaInCircle;
+            bt.F_40_44 = F_40_44 * pctOfAreaInCircle;
+            bt.F_45_49 = F_45_49 * pctOfAreaInCircle;
+            bt.F_50_54 = F_50_54 * pctOfAreaInCircle;
+            bt.F_55_59 = F_55_59 * pctOfAreaInCircle;
+            bt.F_60_64 = F_60_64 * pctOfAreaInCircle;
+            bt.F_65_69 = F_65_69 * pctOfAreaInCircle;
+            bt.F_70_74 = F_70_74 * pctOfAreaInCircle;
+            bt.F_75_79 = F_75_79 * pctOfAreaInCircle;
+            bt.F_80_84 = F_80_84 * pctOfAreaInCircle;
+            bt.F_OVER85 = F_OVER85 * pctOfAreaInCircle;;
         }
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
     }
     return;
+}
+double medianAge (double * counts,double *ages,int nvals)
+{
+    double median = 0;
+    int i;
+    double totCount = 0;
+    for (int i = 0;i<nvals;i++)
+        totCount += counts[i];
+    double halfCount = totCount / 2;
+    double count = 0;
+    double lastCount = 0;
+    i = 0;
+    while (i < nvals && count < halfCount)
+    {
+        count += counts[i++];
+    };
+    if (i < nvals)
+    {
+        double f = (halfCount - (count - counts[i-1])) / counts[i-1];
+        median = ages[i-1] + f * (ages[i] - ages[i-1]);
+    }
+    else
+        median = ages[i-1];
+    return median;
+}
+double medianChildMale (BLOCK_TOTALS * bt)
+{
+    double ages[5], counts[5];
+    int i=0, j=0, nvals = 5;
+    counts[i++] = 0; ages[j++] = 0;
+    counts[i++] = bt.M_0_4; ages[j++] = 0 ;
+    counts[i++] = bt.M_5_9; ages[j++] = 5 ;
+    counts[i++] = bt.M_10_14; ages[j++] = 10 ;
+    counts[i++] = bt.M_15_19; ages[j++] = 15 ;
+    return medianAge (counts,ages,nvals);
+}
+double medianChildFemale (BLOCK_TOTALS * bt)
+{
+    double ages[5], counts[5];
+    int i=0, j=0, nvals = 5;
+    counts[i++] = 0; ages[j++] = 0;
+    counts[i++] = bt.F_0_4; ages[j++] = 0 ;
+    counts[i++] = bt.F_5_9; ages[j++] = 5 ;
+    counts[i++] = bt.F_10_14; ages[j++] = 10 ;
+    counts[i++] = bt.F_15_19; ages[j++] = 15 ;
+    return medianAge (counts,ages,nvals);
+}
+double medianChild (BLOCK_TOTALS * bt)
+{
+    double ages[5], counts[5];
+    int i=0, j=0, nvals = 5;
+    counts[i++] = 0; ages[j++] = 0;
+    counts[i++] = bt.M_0_4 + bt.F_0_4; ages[j++] = 0 ;
+    counts[i++] = bt.M_5_9 + bt.F_5_9; ages[j++] = 5 ;
+    counts[i++] = bt.M_10_14 + bt.F_10_14; ages[j++] = 10 ;
+    counts[i++] = bt.M_15_19 + bt.F_15_19; ages[j++] = 15 ;
+    return medianAge (counts,ages,nvals);
+}
+double medianAdultMale (BLOCK_TOTALS * bt)
+{
+    double ages[15], counts[15];
+    int i=0, j=0, nvals = 15;
+    counts[i++] = 0; ages[j++] = 0;
+    counts[i++] = bt.M_20_24; ages[j++] = 20 ;
+    counts[i++] = bt.M_25_29; ages[j++] = 25 ;
+    counts[i++] = bt.M_30_34; ages[j++] = 30 ;
+    counts[i++] = bt.M_35_39; ages[j++] = 35 ;
+    counts[i++] = bt.M_40_44; ages[j++] = 40 ;
+    counts[i++] = bt.M_45_49; ages[j++] = 45 ;
+    counts[i++] = bt.M_50_54; ages[j++] = 50 ;
+    counts[i++] = bt.M_55_59; ages[j++] = 55 ;
+    counts[i++] = bt.M_60_64; ages[j++] = 60 ;
+    counts[i++] = bt.M_65_69; ages[j++] = 65 ;
+    counts[i++] = bt.M_70_74; ages[j++] = 70 ;
+    counts[i++] = bt.M_75_79; ages[j++] = 75 ;
+    counts[i++] = bt.M_80_84; ages[j++] = 80 ;
+    counts[i++] = bt.M_OVER85; ages[j++] = 86;
+    return medianAge (counts,ages,nvals);
+}
+double medianAdultFemale (BLOCK_TOTALS * bt)
+{
+    double ages[15], counts[15];
+    int i=0, j=0, nvals = 15;
+    counts[i++] = 0; ages[j++] = 0;
+    counts[i++] = bt.F_20_24; ages[j++] = 20 ;
+    counts[i++] = bt.F_25_29; ages[j++] = 25 ;
+    counts[i++] = bt.F_30_34; ages[j++] = 30 ;
+    counts[i++] = bt.F_35_39; ages[j++] = 35 ;
+    counts[i++] = bt.F_40_44; ages[j++] = 40 ;
+    counts[i++] = bt.F_45_49; ages[j++] = 45 ;
+    counts[i++] = bt.F_50_54; ages[j++] = 50 ;
+    counts[i++] = bt.F_55_59; ages[j++] = 55 ;
+    counts[i++] = bt.F_60_64; ages[j++] = 60 ;
+    counts[i++] = bt.F_65_69; ages[j++] = 65 ;
+    counts[i++] = bt.F_70_74; ages[j++] = 70 ;
+    counts[i++] = bt.F_75_79; ages[j++] = 75 ;
+    counts[i++] = bt.F_80_84; ages[j++] = 80 ;
+    counts[i++] = bt.F_OVER85; ages[j++] = 86;
+    return medianAge (counts,ages,nvals);
+}
+
+double medianAdult (BLOCK_TOTALS * bt)
+{
+    double ages[15], counts[15];
+    int i=0, j=0, nvals = 15;
+    counts[i++] = 0; ages[j++] = 0;
+    counts[i++] = bt.M_20_24 + bt.F_20_24; ages[j++] = 20 ;
+    counts[i++] = bt.M_25_29 + bt.F_25_29; ages[j++] = 25 ;
+    counts[i++] = bt.M_30_34 + bt.F_30_34; ages[j++] = 30 ;
+    counts[i++] = bt.M_35_39 + bt.F_35_39; ages[j++] = 35 ;
+    counts[i++] = bt.M_40_44 + bt.F_40_44; ages[j++] = 40 ;
+    counts[i++] = bt.M_45_49 + bt.F_45_49; ages[j++] = 45 ;
+    counts[i++] = bt.M_50_54 + bt.F_50_54; ages[j++] = 50 ;
+    counts[i++] = bt.M_55_59 + bt.F_55_59; ages[j++] = 55 ;
+    counts[i++] = bt.M_60_64 + bt.F_60_64; ages[j++] = 60 ;
+    counts[i++] = bt.M_65_69 + bt.F_65_69; ages[j++] = 65 ;
+    counts[i++] = bt.M_70_74 + bt.F_70_74; ages[j++] = 70 ;
+    counts[i++] = bt.M_75_79 + bt.F_75_79; ages[j++] = 75 ;
+    counts[i++] = bt.M_80_84 + bt.F_80_84; ages[j++] = 80 ;
+    counts[i++] = bt.M_OVER85 + bt.F_OVER85; ages[j++] = 86;
+    return medianAge (counts,ages,nvals);
 }
 -(DATA_FROM_BLOCKS *) blockValuesFromBlockTotals:(BLOCK_TOTALS *)bt
 {
@@ -301,6 +500,7 @@ Top:
     values.popPerSqMile = IDNINT (bt.totPop / _totalAreaInSqMiles);
     if (bt.totHouseholds > 0)
     {
+        values.aveHHSize = bt.aveHHSize / bt.totHouseholds;
         values.livedAlone = IDNINT (100.0 * bt.totlivedAlone / bt.totHouseholds);
         values.famNoKids = IDNINT (100.0 * bt.totfamNoKids / bt.totHouseholds);
         values.marrKids = IDNINT (100.0 * bt.totmarrKids / bt.totHouseholds);
@@ -312,6 +512,12 @@ Top:
         values.pctRenteroccupied = IDNINT (100.0 * bt.totrenteroccupied / bt.totHouseholds);
         values.pctVacant = IDNINT (100.0 * bt.totvacant / bt.totHouseholds);
         values.nonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
+        values.medianChildAgeMale = medianChildMale (bt);
+        values.medianAdultAgeMale = medianAdultMale (bt);
+        values.medianChildAgeFemale = medianChildFemale (bt);
+        values.medianAdultAgeFemale = medianAdultFemale (bt);
+        values.medianChildAge = medianChild (bt);
+        values.medianAdultAge = medianAdult (bt);
     }
     if (bt.totPop > 0)
         values.medianAge = IDNINT(bt.totmedianAge / bt.totPop);
@@ -519,11 +725,16 @@ Top:
     sqlite3_stmt *statement = NULL;
     NSString *query;
     NSString *blockFieldList = [RiteHomeCompute blockFieldList];
+    double pctOfTotalArea = 1.0;
     
     if (strlen (blockOrBlockGroup) == 12)
+    {
         query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA WHERE GEOG_UNIT>='%s000' AND GEOG_UNIT<='%s999'",blockFieldList,blockOrBlockGroup,blockOrBlockGroup];
+    }
     else if (strlen (blockOrBlockGroup) > 12)
+    {
         query = [NSString stringWithFormat:@"SELECT %@ FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",blockFieldList,blockOrBlockGroup];
+    }
     else
         return FALSE;
     
