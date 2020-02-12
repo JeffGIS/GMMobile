@@ -676,7 +676,7 @@ return _version;
             break;
             
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT ANUMBER,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME >= '%@' AND STREETNAME < '%@' AND ANUMBER = %i",
+            query = [NSString stringWithFormat:@"SELECT HOUSENUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME >= '%@' AND STREETNAME < '%@' AND HOUSENUM = %i",
                      matchChar.uppercaseString, lastName.uppercaseString, houseNumber];
             break;
     }
