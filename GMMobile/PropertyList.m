@@ -140,6 +140,8 @@ NSString * GetPropListDirectory (void)
         NSLog(@"%@ file removal error", currentDir);
         return FALSE;
     }
+    [Destinations deleteRecordsForPropList:(NSString*)[pl plName]];
+
     NSArray *lists = [PropertyList getPropertyLists];
     if (lists.count)
         [UserDefaults.defaults saveString:lists[0]
@@ -593,6 +595,18 @@ NSString * GetPropListDirectory (void)
             break;
         case PFT_TimeToDestinations:
             name = @"Time to Destinations (Hours per Month)";
+            break;
+        case PFT_DistanceToDestinationsGoogle:
+            name = @"Distance to Destinations (Google)";
+            break;
+        case PFT_TimeToDestinationsGoogle:
+            name = @"Time to Destinations (Google)";
+            break;
+        case PFT_DistanceToDestinationsApple:
+            name = @"Distance to Destinations (Apple)";
+            break;
+        case PFT_TimeToDestinationsApple:
+            name = @"Time to Destinations (Apple)";
             break;
         case PFT_PctHomestead_block:
             name = @"PCT Homestead (Block)";
@@ -1191,7 +1205,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     {
         Destinations *dest = Destinations.new;
         
-        CGFloat val = [dest totalValueForProperty:propNum ofType:type];
+        CGFloat val = [dest totalValueForProperty:propNum ofType:type fromService:@""];
         value = [NSString stringWithFormat:@"%.1f", val/60.0];
     }
     
@@ -1199,7 +1213,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     {
         Destinations *dest = Destinations.new;
         
-        CGFloat val = [dest totalValueForProperty:propNum ofType:type];
+        CGFloat val = [dest totalValueForProperty:propNum ofType:type fromService:@""];
         value = [NSString stringWithFormat:@"%.1f", val];
     }
     

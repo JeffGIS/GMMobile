@@ -55,6 +55,9 @@
 - (void)updateDestination:(Destination*)dest;
 
 - (CGFloat)totalValueForProperty:(NSInteger)propNum
-                          ofType:(PropFieldType)type;
+                          ofType:(PropFieldType)type
+                     fromService:(NSString *) service;
+
++(BOOL) deleteRecordsForPropList:(NSString*)propListName;
 
 @end

@@ -144,8 +144,8 @@
     BOOL opened = [self open];
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS Destinations (DestinationNumber INT PRIMARY KEY,GroupNumber INT,DestinationName CHAR(200),LATITUDE REAL,LONGITUDE REAL,Frequency REAL,TimeDepart INT,TimeReturn INT);\
-    CREATE TABLE IF NOT EXISTS Routes (RouteNum INT,PropertyNum INT,DestinationNum INT,Direction INT,Distance REAL,Time REAL);\
-                      CREATE INDEX IF NOT EXISTS PropNum_index ON Routes (PropertyNum ASC);";
+    CREATE TABLE IF NOT EXISTS RoutesByService (Service CHAR(16),PropListName CHAR(64),PropertyNum INT,RouteNum INT,DestinationNum INT,Direction INT,Distance REAL,Time REAL);\
+                      CREATE INDEX IF NOT EXISTS PropNum_index ON RoutesByService (PropListName ASC,PropertyNum ASC);";
     
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
@@ -355,7 +355,7 @@
     
     NSString * cmd = [NSString stringWithFormat:@"DELETE FROM Destinations WHERE DestinationNumber = %li;",(long)destinationID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"DELETE FROM Routes WHERE DestinationNum = %li;",(long)destinationID];
+    cmd = [NSString stringWithFormat:@"DELETE FROM RoutesByService WHERE DestinationNum = %li;",(long)destinationID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
     [self close:opened];
@@ -384,86 +384,94 @@
      inDirection:(int)direction
     tranportType:(MKDirectionsTransportType)transportType
 {
-    Route *route = [[Route alloc] init];
-    
-    CLLocationCoordinate2D fromCoord = CLLocationCoordinate2DMake(fromPoint.lat, fromPoint.lon);
-    
-    MKPlacemark *fpm = [[MKPlacemark alloc] initWithCoordinate:fromCoord
-                                             addressDictionary:nil];
-    
-    MKMapItem *fmi = [[MKMapItem alloc] initWithPlacemark:fpm];
-    
-    CLLocationCoordinate2D toCoord = CLLocationCoordinate2DMake(toPoint.lat, toPoint.lon);
-    
-    MKPlacemark *tpm = [[MKPlacemark alloc] initWithCoordinate:toCoord
-                                             addressDictionary:nil];
-    
-    MKMapItem *tmi = [[MKMapItem alloc] initWithPlacemark:tpm];
-    
-    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-    request.source = fmi;
-    request.destination = tmi;
-    request.transportType = transportType;
-    request.requestsAlternateRoutes = NO;
-    request.departureDate = [NVDestinationOptions getDateForTime:time];
-    
-    MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
-    if (directions.calculating)
+    NSString * server = [CRAPI.sharedInstance getRouteServer];
+    if ([server isEqual:@"GOOGLE"] || [server isEqual:@"Both"])
     {
-        [directions cancel];
-        return -1;
+        [self getRouteFromGoogle:routeNum
+                        fromProp:propNum
+                       fromPoint:fromPoint
+                          toDest:destinationID
+                         toPoint:toPoint
+                          atTime:time
+                   withFrequency:frequency
+                     inDirection:direction
+                    tranportType:transportType];
     }
-    
-    [directions calculateDirectionsWithCompletionHandler:
-     ^(MKDirectionsResponse *response, NSError *error) {
-         if (error)
-         {
-             NSLog(@"MKDIR ERROR(from %li to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
-             
-             [self getRouteFromGoogle:routeNum
-                             fromProp:propNum
-                            fromPoint:fromPoint
-                               toDest:destinationID
-                              toPoint:toPoint
-                               atTime:time
-                        withFrequency:frequency
-                          inDirection:direction
-                         tranportType:transportType];
-         }
-         
-         else
-         {
-             MKRoute *theRoute = response.routes[0];
-             NSArray *routeSteps = theRoute.steps;
-             NSMutableArray *routePoly = [[NSMutableArray alloc] init];
-             
-             for (int i = 0; i < routeSteps.count; i++)
-             {
-                 MKRouteStep *mkrs = routeSteps[i];
-                 
-                 RouteStep *rs = [RouteStep routeStepWithPolyline:mkrs.polyline
-                                                    transportType:mkrs.transportType];
-                 
-                 [routePoly addObject:rs];
-             }
-             
-             route.routePolyline = routePoly;
-             route.distanceInMiles = frequency * (theRoute.distance / METERS_PER_MILE);
-             route.timeInMinutes = frequency * (theRoute.expectedTravelTime / 60.0);
-             
-             [_condition lock];
-             //[_condition wait];
-             BOOL opened = [self open];
-             
-             NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
-                              (long)routeNum, (long)propNum, (long)destinationID, direction, route.distanceInMiles, route.timeInMinutes];
-             
-             [self executeCmd:(LPSTR)cmd.UTF8String];
-             [self close:opened];
-             //[_condition signal];
-             [_condition unlock];
-         }
-     }];
+    if ([server isEqual:@"Apple"] || [server isEqual:@"Both"])
+    {
+        Route *route = [[Route alloc] init];
+        
+        CLLocationCoordinate2D fromCoord = CLLocationCoordinate2DMake(fromPoint.lat, fromPoint.lon);
+        
+        MKPlacemark *fpm = [[MKPlacemark alloc] initWithCoordinate:fromCoord
+                                                 addressDictionary:nil];
+        
+        MKMapItem *fmi = [[MKMapItem alloc] initWithPlacemark:fpm];
+        
+        CLLocationCoordinate2D toCoord = CLLocationCoordinate2DMake(toPoint.lat, toPoint.lon);
+        
+        MKPlacemark *tpm = [[MKPlacemark alloc] initWithCoordinate:toCoord
+                                                 addressDictionary:nil];
+        
+        MKMapItem *tmi = [[MKMapItem alloc] initWithPlacemark:tpm];
+        
+        MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+        request.source = fmi;
+        request.destination = tmi;
+        request.transportType = transportType;
+        request.requestsAlternateRoutes = NO;
+        request.departureDate = [NVDestinationOptions getDateForTime:time];
+        
+        MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
+        if (directions.calculating)
+        {
+            [directions cancel];
+            return -1;
+        }
+        
+        [directions calculateDirectionsWithCompletionHandler:
+         ^(MKDirectionsResponse *response, NSError *error) {
+            
+            if (error)
+            {
+                NSLog(@"MKDIR ERROR(from %li to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+                
+            }
+            
+            else
+            {
+                MKRoute *theRoute = response.routes[0];
+                NSArray *routeSteps = theRoute.steps;
+                NSMutableArray *routePoly = [[NSMutableArray alloc] init];
+                
+                for (int i = 0; i < routeSteps.count; i++)
+                {
+                    MKRouteStep *mkrs = routeSteps[i];
+                    
+                    RouteStep *rs = [RouteStep routeStepWithPolyline:mkrs.polyline
+                                                       transportType:mkrs.transportType];
+                    
+                    [routePoly addObject:rs];
+                }
+                
+                route.routePolyline = routePoly;
+                route.distanceInMiles = frequency * (theRoute.distance / METERS_PER_MILE);
+                route.timeInMinutes = frequency * (theRoute.expectedTravelTime / 60.0);
+                
+                [_condition lock];
+                //[_condition wait];
+                BOOL opened = [self open];
+                
+                NSString *cmd = [NSString stringWithFormat:@"INSERT INTO RoutesByService VALUES ('Apple','%@',%li,%li,%li,%i,%f,%f);",PropertyList.getCurrentPropertyListName,
+                                 (long)propNum, (long)routeNum, (long)destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+                
+                [self executeCmd:(LPSTR)cmd.UTF8String];
+                [self close:opened];
+                //[_condition signal];
+                [_condition unlock];
+            }
+        }];
+    }
     return 1;
 }
 
@@ -500,8 +508,8 @@
     }
     
     NSString *urlString =
-    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=%@",
-     fromPoint.lat, fromPoint.lon, toPoint.lat, toPoint.lon, mode];
+    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=%@&key=%@",
+     fromPoint.lat, fromPoint.lon, toPoint.lat, toPoint.lon, mode,GOOGLE_API_KEY];
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     urlRequest.timeoutInterval = 15;
@@ -576,8 +584,8 @@
         //[_condition wait];
         BOOL opened = [self open];
         
-        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
-                         (long)routeNum, (long)propNum, (long)destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO RoutesByService VALUES ('GOOGLE','%@',%li,%li,%li,%i,%f,%f);",PropertyList.getCurrentPropertyListName,
+                         (long)propNum, (long)routeNum, (long)destinationID, direction, route.distanceInMiles, route.timeInMinutes];
         
         [self executeCmd:(LPSTR)cmd.UTF8String];
         [self close:opened];
@@ -668,12 +676,18 @@
 
 - (CGFloat)totalValueForProperty:(NSInteger)propNum
                           ofType:(PropFieldType)type
+                     fromService:(NSString *) serviceIN
 {
     CGFloat totval = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT Distance,Time FROM Routes WHERE PropertyNum = %li",(long)propNum];
+    NSString * Service = @"GOOGLE";
+    NSString *query;
     sqlite3_stmt *statement = NULL;
-    
+    BOOL found = FALSE;
+    if (serviceIN.length)
+        Service = serviceIN;
+Top:
+    query =  [NSString stringWithFormat:@"SELECT Distance,Time FROM RoutesByService WHERE PropListName = '%@' AND PropertyNum = %li AND Service = '%@'",PropertyList.getCurrentPropertyListName,(long)propNum,Service];
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -681,13 +695,19 @@
         CGFloat dist = sqlite3_column_double(statement, 0);
         CGFloat time = sqlite3_column_double(statement, 1);
         
-        if (type == PFT_TimeToDestinations)
+        if (type == PFT_TimeToDestinations || type == PFT_TimeToDestinationsGoogle || type == PFT_TimeToDestinationsApple)
             totval += time;
         else
             totval += dist;
+        found = TRUE;
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    if (!found && [Service isEqualToString:@"GOOGLE"] && !serviceIN.length)
+    {
+        Service = @"Apple";
+        goto Top;
+    }
     [self close:opened];
     
     return totval;
@@ -715,4 +735,13 @@
     [self close:opened];
 }
 
++(BOOL) deleteRecordsForPropList:(NSString*)propListName
+{
+    Destinations *dest = Destinations.new;
+    BOOL opened = [dest open];
+    NSString * cmd = [NSString stringWithFormat:@"DELETE FROM RoutesByService WHERE PropListName = '%@'",propListName];
+    BOOL rtn = [dest executeCmd:(LPSTR)cmd.UTF8String];
+    [dest close:opened];
+    return rtn;
+}
 @end

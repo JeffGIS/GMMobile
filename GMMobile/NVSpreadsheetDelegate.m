@@ -240,17 +240,59 @@
             Destinations *dest = Destinations.new;
             
             CGFloat val = [dest totalValueForProperty:propNum
-                                               ofType:type];
-            
+                                               ofType:type
+                                          fromService:@""];
+
             return [NSString stringWithFormat:@"%.1f", (val / 60.0)];
         }
-        
+        if (type == PFT_TimeToDestinationsGoogle)
+        {
+            Destinations *dest = Destinations.new;
+            
+            CGFloat val = [dest totalValueForProperty:propNum
+                                               ofType:type
+                                          fromService:@"GOOGLE"];
+
+            return [NSString stringWithFormat:@"%.1f", (val / 60.0)];
+        }
+
+        if (type == PFT_TimeToDestinationsApple)
+        {
+            Destinations *dest = Destinations.new;
+            
+            CGFloat val = [dest totalValueForProperty:propNum
+                                               ofType:type
+                                          fromService:@"Apple"];
+
+            return [NSString stringWithFormat:@"%.1f", (val / 60.0)];
+        }
         else if (type == PFT_DistanceToDestinations)
         {
             Destinations *dest = Destinations.new;
             
             CGFloat val = [dest totalValueForProperty:propNum
-                                               ofType:type];
+                                               ofType:type
+                                          fromService:@""];
+            
+            return [NSString stringWithFormat:@"%.1f", val];
+        }
+        else if (type == PFT_DistanceToDestinationsGoogle)
+        {
+            Destinations *dest = Destinations.new;
+            
+            CGFloat val = [dest totalValueForProperty:propNum
+                                               ofType:type
+                                          fromService:@"GOOGLE"];
+            
+            return [NSString stringWithFormat:@"%.1f", val];
+        }
+        else if (type == PFT_DistanceToDestinationsApple)
+        {
+            Destinations *dest = Destinations.new;
+            
+            CGFloat val = [dest totalValueForProperty:propNum
+                                               ofType:type
+                                          fromService:@"Apple"];
             
             return [NSString stringWithFormat:@"%.1f", val];
         }
@@ -438,6 +480,7 @@
                 break;
             case PFT_PIN:
             case PFT_Address:
+            case PFT_UserID:
                 array = [NSMutableArray arrayWithArray:@[@"Zoom to This Property", @"Zoom to All Properties in List", @"Cancel"]];
                 break;
             case PFT_LastSaleDate:
