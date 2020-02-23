@@ -508,7 +508,7 @@ return _version;
     [self getAddressForPID:PID
            houseNumAndUnit:&houseAndUnit
                 streetName:&streetName
-                      city:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+                      city:nil zip:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
     NSArray * streetPoints = [self getStreetPointsNearPoint:pt
                              withinRadius:75];
     BOOL haveMatchingStreet = FALSE;
@@ -907,7 +907,8 @@ return _version;
       houseNumAndUnit:(NSString **)houseAndUnit
            streetName:(NSString **)streetName
                  city:(NSString **)city
-            ownerName:(NSString **)owner
+                 zip:(NSString **)zip
+          ownerName:(NSString **)owner
          taxpayerName:(NSString **)taxpayer
           censusBlock:(NSString **)cenblock
 associatedCensusBlock:(NSString **)cenblockAssociated
@@ -934,7 +935,7 @@ associatedCensusBlock:(NSString **)cenblockAssociated
     if (totEMV)
         *totEMV = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [ANUMBER],[STREETNAME],[CTU_NAME],[CENBLOCK],[CENBLOCK2],[USECLASS1],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT]  FROM PROPINFO Where PIN = '%@'",
+    NSString *query = [NSString stringWithFormat:@"SELECT [ANUMBER],[STREETNAME],[CTU_NAME],[ZIP],[CENBLOCK],[CENBLOCK2],[USECLASS1],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT]  FROM PROPINFO Where PIN = '%@'",
                        PID];
     sqlite3_stmt *statement = NULL;
     
@@ -947,6 +948,7 @@ associatedCensusBlock:(NSString **)cenblockAssociated
         LPSTR street = (LPSTR)sqlite3_column_text(statement, i++);
         //LPSTR unit = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR cityc = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR zipcode = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR cenblockc = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR cenblock2c = (LPSTR)sqlite3_column_text(statement, i++);
         LPSTR usedescc = (LPSTR)sqlite3_column_text(statement, i++);
@@ -968,6 +970,8 @@ associatedCensusBlock:(NSString **)cenblockAssociated
         *streetName = [NSString stringWithUTF8String:street];
         if (city)
             *city = [self noNullString:cityc];
+        if (zip)
+            *zip = [self noNullString:zipcode];
         if (cenblock)
             *cenblock = [self noNullString:cenblockc];
         if (cenblockAssociated)

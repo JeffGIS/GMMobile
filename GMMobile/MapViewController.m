@@ -2005,7 +2005,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
-                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil
+                                          city:nil zip:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil
                                         totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
                     
                     _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
@@ -4723,7 +4723,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showZillow
 {
-    NSString *houseAndUnit, *streetName, *city, *cenblock, *usedesc;
+    NSString *houseAndUnit, *streetName, *city, *zipcode, *cenblock, *usedesc;
     double totEMV;
     
     PropertyData *pd = PropertyData.new;
@@ -4732,6 +4732,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
              houseNumAndUnit:&houseAndUnit
                   streetName:&streetName
                         city:&city
+                         zip:&zipcode
                    ownerName:nil taxpayerName:nil
                  censusBlock:&cenblock
        associatedCensusBlock:nil

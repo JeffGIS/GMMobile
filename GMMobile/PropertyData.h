@@ -162,6 +162,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
          houseNumAndUnit:(NSString **)houseAndUnit
               streetName:(NSString **)streetName
                     city:(NSString **)city
+                     zip:(NSString **)zip
                ownerName:(NSString **)owner
             taxpayerName:(NSString **)taxpayer
              censusBlock:(NSString **)cenblock

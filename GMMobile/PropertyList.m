@@ -1795,6 +1795,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     NSString *houseAndUnit = @"";
     NSString *streetName = @"";
     NSString *city = @"";
+    NSString *zipcode = @"";
     NSString *cenblock = @"";
     NSString *cenblockAssociated = @"";
     NSString *owner = @"";
@@ -1816,6 +1817,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                    houseNumAndUnit:&houseAndUnit
                         streetName:&streetName
                               city:&city
+                               zip:&zipcode
                          ownerName:&owner
                       taxpayerName:&taxpayer
                        censusBlock:&cenblock
@@ -1831,12 +1833,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                            specAss:&specAssmt
                              acres:&acres])
     {
-        
+        int zip = zipcode.intValue;
         NSString *address = [NSString stringWithFormat:@"%@ %@",houseAndUnit,streetName];
         if (![_valuesFromWalkScore getWalkScoreForAddress:address
                             city:city
                            state:@"MN"
-                             zip:0
+                             zip:zip
                              lat:pidPoint.lat
                              lon:pidPoint.lon])
         {
@@ -1885,7 +1887,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
  //   _dbid = [self next_id];
     _PropNum = [self nextPropNum];
     _PropVersion = [propData propertyDatasetVersion];
-    NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
+    NSString *address = [NSString stringWithFormat:@"%@ %@\n%@ %@",houseAndUnit,streetName,city,zipcode];
     
     [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
     
