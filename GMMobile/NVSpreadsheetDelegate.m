@@ -218,9 +218,10 @@
     return rtn.integerValue;
 }
 
-- (NSString *)textForColumn:(NSUInteger)column
-                        row:(NSUInteger)row
+- (NSString *)textForColumn:(int)columnIN
+                        row:(int)row
 {
+    NSUInteger column = (int)abs ((int)columnIN);
     PropertyList *proplist = _propList;
     NSArray *list = proplist.getPropertyNumbers;
     NSArray *availablePropertyFields = [PropertyList availablePropertyFields];
@@ -302,7 +303,16 @@
 
             return [NSString stringWithFormat:@"%i Clips",(int)clips.count];
         }
-        
+        else if (type == PFT_Links)
+        {
+            if (columnIN < 0)
+            {
+                return [proplist getFieldValue:propNum
+                                          type:PFT_Address];
+            }
+            else
+                return @"Tap here to view";
+        }
         return [proplist getFieldValue:propNum
                                   type:type];
     }
@@ -486,7 +496,10 @@
             case PFT_LastSaleDate:
             case PFT_LastSalePrice:
                 array = [NSMutableArray arrayWithArray:@[@"Show Sales History", @"Cancel"]];
-               break;
+                break;
+            case PFT_Links:
+                array = [NSMutableArray arrayWithArray:@[@"Get Links"]];
+                break;
             default:break;
         }
     }
