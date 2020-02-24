@@ -119,7 +119,7 @@
 
 }
 - (void) addPropFromWebsiteToPropList:(NSString *)link
-                              popover:(NVPopoverTableView *)popover
+                              popover:(GSSiPopoverView *)popover
 {
     NSString * address;
     NSString * houseNum = @"";
@@ -136,6 +136,7 @@
     }
     PropertyData *propData = [[PropertyData alloc] init];
     BOOL opened = [self openList:_spreadSheetVC];
+    _locationManager = nil;
     NSArray * addressList = [propData getPIDsMatchingAddress:houseNum.intValue
                                          streetName:streetName];
     for (NSString *addr in addressList)
