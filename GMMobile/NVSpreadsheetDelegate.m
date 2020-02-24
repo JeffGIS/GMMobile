@@ -118,7 +118,34 @@
     //return ([PropertyList availablePropertyFields].count - 2);
 
 }
-
+- (void) addPropFromWebsiteToPropList:(NSString *)link
+                              popover:(NVPopoverTableView *)popover
+{
+    NSString * address;
+    NSString * houseNum = @"";
+    NSString * streetName = @"";
+    
+    NSRange range;
+    range = [link rangeOfString:@"www.edinarealty.com/homes-for-sale/"];
+    if (range.length > 0)
+    {
+        address = [link substringFromIndex:range.location+range.length];
+        houseNum = textBefor(address, @"-");
+        streetName = textAfter (address,@"-");
+        streetName = textBefor(streetName,@"-");
+    }
+    PropertyData *propData = [[PropertyData alloc] init];
+    BOOL opened = [self openList:_spreadSheetVC];
+    NSArray * addressList = [propData getPIDsMatchingAddress:houseNum.intValue
+                                         streetName:streetName];
+    for (NSString *addr in addressList)
+    {
+        NSString *PID = textAfter (addr,@"\t");
+        PID = textAfter(PID,@"\t");
+        PID = textBefor(PID,@"\t");
+        [_propList addParcelToPropertyList:PID popover:popover];
+    }
+}
 - (NSInteger)numRowsInSpreadsheet
 {
     return (_propList.getPropertyNumbers.count + 4);
