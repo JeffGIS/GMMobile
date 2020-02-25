@@ -22,6 +22,22 @@
 
 @implementation NVSpreadsheetDelegate
 
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        [self openList:nil];
+    }
+    
+    return self;
+}
+- (void)dealloc
+{
+    [self closeList];
+}
+
 - (SpreadsheetTypes)getSpreadSheetType
 {
     return SST_PropertyList;
@@ -91,7 +107,8 @@
     BOOL rtn = FALSE;
     
     _spreadSheetVC = vc;
-    _propList = PropertyList.new;
+    if (!_propList)
+        _propList = PropertyList.new;
     if (_propList)
     {
         [_propList open];
@@ -110,7 +127,6 @@
 - (void) closeList
 {
     [_propList close:TRUE];
-    _propList = nil;
 }
 - (NSInteger)numColumnsInSpreadsheet
 {
