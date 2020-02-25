@@ -44,7 +44,8 @@
 - (BOOL) createTables;
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
-                        popover:(GSSiPopoverView*)popover;
+                        popover:(GSSiPopoverView*)popover
+                       delegate:(id)delegate;
 
 - (NSArray *)getPropertyNumbers;
 + (NSArray *)availablePropertyFields;

@@ -441,7 +441,7 @@
             if (!_cancelAddProperties)
             {
                 NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
-                [_pl addParcelToPropertyList:pin popover:nil];
+                [_pl addParcelToPropertyList:pin popover:nil delegate:self];
                 
             }
 

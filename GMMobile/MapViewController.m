@@ -7257,7 +7257,9 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     _propertyList = PropertyList.new;
     _propertyList.delegate = self;
-    [_propertyList addParcelToPropertyList:_selectedPID popover:_popover];
+    [_propertyList addParcelToPropertyList:_selectedPID
+                                   popover:_popover
+                                  delegate:self];
 }
 
 - (void)ParcelAddedToPropertyList:(int)status

@@ -1784,10 +1784,16 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
                         popover:(GSSiPopoverView *)popover
+                       delegate:(id)delegate
 {
     BOOL rtn = NO;
-    
+    _delegate = delegate;
     _popover = popover;
+    [_popover show];
+    dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
+    
+    dispatch_async(getSlowValueQue,
+                   ^{
     PropertyData *propData = [[PropertyData alloc] init];
     LLPOINT pidPoint = [propData getPointForPID:PID];
     
@@ -1976,23 +1982,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addInt:speed withCode:PFT_StreetSpeedLimit];
 
     int numValues = PFT_END;
-    rtn = YES;
-    
+     
     _slowValues = [[GetSlowValues alloc]init];
 
-    dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
-    
-    dispatch_async(getSlowValueQue,
-                   ^{
         [self->_slowValues computeSlowValues:self->_PropNum
                                         dbid:0
                                     delegate:self
                                      popover:self->_popover
                                 aroundLatLon:pidPoint
                                      useDesc:(LPSTR)usedesc.UTF8String];
+        [self close:_opened];
     });
     
-    //[self close:opened];
     return rtn;
 }
 
