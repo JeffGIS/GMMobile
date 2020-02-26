@@ -2210,7 +2210,11 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self close:_opened];
     _haveWalkScoreValues = FALSE;
     _valuesFromWalkScore = nil;
-    [_delegate ParcelAddedToPropertyList:TRUE];
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_delegate ParcelAddedToPropertyList:TRUE];
+                   });
+
 }
 
 /*

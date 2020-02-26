@@ -145,7 +145,11 @@
     
     NSRange range;
     range = [link rangeOfString:@"www.edinarealty.com/homes-for-sale/"];
-    if (range.length > 0)
+    if (range.location == NSNotFound)
+    {
+        showAlert(@"Property not found");
+    }
+    else
     {
         address = [link substringFromIndex:range.location+range.length];
         houseNum = textBefor(address, @"-");
@@ -153,40 +157,50 @@
         streetType = textAfter (streetName,@"-");
         streetType = textBefor (streetType,@"-");
         streetName = textBefor(streetName,@"-");
+        PropertyData *propData = [[PropertyData alloc] init];
+        [self closeList];
+        _locationManager = nil;
+        
+        NSArray * addressList = NSArray.new;
+        
+        if (houseNum.intValue > 0 && streetName.length > 0)
+            addressList = [propData getPIDsMatchingAddress:houseNum.intValue
+                                                streetName:streetName];
+        if (addressList.count > 1)
+        {
+            NSRange range;
+            range.length = 1;
+            range.location = 0;
+            NSString *firstc = [streetType substringWithRange:range];
+            streetName = [NSString stringWithFormat:@"%@ %@",streetName,firstc];
+            addressList = [propData getPIDsMatchingAddress:houseNum.intValue
+                                                streetName:streetName];
+        }
+        propData = nil;
+        if (addressList.count == 1)
+        {
+            NSString *addr = addressList[0];
+            NSString *PID = textAfter (addr,@"\t");
+            PID = textAfter(PID,@"\t");
+            PID = textBefor(PID,@"\t");
+            _addingPropToProplist = TRUE;
+            [_propList addParcelToPropertyList:PID popover:popover delegate:self];
+        }
+        else
+            showAlert(@"Property not found");
     }
-    PropertyData *propData = [[PropertyData alloc] init];
-    [self closeList];
-    _locationManager = nil;
-
-    NSArray * addressList = [propData getPIDsMatchingAddress:houseNum.intValue
-                                         streetName:streetName];
-    if (addressList.count > 1)
-    {
-           NSRange range;
-           range.length = 1;
-           range.location = 0;
-           NSString *firstc = [streetType substringWithRange:range];
-           streetName = [NSString stringWithFormat:@"%@ %@",streetName,firstc];
-           addressList = [propData getPIDsMatchingAddress:houseNum.intValue
-                                               streetName:streetName];
-    }
-    propData = nil;
-    if (addressList.count == 1)
-    {
-        NSString *addr = addressList[0];
-        NSString *PID = textAfter (addr,@"\t");
-        PID = textAfter(PID,@"\t");
-        PID = textBefor(PID,@"\t");
-        _addingPropToProplist = TRUE;
-        [_propList addParcelToPropertyList:PID popover:popover delegate:self];
-    }
-    else
-        showAlert(@"Property not found");
 }
 
 - (void)ParcelAddedToPropertyList:(int)status
 {
     _addingPropToProplist = FALSE;
+    if (_spreadSheetVC)
+    [NSTimer scheduledTimerWithTimeInterval:0.1
+                                     target:_spreadSheetVC
+                                   selector:@selector(doDataReload:)
+                                   userInfo:nil
+                                    repeats:NO];
+    
 }
 - (NSInteger)numRowsInSpreadsheet
 {
