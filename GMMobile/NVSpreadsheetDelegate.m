@@ -194,6 +194,7 @@
 - (void)ParcelAddedToPropertyList:(int)status
 {
     _addingPropToProplist = FALSE;
+
     if (_spreadSheetVC)
     [NSTimer scheduledTimerWithTimeInterval:0.1
                                      target:_spreadSheetVC

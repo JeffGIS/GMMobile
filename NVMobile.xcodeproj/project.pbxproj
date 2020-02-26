@@ -552,7 +552,7 @@
 		EB4F25841A757F2000761FD5 /* FindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindViewController.m; sourceTree = "<group>"; };
 		EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPIDViewController.h; sourceTree = "<group>"; };
 		EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindPIDViewController.m; sourceTree = "<group>"; };
-		EB5521C91A61B6A8008CE2D1 /* NVMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NVMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5521C91A61B6A8008CE2D1 /* RiteHome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RiteHome.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB5521CD1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB5521CE1A61B6A8008CE2D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EB5521D01A61B6A8008CE2D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -1047,7 +1047,7 @@
 		EB5521CA1A61B6A8008CE2D1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EB5521C91A61B6A8008CE2D1 /* NVMobile.app */,
+				EB5521C91A61B6A8008CE2D1 /* RiteHome.app */,
 				EB5521E51A61B6A8008CE2D1 /* NVMobileTests.xctest */,
 			);
 			name = Products;
@@ -1134,7 +1134,7 @@
 			);
 			name = NVMobile;
 			productName = GMMobile;
-			productReference = EB5521C91A61B6A8008CE2D1 /* NVMobile.app */;
+			productReference = EB5521C91A61B6A8008CE2D1 /* RiteHome.app */;
 			productType = "com.apple.product-type.application";
 		};
 		EB5521E41A61B6A8008CE2D1 /* GMMobileTests */ = {
@@ -1611,7 +1611,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = NVMobileIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = RiteHomeIcon;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CODE_SIGN_ENTITLEMENTS = NVMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1633,7 +1633,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionmobile;
-				PRODUCT_NAME = NVMobile;
+				PRODUCT_NAME = RiteHome;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1643,7 +1643,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = NVMobileIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = RiteHomeIcon;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CODE_SIGN_ENTITLEMENTS = NVMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1665,7 +1665,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionmobile;
-				PRODUCT_NAME = NVMobile;
+				PRODUCT_NAME = RiteHome;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

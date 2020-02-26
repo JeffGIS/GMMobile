@@ -31,6 +31,13 @@
 
 @implementation FindPropertyOwnerViewController
 
+- (id)init
+{
+    self = [super init];
+        
+    return self;
+}
+
 + (NSArray *)limitToOptions
 {
     BoundaryData *bd = [[BoundaryData alloc] init];
