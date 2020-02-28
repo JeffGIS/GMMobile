@@ -6544,8 +6544,24 @@ didSelectPDFButtonWithText:(NSString *)text
         
     }
     
-    else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
+    else if ([text isEqualToString:@"Add All Units to Property List"])
     {
+        PropertyData *pd = PropertyData.new;
+        _linkedList = [pd getLinkedParcels:_selectedPID];
+        
+        if (_linkedList.count)
+        {
+            NSMutableArray * PIDList = NSMutableArray.new;
+            for (PropertyDataExtract *ped in _linkedList)
+            {
+                [PIDList addObject:ped.PIN];
+            }
+            _propertyList = PropertyList.new;
+            _propertyList.delegate = self;
+            [_propertyList addParcelsToPropertyList:PIDList
+                                            popover:_popover
+                                           delegate:self];
+        }
         
     }
     
@@ -6592,6 +6608,7 @@ didSelectPDFButtonWithText:(NSString *)text
     {
         case MarkerInfoWindowTypePID:
         {
+            _selectedPID = title;
             if (_infoWindow.marker.nLinks && !_infoWindow.linkedPID)
             {
                 PropertyData *pd = PropertyData.new;
@@ -6601,7 +6618,7 @@ didSelectPDFButtonWithText:(NSString *)text
                 {
                     NSMutableArray *unitList = NSMutableArray.array;
                     [unitList addObject:@"View Overall Property Report"];
-                    [unitList addObject:@"Add All Units to Spreadsheet"];
+                    [unitList addObject:@"Add All Units to Property List"];
                     
                     for (PropertyDataExtract *ped in _linkedList)
                     {
@@ -6630,8 +6647,7 @@ didSelectPDFButtonWithText:(NSString *)text
                 }
             }
             
-            _selectedPID = title;
-            
+             
             _options = @[@"", @"Property Report", @"Property History", @"Sales History (Block)", @"Sales History (Block Group)", @"Zillow Property Record",
                          @"Display Google Street View", @"Display Bing Streetside",
                          @"Set as Target Parcel", @"Perform 3D Fly Around",

@@ -923,7 +923,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
             break;
         case MBL_VotingDistricts:
-            break;
         {
              [_bd displayCensusAreas:context
                                type:@"VOTING"

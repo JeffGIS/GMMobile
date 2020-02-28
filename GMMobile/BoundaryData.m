@@ -1444,6 +1444,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         double screenAreaInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
         double minDisplayAreaInAcres = 4 * screenAreaInAcres / screenAreaInPixels;
         Bool valuesAreInteger = TRUE;
+        NSString * Precinct = @"";
         if (_pass == DataPass && !field.length)
             return;
         _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
@@ -1585,7 +1586,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                     query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                     _totRecords = [self getQueryCount:query];
-                    query = [NSString stringWithFormat:@"SELECT %@.id,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PCTID = %@.VTDID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                    query = [NSString stringWithFormat:@"SELECT %@.id,AREA,AREA,PCTID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PCTID = %@.VTDID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,polyTable,dataTable];
                     
                 }
@@ -1700,8 +1701,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 }
                 else if (isVoting)
                 {
-                    LPSTR cline = (LPSTR)sqlite3_column_text(statement,i++);
-                    NSString *cl = [NSString stringWithUTF8String:cline];
+                    LPSTR prct = (LPSTR)sqlite3_column_text(statement,i++);
+                    Precinct = [NSString stringWithUTF8String:prct];
                 }
                 else
                 {
@@ -1812,7 +1813,10 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                         llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                         llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                     }
-                    dc.iValue = IDNINT64(dataValue);
+                    if (isVoting)
+                        dc.iValue = Precinct.intValue;
+                    else
+                        dc.iValue = IDNINT64(dataValue);
                     if ([themes containsColorByRefTheme])
                     {
                         [themes setDisplayCharacteristics:dc

@@ -141,7 +141,7 @@ NSString * GetPropListDirectory (void)
         return FALSE;
     }
     [Destinations deleteRecordsForPropList:(NSString*)[pl plName]];
-
+    
     NSArray *lists = [PropertyList getPropertyLists];
     if (lists.count)
         [UserDefaults.defaults saveString:lists[0]
@@ -177,7 +177,7 @@ NSString * GetPropListDirectory (void)
 {
     [self close:YES];
     _slowValues = nil;
-
+    
     NSLog(@"PropertyList Database dealloc");
 }
 
@@ -431,7 +431,7 @@ NSString * GetPropListDirectory (void)
         case PFT_PctSFResidential_Mile:
             name = @"PCT Single Family Residential (Mile)";
             break;
-       case PFT_PctMFResidential_Mile:
+        case PFT_PctMFResidential_Mile:
             name = @"PCT Multi Family Residential (Mile)";
             break;
         case PFT_PctMFResidential_qtrMile:
@@ -621,11 +621,11 @@ NSString * GetPropListDirectory (void)
             name = @"Median Age Population (Block)";
             break;
         case PFT_MedianAgePop_blockgroup:
-             name = @"Median Age Population (Block Group)";
-             break;
+            name = @"Median Age Population (Block Group)";
+            break;
         case PFT_MedianAgePop_blockstreet:
-             name = @"Median Age Population (Block Street)";
-             break;
+            name = @"Median Age Population (Block Street)";
+            break;
         case PFT_MedianBuiltYear_block:
             name = @"Median Year Built (Block)";
             break;
@@ -1156,7 +1156,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
-
+    
     return PID;
 }
 
@@ -1223,10 +1223,10 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     if (_delegate)
     {
         [_delegate PropertyList:self
-                       returnsValue:value
-                  forPropertyNumber:propNum
-                       andFieldType:type
-                         withStatus:0];
+                   returnsValue:value
+              forPropertyNumber:propNum
+                   andFieldType:type
+                     withStatus:0];
     }
     
     
@@ -1782,9 +1782,19 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     _haveWalkScoreValues = -2;
 }
 
-- (BOOL)addParcelToPropertyList:(NSString *)PID
+- (BOOL)addParcelToPropertyList:(NSString*)PID
                         popover:(GSSiPopoverView *)popover
                        delegate:(id)delegate
+{
+    NSMutableArray * PIDList = NSMutableArray.new;
+    [PIDList addObject:PID];
+    BOOL rtn = [self addParcelsToPropertyList:PIDList popover:popover delegate:delegate];
+    return rtn;
+    
+}
+- (BOOL)addParcelsToPropertyList:(NSArray*)PIDList
+                         popover:(GSSiPopoverView *)popover
+                        delegate:(id)delegate
 {
     BOOL rtn = NO;
     _delegate = delegate;
@@ -1794,204 +1804,211 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     dispatch_async(getSlowValueQue,
                    ^{
-    PropertyData *propData = [[PropertyData alloc] init];
-    LLPOINT pidPoint = [propData getPointForPID:PID];
-    
-    //add address to Proplist
-    NSString *houseAndUnit = @"";
-    NSString *streetName = @"";
-    NSString *city = @"";
-    NSString *zipcode = @"";
-    NSString *cenblock = @"";
-    NSString *cenblockAssociated = @"";
-    NSString *owner = @"";
-    NSString *taxpayer = @"";
-    double landEMV = 0;
-    double bldgEMV = 0;
-    double totTax = 0;
-    double specAssmt = 0;
-    double acres = 0;
-    double saleValue = 0;
-    NSString * usedesc;
-    NSString * saleDate;
-    int yearBuilt;
-    
-    _valuesFromWalkScore = [RHWalkScore walkScoreWithDelegate:self];
-    _haveWalkScoreValues = FALSE;
-    
-    if ([propData getAddressForPID:PID
-                   houseNumAndUnit:&houseAndUnit
-                        streetName:&streetName
-                              city:&city
-                               zip:&zipcode
-                         ownerName:&owner
-                      taxpayerName:&taxpayer
-                       censusBlock:&cenblock
-                           associatedCensusBlock:&cenblockAssociated
-                           useDesc:&usedesc
-                          saleDate:&saleDate
-                         saleValue:&saleValue
-                         yearBuilt:&yearBuilt
-                            totEMV:&_totEMV
-                           landEMV:&landEMV
-                           bldgEMV:&bldgEMV
-                            totTAX:&totTax
-                           specAss:&specAssmt
-                             acres:&acres])
-    {
-        int zip = zipcode.intValue;
-        NSString *address = [NSString stringWithFormat:@"%@ %@",houseAndUnit,streetName];
-        if (![_valuesFromWalkScore getWalkScoreForAddress:address
-                            city:city
-                           state:@"MN"
-                             zip:zip
-                             lat:pidPoint.lat
-                             lon:pidPoint.lon])
+        PropertyData *propData = [[PropertyData alloc] init];
+        for (NSString * PID in PIDList)
         {
-            _haveWalkScoreValues = -1;
+            LLPOINT pidPoint = [propData getPointForPID:PID];
+            
+            //add address to Proplist
+            NSString *houseAndUnit = @"";
+            NSString *streetName = @"";
+            NSString *city = @"";
+            NSString *zipcode = @"";
+            NSString *cenblock = @"";
+            NSString *cenblockAssociated = @"";
+            NSString *owner = @"";
+            NSString *taxpayer = @"";
+            double landEMV = 0;
+            double bldgEMV = 0;
+            double totTax = 0;
+            double specAssmt = 0;
+            double acres = 0;
+            double saleValue = 0;
+            NSString * usedesc;
+            NSString * saleDate;
+            int yearBuilt;
+            
+            _valuesFromWalkScore = [RHWalkScore walkScoreWithDelegate:self];
+            _haveWalkScoreValues = FALSE;
+            
+            if ([propData getAddressForPID:PID
+                           houseNumAndUnit:&houseAndUnit
+                                streetName:&streetName
+                                      city:&city
+                                       zip:&zipcode
+                                 ownerName:&owner
+                              taxpayerName:&taxpayer
+                               censusBlock:&cenblock
+                     associatedCensusBlock:&cenblockAssociated
+                                   useDesc:&usedesc
+                                  saleDate:&saleDate
+                                 saleValue:&saleValue
+                                 yearBuilt:&yearBuilt
+                                    totEMV:&_totEMV
+                                   landEMV:&landEMV
+                                   bldgEMV:&bldgEMV
+                                    totTAX:&totTax
+                                   specAss:&specAssmt
+                                     acres:&acres])
+            {
+                int zip = zipcode.intValue;
+                NSString *address = [NSString stringWithFormat:@"%@ %@",houseAndUnit,streetName];
+                if (![_valuesFromWalkScore getWalkScoreForAddress:address
+                                                             city:city
+                                                            state:@"MN"
+                                                              zip:zip
+                                                              lat:pidPoint.lat
+                                                              lon:pidPoint.lon])
+                {
+                    _haveWalkScoreValues = -1;
+                }
+            }
+            int speed;
+            [propData getPointOnStreetForPID:PID speed:&speed];
+            char cenBlockGroup[20];
+            strcpy (cenBlockGroup, cenblock.UTF8String);
+            cenBlockGroup[12] = 0;
+            _usedesc = usedesc;
+            _rhCompute = RiteHomeCompute.new;
+            _rhCompute.propData = propData;
+            _rhCompute.propList = self;
+            DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
+            DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
+            DATA_FROM_PARCELS *values_block_street = DATA_FROM_PARCELS.new;
+            DATA_FROM_BLOCKS *values_cenblock = DATA_FROM_BLOCKS.new;
+            DATA_FROM_BLOCKS *values_cenblockgroup = DATA_FROM_BLOCKS.new;
+            
+            [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
+                                            inCensusArea:(LPSTR)cenBlockGroup
+                                                  totEMV:(int)_totEMV
+                                                 useDesc:(LPSTR)_usedesc.UTF8String];
+            
+            
+            [_rhCompute computeValuesFromParcelsInCensus:values_block
+                                            inCensusArea:(LPSTR)cenblock.UTF8String
+                                                  totEMV:(int)_totEMV
+                                                 useDesc:(LPSTR)_usedesc.UTF8String];
+            
+            [_rhCompute computeValuesFromParcelsInCensus:values_block_street
+                                            inCensusArea:(LPSTR)cenBlockGroup
+                                  orAssociatedCensusArea:(LPSTR)cenblock.UTF8String
+                                                onStreet:streetName
+                                                  totEMV:(int)_totEMV
+                                                 useDesc:(LPSTR)_usedesc.UTF8String];
+            values_cenblock = [_rhCompute computeValuesFromCensus:(LPSTR)cenblock.UTF8String];
+            values_cenblockgroup = [_rhCompute computeValuesFromCensus:(LPSTR)cenBlockGroup];
+            
+            _opened = [self open];
+            if (_opened)
+                [self startTransaction];
+            
+            //   _dbid = [self next_id];
+            _PropNum = [self nextPropNum];
+            _PropVersion = [propData propertyDatasetVersion];
+            NSString *address = [NSString stringWithFormat:@"%@ %@\n%@ %@",houseAndUnit,streetName,city,zipcode];
+            
+            [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
+            
+            [self addString:PID       withCode:PFT_PIN];
+            [self addString:taxpayer      withCode:PFT_UserID];
+            [self addString:address   withCode:PFT_Address];
+            [self addDouble:_totEMV   withCode:PFT_EMV_TOTAL];
+            [self addDouble:landEMV   withCode:PFT_EMV_LAND];
+            [self addDouble:bldgEMV   withCode:PFT_EMV_BUILDING];
+            [self addDouble:totTax    withCode:PFT_TOTAL_TAX];
+            [self addDouble:specAssmt withCode:PFT_SPEC_ASSESSMENT];
+            [self addDouble:acres     withCode:PFT_ACRES];
+            if (acres > 0)
+            {
+                double landPerAcre = landEMV/acres;
+                [self addDouble:landPerAcre withCode:PFT_EMV_LAND_PER_ACRE];
+            }
+            [self addString:owner     withCode:PFT_Owner];
+            [self addString:taxpayer  withCode:PFT_TaxPayer];
+            [self addString:saleDate  withCode:PFT_LastSaleDate];
+            [self addDouble:saleValue withCode:PFT_LastSalePrice];
+            [self addInt:yearBuilt    withCode:PFT_YearBuilt];
+            
+            [self addInt:values_block.rankTotEMV      withCode:PFT_RankEMV_block];
+            [self addInt:values_block.pctHomestead    withCode:PFT_PctHomestead_block];
+            [self addInt:values_block.medianBuiltYear withCode:PFT_MedianBuiltYear_block];
+            [self addInt:values_block.aveBuiltYear withCode:PFT_AveBuiltYear_block];
+            [self addInt:values_block.stability_5yr   withCode:PFT_Stability5yr_block];
+            [self addInt:values_block.stability_15yr  withCode:PFT_Stability15yr_block];
+            [self addInt:values_block.activity_5yr   withCode:PFT_Activity5yr_block];
+            [self addInt:values_block.activity_15yr  withCode:PFT_Activity15yr_block];
+            [self addInt:values_block.pctNoTax  withCode:PFT_PCTNoTax_block];
+            
+            [self addInt:values_blockgroup.rankTotEMV      withCode:PFT_RankEMV_blockgroup];
+            [self addInt:values_blockgroup.pctHomestead    withCode:PFT_PctHomestead_blockgroup];
+            [self addInt:values_blockgroup.medianBuiltYear withCode:PFT_MedianBuiltYear_blockgroup];
+            [self addInt:values_blockgroup.aveBuiltYear withCode:PFT_AveBuiltYear_blockgroup];
+            [self addInt:values_blockgroup.stability_5yr   withCode:PFT_Stability5yr_blockgroup];
+            [self addInt:values_blockgroup.stability_15yr  withCode:PFT_Stability15yr_blockgroup];
+            [self addInt:values_blockgroup.activity_5yr   withCode:PFT_Activity5yr_blockgroup];
+            [self addInt:values_blockgroup.activity_15yr  withCode:PFT_Activity15yr_blockgroup];
+            [self addInt:values_blockgroup.pctNoTax  withCode:PFT_PCTNoTax_blockgroup];
+            
+            [self addInt:values_block_street.rankTotEMV      withCode:PFT_RankEMV_blockstreet];
+            [self addInt:values_block_street.pctHomestead    withCode:PFT_PctHomestead_blockstreet];
+            [self addInt:values_block_street.medianBuiltYear withCode:PFT_MedianBuiltYear_blockstreet];
+            [self addInt:values_block_street.aveBuiltYear withCode:PFT_AveBuiltYear_blockstreet];
+            [self addInt:values_block_street.stability_5yr   withCode:PFT_Stability5yr_blockstreet];
+            [self addInt:values_block_street.stability_15yr  withCode:PFT_Stability15yr_blockstreet];
+            [self addInt:values_block_street.activity_5yr   withCode:PFT_Activity5yr_blockstreet];
+            [self addInt:values_block_street.activity_15yr  withCode:PFT_Activity15yr_blockstreet];
+            [self addInt:values_block_street.pctNoTax  withCode:PFT_PCTNoTax_blockstreet];
+            
+            [self addInt:values_cenblock.famNoKids  withCode:PFT_PctFamNoKids_block];
+            [self addInt:values_cenblock.livedAlone withCode:PFT_PctLivedAlone_block];
+            [self addInt:values_cenblock.marrKids withCode:PFT_PctMarrKids_block];
+            [self addInt:values_cenblock.nonFamily withCode:PFT_PctNonFamily_block];
+            [self addInt:values_cenblock.unMarrKids withCode:PFT_PctUnMarrKids_block];
+            [self addInt:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
+            [self addInt:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
+            [self addInt:values_cenblock.pctWithChildren withCode:PFT_PctChildren_block];
+            [self addInt:values_cenblock.pctWithSeniors withCode:PFT_PctSenior_block];
+            [self addInt:values_cenblock.pctOwneroccupied withCode:PFT_PctOwnerOccupied_block];
+            [self addInt:values_cenblock.pctRenteroccupied withCode:PFT_PctRenterOccupied_block];
+            [self addInt:values_cenblock.pctVacant withCode:PFT_PctVacant_block];
+            [self addInt:values_cenblock.totHouseholds withCode:PFT_TotalHouseholds_block];
+            [self addInt:values_cenblock.totPop withCode:PFT_TotalPop_block];
+            [self addInt:values_cenblock.popPerSqMile withCode:PFT_PopDensity_block];
+            
+            [self addInt:values_cenblockgroup.famNoKids  withCode:PFT_PctFamNoKids_blockgroup];
+            [self addInt:values_cenblockgroup.livedAlone withCode:PFT_PctLivedAlone_blockgroup];
+            [self addInt:values_cenblockgroup.marrKids withCode:PFT_PctMarrKids_blockgroup];
+            [self addInt:values_cenblockgroup.nonFamily withCode:PFT_PctNonFamily_blockgroup];
+            [self addInt:values_cenblockgroup.unMarrKids withCode:PFT_PctUnMarrKids_blockgroup];
+            [self addInt:values_cenblockgroup.medianAdultAge withCode:PFT_MedianAgeAdults_blockgroup];
+            [self addInt:values_cenblockgroup.medianChildAge withCode:PFT_MedianAgeChildren_blockgroup];
+            [self addInt:values_cenblockgroup.pctWithChildren withCode:PFT_PctChildren_blockgroup];
+            [self addInt:values_cenblockgroup.pctWithSeniors withCode:PFT_PctSenior_blockgroup];
+            [self addInt:values_cenblockgroup.pctOwneroccupied withCode:PFT_PctOwnerOccupied_blockgroup];
+            [self addInt:values_cenblockgroup.pctRenteroccupied withCode:PFT_PctRenterOccupied_blockgroup];
+            [self addInt:values_cenblockgroup.pctVacant withCode:PFT_PctVacant_blockgroup];
+            [self addInt:values_cenblockgroup.totPop withCode:PFT_TotalPop_blockgroup];
+            [self addInt:values_cenblockgroup.totHouseholds withCode:PFT_TotalHouseholds_blockgroup];
+            [self addInt:values_cenblockgroup.popPerSqMile withCode:PFT_PopDensity_blockgroup];
+            
+            [self addInt:speed withCode:PFT_StreetSpeedLimit];
+            
+            int numValues = PFT_END;
+            
+            _slowValues = [[GetSlowValues alloc]init];
+            
+            [self->_slowValues computeSlowValues:self->_PropNum
+                                            dbid:0
+                                        delegate:self
+                                         popover:self->_popover
+                                    aroundLatLon:pidPoint
+                                         useDesc:(LPSTR)usedesc.UTF8String];
+            [self close:_opened];
         }
-    }
-    int speed;
-    [propData getPointOnStreetForPID:PID speed:&speed];
-    char cenBlockGroup[20];
-    strcpy (cenBlockGroup, cenblock.UTF8String);
-    cenBlockGroup[12] = 0;
-    _usedesc = usedesc;
-    _rhCompute = RiteHomeCompute.new;
-    _rhCompute.propData = propData;
-    _rhCompute.propList = self;
-    DATA_FROM_PARCELS *values_blockgroup = DATA_FROM_PARCELS.new;
-    DATA_FROM_PARCELS *values_block = DATA_FROM_PARCELS.new;
-    DATA_FROM_PARCELS *values_block_street = DATA_FROM_PARCELS.new;
-    DATA_FROM_BLOCKS *values_cenblock = DATA_FROM_BLOCKS.new;
-    DATA_FROM_BLOCKS *values_cenblockgroup = DATA_FROM_BLOCKS.new;
-
-    [_rhCompute computeValuesFromParcelsInCensus:values_blockgroup
-                                    inCensusArea:(LPSTR)cenBlockGroup
-                                          totEMV:(int)_totEMV
-                                         useDesc:(LPSTR)_usedesc.UTF8String];
-    
-    
-    [_rhCompute computeValuesFromParcelsInCensus:values_block
-                                    inCensusArea:(LPSTR)cenblock.UTF8String
-                                          totEMV:(int)_totEMV
-                                         useDesc:(LPSTR)_usedesc.UTF8String];
-    
-    [_rhCompute computeValuesFromParcelsInCensus:values_block_street
-                                    inCensusArea:(LPSTR)cenBlockGroup
-                          orAssociatedCensusArea:(LPSTR)cenblock.UTF8String
-                                              onStreet:streetName
-                                          totEMV:(int)_totEMV
-                                         useDesc:(LPSTR)_usedesc.UTF8String];
-    values_cenblock = [_rhCompute computeValuesFromCensus:(LPSTR)cenblock.UTF8String];
-    values_cenblockgroup = [_rhCompute computeValuesFromCensus:(LPSTR)cenBlockGroup];
-
-    _opened = [self open];
-    if (_opened)
-        [self startTransaction];
-    
- //   _dbid = [self next_id];
-    _PropNum = [self nextPropNum];
-    _PropVersion = [propData propertyDatasetVersion];
-    NSString *address = [NSString stringWithFormat:@"%@ %@\n%@ %@",houseAndUnit,streetName,city,zipcode];
-    
-    [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
-    
-    [self addString:PID       withCode:PFT_PIN];
-    [self addString:taxpayer      withCode:PFT_UserID];
-    [self addString:address   withCode:PFT_Address];
-    [self addDouble:_totEMV   withCode:PFT_EMV_TOTAL];
-    [self addDouble:landEMV   withCode:PFT_EMV_LAND];
-    [self addDouble:bldgEMV   withCode:PFT_EMV_BUILDING];
-    [self addDouble:totTax    withCode:PFT_TOTAL_TAX];
-    [self addDouble:specAssmt withCode:PFT_SPEC_ASSESSMENT];
-    [self addDouble:acres     withCode:PFT_ACRES];
-    if (acres > 0)
-    {
-        double landPerAcre = landEMV/acres;
-        [self addDouble:landPerAcre withCode:PFT_EMV_LAND_PER_ACRE];
-    }
-    [self addString:owner     withCode:PFT_Owner];
-    [self addString:taxpayer  withCode:PFT_TaxPayer];
-    [self addString:saleDate  withCode:PFT_LastSaleDate];
-    [self addDouble:saleValue withCode:PFT_LastSalePrice];
-    [self addInt:yearBuilt    withCode:PFT_YearBuilt];
-
-    [self addInt:values_block.rankTotEMV      withCode:PFT_RankEMV_block];
-    [self addInt:values_block.pctHomestead    withCode:PFT_PctHomestead_block];
-    [self addInt:values_block.medianBuiltYear withCode:PFT_MedianBuiltYear_block];
-    [self addInt:values_block.aveBuiltYear withCode:PFT_AveBuiltYear_block];
-    [self addInt:values_block.stability_5yr   withCode:PFT_Stability5yr_block];
-    [self addInt:values_block.stability_15yr  withCode:PFT_Stability15yr_block];
-    [self addInt:values_block.activity_5yr   withCode:PFT_Activity5yr_block];
-    [self addInt:values_block.activity_15yr  withCode:PFT_Activity15yr_block];
-    [self addInt:values_block.pctNoTax  withCode:PFT_PCTNoTax_block];
-
-    [self addInt:values_blockgroup.rankTotEMV      withCode:PFT_RankEMV_blockgroup];
-    [self addInt:values_blockgroup.pctHomestead    withCode:PFT_PctHomestead_blockgroup];
-    [self addInt:values_blockgroup.medianBuiltYear withCode:PFT_MedianBuiltYear_blockgroup];
-    [self addInt:values_blockgroup.aveBuiltYear withCode:PFT_AveBuiltYear_blockgroup];
-    [self addInt:values_blockgroup.stability_5yr   withCode:PFT_Stability5yr_blockgroup];
-    [self addInt:values_blockgroup.stability_15yr  withCode:PFT_Stability15yr_blockgroup];
-    [self addInt:values_blockgroup.activity_5yr   withCode:PFT_Activity5yr_blockgroup];
-    [self addInt:values_blockgroup.activity_15yr  withCode:PFT_Activity15yr_blockgroup];
-    [self addInt:values_blockgroup.pctNoTax  withCode:PFT_PCTNoTax_blockgroup];
-
-    [self addInt:values_block_street.rankTotEMV      withCode:PFT_RankEMV_blockstreet];
-    [self addInt:values_block_street.pctHomestead    withCode:PFT_PctHomestead_blockstreet];
-    [self addInt:values_block_street.medianBuiltYear withCode:PFT_MedianBuiltYear_blockstreet];
-    [self addInt:values_block_street.aveBuiltYear withCode:PFT_AveBuiltYear_blockstreet];
-    [self addInt:values_block_street.stability_5yr   withCode:PFT_Stability5yr_blockstreet];
-    [self addInt:values_block_street.stability_15yr  withCode:PFT_Stability15yr_blockstreet];
-    [self addInt:values_block_street.activity_5yr   withCode:PFT_Activity5yr_blockstreet];
-    [self addInt:values_block_street.activity_15yr  withCode:PFT_Activity15yr_blockstreet];
-    [self addInt:values_block_street.pctNoTax  withCode:PFT_PCTNoTax_blockstreet];
-
-    [self addInt:values_cenblock.famNoKids  withCode:PFT_PctFamNoKids_block];
-    [self addInt:values_cenblock.livedAlone withCode:PFT_PctLivedAlone_block];
-    [self addInt:values_cenblock.marrKids withCode:PFT_PctMarrKids_block];
-    [self addInt:values_cenblock.nonFamily withCode:PFT_PctNonFamily_block];
-    [self addInt:values_cenblock.unMarrKids withCode:PFT_PctUnMarrKids_block];
-    [self addInt:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
-    [self addInt:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
-    [self addInt:values_cenblock.pctWithChildren withCode:PFT_PctChildren_block];
-    [self addInt:values_cenblock.pctWithSeniors withCode:PFT_PctSenior_block];
-    [self addInt:values_cenblock.pctOwneroccupied withCode:PFT_PctOwnerOccupied_block];
-    [self addInt:values_cenblock.pctRenteroccupied withCode:PFT_PctRenterOccupied_block];
-    [self addInt:values_cenblock.pctVacant withCode:PFT_PctVacant_block];
-    [self addInt:values_cenblock.totHouseholds withCode:PFT_TotalHouseholds_block];
-    [self addInt:values_cenblock.totPop withCode:PFT_TotalPop_block];
-    [self addInt:values_cenblock.popPerSqMile withCode:PFT_PopDensity_block];
-
-    [self addInt:values_cenblockgroup.famNoKids  withCode:PFT_PctFamNoKids_blockgroup];
-    [self addInt:values_cenblockgroup.livedAlone withCode:PFT_PctLivedAlone_blockgroup];
-    [self addInt:values_cenblockgroup.marrKids withCode:PFT_PctMarrKids_blockgroup];
-    [self addInt:values_cenblockgroup.nonFamily withCode:PFT_PctNonFamily_blockgroup];
-    [self addInt:values_cenblockgroup.unMarrKids withCode:PFT_PctUnMarrKids_blockgroup];
-    [self addInt:values_cenblockgroup.medianAdultAge withCode:PFT_MedianAgeAdults_blockgroup];
-    [self addInt:values_cenblockgroup.medianChildAge withCode:PFT_MedianAgeChildren_blockgroup];
-    [self addInt:values_cenblockgroup.pctWithChildren withCode:PFT_PctChildren_blockgroup];
-    [self addInt:values_cenblockgroup.pctWithSeniors withCode:PFT_PctSenior_blockgroup];
-    [self addInt:values_cenblockgroup.pctOwneroccupied withCode:PFT_PctOwnerOccupied_blockgroup];
-    [self addInt:values_cenblockgroup.pctRenteroccupied withCode:PFT_PctRenterOccupied_blockgroup];
-    [self addInt:values_cenblockgroup.pctVacant withCode:PFT_PctVacant_blockgroup];
-    [self addInt:values_cenblockgroup.totPop withCode:PFT_TotalPop_blockgroup];
-    [self addInt:values_cenblockgroup.totHouseholds withCode:PFT_TotalHouseholds_blockgroup];
-    [self addInt:values_cenblockgroup.popPerSqMile withCode:PFT_PopDensity_blockgroup];
-    
-    [self addInt:speed withCode:PFT_StreetSpeedLimit];
-
-    int numValues = PFT_END;
-     
-    _slowValues = [[GetSlowValues alloc]init];
-
-        [self->_slowValues computeSlowValues:self->_PropNum
-                                        dbid:0
-                                    delegate:self
-                                     popover:self->_popover
-                                aroundLatLon:pidPoint
-                                     useDesc:(LPSTR)usedesc.UTF8String];
-        [self close:_opened];
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+            [_delegate ParcelAddedToPropertyList:TRUE];
+        });
     });
     
     return rtn;
@@ -2010,19 +2027,19 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         DATA_FROM_PARCELS *values_Mile = DATA_FROM_PARCELS.new;
         DATA_FROM_PARCELS *values_qtrMile = DATA_FROM_PARCELS.new;
         DATA_FROM_PARCELS *values_halfMile = DATA_FROM_PARCELS.new;
-//        DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
+        //        DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_qtrMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_halfMile = DATA_FROM_BLOCKS.new;
-//        DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
+        //        DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_qtrMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_halfMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_Mile = DATA_FROM_LANDUSE.new;
-
+        
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         [_rhCompute computeValuesFromParcelsInCircle:values_qtrMile
                                          forProperty:propNum
                                             inCircle:2
@@ -2032,8 +2049,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         [_rhCompute computeValuesFromParcelsInCircle:values_halfMile
                                          forProperty:propNum
                                             inCircle:3
@@ -2043,8 +2060,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
         [_rhCompute computeValuesFromParcelsInCircle:values_Mile
                                          forProperty:propNum
@@ -2054,27 +2071,27 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
-/*        [_rhCompute computeValuesFromBlocksInCircle:values_block_eighthMile
-                                        forProperty:propNum
-                                           inCircle:1];
-        
-        nComputes++;*/
+        /*        [_rhCompute computeValuesFromBlocksInCircle:values_block_eighthMile
+         forProperty:propNum
+         inCircle:1];
+         
+         nComputes++;*/
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
-       values_block_qtrMile = [_rhCompute computeValuesFromBlocksInCircle:2
-                                                              forProperty:propNum];
+        values_block_qtrMile = [_rhCompute computeValuesFromBlocksInCircle:2
+                                                               forProperty:propNum];
         
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
         values_block_halfMile = [_rhCompute computeValuesFromBlocksInCircle:3
                                                                 forProperty:propNum];
@@ -2082,18 +2099,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
-/*        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
-                                         forProperty:propNum
-                                            inCircle:1];
-        
-        nComputes++;*/
+        /*        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
+         forProperty:propNum
+         inCircle:1];
+         
+         nComputes++;*/
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
         [_rhCompute computeValuesFromLandUseInCircle:values_landUse_qtrMile
                                          forProperty:propNum
@@ -2102,8 +2119,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
         [_rhCompute computeValuesFromLandUseInCircle:values_landUse_halfMile
                                          forProperty:propNum
@@ -2117,8 +2134,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         nComputes++;
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:nComputes/totComputes];
-                       });
+            [_popover updateProgress:nComputes/totComputes];
+        });
         
         //_dbid = [self next_id];
         if (_haveWalkScoreValues > 0)
@@ -2137,7 +2154,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self addInt:values_halfMile.stability_15yr    withCode:PFT_Stability15yr_halfMile];
         [self addInt:values_Mile.stability_5yr    withCode:PFT_Stability5yr_Mile];
         [self addInt:values_Mile.stability_15yr    withCode:PFT_Stability15yr_Mile];
-
+        
         [self addInt:values_landUse_qtrMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_qtrMile];
         [self addInt:values_landUse_qtrMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_qtrMile];
         [self addInt:values_landUse_qtrMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_qtrMile];
@@ -2149,7 +2166,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self addInt:values_landUse_halfMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_halfMile];
         totPCT = values_landUse_halfMile.PCT_SingleFamilyResidential + values_landUse_halfMile.PCT_MultiFamilyResidential + values_landUse_halfMile.PCT_MixedUseResidential;
         [self addInt:totPCT withCode:PFT_PctResidential_halfMile];
-
+        
         [self addInt:values_landUse_Mile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_Mile];
         [self addInt:values_landUse_Mile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_Mile];
         [self addInt:values_landUse_Mile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_Mile];
@@ -2178,7 +2195,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self addInt:totPCT withCode:PFT_PctTransportation_halfMile];
         totPCT = values_landUse_Mile.PCT_HighwayRailway + values_landUse_Mile.PCT_Airport;
         [self addInt:totPCT withCode:PFT_PctTransportation_Mile];
-
+        
         [self addInt:values_landUse_qtrMile.PCT_ParkRecPreserve withCode:PFT_PctPark_qtrMile];
         [self addInt:values_landUse_halfMile.PCT_ParkRecPreserve withCode:PFT_PctPark_halfMile];
         [self addInt:values_landUse_Mile.PCT_ParkRecPreserve withCode:PFT_PctPark_Mile];
@@ -2193,7 +2210,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self addInt:totPCT withCode:PFT_PctOpenSpace_halfMile];
         totPCT = values_landUse_Mile.PCT_ParkRecPreserve + values_landUse_Mile.PCT_Agriculture + values_landUse_Mile.PCT_Undeveloped + values_landUse_Mile.PCT_Water;
         [self addInt:totPCT withCode:PFT_PctOpenSpace_Mile];
-
+        
         [self addInt:values_block_qtrMile.medianAdultAge withCode:PFT_MedianAgeAdults_qtrMile];
         
         [self addInt:values_block_halfMile.medianAdultAge withCode:PFT_MedianAgeAdults_halfMile];
@@ -2202,19 +2219,15 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [self commitTransaction];
         dispatch_async(dispatch_get_main_queue(),
                        ^{
-                           [_popover updateProgress:1.0];
-                           [_popover hide];
-                       });
+            [_popover updateProgress:1.0];
+            [_popover hide];
+        });
         
     }
     [self close:_opened];
     _haveWalkScoreValues = FALSE;
     _valuesFromWalkScore = nil;
-    dispatch_async(dispatch_get_main_queue(),
-                   ^{
-                       [_delegate ParcelAddedToPropertyList:TRUE];
-                   });
-
+    
 }
 
 /*
@@ -2289,7 +2302,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self addDouble:value   withCode:code];
 }
 - (void) addIntegerToProplist:(int)value
-                    withCode:(PropFieldType)code
+                     withCode:(PropFieldType)code
 {
     [self addInt:value   withCode:code];
 }
