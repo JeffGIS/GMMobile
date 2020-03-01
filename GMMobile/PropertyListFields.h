@@ -186,6 +186,19 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_StreetSpeedLimit,
     PFT_SpeedFactor,
     PFT_TrafficFactor,
+    
+    PFT_PctVoteDem2018_qtrMile,
+    PFT_PctVoteRep2018_qtrMile,
+    PFT_PctVoteDem2018_halfMile,
+    PFT_PctVoteRep2018_halfMile,
+    PFT_PctVoteDem2018_Mile,
+    PFT_PctVoteRep2018_Mile,
+    PFT_PctVoteDem2016_qtrMile,
+    PFT_PctVoteRep2016_qtrMile,
+    PFT_PctVoteDem2016_halfMile,
+    PFT_PctVoteRep2016_halfMile,
+    PFT_PctVoteDem2016_Mile,
+    PFT_PctVoteRep2016_Mile,
     PFT_END,
 };
 typedef NS_ENUM(NSInteger, PropBaseType)

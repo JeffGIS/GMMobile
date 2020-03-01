@@ -199,7 +199,10 @@
     double area = 0;
     NSString * query = [NSString stringWithFormat:@"SELECT %@, area FROM CENSUS%@POLY Where id = %i",type,type,
                         polyID];
-    
+    if ([type isEqualToString:@"VOTING2018"])
+        query = [NSString stringWithFormat:@"SELECT PCTID, area FROM VOTING_POLY2018 Where id = %i",polyID];
+    else if ([type isEqualToString:@"VOTING2016"])
+        query = [NSString stringWithFormat:@"SELECT PCTID, area FROM VOTING_POLY2016 Where id = %i",polyID];
     sqlite3_stmt *statement = NULL;
     BoundaryData *bad = [[BoundaryData alloc]init];
     
@@ -1409,10 +1412,16 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             dataTable = [NSString stringWithFormat:@"PROPINFO"];
             isParcel = YES;
         }
-        else if ([type isEqualToString:@"VOTING"])
+        else if ([type isEqualToString:@"VOTING2018"])
         {
             polyTable = [NSString stringWithFormat:@"VOTING_POLY2018"];
             dataTable = [NSString stringWithFormat:@"VOTING_DATA2018"];
+            isVoting = YES;
+        }
+        else if ([type isEqualToString:@"VOTING2016"])
+        {
+            polyTable = [NSString stringWithFormat:@"VOTING_POLY2016"];
+            dataTable = [NSString stringWithFormat:@"VOTING_DATA2016"];
             isVoting = YES;
         }
         else if ([type isEqualToString:@"BLOCKGROUP_ACS"])

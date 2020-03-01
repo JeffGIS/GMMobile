@@ -16,6 +16,10 @@
 @end
 @implementation BLOCK_TOTALS
 @end
+@implementation DISTRICT_TOTALS
+@end
+@implementation DATA_FROM_DISTRICTS
+@end
 
 @implementation RiteHomeCompute
 
@@ -251,6 +255,14 @@ Top:
     return list;
 }
 
++(NSString *) precinctFieldList:(int)year
+{
+    NSString * list = @"PCTNAME,COUNTYNAME,USSENR,USSENDFL,USSENTOTAL,USREPR,USREPDFL,USREPTOTAL";
+    if (year == 2016)
+        list = @"PCTNAME,COUNTYNAME,USPRSR,USPRSDFL,USPRSTOTAL,USREPR,USREPDFL,USREPTOTAL";
+    return list;
+}
+
 - (void) addBlock:(sqlite3_stmt*) statement
          toTotals:(BLOCK_TOTALS *)bt
          usingPCT:(double)pctOfAreaInCircle
@@ -370,6 +382,36 @@ Top:
     }
     return;
 }
+- (void) addDistrict:(sqlite3_stmt*) statement
+            toTotals:(DISTRICT_TOTALS *)dt
+            usingPCT:(double)pctOfAreaInCircle
+{
+    if (statement)
+    {
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            int i=0;
+            LPSTR PrecinctName = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR COUNTYNAME = (LPSTR)sqlite3_column_text(statement,i++);
+            int USSENR = sqlite3_column_int(statement,i++);
+            int USSENDFL = sqlite3_column_int(statement,i++);
+            int USSENTOTAL = sqlite3_column_int(statement,i++);
+            int USREPR = sqlite3_column_int(statement,i++);
+            int USREPDFL = sqlite3_column_int(statement,i++);
+            int USREPTOTAL  = sqlite3_column_int(statement,i++);
+            dt.numDistricts++;
+            dt.USSENR += USSENR * pctOfAreaInCircle;
+            dt.USSENDFL += USSENDFL * pctOfAreaInCircle;
+            dt.USSENTOTAL += USSENTOTAL * pctOfAreaInCircle;
+            dt.USREPR += USREPR * pctOfAreaInCircle;
+            dt.USREPDFL += USREPDFL * pctOfAreaInCircle;
+            dt.USREPTOTAL += USREPTOTAL * pctOfAreaInCircle;
+        }
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
+    }
+    return;
+}
+
 double medianAge (double * counts,double *ages,int nvals)
 {
     double median = 0;
@@ -523,6 +565,24 @@ double medianAdult (BLOCK_TOTALS * bt)
         values.medianAge = IDNINT(bt.totmedianAge / bt.totPop);
     return values;
 }
+
+-(DATA_FROM_DISTRICTS *) districtValuesFromDistrictTotals:(DISTRICT_TOTALS *)dt
+{
+    DATA_FROM_DISTRICTS * values = DATA_FROM_DISTRICTS.new;
+    
+    values.numDistricts = dt.numDistricts;
+    values.PCT_R_USSEN = 100.0 * dt.USSENR / dt.USSENTOTAL;
+    values.PCT_DFL_USSEN = 100.0 * dt.USSENDFL / dt.USSENTOTAL;
+    values.PCT_OTHER_USSEN = 100.0 - (100.0 * (dt.USSENR+dt.USSENDFL) / dt.USSENTOTAL);
+    values.PCT_R_USREP = 100.0 * dt.USREPR / dt.USREPTOTAL;
+    values.PCT_DFL_USREP = 100.0 * dt.USREPDFL / dt.USREPTOTAL;
+    values.PCT_OTHER_USREP = 100.0 - (100.0 * (dt.USREPR+dt.USREPDFL) / dt.USREPTOTAL);;
+    values.PCT_R_TOTAL = 100.0 * (dt.USSENR + dt.USREPR) / (dt.USSENTOTAL+dt.USREPTOTAL);
+    values.PCT_DFL_TOTAL = 100.0 * (dt.USSENDFL + dt.USREPDFL) / (dt.USSENTOTAL+dt.USREPTOTAL);
+    values.PCT_OTHER_TOTAL = 100.0 - (values.PCT_R_TOTAL + values.PCT_DFL_TOTAL);
+    return values;
+}
+
 - (DATA_FROM_BLOCKS *) computeBlockValues:(sqlite3_stmt*)statement_BlockList
                                 PCTofArea:(double) pctOfAreaInCircle
 {
@@ -557,6 +617,45 @@ Top:
     DATA_FROM_BLOCKS *values = [self blockValuesFromBlockTotals:bt];
     return values;
 }
+
+- (DATA_FROM_DISTRICTS *) computeVotingDistrictValues:(sqlite3_stmt*)statement_DistrictList
+                                              forYear:(int)year
+                                            PCTofArea:(double) pctOfAreaInCircle
+{
+    sqlite3_stmt *statement = NULL;
+    DISTRICT_TOTALS *dt = DISTRICT_TOTALS.new;
+    NSString * type = [NSString stringWithFormat:@"VOTING%i",year];
+    
+Top:
+    [self addDistrict:statement
+          toTotals:dt
+          usingPCT:pctOfAreaInCircle];
+    if (statement_DistrictList)
+    {
+        if (sqlite3_step(statement_DistrictList) == SQLITE_ROW)
+        {
+            int polyID = sqlite3_column_int(statement_DistrictList,0);
+            double SQMetersInCircle = sqlite3_column_double(statement_DistrictList,1);
+            double polyArea;
+            NSString *Precinct = [BoundaryData getKeyforPolyid:polyID
+                                                     ofType:type
+                                               areaInMeters:&polyArea];
+            pctOfAreaInCircle = SQMetersInCircle /polyArea;
+            if (pctOfAreaInCircle > 1)
+                pctOfAreaInCircle = 1;
+            NSString *precinctFieldList= [RiteHomeCompute precinctFieldList:year];
+            NSString *query = [NSString stringWithFormat:@"SELECT %@ FROM VOTING_DATA%i Where VTDID = '%@'",precinctFieldList,year,Precinct];
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(_propData.database, query.UTF8String, -1, &statement, 0), _propData.database);
+            goto Top;
+        }
+        else
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement_DistrictList),_propList.database);
+    }
+    DATA_FROM_DISTRICTS *values = [self districtValuesFromDistrictTotals:dt];
+    return values;
+}
+
+
 
 +(NSString *) landUseFieldList
 {
@@ -765,6 +864,38 @@ Top:
     BOOL opened = [_propData open];
     values = [self computeBlockValues:statement
                             PCTofArea:1];
+    
+    [_propData close:opened];
+    
+    return values;
+}
+- (DATA_FROM_DISTRICTS *)computeValuesFromDistrictsInCircle:(int)circleID
+                                                    forYear:(int)year
+                                                forProperty:(int)propNum
+{
+    DATA_FROM_DISTRICTS * values = DATA_FROM_DISTRICTS.new;
+    sqlite3_stmt *statement = NULL;
+    NSString *query;
+    int circleId = circleID - 1;
+    int type = MBL_VotingDistricts2018;
+    
+    switch (year)
+    {
+        default:
+            type = MBL_VotingDistricts2018;
+            break;
+        case 2016:
+            type = MBL_VotingDistricts2016;
+            break;
+    }
+    _totalAreaInSqMiles = circleRadiusInMiles[circleId] * circleRadiusInMiles[circleId] * PY;
+    
+    query = [NSString stringWithFormat:@"SELECT AreaID,SQMetersInCircle,PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %i AND AreaType = %li AND Distance = %i",propNum,(long)type,circleID];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_propList.database, query.UTF8String, -1, &statement, 0), _propList.database);
+    BOOL opened = [_propData open];
+    values = [self computeVotingDistrictValues:statement
+                                       forYear:year
+                                     PCTofArea:1];
     
     [_propData close:opened];
     

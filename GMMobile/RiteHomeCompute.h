@@ -127,6 +127,30 @@ medianChildAgeFemale;
 
 @end
 
+@interface DISTRICT_TOTALS : NSObject
+@property int numDistricts;
+@property double USSENR;
+@property double USSENDFL;
+@property double USSENTOTAL;
+@property double USREPR;
+@property double USREPDFL;
+@property double USREPTOTAL;
+@end
+
+@interface DATA_FROM_DISTRICTS : NSObject
+@property int numDistricts;
+@property  double
+PCT_R_USSEN,
+PCT_DFL_USSEN,
+PCT_OTHER_USSEN,
+PCT_R_USREP,
+PCT_DFL_USREP,
+PCT_OTHER_USREP,
+PCT_R_TOTAL,
+PCT_DFL_TOTAL,
+PCT_OTHER_TOTAL;
+@end
+
 @interface DATA_FROM_LANDUSE : NSObject
 @property  int
 PCT_SingleFamilyResidential,
@@ -153,6 +177,7 @@ PCT_Water;
 
 +(NSString *) parcelFieldList;
 +(NSString *) blockFieldList;
++(NSString *) precinctFieldList:(int)year;
 
 - (bool)computeValuesFromParcelsInCensus:(DATA_FROM_PARCELS *)values
                             inCensusArea:(LPSTR)cenBlockIN
@@ -174,6 +199,10 @@ PCT_Water;
 
 - (DATA_FROM_BLOCKS *)computeValuesFromBlocksInCircle:(int)circleID
                                           forProperty:(int)propNum;
+
+- (DATA_FROM_DISTRICTS *)computeValuesFromDistrictsInCircle:(int)circleID
+                                                    forYear:(int)year
+                                                forProperty:(int)propNum;
 
 - (bool)computeValuesFromLandUseInCircle:(DATA_FROM_LANDUSE *)values
                              forProperty:(int)propNum

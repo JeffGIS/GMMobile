@@ -235,6 +235,8 @@
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB68767F201A48E000C6728B /* RiteHomeCompute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB68767E201A48E000C6728B /* RiteHomeCompute.m */; };
+		EB69FF41240C2EE5006F7E37 /* VOTING2018_def.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */; };
+		EB69FF42240C2EE5006F7E37 /* VotingMetadata.html in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */; };
 		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
 		EB96695C239B6D3A003F3C16 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB966959239B6C33003F3C16 /* Charts.framework */; };
 		EB96695E239B6E60003F3C16 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB966959239B6C33003F3C16 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -574,6 +576,8 @@
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PropertyData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB68767D201A48E000C6728B /* RiteHomeCompute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiteHomeCompute.h; sourceTree = "<group>"; };
 		EB68767E201A48E000C6728B /* RiteHomeCompute.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiteHomeCompute.m; sourceTree = "<group>"; };
+		EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VOTING2018_def.txt; sourceTree = "<group>"; };
+		EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = VotingMetadata.html; sourceTree = "<group>"; };
 		EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetSlowValues.h; sourceTree = "<group>"; };
 		EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetSlowValues.m; sourceTree = "<group>"; };
 		EB966953239B6C33003F3C16 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
@@ -664,6 +668,8 @@
 		1FB2CC6B1CB56D9E001360CF /* PropListDescriptions */ = {
 			isa = PBXGroup;
 			children = (
+				EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */,
+				EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */,
 				1F5ADD571CB95EDA002D7BED /* PropListField_4.pdf */,
 				1F5ADD551CB95D27002D7BED /* PropListField_default.pdf */,
 			);
@@ -1249,6 +1255,7 @@
 				69DA9C701F84150A00D38A5D /* NVAccessIcon1024.png in Resources */,
 				695F86101F7C48A9002018D8 /* config.png in Resources */,
 				692537161F7ACFF0003F5ABA /* NVSdwkIcon1024.png in Resources */,
+				EB69FF41240C2EE5006F7E37 /* VOTING2018_def.txt in Resources */,
 				BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */,
 				691B5DCC1E520E3300C90383 /* landuse.slt in Resources */,
 				691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */,
@@ -1378,6 +1385,7 @@
 				695577D31D83714100A34C24 /* checkedBox.png in Resources */,
 				6948ED301EC50A6600809632 /* NVMetroIcon1024.png in Resources */,
 				69FD71381FE2FB3400EAFDEF /* VideoRecordIcon.png in Resources */,
+				EB69FF42240C2EE5006F7E37 /* VotingMetadata.html in Resources */,
 				692D9CF31CA2FB6C00AFCA9A /* whiteUpload.png in Resources */,
 				697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */,
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
@@ -1625,7 +1633,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GMMobile/GMMobile-Prefix.pch";
-				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = GMMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -1657,7 +1666,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GMMobile/GMMobile-Prefix.pch";
-				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = GMMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;

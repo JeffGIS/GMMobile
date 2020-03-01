@@ -99,7 +99,14 @@
                         withRadius:circleRadiusInMeters[idist]
                         distanceID:idist
                            useDesc:usedescIN
-                         baseLayer:MBL_VotingDistricts];
+                         baseLayer:MBL_VotingDistricts2018];
+        nComputes++;
+        [self computeValuesFromMap:popover
+                      aroundLatLon:latlon
+                        withRadius:circleRadiusInMeters[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_VotingDistricts2016];
         nComputes++;
         if (idist == 0)
         {
@@ -237,8 +244,12 @@
             _areaType = @"CENTRACT";
             [self createColorByIDTable];
             break;
-        case MBL_VotingDistricts:
-            _areaType = @"VOTING";
+        case MBL_VotingDistricts2018:
+            _areaType = @"VOTING2018";
+            [self createColorByIDTable];
+            break;
+        case MBL_VotingDistricts2016:
+            _areaType = @"VOTING2016";
             [self createColorByIDTable];
             break;
         case MBL_StreetCenterlines:
@@ -922,10 +933,22 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     baseLayer:baseLayer];
         }
             break;
-        case MBL_VotingDistricts:
+        case MBL_VotingDistricts2018:
         {
              [_bd displayCensusAreas:context
-                               type:@"VOTING"
+                               type:@"VOTING2018"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
+        }
+            break;
+        case MBL_VotingDistricts2016:
+        {
+             [_bd displayCensusAreas:context
+                               type:@"VOTING2016"
              displayCharacteristics:dc
                           llCorners:latlonCornerPoints
                            LLBounds:platlonBounds

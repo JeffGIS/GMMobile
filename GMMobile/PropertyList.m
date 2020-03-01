@@ -914,7 +914,43 @@ NSString * GetPropListDirectory (void)
         case PFT_AveHouseholdSize_halfMile:
             name = @"Ave Household Size (Half Mile)";
             break;
-    }
+        case PFT_PctVoteDem2018_qtrMile:
+            name = @"PCT Vote Dem 2018 (Qtr Mile)";
+            break;
+        case PFT_PctVoteRep2018_qtrMile:
+            name = @"PCT Vote Rep 2018 (Qtr Mile)";
+            break;
+        case PFT_PctVoteDem2018_halfMile:
+            name = @"PCT Vote Dem 2018 (Half Mile)";
+            break;
+        case PFT_PctVoteRep2018_halfMile:
+            name = @"PCT Vote Rep 2018 (Half Mile)";
+            break;
+        case PFT_PctVoteDem2018_Mile:
+            name = @"PCT Vote Dem 2018 (Mile)";
+            break;
+        case PFT_PctVoteRep2018_Mile:
+            name = @"PCT Vote Rep 2018 (Mile)";
+            break;
+        case PFT_PctVoteDem2016_qtrMile:
+            name = @"PCT Vote Dem 2016 (Qtr Mile)";
+            break;
+        case PFT_PctVoteRep2016_qtrMile:
+            name = @"PCT Vote Rep 2016 (Qtr Mile)";
+            break;
+        case PFT_PctVoteDem2016_halfMile:
+            name = @"PCT Vote Dem 2016 (Half Mile)";
+            break;
+        case PFT_PctVoteRep2016_halfMile:
+            name = @"PCT Vote Rep 2016 (Half Mile)";
+            break;
+        case PFT_PctVoteDem2016_Mile:
+            name = @"PCT Vote Dem 2016 (Mile)";
+            break;
+        case PFT_PctVoteRep2016_Mile:
+            name = @"PCT Vote Rep 2016 (Mile)";
+            break;
+        }
     
     return name;
 }
@@ -1100,6 +1136,19 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_AveHouseholdSize_blockgroup:
         case PFT_AveHouseholdSize_qtrMile:
         case PFT_AveHouseholdSize_halfMile:
+        case PFT_PctVoteDem2018_qtrMile:
+        case PFT_PctVoteRep2018_qtrMile:
+        case PFT_PctVoteDem2018_halfMile:
+        case PFT_PctVoteRep2018_halfMile:
+        case PFT_PctVoteDem2018_Mile:
+        case PFT_PctVoteRep2018_Mile:
+        case PFT_PctVoteDem2016_qtrMile:
+        case PFT_PctVoteRep2016_qtrMile:
+        case PFT_PctVoteDem2016_halfMile:
+        case PFT_PctVoteRep2016_halfMile:
+        case PFT_PctVoteDem2016_Mile:
+        case PFT_PctVoteRep2016_Mile:
+            
             rtn = VTDoubleOneDecimal;
             break;
         default:
@@ -2030,6 +2079,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         //        DATA_FROM_BLOCKS *values_block_eighthMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_qtrMile = DATA_FROM_BLOCKS.new;
         DATA_FROM_BLOCKS *values_block_halfMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_DISTRICTS *values_district2018_qtrMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_DISTRICTS *values_district2018_halfMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_DISTRICTS *values_district2018_mile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_DISTRICTS *values_district2016_qtrMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_DISTRICTS *values_district2016_halfMile = DATA_FROM_BLOCKS.new;
+        DATA_FROM_DISTRICTS *values_district2016_mile = DATA_FROM_BLOCKS.new;
         //        DATA_FROM_LANDUSE *values_landUse_eighthMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_qtrMile = DATA_FROM_LANDUSE.new;
         DATA_FROM_LANDUSE *values_landUse_halfMile = DATA_FROM_LANDUSE.new;
@@ -2102,7 +2157,60 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [_popover updateProgress:nComputes/totComputes];
         });
         
-        /*        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
+        values_district2018_qtrMile = [_rhCompute computeValuesFromDistrictsInCircle:2
+                                                                             forYear:2018
+                                                                         forProperty:propNum];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+            [_popover updateProgress:nComputes/totComputes];
+        });
+        
+        values_district2018_halfMile = [_rhCompute computeValuesFromDistrictsInCircle:3
+                                                                              forYear:2018
+                                                                          forProperty:propNum];
+
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+            [_popover updateProgress:nComputes/totComputes];
+        });
+        
+        values_district2018_mile = [_rhCompute computeValuesFromDistrictsInCircle:4
+                                                                          forYear:2018
+                                                                      forProperty:propNum];
+        
+        nComputes++;
+        values_district2016_qtrMile = [_rhCompute computeValuesFromDistrictsInCircle:2
+                                                                             forYear:2016
+                                                                         forProperty:propNum];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+            [_popover updateProgress:nComputes/totComputes];
+        });
+        
+        values_district2016_halfMile = [_rhCompute computeValuesFromDistrictsInCircle:3
+                                                                              forYear:2016
+                                                                          forProperty:propNum];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+            [_popover updateProgress:nComputes/totComputes];
+        });
+        
+        values_district2016_mile = [_rhCompute computeValuesFromDistrictsInCircle:4
+                                                                          forYear:2016
+                                                                      forProperty:propNum];
+        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+            [_popover updateProgress:nComputes/totComputes];
+        });
+        
+/*        [_rhCompute computeValuesFromLandUseInCircle:values_landUse_eighthMile
          forProperty:propNum
          inCircle:1];
          
@@ -2215,6 +2323,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         
         [self addInt:values_block_halfMile.medianAdultAge withCode:PFT_MedianAgeAdults_halfMile];
         
+        [self addDouble:values_district2018_qtrMile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2018_qtrMile];
+        [self addDouble:values_district2018_halfMile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2018_halfMile];
+        [self addDouble:values_district2018_mile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2018_Mile];
+        [self addDouble:values_district2018_qtrMile.PCT_R_TOTAL withCode:PFT_PctVoteRep2018_qtrMile];
+        [self addDouble:values_district2018_halfMile.PCT_R_TOTAL withCode:PFT_PctVoteRep2018_halfMile];
+        [self addDouble:values_district2018_mile.PCT_R_TOTAL withCode:PFT_PctVoteRep2018_Mile];
+        [self addDouble:values_district2016_qtrMile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2016_qtrMile];
+        [self addDouble:values_district2016_halfMile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2016_halfMile];
+        [self addDouble:values_district2016_mile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2016_Mile];
+        [self addDouble:values_district2016_qtrMile.PCT_R_TOTAL withCode:PFT_PctVoteRep2016_qtrMile];
+        [self addDouble:values_district2016_halfMile.PCT_R_TOTAL withCode:PFT_PctVoteRep2016_halfMile];
+        [self addDouble:values_district2016_mile.PCT_R_TOTAL withCode:PFT_PctVoteRep2016_Mile];
         if (_opened)
             [self commitTransaction];
         dispatch_async(dispatch_get_main_queue(),
