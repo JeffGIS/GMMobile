@@ -20,8 +20,9 @@ NVPopoverTableViewDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property PropFieldType lastSelectedType;
 @property (nonatomic) UITextField *titleTextField;
 @property (nonatomic) UISegmentedControl *options;
-@property (nonatomic) UIButton *trash, *plus, *list;
+@property (nonatomic) UIButton *trash, *plus, *list, *type;
 @property BOOL longPressIsActive;
+@property NSArray * fieldTypes;
 
 @end
 
@@ -37,7 +38,7 @@ NVPopoverTableViewDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    
+
     _uncheckedBox = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"uncheckedBox"
                                                                                    ofType:@"png"]];
     
@@ -64,7 +65,8 @@ NVPopoverTableViewDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
     
     CGFloat imageInset = (_rowHeight / 8.0);
     UIEdgeInsets edgeInsets = UIEdgeInsetsMake(imageInset, imageInset, imageInset, imageInset);
-    
+    UIEdgeInsets textInsets = UIEdgeInsetsMake(imageInset*2, imageInset*2, imageInset*2, imageInset*2);
+
     _trash = [UIButton buttonWithType:UIButtonTypeCustom];
     _trash.translatesAutoresizingMaskIntoConstraints = NO;
     _trash.imageEdgeInsets = edgeInsets;
@@ -129,7 +131,34 @@ NVPopoverTableViewDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
     [_options addTarget:self
                  action:@selector(optionsTapped:)
        forControlEvents:UIControlEventValueChanged];
+    [_options setHidden:YES];
+    _type = [UIButton buttonWithType:UIButtonTypeCustom];
+    _type.backgroundColor = UIColor.blackColor;
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _type.titleLabel.font = [UIFont boldSystemFontOfSize:20];
     
+    else
+        _type.titleLabel.font = [UIFont boldSystemFontOfSize:30];
+    
+    _type.titleLabel.adjustsFontSizeToFitWidth = YES;
+    _type.titleLabel.textAlignment = NSTextAlignmentCenter;
+    _type.titleLabel.backgroundColor = UIColor.whiteColor;
+    _type.titleEdgeInsets  = textInsets;
+    NSString * currentTypes = [UserDefaults.defaults stringForKey:@"FieldTypesToDisplay"];
+    if (!currentTypes || !currentTypes.length)
+        currentTypes = @"All Types";
+    [_type setTitle:currentTypes forState:UIControlStateNormal];
+    [_type setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+    [_type setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
+    [_type setTitleEdgeInsets:textInsets];
+    [_type setBackgroundColor:UIColor.whiteColor];
+
+    [_type addTarget:self
+              action:@selector(typeTapped:)
+    forControlEvents:UIControlEventTouchUpInside];
+
+    _type.translatesAutoresizingMaskIntoConstraints = NO;
+
     [self setupTableView];
 }
 
@@ -202,6 +231,15 @@ viewForHeaderInSection:(NSInteger)section
         [_options constrainCenterYToAnchor:headerView.centerYAnchor];
         [_options constrainWidthToConstant:(_rowHeight * 3.0)];
         [_options constrainHeightToConstant:(_rowHeight * 0.6)];
+    }
+    
+    if (![headerView.subviews containsObject:_type])
+    {
+        [headerView addSubview:_type];
+        [_type constrainLeadingToAnchor:_trash.trailingAnchor];
+        [_type constrainCenterYToAnchor:headerView.centerYAnchor];
+        [_type constrainWidthToConstant:(_rowHeight * 3.0)];
+        [_type constrainHeightToConstant:(_rowHeight * 0.6)];
     }
     
     if (![headerView.subviews containsObject:_titleTextField])
@@ -293,7 +331,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    if ([popoverTableView.identifier isEqualToString:@"CopyToNewList"])
+    if ([popoverTableView.identifier isEqualToString:@"FieldTypes"])
+    {
+        [_type setTitle:text forState:UIControlStateNormal];
+        [UserDefaults.defaults saveString:text forKey:@"FieldTypesToDisplay"];
+    }
+    else if ([popoverTableView.identifier isEqualToString:@"CopyToNewList"])
     {
         [FieldList createNewFieldList];
         
@@ -326,9 +369,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)optionsTapped:(UIButton *)button
 {
-    
+    return;
 }
 
+- (void)typeTapped:(UIButton *)button
+{
+    _fieldTypes = @[@"All Types",@"Property",@"Demographic",@"Land Use",@"Voting",@"Other"];
+    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                          delegate:self
+                                                                             title:@"Select Field Types"
+                                                                         textArray:_fieldTypes
+                                                                     includeCancel:YES];
+    nvptv.identifier = @"FieldTypes";
+
+    return;
+}
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
