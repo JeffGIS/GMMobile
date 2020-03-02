@@ -1148,6 +1148,46 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctVoteRep2016_halfMile:
         case PFT_PctVoteDem2016_Mile:
         case PFT_PctVoteRep2016_Mile:
+        case PFT_PctChildren_block:
+        case PFT_PctSenior_block:
+        case PFT_PctChildren_blockgroup:
+        case PFT_PctSenior_blockgroup:
+        case PFT_PctPark_qtrMile:
+        case PFT_PctPark_halfMile:
+        case PFT_PctPark_Mile:
+        case PFT_PctWater_qtrMile:
+        case PFT_PctWater_halfMile:
+        case PFT_PctWater_Mile:
+        case PFT_PctOpenSpace_qtrMile:
+        case PFT_PctOpenSpace_halfMile:
+        case PFT_PctOpenSpace_Mile:
+        case PFT_PctIndustrial_qtrMile:
+        case PFT_PctIndustrial_halfMile:
+        case PFT_PctIndustrial_Mile:
+        case PFT_PctResidential_qtrMile:
+        case PFT_PctResidential_halfMile:
+        case PFT_PctResidential_Mile:
+        case PFT_PctSFResidential_qtrMile:
+        case PFT_PctSFResidential_halfMile:
+        case PFT_PctSFResidential_Mile:
+        case PFT_PctMFResidential_qtrMile:
+        case PFT_PctMFResidential_halfMile:
+        case PFT_PctMFResidential_Mile:
+        case PFT_PctMUResidential_qtrMile:
+        case PFT_PctMUResidential_halfMile:
+        case PFT_PctMUResidential_Mile:
+        case PFT_PctRetailCommercial_qtrMile:
+        case PFT_PctRetailCommercial_halfMile:
+        case PFT_PctRetailCommercial_Mile:
+        case PFT_PctInstitutional_qtrMile:
+        case PFT_PctInstitutional_halfMile:
+        case PFT_PctInstitutional_Mile:
+        case PFT_PctOffice_qtrMile:
+        case PFT_PctOffice_halfMile:
+        case PFT_PctOffice_Mile:
+        case PFT_PctTransportation_qtrMile:
+        case PFT_PctTransportation_halfMile:
+        case PFT_PctTransportation_Mile:
             
             rtn = VTDoubleOneDecimal;
             break;
@@ -2013,8 +2053,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [self addInt:values_cenblock.marrKids withCode:PFT_PctMarrKids_block];
             [self addInt:values_cenblock.nonFamily withCode:PFT_PctNonFamily_block];
             [self addInt:values_cenblock.unMarrKids withCode:PFT_PctUnMarrKids_block];
-            [self addInt:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
-            [self addInt:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
+            [self addDouble:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
+            [self addDouble:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
             [self addInt:values_cenblock.pctWithChildren withCode:PFT_PctChildren_block];
             [self addInt:values_cenblock.pctWithSeniors withCode:PFT_PctSenior_block];
             [self addInt:values_cenblock.pctOwneroccupied withCode:PFT_PctOwnerOccupied_block];
