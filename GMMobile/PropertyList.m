@@ -1129,11 +1129,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_Owner:
         case PFT_TaxPayer:
         case PFT_Links:
-        case PFT_LastSaleDate:
         case PFT_WalkDescription:
         case PFT_TransitDescription:
         case PFT_BikeDescription:
             rtn = VTString;
+            break;
+        case PFT_LastSaleDate:
+            rtn = VTDateYYYY_MM_DD;
             break;
         case PFT_ACRES:
             rtn = VTAcres;
@@ -1448,7 +1450,25 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                     //                    value = [value stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
                 }
                 break;
-            case VTDollars:
+            case VTDateYYYY_MM_DD:
+                val = (LPSTR)sqlite3_column_blob(statement, 0);
+                if (val)
+                {
+                    value = [NSString stringWithFormat:@"%s",val];
+                    if (strlen (val) == 8)
+                    {
+                        NSRange r1,r2,r3;
+                        r1.length = 4;
+                        r1.location = 0;
+                        r2.length = 2;
+                        r2.location = 4;
+                        r3.length = 2;
+                        r3.location = 6;
+                        value = [NSString stringWithFormat:@"%@-%@-%@",[value substringWithRange:r1],[value substringWithRange:r2],[value substringWithRange:r3]];
+                    }
+                }
+                break;
+case VTDollars:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
                 value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
