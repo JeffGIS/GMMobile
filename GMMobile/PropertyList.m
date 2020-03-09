@@ -414,7 +414,7 @@ NSString * GetPropListDirectory (void)
             name = @"PCT Parks (Mile)";
             break;
         case PFT_PctWater_qtrMile:
-            name = @"Water (Qtr Mile)";
+            name = @"PCT Water (Qtr Mile)";
             break;
         case PFT_PctWater_halfMile:
             name = @"PCT Water (Half Mile)";
@@ -952,6 +952,15 @@ NSString * GetPropListDirectory (void)
             break;
         case PFT_PctVoteRep2016_Mile:
             name = @"PCT Vote Rep 2016 (Mile)";
+            break;
+            
+        case PFT_GROUP_Voting:
+        case PFT_GROUP_Travel:
+        case PFT_GROUP_LandUse:
+        case PFT_GROUP_Demographics:
+        case PFT_GROUP_Property:
+        case PFT_GROUP_Other:
+            name = @"";
             break;
             
         default:

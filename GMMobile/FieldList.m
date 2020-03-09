@@ -19,6 +19,7 @@
 @property BOOL isOpen;
 @property unsigned long long fileSize;
 @property int dbIsOpen;
+@property NSInteger startDisplayType, endDisplayType;
 @end
 
 @implementation FieldList
@@ -250,11 +251,53 @@ NSString * GetFieldListDirectory (void)
 {
     SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
+- (void) setStartAndEndFieldTypesToDisplay
+{
+    //_fieldTypes = @[@"All Types",@"Property",@"Land Use",@"Demographics",@"Travel",@"Voting",@"Other"];
 
+    NSString * typesToDisplay = [UserDefaults.defaults stringForKey:@"FieldTypesToDisplay"];
+    if (!typesToDisplay || !typesToDisplay.length || [typesToDisplay isEqualToString:@"All Types"])
+    {
+        _startDisplayType = PFT_GROUP_Property;
+        _endDisplayType = PFT_END;
+    }
+    else if ([typesToDisplay isEqualToString:@"Property"])
+    {
+        _startDisplayType = PFT_GROUP_Property;
+        _endDisplayType = PFT_GROUP_LandUse;
+    }
+    else if ([typesToDisplay isEqualToString:@"Land Use"])
+    {
+        _startDisplayType = PFT_GROUP_LandUse;
+        _endDisplayType = PFT_GROUP_Demographics;
+    }
+    else if ([typesToDisplay isEqualToString:@"Demographics"])
+    {
+        _startDisplayType = PFT_GROUP_Demographics;
+        _endDisplayType = PFT_GROUP_Travel;
+    }
+    else if ([typesToDisplay isEqualToString:@"Travel"])
+    {
+        _startDisplayType = PFT_GROUP_Travel;
+        _endDisplayType = PFT_GROUP_Voting;
+    }
+    else if ([typesToDisplay isEqualToString:@"Voting"])
+    {
+        _startDisplayType = PFT_GROUP_Voting;
+        _endDisplayType = PFT_GROUP_Other;
+    }
+    else if ([typesToDisplay isEqualToString:@"Other"])
+    {
+        _startDisplayType = PFT_GROUP_Other;
+        _endDisplayType = PFT_END;
+    }
+}
 + (NSArray*)getFieldListRecords:(BOOL)getAll
 {
     NSMutableArray *records = [[NSMutableArray alloc]init];
     FieldList *fl = FieldList.new;
+    
+    [fl setStartAndEndFieldTypesToDisplay];
     
     BOOL opened = [fl open];
     NSString *query = [NSString stringWithFormat:@"SELECT FieldType, Sequence, Weight, InsertAfter FROM FieldList WHERE Sequence > 0 ORDER BY Sequence"];
@@ -269,11 +312,15 @@ NSString * GetFieldListDirectory (void)
         
         flr.type = sqlite3_column_int(statement, 0);
         flr.name = [PropertyList propertyFieldName:flr.type];
-        flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
-        flr.sequence = sqlite3_column_int(statement, 1);
-        flr.weight = sqlite3_column_int(statement, 2);
-        flr.insertAfter = sqlite3_column_int(statement, 3);
-        [records addObject:flr];
+        if (flr.name.length)
+        {
+            flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
+            flr.sequence = sqlite3_column_int(statement, 1);
+            flr.weight = sqlite3_column_int(statement, 2);
+            flr.insertAfter = sqlite3_column_int(statement, 3);
+            if (flr.type >= fl.startDisplayType && flr.type <= fl.endDisplayType)
+                [records addObject:flr];
+        }
     }
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
     
@@ -289,11 +336,15 @@ NSString * GetFieldListDirectory (void)
             
             flr.type = sqlite3_column_int(statement, 0);
             flr.name = [PropertyList propertyFieldName:flr.type];
-            flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
-            flr.sequence = sqlite3_column_int(statement, 1);
-            flr.weight = sqlite3_column_int(statement, 2);
-            flr.insertAfter = sqlite3_column_int(statement, 3);
-           [records addObject:flr];
+            if (flr.name.length)
+            {
+                flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
+                flr.sequence = sqlite3_column_int(statement, 1);
+                flr.weight = sqlite3_column_int(statement, 2);
+                flr.insertAfter = sqlite3_column_int(statement, 3);
+                if (flr.type >= fl.startDisplayType && flr.type <= fl.endDisplayType)
+                    [records addObject:flr];
+            }
         }
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
     }
