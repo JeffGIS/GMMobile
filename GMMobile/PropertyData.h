@@ -157,6 +157,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 - (int)pickParcel:(LLPOINT *)pt
     highlightList:(NSMutableArray*)hlist;
 -(NSMutableArray *) getParcelHistory:(NSString*)PID;
+- (NSString *) getPIDAddress:(NSString *)PID;
 
 - (BOOL)getAddressForPID:(NSString *)PID
          houseNumAndUnit:(NSString **)houseAndUnit

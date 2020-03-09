@@ -376,7 +376,9 @@ Top:
             bt.F_70_74 = F_70_74 * pctOfAreaInCircle;
             bt.F_75_79 = F_75_79 * pctOfAreaInCircle;
             bt.F_80_84 = F_80_84 * pctOfAreaInCircle;
-            bt.F_OVER85 = F_OVER85 * pctOfAreaInCircle;;
+            bt.F_OVER85 = F_OVER85 * pctOfAreaInCircle;
+            
+            
         }
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),_propData.database);
     }
@@ -543,17 +545,16 @@ double medianAdult (BLOCK_TOTALS * bt)
     if (bt.totHouseholds > 0)
     {
         values.aveHHSize = bt.aveHHSize / bt.totHouseholds;
-        values.livedAlone = IDNINT (100.0 * bt.totlivedAlone / bt.totHouseholds);
-        values.famNoKids = IDNINT (100.0 * bt.totfamNoKids / bt.totHouseholds);
-        values.marrKids = IDNINT (100.0 * bt.totmarrKids / bt.totHouseholds);
-        values.unMarrKids = IDNINT (100.0 * bt.totunMarrKids / bt.totHouseholds);
-        values.nonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
+        values.pctLivedAlone = IDNINT (100.0 * bt.totlivedAlone / bt.totHouseholds);
+        values.pctFamNoKids = IDNINT (100.0 * bt.totfamNoKids / bt.totHouseholds);
+        values.pctMarrKids = IDNINT (100.0 * bt.totmarrKids / bt.totHouseholds);
+        values.pctUnMarrKids = IDNINT (100.0 * bt.totunMarrKids / bt.totHouseholds);
+        values.pctNonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
         values.pctWithChildren = IDNINT (100.0 * bt.tothhwithChildren / bt.totHouseholds);
         values.pctWithSeniors = IDNINT (100.0 * bt.tothhwithSeniors / bt.totHouseholds);
         values.pctOwneroccupied = IDNINT (100.0 * bt.totowneroccupied / bt.totHouseholds);
         values.pctRenteroccupied = IDNINT (100.0 * bt.totrenteroccupied / bt.totHouseholds);
         values.pctVacant = IDNINT (100.0 * bt.totvacant / bt.totHouseholds);
-        values.nonFamily = IDNINT (100.0 * bt.totnonFamily / bt.totHouseholds);
         values.medianChildAgeMale = medianChildMale (bt);
         values.medianAdultAgeMale = medianAdultMale (bt);
         values.medianChildAgeFemale = medianChildFemale (bt);

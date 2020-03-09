@@ -521,13 +521,17 @@
     urlData = [NSURLConnection sendSynchronousRequest:urlRequest
                                     returningResponse:&response
                                                 error:&error];
+    NSDictionary *json = NSDictionary.new;
     
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
-                                                         options:NSJSONReadingMutableContainers
-                                                           error:&error];
-    
-    NSString *status = json[@"status"];
-    
+    NSString *status = @"Get route failed";
+    if (urlData)
+    {
+        json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:&error];
+        
+        status = json[@"status"];
+    }
     if (error)
         NSLog(@"JSON ERROR(from %li to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
     

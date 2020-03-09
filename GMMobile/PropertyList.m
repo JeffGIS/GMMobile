@@ -618,13 +618,16 @@ NSString * GetPropListDirectory (void)
             name = @"PCT Homestead (Block Street)";
             break;
         case PFT_MedianAgePop_block:
-            name = @"Median Age Population (Block)";
+            name = @"Median Age (Block)";
             break;
         case PFT_MedianAgePop_blockgroup:
-            name = @"Median Age Population (Block Group)";
+            name = @"Median Age (Block Group)";
             break;
-        case PFT_MedianAgePop_blockstreet:
-            name = @"Median Age Population (Block Street)";
+        case PFT_MedianAgePop_qtrMile:
+            name = @"Median Age (Qtr Mile)";
+            break;
+        case PFT_MedianAgePop_halfMile:
+            name = @"Median Age (Mile)";
             break;
         case PFT_MedianBuiltYear_block:
             name = @"Median Year Built (Block)";
@@ -950,6 +953,9 @@ NSString * GetPropListDirectory (void)
         case PFT_PctVoteRep2016_Mile:
             name = @"PCT Vote Rep 2016 (Mile)";
             break;
+            
+        default:
+            name = @"UNDEFINED";
         }
     
     return name;
@@ -1188,6 +1194,18 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctTransportation_qtrMile:
         case PFT_PctTransportation_halfMile:
         case PFT_PctTransportation_Mile:
+        case PFT_MedianAgeChildren_block:
+        case PFT_MedianAgeAdults_block:
+        case PFT_PctChildren_qtrMile:
+        case PFT_PctChildren_halfMile:
+        case PFT_MedianAgeChildren_blockgroup:
+        case PFT_MedianAgeAdults_blockgroup:
+        case PFT_MedianAgeChildren_qtrMile:
+        case PFT_MedianAgeAdults_qtrMile:
+        case PFT_MedianAgeChildren_halfMile:
+        case PFT_MedianAgeAdults_halfMile:
+        case PFT_MedianAgePop_block:
+        case PFT_MedianAgePop_blockgroup:
             
             rtn = VTDoubleOneDecimal;
             break;
@@ -1885,7 +1903,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                          popover:(GSSiPopoverView *)popover
                         delegate:(id)delegate
 {
-    BOOL rtn = NO;
+    BOOL rtn = YES;
     _delegate = delegate;
     _popover = popover;
     [_popover show];
@@ -2048,34 +2066,36 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [self addInt:values_block_street.activity_15yr  withCode:PFT_Activity15yr_blockstreet];
             [self addInt:values_block_street.pctNoTax  withCode:PFT_PCTNoTax_blockstreet];
             
-            [self addInt:values_cenblock.famNoKids  withCode:PFT_PctFamNoKids_block];
-            [self addInt:values_cenblock.livedAlone withCode:PFT_PctLivedAlone_block];
-            [self addInt:values_cenblock.marrKids withCode:PFT_PctMarrKids_block];
-            [self addInt:values_cenblock.nonFamily withCode:PFT_PctNonFamily_block];
-            [self addInt:values_cenblock.unMarrKids withCode:PFT_PctUnMarrKids_block];
+            [self addDouble:values_cenblock.pctFamNoKids  withCode:PFT_PctFamNoKids_block];
+            [self addDouble:values_cenblock.pctLivedAlone withCode:PFT_PctLivedAlone_block];
+            [self addDouble:values_cenblock.pctMarrKids withCode:PFT_PctMarrKids_block];
+            [self addDouble:values_cenblock.pctNonFamily withCode:PFT_PctNonFamily_block];
+            [self addDouble:values_cenblock.pctUnMarrKids withCode:PFT_PctUnMarrKids_block];
+            [self addDouble:values_cenblock.medianAge withCode:PFT_MedianAgePop_block];
             [self addDouble:values_cenblock.medianAdultAge withCode:PFT_MedianAgeAdults_block];
             [self addDouble:values_cenblock.medianChildAge withCode:PFT_MedianAgeChildren_block];
-            [self addInt:values_cenblock.pctWithChildren withCode:PFT_PctChildren_block];
-            [self addInt:values_cenblock.pctWithSeniors withCode:PFT_PctSenior_block];
-            [self addInt:values_cenblock.pctOwneroccupied withCode:PFT_PctOwnerOccupied_block];
-            [self addInt:values_cenblock.pctRenteroccupied withCode:PFT_PctRenterOccupied_block];
-            [self addInt:values_cenblock.pctVacant withCode:PFT_PctVacant_block];
+            [self addDouble:values_cenblock.pctWithChildren withCode:PFT_PctChildren_block];
+            [self addDouble:values_cenblock.pctWithSeniors withCode:PFT_PctSenior_block];
+            [self addDouble:values_cenblock.pctOwneroccupied withCode:PFT_PctOwnerOccupied_block];
+            [self addDouble:values_cenblock.pctRenteroccupied withCode:PFT_PctRenterOccupied_block];
+            [self addDouble:values_cenblock.pctVacant withCode:PFT_PctVacant_block];
             [self addInt:values_cenblock.totHouseholds withCode:PFT_TotalHouseholds_block];
             [self addInt:values_cenblock.totPop withCode:PFT_TotalPop_block];
             [self addInt:values_cenblock.popPerSqMile withCode:PFT_PopDensity_block];
             
-            [self addInt:values_cenblockgroup.famNoKids  withCode:PFT_PctFamNoKids_blockgroup];
-            [self addInt:values_cenblockgroup.livedAlone withCode:PFT_PctLivedAlone_blockgroup];
-            [self addInt:values_cenblockgroup.marrKids withCode:PFT_PctMarrKids_blockgroup];
-            [self addInt:values_cenblockgroup.nonFamily withCode:PFT_PctNonFamily_blockgroup];
-            [self addInt:values_cenblockgroup.unMarrKids withCode:PFT_PctUnMarrKids_blockgroup];
-            [self addInt:values_cenblockgroup.medianAdultAge withCode:PFT_MedianAgeAdults_blockgroup];
-            [self addInt:values_cenblockgroup.medianChildAge withCode:PFT_MedianAgeChildren_blockgroup];
-            [self addInt:values_cenblockgroup.pctWithChildren withCode:PFT_PctChildren_blockgroup];
-            [self addInt:values_cenblockgroup.pctWithSeniors withCode:PFT_PctSenior_blockgroup];
-            [self addInt:values_cenblockgroup.pctOwneroccupied withCode:PFT_PctOwnerOccupied_blockgroup];
-            [self addInt:values_cenblockgroup.pctRenteroccupied withCode:PFT_PctRenterOccupied_blockgroup];
-            [self addInt:values_cenblockgroup.pctVacant withCode:PFT_PctVacant_blockgroup];
+            [self addDouble:values_cenblockgroup.pctFamNoKids  withCode:PFT_PctFamNoKids_blockgroup];
+            [self addDouble:values_cenblockgroup.pctLivedAlone withCode:PFT_PctLivedAlone_blockgroup];
+            [self addDouble:values_cenblockgroup.pctMarrKids withCode:PFT_PctMarrKids_blockgroup];
+            [self addDouble:values_cenblockgroup.pctNonFamily withCode:PFT_PctNonFamily_blockgroup];
+            [self addDouble:values_cenblockgroup.pctUnMarrKids withCode:PFT_PctUnMarrKids_blockgroup];
+            [self addDouble:values_cenblockgroup.medianAge withCode:PFT_MedianAgePop_blockgroup];
+            [self addDouble:values_cenblockgroup.medianAdultAge withCode:PFT_MedianAgeAdults_blockgroup];
+            [self addDouble:values_cenblockgroup.medianChildAge withCode:PFT_MedianAgeChildren_blockgroup];
+            [self addDouble:values_cenblockgroup.pctWithChildren withCode:PFT_PctChildren_blockgroup];
+            [self addDouble:values_cenblockgroup.pctWithSeniors withCode:PFT_PctSenior_blockgroup];
+            [self addDouble:values_cenblockgroup.pctOwneroccupied withCode:PFT_PctOwnerOccupied_blockgroup];
+            [self addDouble:values_cenblockgroup.pctRenteroccupied withCode:PFT_PctRenterOccupied_blockgroup];
+            [self addDouble:values_cenblockgroup.pctVacant withCode:PFT_PctVacant_blockgroup];
             [self addInt:values_cenblockgroup.totPop withCode:PFT_TotalPop_blockgroup];
             [self addInt:values_cenblockgroup.totHouseholds withCode:PFT_TotalHouseholds_blockgroup];
             [self addInt:values_cenblockgroup.popPerSqMile withCode:PFT_PopDensity_blockgroup];

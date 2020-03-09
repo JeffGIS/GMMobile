@@ -903,6 +903,31 @@ return _version;
         rtn = [NSString stringWithUTF8String:str];
     return rtn;
 }
+- (NSString *) getPIDAddress:(NSString *)PID
+{
+    NSString * houseAndUnit;
+    NSString * streetName;
+    NSString * city;
+    NSString * zipcode;
+    NSString * address = @"";
+    if ([self getAddressForPID:PID
+             houseNumAndUnit:&houseAndUnit
+                  streetName:&streetName
+                        city:&city
+                         zip:&zipcode
+                   ownerName:nil taxpayerName:nil
+                 censusBlock:nil
+       associatedCensusBlock:nil
+                     useDesc:nil
+                    saleDate:nil saleValue:nil
+                   yearBuilt:nil
+                      totEMV:nil
+                     landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil])
+    {
+        address = [NSString stringWithFormat:@"%@ %@ %@ %@",houseAndUnit,streetName,city,zipcode];
+    }
+    return address;
+}
 - (BOOL)getAddressForPID:(NSString *)PID
       houseNumAndUnit:(NSString **)houseAndUnit
            streetName:(NSString **)streetName

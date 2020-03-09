@@ -135,28 +135,87 @@
     //return ([PropertyList availablePropertyFields].count - 2);
 
 }
-- (void) addPropFromWebsiteToPropList:(NSString *)link
+- (BOOL) addPropFromWebsiteToPropList:(NSString *)link
                               popover:(GSSiPopoverView *)popover
 {
+    BOOL rtn = FALSE;
     NSString * address;
     NSString * houseNum = @"";
     NSString * streetName = @"";
     NSString * streetType = @"";
+    NSString * spacer = @"-";
     
     NSRange range;
-    range = [link rangeOfString:@"www.edinarealty.com/homes-for-sale/"];
+    NSArray *validSites = @[@"www.krislindahl.com/listing/cms/",@"www.edinarealty.com/homes-for-sale/",@"www.zillow.com/homedetails/",@"www.coldwellbanker.com/property/",@"//www.realtor.com/realestateandhomes-detail/"];
+    
+    for (NSString * site in validSites)
+    {
+        range = [link rangeOfString:site];
+        if (range.location != NSNotFound)
+        {
+            address = [link substringFromIndex:range.location+range.length];
+            goto FoundSite;
+        }
+    }
+    range = [link rangeOfString:@"kw.com/property/LST"];
+    if (range.location != NSNotFound)
+    {
+        showAlert(@"Enter the property's address");
+        return FALSE;
+    }
+    range = [link rangeOfString:@"www.trulia.com/"];
+    if (range.location != NSNotFound)
+    {
+        range = [link rangeOfString:@"/" options:NSBackwardsSearch];
+        if (range.location == NSNotFound)
+            return FALSE;
+        range.location++;
+        range.length = link.length - range.location;
+        address = [link substringWithRange:range];
+        goto FoundSite;
+    }
+    spacer = @" ";
+    range = [link rangeOfString:@"\n"];
+    if (range.location != NSNotFound)
+    {
+        if (range.location)
+        {
+            range.length = range.location - 1;
+            range.location = 0;
+        }
+        else
+        {
+            range = [link rangeOfString:@"\n" options:NSBackwardsSearch];
+            if (range.location)
+            {
+                range.length = link.length - range.location;
+                range.location++;
+            }
+            else
+                goto NotFound;
+        }
+        address = [link substringWithRange:range];
+        goto FoundSite;
+    }
+    range = [link rangeOfString:@"/"];
     if (range.location == NSNotFound)
     {
-        showAlert(@"Property not found");
+        range.length = link.length;
+        range.location = 0;
+        address = [link substringWithRange:range];
+        goto FoundSite;
     }
-    else
+NotFound:
+    showAlert(@"Property not found");
+    return FALSE;
+    
+FoundSite:
     {
-        address = [link substringFromIndex:range.location+range.length];
-        houseNum = textBefor(address, @"-");
-        streetName = textAfter (address,@"-");
-        streetType = textAfter (streetName,@"-");
-        streetType = textBefor (streetType,@"-");
-        streetName = textBefor(streetName,@"-");
+        houseNum = textBefor(address, spacer);
+        streetName = textAfter (address,spacer);
+        streetType = textAfter (streetName,spacer);
+        streetType = textBefor (streetType,spacer);
+        streetName = textBefor(streetName,spacer);
         PropertyData *propData = [[PropertyData alloc] init];
         [self closeList];
         _locationManager = nil;
@@ -184,24 +243,25 @@
             PID = textAfter(PID,@"\t");
             PID = textBefor(PID,@"\t");
             _addingPropToProplist = TRUE;
-            [_propList addParcelToPropertyList:PID popover:popover delegate:self];
+            rtn = [_propList addParcelToPropertyList:PID popover:popover delegate:self];
         }
         else
             showAlert(@"Property not found");
     }
+    return rtn;
 }
 
 - (void)ParcelAddedToPropertyList:(int)status
 {
     _addingPropToProplist = FALSE;
 
-    if (_spreadSheetVC)
+/*    if (_spreadSheetVC)
     [NSTimer scheduledTimerWithTimeInterval:0.1
                                      target:_spreadSheetVC
                                    selector:@selector(doDataReload:)
                                    userInfo:nil
                                     repeats:NO];
-    
+*/
 }
 - (NSInteger)numRowsInSpreadsheet
 {
@@ -575,7 +635,7 @@
             case PFT_PIN:
             case PFT_Address:
             case PFT_UserID:
-                array = [NSMutableArray arrayWithArray:@[@"Zoom to This Property", @"Zoom to All Properties in List", @"Cancel"]];
+                array = [NSMutableArray arrayWithArray:@[@"Zoom to This Property", @"Zoom to All Properties in List",@"Route to This Property", @"Cancel"]];
                 break;
             case PFT_LastSaleDate:
             case PFT_LastSalePrice:
@@ -597,6 +657,25 @@
     NSString *PID = [_propList getPIDforPropnum:propNum];
     chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:PID];
     [vc presentViewController:chartsVC animated:YES completion:nil];
+}
+
+- (void) routeToProperty:(int)propNum
+{
+    NSString *PID = [_propList getPIDforPropnum:propNum];
+    PropertyData *pd = PropertyData.new;
+    NSString * propAddress = [pd getPIDAddress:PID];
+    propAddress = [propAddress stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    NSString * GOOGLEMapsCmd = @"https://www.google.com/maps/@42.585444,13.007813,15z";
+    GOOGLEMapsCmd = [NSString stringWithFormat:@"https://www.google.com/maps?f=d&daddr=%@&sspn=0.2,0.1&nav=1&x-source=SourceApp&x-success=sourceapp://?resume=true",propAddress];
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:GOOGLEMapsCmd]])
+    {
+         [UIApplication.sharedApplication openURL:[NSURL URLWithString:GOOGLEMapsCmd]];
+    }
+    else
+    {
+        showAlert(@"Cannot open Google Maps AP");
+    }
+
 }
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {

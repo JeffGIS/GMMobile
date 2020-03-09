@@ -105,18 +105,18 @@ F_OVER85;
 @property  double aveHHSize;
 @property  int  totPop,
 totHouseholds,
-popPerSqMile,
-livedAlone,
-marrKids,
-unMarrKids,
-famNoKids,
-nonFamily,
+popPerSqMile;
+@property double
+pctLivedAlone,
+pctMarrKids,
+pctUnMarrKids,
+pctFamNoKids,
+pctNonFamily,
 pctWithChildren,
 pctWithSeniors,
 pctOwneroccupied,
 pctRenteroccupied,
-pctVacant;
-@property double
+pctVacant,
 medianAge,
 medianAdultAge,
 medianAdultAgeMale,
