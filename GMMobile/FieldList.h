@@ -22,7 +22,8 @@
 
 @interface FieldList : NSObject
 
-+ (NSArray *)getFieldListRecords:(BOOL)getAll;
++ (NSArray *)getFieldListRecords:(BOOL)getBothSelectedAndNonSelected
+                   fromAllGroups:(BOOL) allGroups;
 + (NSArray *)getFieldLists;
 + (NSString *)getCurrentFieldListName;
 

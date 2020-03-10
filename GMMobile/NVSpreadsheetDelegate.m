@@ -113,7 +113,8 @@
     if (_propList && !_addingPropToProplist)
     {
         [_propList open];
-        _fieldList = [FieldList getFieldListRecords:NO];
+        _fieldList = [FieldList getFieldListRecords:NO
+                                      fromAllGroups:YES];
         [self getCurrentLocation];
         rtn = TRUE;
     }

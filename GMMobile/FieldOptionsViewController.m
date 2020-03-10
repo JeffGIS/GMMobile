@@ -61,7 +61,8 @@ NVPopoverTableViewDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
         _headerFont = [UIFont boldSystemFontOfSize:40.0];
     }
     
-    _fieldlist = [FieldList getFieldListRecords:YES];
+    _fieldlist = [FieldList getFieldListRecords:YES
+                                  fromAllGroups:NO];
     
     CGFloat imageInset = (_rowHeight / 8.0);
     UIEdgeInsets edgeInsets = UIEdgeInsetsMake(imageInset, imageInset, imageInset, imageInset);
@@ -292,7 +293,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (buttonIndex == 0)
         {
             [FieldList deleteCurrentFieldList];
-            _fieldlist = [FieldList getFieldListRecords:YES];
+            _fieldlist = [FieldList getFieldListRecords:YES
+                                          fromAllGroups:NO];
             [_tableView reloadData];
         }
     }
@@ -357,7 +359,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     else if ([popoverTableView.identifier isEqualToString:@"SelectFromList"])
         [FieldList setCurrentFieldList:text];
     
-    _fieldlist = [FieldList getFieldListRecords:YES];
+    _fieldlist = [FieldList getFieldListRecords:YES
+                                  fromAllGroups:NO];
     [_tableView reloadData];
     [popoverTableView hide:YES];
 }
@@ -509,7 +512,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [FieldList setWeightFor:flr.type
                          to:(int)round(value)];
     
-    _fieldlist = [FieldList getFieldListRecords:YES];
+    _fieldlist = [FieldList getFieldListRecords:YES
+                                  fromAllGroups:NO];
     [_tableView reloadData];
 }
 
@@ -526,7 +530,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              from:flr.sequence
                                to:0];
         
-        _fieldlist = [FieldList getFieldListRecords:YES];
+        _fieldlist = [FieldList getFieldListRecords:YES
+                                      fromAllGroups:NO];
         [_tableView reloadData];
     }
 }
@@ -539,7 +544,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [FieldList setInsertAfterTo:flr.type];
     
-    _fieldlist = [FieldList getFieldListRecords:YES];
+    _fieldlist = [FieldList getFieldListRecords:YES
+                                  fromAllGroups:NO];
     [_tableView reloadData];
 }
 
@@ -560,7 +566,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  from:fromseq
                                    to:newseq];
             
-            _fieldlist = [FieldList getFieldListRecords:YES];
+            _fieldlist = [FieldList getFieldListRecords:YES
+                                          fromAllGroups:NO];
             [_tableView reloadData];
         }
     }
