@@ -152,7 +152,7 @@ PCT_OTHER_TOTAL;
 @end
 
 @interface DATA_FROM_LANDUSE : NSObject
-@property  int
+@property  double
 PCT_SingleFamilyResidential,
 PCT_MultiFamilyResidential,
 PCT_MixedUseResidential,

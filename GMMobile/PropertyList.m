@@ -1094,18 +1094,22 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             break;
         case PFT_PctOpenSpace_Mile:
         case PFT_PctOpenSpace_halfMile:
+        case PFT_PctOpenSpace_qtrMile:
             bt = PBT_OpenSpace;
             break;
         case PFT_PctIndustrial_Mile:
         case PFT_PctIndustrial_halfMile:
+        case PFT_PctIndustrial_qtrMile:
             bt = PBT_Industrial;
             break;
         case PFT_PctResidential_Mile:
         case PFT_PctResidential_halfMile:
+        case PFT_PctResidential_qtrMile:
             bt = PBT_Residential;
             break;
         case PFT_PctRetailCommercial_Mile:
         case PFT_PctRetailCommercial_halfMile:
+        case PFT_PctRetailCommercial_qtrMile:
             bt = PBT_Commercial;
             break;
         default:
@@ -2352,65 +2356,65 @@ case VTDollars:
         [self addInt:values_Mile.stability_5yr    withCode:PFT_Stability5yr_Mile];
         [self addInt:values_Mile.stability_15yr    withCode:PFT_Stability15yr_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_qtrMile];
-        [self addInt:values_landUse_qtrMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_qtrMile];
-        [self addInt:values_landUse_qtrMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_qtrMile];
-        int totPCT = values_landUse_qtrMile.PCT_SingleFamilyResidential + values_landUse_qtrMile.PCT_MultiFamilyResidential + values_landUse_qtrMile.PCT_MixedUseResidential;
-        [self addInt:totPCT withCode:PFT_PctResidential_qtrMile];
+        [self addDouble:values_landUse_qtrMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_qtrMile];
+        [self addDouble:values_landUse_qtrMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_qtrMile];
+        [self addDouble:values_landUse_qtrMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_qtrMile];
+        double totPCT = values_landUse_qtrMile.PCT_SingleFamilyResidential + values_landUse_qtrMile.PCT_MultiFamilyResidential + values_landUse_qtrMile.PCT_MixedUseResidential;
+        [self addDouble:totPCT withCode:PFT_PctResidential_qtrMile];
         
-        [self addInt:values_landUse_halfMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_halfMile];
-        [self addInt:values_landUse_halfMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_halfMile];
-        [self addInt:values_landUse_halfMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_halfMile];
+        [self addDouble:values_landUse_halfMile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_halfMile];
+        [self addDouble:values_landUse_halfMile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_halfMile];
+        [self addDouble:values_landUse_halfMile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_halfMile];
         totPCT = values_landUse_halfMile.PCT_SingleFamilyResidential + values_landUse_halfMile.PCT_MultiFamilyResidential + values_landUse_halfMile.PCT_MixedUseResidential;
-        [self addInt:totPCT withCode:PFT_PctResidential_halfMile];
+        [self addDouble:totPCT withCode:PFT_PctResidential_halfMile];
         
-        [self addInt:values_landUse_Mile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_Mile];
-        [self addInt:values_landUse_Mile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_Mile];
-        [self addInt:values_landUse_Mile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_Mile];
+        [self addDouble:values_landUse_Mile.PCT_SingleFamilyResidential withCode:PFT_PctSFResidential_Mile];
+        [self addDouble:values_landUse_Mile.PCT_MultiFamilyResidential withCode:PFT_PctMFResidential_Mile];
+        [self addDouble:values_landUse_Mile.PCT_MixedUseResidential withCode:PFT_PctMUResidential_Mile];
         totPCT = values_landUse_Mile.PCT_SingleFamilyResidential + values_landUse_Mile.PCT_MultiFamilyResidential + values_landUse_Mile.PCT_MixedUseResidential;
-        [self addInt:totPCT withCode:PFT_PctResidential_Mile];
+        [self addDouble:totPCT withCode:PFT_PctResidential_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_qtrMile];
-        [self addInt:values_landUse_halfMile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_halfMile];
-        [self addInt:values_landUse_Mile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_Mile];
+        [self addDouble:values_landUse_qtrMile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_qtrMile];
+        [self addDouble:values_landUse_halfMile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_halfMile];
+        [self addDouble:values_landUse_Mile.PCT_RetailCommercial withCode:PFT_PctRetailCommercial_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_Office withCode:PFT_PctOffice_qtrMile];
-        [self addInt:values_landUse_halfMile.PCT_Office withCode:PFT_PctOffice_halfMile];
-        [self addInt:values_landUse_Mile.PCT_Office withCode:PFT_PctOffice_Mile];
+        [self addDouble:values_landUse_qtrMile.PCT_Office withCode:PFT_PctOffice_qtrMile];
+        [self addDouble:values_landUse_halfMile.PCT_Office withCode:PFT_PctOffice_halfMile];
+        [self addDouble:values_landUse_Mile.PCT_Office withCode:PFT_PctOffice_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_Industrial withCode:PFT_PctIndustrial_qtrMile];
-        [self addInt:values_landUse_halfMile.PCT_Industrial withCode:PFT_PctIndustrial_halfMile];
-        [self addInt:values_landUse_Mile.PCT_Industrial withCode:PFT_PctIndustrial_Mile];
+        [self addDouble:values_landUse_qtrMile.PCT_Industrial withCode:PFT_PctIndustrial_qtrMile];
+        [self addDouble:values_landUse_halfMile.PCT_Industrial withCode:PFT_PctIndustrial_halfMile];
+        [self addDouble:values_landUse_Mile.PCT_Industrial withCode:PFT_PctIndustrial_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_Institutional withCode:PFT_PctInstitutional_qtrMile];
-        [self addInt:values_landUse_halfMile.PCT_Institutional withCode:PFT_PctInstitutional_halfMile];
-        [self addInt:values_landUse_Mile.PCT_Institutional withCode:PFT_PctInstitutional_Mile];
+        [self addDouble:values_landUse_qtrMile.PCT_Institutional withCode:PFT_PctInstitutional_qtrMile];
+        [self addDouble:values_landUse_halfMile.PCT_Institutional withCode:PFT_PctInstitutional_halfMile];
+        [self addDouble:values_landUse_Mile.PCT_Institutional withCode:PFT_PctInstitutional_Mile];
         
         totPCT = values_landUse_qtrMile.PCT_HighwayRailway + values_landUse_qtrMile.PCT_Airport;
-        [self addInt:totPCT withCode:PFT_PctTransportation_qtrMile];
+        [self addDouble:totPCT withCode:PFT_PctTransportation_qtrMile];
         totPCT = values_landUse_halfMile.PCT_HighwayRailway + values_landUse_halfMile.PCT_Airport;
-        [self addInt:totPCT withCode:PFT_PctTransportation_halfMile];
+        [self addDouble:totPCT withCode:PFT_PctTransportation_halfMile];
         totPCT = values_landUse_Mile.PCT_HighwayRailway + values_landUse_Mile.PCT_Airport;
-        [self addInt:totPCT withCode:PFT_PctTransportation_Mile];
+        [self addDouble:totPCT withCode:PFT_PctTransportation_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_ParkRecPreserve withCode:PFT_PctPark_qtrMile];
-        [self addInt:values_landUse_halfMile.PCT_ParkRecPreserve withCode:PFT_PctPark_halfMile];
-        [self addInt:values_landUse_Mile.PCT_ParkRecPreserve withCode:PFT_PctPark_Mile];
+        [self addDouble:values_landUse_qtrMile.PCT_ParkRecPreserve withCode:PFT_PctPark_qtrMile];
+        [self addDouble:values_landUse_halfMile.PCT_ParkRecPreserve withCode:PFT_PctPark_halfMile];
+        [self addDouble:values_landUse_Mile.PCT_ParkRecPreserve withCode:PFT_PctPark_Mile];
         
-        [self addInt:values_landUse_qtrMile.PCT_Water withCode:PFT_PctWater_qtrMile];
-        [self addInt:values_landUse_halfMile.PCT_Water withCode:PFT_PctWater_halfMile];
-        [self addInt:values_landUse_Mile.PCT_Water withCode:PFT_PctWater_Mile];
+        [self addDouble:values_landUse_qtrMile.PCT_Water withCode:PFT_PctWater_qtrMile];
+        [self addDouble:values_landUse_halfMile.PCT_Water withCode:PFT_PctWater_halfMile];
+        [self addDouble:values_landUse_Mile.PCT_Water withCode:PFT_PctWater_Mile];
         
         totPCT = values_landUse_qtrMile.PCT_ParkRecPreserve + values_landUse_qtrMile.PCT_Agriculture + values_landUse_qtrMile.PCT_Undeveloped + values_landUse_qtrMile.PCT_Water;
-        [self addInt:totPCT withCode:PFT_PctOpenSpace_qtrMile];
+        [self addDouble:totPCT withCode:PFT_PctOpenSpace_qtrMile];
         totPCT = values_landUse_halfMile.PCT_ParkRecPreserve + values_landUse_halfMile.PCT_Agriculture + values_landUse_halfMile.PCT_Undeveloped + values_landUse_halfMile.PCT_Water;
-        [self addInt:totPCT withCode:PFT_PctOpenSpace_halfMile];
+        [self addDouble:totPCT withCode:PFT_PctOpenSpace_halfMile];
         totPCT = values_landUse_Mile.PCT_ParkRecPreserve + values_landUse_Mile.PCT_Agriculture + values_landUse_Mile.PCT_Undeveloped + values_landUse_Mile.PCT_Water;
-        [self addInt:totPCT withCode:PFT_PctOpenSpace_Mile];
+        [self addDouble:totPCT withCode:PFT_PctOpenSpace_Mile];
         
-        [self addInt:values_block_qtrMile.medianAdultAge withCode:PFT_MedianAgeAdults_qtrMile];
+        [self addDouble:values_block_qtrMile.medianAdultAge withCode:PFT_MedianAgeAdults_qtrMile];
         
-        [self addInt:values_block_halfMile.medianAdultAge withCode:PFT_MedianAgeAdults_halfMile];
+        [self addDouble:values_block_halfMile.medianAdultAge withCode:PFT_MedianAgeAdults_halfMile];
         
         [self addDouble:values_district2018_qtrMile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2018_qtrMile];
         [self addDouble:values_district2018_halfMile.PCT_DFL_TOTAL withCode:PFT_PctVoteDem2018_halfMile];
