@@ -115,7 +115,7 @@
         [_propList open];
         _fieldList = [FieldList getFieldListRecords:NO
                                       fromAllGroups:YES];
-        [self getCurrentLocation];
+       // [self getCurrentLocation];
         rtn = TRUE;
     }
     return rtn;
