@@ -8,6 +8,7 @@
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
 #import "RiteHomeCompute.h"
+#import "FieldList.h"
 #import "CCodeLibrary/RiteHome.h"
 
 //#define CURRENT_VERSION 28
@@ -1063,6 +1064,9 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctIndustrial_Mile:
         case PFT_PctRetailCommercial_Mile:
         case PFT_PctResidential_Mile:
+        case PFT_PctInstitutional_Mile:
+        case PFT_PctWater_Mile:
+        case PFT_PctOffice_Mile:
             radius = 1.0;
             break;
         case PFT_Stability5yr_halfMile:
@@ -1071,7 +1075,26 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctIndustrial_halfMile:
         case PFT_PctRetailCommercial_halfMile:
         case PFT_PctResidential_halfMile:
+        case PFT_PctWater_halfMile:
+        case PFT_PctOffice_halfMile:
+        case PFT_PctInstitutional_halfMile:
             radius = 0.5;
+            break;
+        case PFT_PctPark_qtrMile:
+        case PFT_Stability5yr_qtrMile:
+        case PFT_Stability15yr_qtrMile:
+        case PFT_PctWater_qtrMile:
+        case  PFT_PctOpenSpace_qtrMile:
+        case PFT_PctIndustrial_qtrMile:
+        case PFT_PctResidential_qtrMile:
+        case PFT_PctSFResidential_qtrMile:
+        case PFT_PctMFResidential_qtrMile:
+        case PFT_PctMUResidential_qtrMile:
+        case PFT_PctRetailCommercial_qtrMile:
+        case PFT_PctInstitutional_qtrMile:
+        case PFT_PctOffice_qtrMile:
+        case PFT_PctTransportation_qtrMile:
+            radius = 0.25;
             break;
         default:
             break;
@@ -1843,8 +1866,10 @@ case VTDollars:
     NSArray *fields = [PropertyList availablePropertyFields];
     if (option < fields.count)
     {
-        NSNumber *field = fields[option];
-        PropFieldType ifield = field.integerValue;
+        NSArray<FieldListRecord*>* inUseFields = [FieldList getFieldListRecords:NO
+                                                                  fromAllGroups:YES];
+        FieldListRecord * field = inUseFields[option];
+        PropFieldType ifield = field.type;
         ConfigurationControl.sharedInstance.MapitPID = PID;
         ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
         ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];

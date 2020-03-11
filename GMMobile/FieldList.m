@@ -292,7 +292,7 @@ NSString * GetFieldListDirectory (void)
         _endDisplayType = PFT_END;
     }
 }
-+ (NSArray*)getFieldListRecords:(BOOL)getBothSelectedAndNonSelected
++ (NSArray<FieldListRecord*>*)getFieldListRecords:(BOOL)getBothSelectedAndNonSelected
                   fromAllGroups:(BOOL) allGroups
 {
     NSMutableArray *records = [[NSMutableArray alloc]init];
