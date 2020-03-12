@@ -68,6 +68,7 @@
                         type:(PropFieldType)fieldType;
 - (void)setZoomValues:(NSInteger)propNum
            withOption:(NSInteger)option;
++ (MapitBaseLayer)getBaseLayerForField:(PropFieldType)field;
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field;
 - (void) deleteProperty:(NSInteger)propNum;
 NSString* propertyListFieldDescription (NSInteger fieldNumber);

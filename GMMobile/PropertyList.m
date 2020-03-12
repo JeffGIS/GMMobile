@@ -1009,7 +1009,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {
     CPFeatures rtn = NVMetroSettings.sharedInstance.currentFeature;
     NVMetroSettings.sharedInstance.currentFeature = CPFLandUse;
-    
+    ConfigurationControl.sharedInstance.currentMapitBaseLayer = [PropertyList getBaseLayerForField:field];
     return rtn;
 }
 - (int)getBoundaryTypeForField:(PropFieldType) field
@@ -1103,6 +1103,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return radius;
 }
 
++ (MapitBaseLayer)getBaseLayerForField:(PropFieldType)field
+{
+    MapitBaseLayer rtn = MBL_LandUse;
+    
+    return rtn;
+}
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field
 {
     PropBaseType bt=PBT_Residential;
@@ -1863,11 +1869,10 @@ case VTDollars:
         [self close:opened];
         return;
     }
-    NSArray *fields = [PropertyList availablePropertyFields];
-    if (option < fields.count)
+    NSArray<FieldListRecord*>* inUseFields = [FieldList getFieldListRecords:NO
+                                                            fromAllGroups:YES];
+    if (option < inUseFields.count)
     {
-        NSArray<FieldListRecord*>* inUseFields = [FieldList getFieldListRecords:NO
-                                                                  fromAllGroups:YES];
         FieldListRecord * field = inUseFields[option];
         PropFieldType ifield = field.type;
         ConfigurationControl.sharedInstance.MapitPID = PID;
