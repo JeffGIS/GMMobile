@@ -197,6 +197,12 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctVoteDem2016_Mile,
     PFT_PctVoteRep2016_Mile,
  
+    PFT_GROUP_Limited,
+    PFT_Minneapolis_Crime,
+    PFT_Minneapolis_311,
+    PFT_StPaul_Crime,
+    PFT_StPaul_Permits,
+    
     PFT_GROUP_Other,
     PFT_ProsAndCons,
     PFT_WalkScore,

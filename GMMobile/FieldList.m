@@ -284,6 +284,11 @@ NSString * GetFieldListDirectory (void)
     else if ([typesToDisplay isEqualToString:@"Voting"])
     {
         _startDisplayType = PFT_GROUP_Voting;
+        _endDisplayType = PFT_GROUP_Limited;
+    }
+    else if ([typesToDisplay isEqualToString:@"Limited"])
+    {
+        _startDisplayType = PFT_GROUP_Limited;
         _endDisplayType = PFT_GROUP_Other;
     }
     else if ([typesToDisplay isEqualToString:@"Other"])

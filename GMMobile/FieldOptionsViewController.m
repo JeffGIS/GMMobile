@@ -377,7 +377,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)typeTapped:(UIButton *)button
 {
-    _fieldTypes = @[@"All Types",@"Property",@"Land Use",@"Demographics",@"Travel",@"Voting",@"Other"];
+    _fieldTypes = @[@"All Types",@"Property",@"Land Use",@"Demographics",@"Travel",@"Voting",@"Limited",@"Other"];
     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                           delegate:self
                                                                              title:@"Select Field Types"
