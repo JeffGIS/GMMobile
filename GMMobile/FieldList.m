@@ -251,12 +251,18 @@ NSString * GetFieldListDirectory (void)
 {
     SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
-- (void) setStartAndEndFieldTypesToDisplay:(BOOL)allGroups
+- (void) setStartAndEndFieldTypesToDisplay:(BOOL)getBothSelectedAndNonSelected
+                             fromAllGroups:(BOOL) allGroups
 {
     //_fieldTypes = @[@"All Types",@"Property",@"Land Use",@"Demographics",@"Travel",@"Voting",@"Other"];
 
     NSString * typesToDisplay = [UserDefaults.defaults stringForKey:@"FieldTypesToDisplay"];
-    if (allGroups || !typesToDisplay || !typesToDisplay.length || [typesToDisplay isEqualToString:@"All Types"])
+    if (allGroups && !getBothSelectedAndNonSelected)
+    {
+        _startDisplayType = PFT_UserID;
+        _endDisplayType = PFT_END;
+    }
+    else if (allGroups || !typesToDisplay || !typesToDisplay.length || [typesToDisplay isEqualToString:@"All Types"])
     {
         _startDisplayType = PFT_GROUP_Property;
         _endDisplayType = PFT_END;
@@ -303,7 +309,8 @@ NSString * GetFieldListDirectory (void)
     NSMutableArray *records = [[NSMutableArray alloc]init];
     FieldList *fl = FieldList.new;
     
-    [fl setStartAndEndFieldTypesToDisplay:allGroups];
+    [fl setStartAndEndFieldTypesToDisplay:getBothSelectedAndNonSelected
+                            fromAllGroups:allGroups];
     
     BOOL opened = [fl open];
     NSString *query = [NSString stringWithFormat:@"SELECT FieldType, Sequence, Weight, InsertAfter FROM FieldList WHERE Sequence > 0 ORDER BY Sequence"];

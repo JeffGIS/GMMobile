@@ -954,12 +954,26 @@ NSString * GetPropListDirectory (void)
         case PFT_PctVoteRep2016_Mile:
             name = @"PCT Vote Rep 2016 (Mile)";
             break;
-            
+        case PFT_Minneapolis_Crime:
+            name = @"Mpls Violent Crime (Mile)";
+            break;
+        case PFT_Minneapolis_311:
+            name = @"Mpls 311 Calls (Mile)";
+            break;
+        case PFT_StPaul_Crime:
+            name = @"St Paul Violent Crime (Mile)";
+            break;
+        case PFT_StPaul_Permits:
+            name = @"St Paul Permits (Mile)";
+            break;
+                
+
         case PFT_GROUP_Voting:
         case PFT_GROUP_Travel:
         case PFT_GROUP_LandUse:
         case PFT_GROUP_Demographics:
         case PFT_GROUP_Property:
+        case PFT_GROUP_Limited:
         case PFT_GROUP_Other:
             name = @"";
             break;
