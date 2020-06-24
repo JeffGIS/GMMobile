@@ -147,7 +147,7 @@
     NSString * spacer = @"-";
     
     NSRange range;
-    NSArray *validSites = @[@"www.krislindahl.com/listing/cms/",@"www.edinarealty.com/homes-for-sale/",@"www.zillow.com/homedetails/",@"www.coldwellbanker.com/property/",@"//www.realtor.com/realestateandhomes-detail/"];
+    NSArray *validSites = @[@"www.krislindahl.com/listing/cms/",@"www.krislindahl.com/listing/",@"www.edinarealty.com/homes-for-sale/",@"www.zillow.com/homedetails/",@"www.coldwellbanker.com/property/",@"//www.realtor.com/realestateandhomes-detail/"];
     
     for (NSString * site in validSites)
     {
@@ -212,42 +212,53 @@ NotFound:
     
 FoundSite:
     {
-        houseNum = textBefor(address, spacer);
-        streetName = textAfter (address,spacer);
-        streetType = textAfter (streetName,spacer);
-        streetType = textBefor (streetType,spacer);
-        streetName = textBefor(streetName,spacer);
-        PropertyData *propData = [[PropertyData alloc] init];
-        [self closeList];
-        _locationManager = nil;
-        
-        NSArray * addressList = NSArray.new;
-        
-        if (houseNum.intValue > 0 && streetName.length > 0)
-            addressList = [propData getPIDsMatchingAddress:houseNum.intValue
-                                                streetName:streetName];
-        if (addressList.count > 1)
+        int nAttempts = 0;
+        while (nAttempts < 2)
         {
-            NSRange range;
-            range.length = 1;
-            range.location = 0;
-            NSString *firstc = [streetType substringWithRange:range];
-            streetName = [NSString stringWithFormat:@"%@ %@",streetName,firstc];
-            addressList = [propData getPIDsMatchingAddress:houseNum.intValue
-                                                streetName:streetName];
+            houseNum = textBefor(address, spacer);
+            streetName = textAfter (address,spacer);
+            streetType = textAfter (streetName,spacer);
+            streetType = textBefor (streetType,spacer);
+            streetName = textBefor(streetName,spacer);
+            PropertyData *propData = [[PropertyData alloc] init];
+            [self closeList];
+            _locationManager = nil;
+            
+            NSArray * addressList = NSArray.new;
+            
+            if (houseNum.intValue > 0 && streetName.length > 0)
+                addressList = [propData getPIDsMatchingAddress:houseNum
+                                                    streetName:streetName];
+            if (!addressList.count)
+            {
+                address = textAfter (address,spacer);
+                nAttempts++;
+                continue;
+            }
+            if (addressList.count > 1)
+            {
+                NSRange range;
+                range.length = 1;
+                range.location = 0;
+                NSString *firstc = [streetType substringWithRange:range];
+                streetName = [NSString stringWithFormat:@"%@ %@",streetName,firstc];
+                addressList = [propData getPIDsMatchingAddress:houseNum
+                                                    streetName:streetName];
+            }
+            propData = nil;
+            if (addressList.count == 1)
+            {
+                NSString *addr = addressList[0];
+                NSString *PID = textAfter (addr,@"\t");
+                PID = textAfter(PID,@"\t");
+                PID = textBefor(PID,@"\t");
+                _addingPropToProplist = TRUE;
+                rtn = [_propList addParcelToPropertyList:PID popover:popover delegate:self];
+            }
+            else
+                showAlert(@"Property not found");
+            nAttempts = 3;
         }
-        propData = nil;
-        if (addressList.count == 1)
-        {
-            NSString *addr = addressList[0];
-            NSString *PID = textAfter (addr,@"\t");
-            PID = textAfter(PID,@"\t");
-            PID = textBefor(PID,@"\t");
-            _addingPropToProplist = TRUE;
-            rtn = [_propList addParcelToPropertyList:PID popover:popover delegate:self];
-        }
-        else
-            showAlert(@"Property not found");
     }
     return rtn;
 }

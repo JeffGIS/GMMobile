@@ -141,7 +141,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
 - (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
                                            limitOf:(int)lim;
 
-- (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
+- (NSMutableArray *)getPIDsMatchingAddress:(NSString *)houseNumber
                                 streetName:(NSString *)matchChar;
 
 - (LLPOINT) getPointForPID:(NSString *)PID;

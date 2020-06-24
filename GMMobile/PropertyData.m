@@ -659,7 +659,7 @@ return _version;
     return array;
 }
 
-- (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
+- (NSMutableArray *)getPIDsMatchingAddress:(NSString *)houseNumber
                                 streetName:(NSString *)matchChar
 {
     NSMutableArray *array = NSMutableArray.array;
@@ -676,8 +676,15 @@ return _version;
             break;
             
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT HOUSENUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME >= '%@' AND STREETNAME < '%@' AND HOUSENUM = %i",
-                     matchChar.uppercaseString, lastName.uppercaseString, houseNumber];
+        {
+            NSString * NameSearch = [NSString stringWithFormat:@"STREETNAME >= '%@' AND STREETNAME < '%@'",matchChar.uppercaseString, lastName.uppercaseString];
+            NSString * HouseSearch = [NSString stringWithFormat:@"HOUSENUM = %@",houseNumber];
+            if ([matchChar containsString:@"%"] || [matchChar containsString:@"_"])
+                NameSearch = [NSString stringWithFormat:@"STREETNAME LIKE '%@'",matchChar.uppercaseString];
+            if ([houseNumber containsString:@"%"] || [houseNumber containsString:@"_"])
+                HouseSearch = [NSString stringWithFormat:@"HOUSENUM LIKE '%@'",houseNumber.uppercaseString];
+            query = [NSString stringWithFormat:@"SELECT HOUSENUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where %@ AND %@",NameSearch,HouseSearch];
+        }
             break;
     }
     

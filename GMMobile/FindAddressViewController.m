@@ -88,7 +88,7 @@
         _houseTF.text = houseSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
         
-        _addressList = [propData getPIDsMatchingAddress:houseSearchText.intValue
+        _addressList = [propData getPIDsMatchingAddress:houseSearchText
                                              streetName:streetSearchText];
         
         [_tableView reloadData];
@@ -105,7 +105,7 @@
     
     PropertyData *propData = [[PropertyData alloc] init];
     
-    _addressList = [propData getPIDsMatchingAddress:textField.text.intValue
+    _addressList = [propData getPIDsMatchingAddress:textField.text
                                          streetName:_streetTF.text];
     
     [_tableView reloadData];
@@ -115,7 +115,7 @@
 {
     PropertyData *propData = [[PropertyData alloc] init];
     
-    _addressList = [propData getPIDsMatchingAddress:_houseTF.text.intValue
+    _addressList = [propData getPIDsMatchingAddress:_houseTF.text
                                          streetName:textField.text];
     
     [_tableView reloadData];
@@ -133,7 +133,8 @@ replacementString:(NSString *)string
         
         if ([numberSet isSupersetOfSet:stringSet])
             return YES;
-        
+        else if ([string isEqualToString:@"%"])
+            return YES;
         else
         {
             [_houseTF resignFirstResponder];
