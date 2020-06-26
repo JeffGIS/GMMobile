@@ -133,7 +133,7 @@ replacementString:(NSString *)string
         
         if ([numberSet isSupersetOfSet:stringSet])
             return YES;
-        else if ([string isEqualToString:@"%"])
+        else if ([string isEqualToString:@"%"]||[string isEqualToString:@"_"])
             return YES;
         else
         {
