@@ -1644,7 +1644,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             if (NVMetroSettings.sharedInstance.propertyListDisplayType == PLD_Areas)
             {
                 pl = PropertyList.new;
-                plOpened = [pl open];
+                plOpened = [pl open:NO];
             }
             while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -2296,7 +2296,7 @@ NextPass:
     if (isParcel && NVMetroSettings.sharedInstance.propertyListDisplayType == PLD_Areas)
     {
         pl = PropertyList.new;
-        plOpened = [pl open];
+        plOpened = [pl open:NO];
     }
 
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];

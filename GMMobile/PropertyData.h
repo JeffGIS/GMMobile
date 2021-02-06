@@ -169,6 +169,7 @@ typedef NS_ENUM(NSInteger, ActionOption)
              censusBlock:(NSString **)cenblock
    associatedCensusBlock:(NSString **)cenblockAssociated
                  useDesc:(NSString **)usedesc
+               homestead:(NSString **)homestead
                 saleDate:(NSString **)saleDate
                saleValue:(double *)saleValue
                yearBuilt:(int *)yearBuilt

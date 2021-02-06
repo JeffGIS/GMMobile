@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_EMV_LAND_PER_ACRE,
     PFT_TOTAL_TAX,
     PFT_SPEC_ASSESSMENT,
+    PFT_Homestead,
     PFT_YearBuilt,
     PFT_LastSaleDate,
     PFT_LastSalePrice,
@@ -68,6 +69,7 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PCTNoTax_blockstreet,
 
     PFT_GROUP_LandUse,
+    PFT_LandUse,
     PFT_PctPark_qtrMile,
     PFT_PctPark_halfMile,
     PFT_PctPark_Mile,

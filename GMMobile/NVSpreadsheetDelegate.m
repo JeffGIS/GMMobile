@@ -112,7 +112,7 @@
         _propList = PropertyList.new;
     if (_propList && !_addingPropToProplist)
     {
-        [_propList open];
+        [_propList open:NO];
         _fieldList = [FieldList getFieldListRecords:NO
                                       fromAllGroups:YES];
        // [self getCurrentLocation];
@@ -253,7 +253,10 @@ FoundSite:
                 PID = textAfter(PID,@"\t");
                 PID = textBefor(PID,@"\t");
                 _addingPropToProplist = TRUE;
-                rtn = [_propList addParcelToPropertyList:PID popover:popover delegate:self];
+                rtn = [_propList addParcelToPropertyList:PID
+                                                 popover:popover
+                                                delegate:self
+                                        computeAllValues:YES];
             }
             else
                 showAlert(@"Property not found");
@@ -288,7 +291,7 @@ FoundSite:
 - (void)deleteRows:(NSArray *)arrayOfRows
 {
     NSArray *list = _propList.getPropertyNumbers;
-    BOOL opened = [_propList open];
+    BOOL opened = [_propList open:NO];
     [_propList startTransaction];
     
     for (NSNumber *row in arrayOfRows)
@@ -455,7 +458,7 @@ FoundSite:
         }
         else if (type == PFT_ProsAndCons)
         {
-            NSArray *clips = [_propList getVideoClipsForProperty:(int)propNum];
+            NSArray *clips = [proplist getVideoClipsForProperty:(int)propNum];
 
             return [NSString stringWithFormat:@"%i Clips",(int)clips.count];
         }
@@ -521,7 +524,7 @@ FoundSite:
 {
     [_propList close:YES];
     NSArray * rtn = [PropertyList getPropertyLists];
-    [_propList open];
+    [_propList open:NO];
     return rtn;
 }
 
@@ -529,21 +532,22 @@ FoundSite:
 {
     [_propList close:YES];
     [PropertyList setCurrentPropertyList:file];
-    [_propList open];
+    [_propList open:NO];
 }
 
 - (void)spreadsheetDidDeleteCurrentList
 {
     [_propList close:YES];
     [PropertyList deleteCurrentPropertyList];
-    [_propList open];
+    [_propList open:YES];
+    [_propList close:YES];
 }
 
 - (void)spreadsheetDidCreateList
 {
     [_propList close:YES];
     [PropertyList createNewPropertyList];
-    [_propList open];
+    [_propList open:NO];
 }
 
 - (void)spreadsheetDidMapItForRow:(NSInteger)row
@@ -733,6 +737,37 @@ FoundSite:
 - (NSArray *)clipsForProperty:(int)propNum
 {
     return [PropertyList.new getVideoClipsForProperty:propNum];
+}
+- (BOOL)addCurrentPropertyListToPropertyList:(NSString *)propListToAddTo
+{
+    NSString * currentListName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
+    [UserDefaults.defaults saveString:propListToAddTo
+                               forKey:@"CurrentPropertyList"];
+
+    PropertyList *pList = PropertyList.new;
+    if ([propListToAddTo isEqual:@"Create New List"])
+    {
+    }
+    else
+    {
+        BOOL opened = [pList open:NO];
+        if (opened)
+        {
+            [pList startTransaction];
+            
+            
+            pList.PropNum = [pList nextPropNum];
+            NSString * PID = [NSString stringWithFormat:@"LIST:%@",currentListName];
+            //        [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
+            
+            [pList addString:PID       withCode:PFT_PIN];
+            [pList commitTransaction];
+            [pList close:opened];
+        }
+    }
+    [UserDefaults.defaults saveString:currentListName
+                               forKey:@"CurrentPropertyList"];
+
 }
 
 @end

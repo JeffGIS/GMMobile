@@ -24,10 +24,13 @@
 @interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate,RHWalkScoreDelegate>
 @property (nonatomic, weak) id <PropertyListDelegate> delegate;
 @property sqlite3nv *database;
+@property sqlite3nv *subDatabase;
 @property NSString* propListDir;
 @property (nonatomic) GSSiPopoverView *popover;
 @property int propVersion;
 @property int numPropertiesInList;
+@property int PropNum;
+
 
 + (NSArray *) getPropertyLists;
 + (NSString*) getCurrentPropertyListName;
@@ -36,7 +39,7 @@
 + (BOOL) setCurrentPropertyList:(NSString *)propList;
 + (void) createNewPropertyList;
 
-- (BOOL)open;
+- (BOOL)open:(BOOL)create;
 - (void)close:(BOOL)opened;
 - (void)startTransaction;
 - (void)commitTransaction;
@@ -45,11 +48,13 @@
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
                             popover:(GSSiPopoverView*)popover
-                       delegate:(id)delegate;
+                       delegate:(id)delegate
+               computeAllValues:(BOOL)computeallvals;
 
 - (BOOL)addParcelsToPropertyList:(NSArray *)PIDList
                          popover:(GSSiPopoverView*)popover
-                        delegate:(id)delegate;
+                        delegate:(id)delegate
+                 computeAllValues:(BOOL)computeallvals;
 
 - (NSArray *)getPropertyNumbers;
 + (NSArray *)availablePropertyFields;
@@ -84,5 +89,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (BOOL)addVideoClip:(RHClip *)clip;
 - (NSArray<RHClip*> *) getVideoClipsForProperty:(int)propNum;
 - (NSString *) getPIDforPropnum:(int)propNum;
+- (int)nextPropNum;
+- (void) addString:(NSString*)value
+          withCode:(PropFieldType)code;
 
 @end

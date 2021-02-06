@@ -508,7 +508,7 @@ return _version;
     [self getAddressForPID:PID
            houseNumAndUnit:&houseAndUnit
                 streetName:&streetName
-                      city:nil zip:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil saleDate:nil saleValue:nil yearBuilt:nil totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+                      city:nil zip:nil ownerName:nil taxpayerName:nil censusBlock:nil associatedCensusBlock:nil useDesc:nil homestead:nil saleDate:nil saleValue:nil yearBuilt:nil totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
     NSArray * streetPoints = [self getStreetPointsNearPoint:pt
                              withinRadius:75];
     BOOL haveMatchingStreet = FALSE;
@@ -926,6 +926,7 @@ return _version;
                  censusBlock:nil
        associatedCensusBlock:nil
                      useDesc:nil
+                   homestead:nil
                     saleDate:nil saleValue:nil
                    yearBuilt:nil
                       totEMV:nil
@@ -936,24 +937,25 @@ return _version;
     return address;
 }
 - (BOOL)getAddressForPID:(NSString *)PID
-      houseNumAndUnit:(NSString **)houseAndUnit
-           streetName:(NSString **)streetName
-                 city:(NSString **)city
-                 zip:(NSString **)zip
-          ownerName:(NSString **)owner
-         taxpayerName:(NSString **)taxpayer
-          censusBlock:(NSString **)cenblock
-associatedCensusBlock:(NSString **)cenblockAssociated
-              useDesc:(NSString **)usedesc
-             saleDate:(NSString **)saleDate
-            saleValue:(double *)saleValue
-            yearBuilt:(int *)yearBuilt
-               totEMV:(double *)totEMV
-              landEMV:(double *)landEMV
-              bldgEMV:(double *)bldgEMV
-               totTAX:(double *)totTax
-              specAss:(double *)specAss
-                acres:(double *)acres;
+         houseNumAndUnit:(NSString **)houseAndUnit
+              streetName:(NSString **)streetName
+                    city:(NSString **)city
+                     zip:(NSString **)zip
+               ownerName:(NSString **)owner
+            taxpayerName:(NSString **)taxpayer
+             censusBlock:(NSString **)cenblock
+   associatedCensusBlock:(NSString **)cenblockAssociated
+                 useDesc:(NSString **)usedesc
+               homestead:(NSString **)homestead
+                saleDate:(NSString **)saleDate
+               saleValue:(double *)saleValue
+               yearBuilt:(int *)yearBuilt
+                  totEMV:(double *)totEMV
+                 landEMV:(double *)landEMV
+                 bldgEMV:(double *)bldgEMV
+                  totTAX:(double *)totTax
+                 specAss:(double *)specAss
+                   acres:(double *)acres
 {
     BOOL rtn = FALSE;
     *houseAndUnit = @"";
@@ -967,7 +969,7 @@ associatedCensusBlock:(NSString **)cenblockAssociated
     if (totEMV)
         *totEMV = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [ANUMBER],[STREETNAME],[CTU_NAME],[ZIP],[CENBLOCK],[CENBLOCK2],[USECLASS1],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT]  FROM PROPINFO Where PIN = '%@'",
+    NSString *query = [NSString stringWithFormat:@"SELECT [ANUMBER],[STREETNAME],[CTU_NAME],[ZIP],[CENBLOCK],[CENBLOCK2],[USECLASS1],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY],[SALE_DATE],[SALE_VALUE],[YEAR_BUILT],[HOMESTEAD]  FROM PROPINFO Where PIN = '%@'",
                        PID];
     sqlite3_stmt *statement = NULL;
     
@@ -996,6 +998,7 @@ associatedCensusBlock:(NSString **)cenblockAssociated
         LPSTR  saleDat = (LPSTR)sqlite3_column_text(statement, i++);
         double saleValu = sqlite3_column_double(statement, i++);
         int yearBuild = sqlite3_column_int(statement, i++);
+        LPSTR homeStead = (LPSTR)sqlite3_column_text(statement, i++);
         if (yearBuilt)
             *yearBuilt = yearBuild;
         *houseAndUnit = [NSString stringWithFormat:@"%s",bldgnum];//,unit];
@@ -1018,8 +1021,6 @@ associatedCensusBlock:(NSString **)cenblockAssociated
         }
         if (taxpayer)
             *taxpayer = [self noNullString:taxpayr];
-        if (usedesc)
-            *usedesc = [self noNullString:usedescc];
         if (saleDate)
             *saleDate= [self noNullString:saleDat];
         if (saleValue)
@@ -1036,6 +1037,8 @@ associatedCensusBlock:(NSString **)cenblockAssociated
             *specAss = specAssmt;
         if (acres)
             *acres = acresp;
+        if (homestead)
+            *homestead = [self noNullString:homeStead];
         rtn = TRUE;
     }
     

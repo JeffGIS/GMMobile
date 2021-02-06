@@ -390,7 +390,7 @@
                 _pl = PropertyList.new;
                 _pl.delegate = self;
                 _indexPaths = _tableView.indexPathsForSelectedRows;
-                _openedProplist = [_pl open];
+                _openedProplist = [_pl open:NO];
                 [_pl startTransaction];
 
                 
@@ -448,7 +448,10 @@
             if (!_cancelAddProperties)
             {
                 NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
-                [_pl addParcelToPropertyList:pin popover:nil delegate:self];
+                [_pl addParcelToPropertyList:pin
+                                     popover:nil
+                                    delegate:self
+                            computeAllValues:NO];
                 
             }
 

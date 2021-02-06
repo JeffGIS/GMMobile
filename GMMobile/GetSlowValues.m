@@ -628,7 +628,7 @@ displayCharacteristics:dc
         CGContextRelease(context);
     if (_colorConversionContext)
         CGContextRelease(_colorConversionContext);
-    if (baseLayer == MBL_StreetCenterlines)// || baseLayer == MBL_Roads)
+/*    if (baseLayer == MBL_StreetCenterlines)// || baseLayer == MBL_Roads)
     {
         NSString * file = CRAPI.sharedInstance.extractFile;
         BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
@@ -636,17 +636,13 @@ displayCharacteristics:dc
             NSLog(@"Image written");
         UIImage *image = [UIImage imageWithContentsOfFile:file];
         ii = 1;
-        /*[UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
-         UIImageWriteToSavedPhotosAlbum(image,
-         nil,
-         nil,
-         nil);*/
+        //[UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES]; UIImageWriteToSavedPhotosAlbum(image,nil,nil,nil);
         if (wantDebugFile)
         {
             [CRAPI.sharedInstance closeDebugFile];
             [CRAPI.sharedInstance sendDebugFile];
         }
-    }
+    }*/
     CGColorSpaceRelease(colorSpace);
     if (bmData)
         free (bmData);
