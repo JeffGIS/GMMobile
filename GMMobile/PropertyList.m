@@ -20,7 +20,6 @@
 @property NSString *plName, *plPath, *plDirectory;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
-@property int dbIsOpen;
 @property NSString *usedesc;
 @property double totEMV;
 //@property int dbid;
@@ -110,7 +109,7 @@ NSString * GetPropListDirectory (void)
 + (BOOL) renameCurrentPropertyList:(NSString *)newName
 {
     PropertyList *pl = [[PropertyList alloc]init];
-    NSString *currentDir = [pl getCurrentPropListDir];
+    NSString *currentDir = [pl getCurrentPropListDir:NO];
     NSString *propListDir = GetPropListDirectory ();
     NSString * newDir = [NSString stringWithFormat:@"%@/%@", propListDir, newName];
     
@@ -134,7 +133,7 @@ NSString * GetPropListDirectory (void)
 {
     PropertyList *pl = [[PropertyList alloc]init];
     [pl open:NO];
-    NSString *currentDir = [pl getCurrentPropListDir];
+    NSString *currentDir = [pl getCurrentPropListDir:NO];
     [pl close:YES];
     NSError *error = nil;
     if (![NSFileManager.defaultManager removeItemAtPath:currentDir error:&error])
@@ -185,7 +184,7 @@ NSString * GetPropListDirectory (void)
     NSLog(@"PropertyList Database dealloc");
 }
 
-- (NSString*) getCurrentPropListDir
+- (NSString*) getCurrentPropListDir:(BOOL)create
 {
     _propListDir = GetPropListDirectory ();
     _plName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
@@ -199,7 +198,8 @@ NSString * GetPropListDirectory (void)
     
     NSString * dir = [NSString stringWithFormat:@"%@/%@", _propListDir, _plName];
 
-    [NSFileManager.defaultManager createDirectoryAtPath:dir
+    if (create)
+        [NSFileManager.defaultManager createDirectoryAtPath:dir
                             withIntermediateDirectories:YES
                                              attributes:nil
                                                   error:nil];
@@ -217,17 +217,14 @@ NSString * GetPropListDirectory (void)
     
     if (!_isOpen)
     {
-        if (_dbIsOpen)
-            NSLog(@"PropertyList already open");
-        _dbIsOpen++;
-        _plDirectory = [self getCurrentPropListDir];
+        _plDirectory = [self getCurrentPropListDir:create];
         _plPath = [NSString stringWithFormat:@"%@/PropertyListData.slt", _plDirectory];
-        
-        //        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
-        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_plPath.UTF8String, &_database), _database);
-        NSLog(@"PropertyList Database open");
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_plPath error:nil].fileSize;
-        if (!_fileSize && create)
+        if (_fileSize || create)
+        //        _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
+            _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_plPath.UTF8String, &_database), _database);
+        NSLog(@"PropertyList Database open");
+        if (!_fileSize && create && _isOpen)
             [self createTables];
         
         rtn = YES;
@@ -243,7 +240,6 @@ NSString * GetPropListDirectory (void)
         NSLog(@"PropertyList Database close");
         SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         _isOpen = NO;
-        _dbIsOpen--;
     }
 }
 - (NSString*) getSubPropListDir:(NSString *)listName
@@ -251,10 +247,6 @@ NSString * GetPropListDirectory (void)
     _propListDir = GetPropListDirectory ();
         
     NSString * dir = [NSString stringWithFormat:@"%@/%@", _propListDir, listName];
-    [NSFileManager.defaultManager createDirectoryAtPath:dir
-                            withIntermediateDirectories:YES
-                                             attributes:nil
-                                                  error:nil];
     return dir;
 }
 
@@ -264,14 +256,15 @@ NSString * GetPropListDirectory (void)
     
     NSString * plDirectory = [self getSubPropListDir:listName];
     NSString * plPath = [NSString stringWithFormat:@"%@/PropertyListData.slt", plDirectory];
-    
-    BOOL isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(plPath.UTF8String, &_subDatabase), _subDatabase);
-    if (isOpen)
+    int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:plPath error:nil].fileSize;
+    if (fileSize > 0)
     {
-        NSLog([NSString stringWithFormat:@"SubPropertyList Database %@ open",listName]);
-        int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:plPath error:nil].fileSize;
-        if (fileSize > 0)
+        BOOL isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(plPath.UTF8String, &_subDatabase), _subDatabase);
+        if (isOpen)
+        {
+            NSLog([NSString stringWithFormat:@"SubPropertyList Database %@ open",listName]);
             rtn = YES;
+        }
         else
             [self closeSubDatabase];
     }
@@ -321,7 +314,7 @@ NSString * GetPropListDirectory (void)
 
 - (NSString *)getVideoDirectory:(int)propNum
 {
-    NSString * pldir = [self getCurrentPropListDir];
+    NSString * pldir = [self getCurrentPropListDir:NO];
     NSString *dir = [NSString stringWithFormat:@"%@/Prop%i_video",pldir,propNum];
     [NSFileManager.defaultManager createDirectoryAtPath:dir
                             withIntermediateDirectories:YES
@@ -1328,21 +1321,24 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {
     NSMutableArray * propNums = [[NSMutableArray alloc]init];
     BOOL opened = [self open:NO];
-    NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT PropNum FROM PropertyList"];
-    
-    sqlite3_stmt *statement = NULL;
-    
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    if (_isOpen)
     {
-        int propid = sqlite3_column_int(statement, 0);
-        NSNumber * propNum = [NSNumber numberWithInt:propid];
-        [propNums addObject:propNum];
+        NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT PropNum FROM PropertyList"];
+        
+        sqlite3_stmt *statement = NULL;
+        
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+        
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            int propid = sqlite3_column_int(statement, 0);
+            NSNumber * propNum = [NSNumber numberWithInt:propid];
+            [propNums addObject:propNum];
+        }
+        
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+        [self close:opened];
     }
-    
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-    [self close:opened];
     _numPropertiesInList = (int)propNums.count;
     return propNums.copy;
 }
@@ -1705,37 +1701,39 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
             
             BOOL opened = [self open:NO];
-            
-            sqlite3_stmt *statement = NULL;
-            
-            SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
-            
-            while (sqlite3_step(statement) == SQLITE_ROW)
+            if (_isOpen)
             {
-                double dval = *(double*)sqlite3_column_blob(statement, 0);
-                totval += dval;
-                nval++;
-            }
-            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-            [self close:opened];
-            switch (type)
-            {
-                case VTDollars:
-                    num = [[NSNumber alloc] initWithDouble:totval];
-                    value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
-                    break;
-                case VTAcres:
-                    num = [[NSNumber alloc] initWithDouble:totval];
-                    value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
-                    break;
-                case VTDoubleOneDecimal:
-                    value = [NSString stringWithFormat:@"%.1f",totval];
-                    break;
-                case VTDouble:
-                    value = [NSString stringWithFormat:@"%f",totval];
-                    break;
-                default:
-                    break;
+                sqlite3_stmt *statement = NULL;
+                
+                SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+                
+                while (sqlite3_step(statement) == SQLITE_ROW)
+                {
+                    double dval = *(double*)sqlite3_column_blob(statement, 0);
+                    totval += dval;
+                    nval++;
+                }
+                SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+                [self close:opened];
+                switch (type)
+                {
+                    case VTDollars:
+                        num = [[NSNumber alloc] initWithDouble:totval];
+                        value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
+                        break;
+                    case VTAcres:
+                        num = [[NSNumber alloc] initWithDouble:totval];
+                        value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
+                        break;
+                    case VTDoubleOneDecimal:
+                        value = [NSString stringWithFormat:@"%.1f",totval];
+                        break;
+                    case VTDouble:
+                        value = [NSString stringWithFormat:@"%f",totval];
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -1763,40 +1761,42 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
             
             BOOL opened = [self open:NO];
-            
-            sqlite3_stmt *statement = NULL;
-            
-            SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
-            
-            while (sqlite3_step(statement) == SQLITE_ROW)
+            if (_isOpen)
             {
-                double dval = *(double*)sqlite3_column_blob(statement, 0);
-                totval += dval;
-                nval++;
-            }
-            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-            [self close:opened];
-            if (nval > 0)
-            {
-                totval /= nval;
-                switch (type)
+                sqlite3_stmt *statement = NULL;
+                
+                SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+                
+                while (sqlite3_step(statement) == SQLITE_ROW)
                 {
-                    case VTDollars:
-                        num = [[NSNumber alloc] initWithDouble:totval];
-                        value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
-                        break;
-                    case VTAcres:
-                        num = [[NSNumber alloc] initWithDouble:totval];
-                        value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
-                        break;
-                    case VTDoubleOneDecimal:
-                        value = [NSString stringWithFormat:@"%.1f",totval];
-                        break;
-                    case VTDouble:
-                        value = [NSString stringWithFormat:@"%f",totval];
-                        break;
-                    default:
-                        break;
+                    double dval = *(double*)sqlite3_column_blob(statement, 0);
+                    totval += dval;
+                    nval++;
+                }
+                SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+                [self close:opened];
+                if (nval > 0)
+                {
+                    totval /= nval;
+                    switch (type)
+                    {
+                        case VTDollars:
+                            num = [[NSNumber alloc] initWithDouble:totval];
+                            value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
+                            break;
+                        case VTAcres:
+                            num = [[NSNumber alloc] initWithDouble:totval];
+                            value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
+                            break;
+                        case VTDoubleOneDecimal:
+                            value = [NSString stringWithFormat:@"%.1f",totval];
+                            break;
+                        case VTDouble:
+                            value = [NSString stringWithFormat:@"%f",totval];
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -2249,7 +2249,19 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             [self addLLPoints:&pidPoint numPoints:1 withCode:PFT_LatLon];
             
             [self addString:PID       withCode:PFT_PIN];
-            [self addString:taxpayer      withCode:PFT_UserID];
+            NSString *userID = @"";
+            if (taxpayer.length && owner.length)
+            {
+                if ([taxpayer.lowercaseString isEqual:owner.lowercaseString])
+                    userID = taxpayer;
+                else
+                    userID = [NSString stringWithFormat:@"%@\n%@",owner,taxpayer];
+            }
+            else if (taxpayer.length)
+                userID = taxpayer;
+            else if (owner.length)
+                userID = owner;
+            [self addString:userID      withCode:PFT_UserID];
             [self addString:address   withCode:PFT_Address];
             [self addDouble:_totEMV   withCode:PFT_EMV_TOTAL];
             [self addDouble:landEMV   withCode:PFT_EMV_LAND];

@@ -1311,6 +1311,8 @@
     
     _currentScreenHeight = self.view.frame.size.height;
     [self stopTrackingUserLocation];
+    if (_nvssvc)
+        [_nvssvc.delegate closeList];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
