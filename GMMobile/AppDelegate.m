@@ -81,7 +81,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.maskTransparency = ![UserDefaults.defaults CGFloatForKey:@"MaskTransparency"];
     CRAPI.sharedInstance.offsetForBounds = [UserDefaults.defaults stringForKey:@"OffsetForBounds"];
     CRAPI.sharedInstance.offsetForBoundsInMeters = (int)[UserDefaults.defaults integerForKey:@"OffsetForBoundsInMeters"];
-    CRAPI.sharedInstance.mapPropList = ![UserDefaults.defaults boolForKey:@"MapPropList"];
+    CRAPI.sharedInstance.mapPropList = [UserDefaults.defaults stringForKey:@"MapPropList"];
     CRAPI.sharedInstance.mapIndividualDest = ![UserDefaults.defaults boolForKey:@"MapIndividualDest"];
     CRAPI.sharedInstance.mapGroupDest = ![UserDefaults.defaults boolForKey:@"MapGroupDest"];
     

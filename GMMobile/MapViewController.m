@@ -1088,7 +1088,7 @@
                 }
             }
             
-            if (CRAPI.sharedInstance.mapPropList)
+            if ([CRAPI.sharedInstance.mapPropList containsString:@"TAGs"])
             {
                 if (!_propertyList)
                 {

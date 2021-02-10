@@ -1583,11 +1583,29 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                                            numRanges:1];
                 if (isParcel)
                 {
-                    query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                    query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_POLY,ACRES_DEED,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND %@.PIN = %@.PID AND ",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,dataTable,polyTable];
+                    if ([CRAPI.sharedInstance.mapPropList containsString:@"List Only"])
+                    {
+                        PropertyList *plist = PropertyList.new;
+                        NSArray * pids = [plist getPIDS];
+                        _totRecords = pids.count;
+
+                        NSString * where = [NSString stringWithFormat:@"%@.PID IN(",polyTable];
+                        NSString * sep = @"";
+                        for (NSString *pid in pids)
+                        {
+                            where = [where stringByAppendingString:[NSString stringWithFormat:@"%@'%@'",sep,pid]];
+                            sep = @",";
+                        }
+                        query = [query stringByAppendingString:[NSString stringWithFormat:@"%@)",where]];
+                    }
+                    else
+                    {
+                        NSString * querycount = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-                    _totRecords = [self getQueryCount:query];
-                    query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_POLY,ACRES_DEED,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
-                             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
+                        _totRecords = [self getQueryCount:querycount];
+                        query = [query stringByAppendingString:[NSString stringWithFormat:@"maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx]];
+                    }
                 }
                 else if (isVoting)
                 {
@@ -2279,7 +2297,26 @@ NextPass:
         isParcel = TRUE;
         NSString * fields = to.fields;
         fieldLoc = 10;
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,LINKEDPARCEL,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,LINKEDPARCEL,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND ",fields];
+        if ([CRAPI.sharedInstance.mapPropList containsString:@"List Only"])
+        {
+            PropertyList *plist = PropertyList.new;
+            NSArray * pids = [plist getPIDS];
+            _totRecords = pids.count;
+            
+            NSString * where = [NSString stringWithFormat:@"PARCELPOLY.PID IN("];
+            NSString * sep = @"";
+            for (NSString *pid in pids)
+            {
+                where = [where stringByAppendingString:[NSString stringWithFormat:@"%@'%@'",sep,pid]];
+                sep = @",";
+            }
+            query = [query stringByAppendingString:[NSString stringWithFormat:@"%@)",where]];
+        }
+        else
+        {
+            query = [query stringByAppendingString:[NSString stringWithFormat:@"maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx]];
+        }
     }
     else
     {

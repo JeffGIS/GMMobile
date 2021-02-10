@@ -92,5 +92,5 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (int)nextPropNum;
 - (void) addString:(NSString*)value
           withCode:(PropFieldType)code;
-
+- (NSArray*) getPIDS;
 @end

@@ -1391,8 +1391,30 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         val = (LPSTR)sqlite3_column_blob(statement, 0);
         if (val)
         {
-            NSString * value = [NSString stringWithFormat:@"%s",val];
-            [pids addObject:value];
+            NSString * pidOrList = [NSString stringWithFormat:@"%s",val];
+            if ([textBefor(pidOrList, @":") isEqual:@"LIST"])
+            {
+                sqlite3_stmt *subStatement = NULL;
+                NSString * listName = textAfter (pidOrList,@":");
+                if ([self openSubDatabase:listName])
+                {
+                    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li", (long)PFT_PIN];
+                    
+                    SQLOK(__FILE__,__LINE__,SQLitePrepare(_subDatabase, query.UTF8String, -1, &subStatement, 0), _subDatabase);
+                    
+                    while (sqlite3_step(subStatement) == SQLITE_ROW)
+                    {
+                        LPSTR val = (LPSTR)sqlite3_column_blob(subStatement, 0);
+                        NSString * pid = [NSString stringWithFormat:@"%s",val];
+                        [pids addObject:pid];
+                    }
+                    SQLOK(__FILE__,__LINE__,SQLiteFinalize(subStatement), _subDatabase);
+                    [self closeSubDatabase];
+                }
+                
+            }
+            else
+                [pids addObject:pidOrList];
         }
     }
     
@@ -1568,7 +1590,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                                     break;
                             }
                         }
-                        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+                        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _subDatabase);
                         [self closeSubDatabase];
                         NSNumber *num;
                         switch (vt)
@@ -1973,7 +1995,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
            withOption:(NSInteger)option
 {
     BOOL opened = [self open:NO];
-    if (propNum == -1)
+    if (propNum == -1) //set from all pids in current property list
     {
         PropertyData *pd = PropertyData.new;
         NSArray * pids = [self getPIDS];

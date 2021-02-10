@@ -769,5 +769,20 @@ FoundSite:
                                forKey:@"CurrentPropertyList"];
 
 }
+- (NSArray*) getListMapitOptions
+{
+    NSMutableArray * options = NSMutableArray.new;
+    NSArray *choices = @[@"Display With TAGs",@"Display List Only With TAGs",@"Display Parcels Shaded Red",@"Display List Only Parcels Shaded Red",@"None"];
+    
+    for (NSString *choice in choices)
+    {
+        if ([choice isEqual:CRAPI.sharedInstance.mapPropList] || ([CRAPI.sharedInstance.mapPropList isEqual:@""] && [choice isEqual:@"None"]))
+            [options addObject:[NSString stringWithFormat:@"%s\x03\x05%i",choice.UTF8String,2]];
+        else
+            [options addObject:choice];
+    }
+    
+    return options;
+}
 
 @end
