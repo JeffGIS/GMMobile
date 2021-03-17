@@ -493,7 +493,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                           startValue:button.titleLabel.text.intValue
                                                             delegate:self
                                                                  tag:button.tag
-                                                               title:title];
+                                                               title:title
+                                                          allowBosch:NO];
 #pragma unused(nvps)
 }
 
