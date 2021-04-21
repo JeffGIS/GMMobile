@@ -288,7 +288,7 @@
     _markerArray = NSMutableArray.array;
     _insetPixArray = NSMutableArray.array;
     
-    _locationManager = CLLocationManager.new;
+    _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     

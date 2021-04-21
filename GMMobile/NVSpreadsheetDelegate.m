@@ -52,7 +52,7 @@
     
     if (!_locationManager)
     {
-        _locationManager = [[CLLocationManager alloc] init];
+        _locationManager = [CRAPI.sharedInstance getLocationManager];
         _locationManager.delegate = self;
     }
     [_locationManager requestLocation];

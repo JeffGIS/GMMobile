@@ -91,7 +91,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if (!CRAPI.sharedInstance.offsetForBoundsInMeters)
         CRAPI.sharedInstance.offsetForBoundsInMeters = 0;
     
-    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.delegate = self;
     _locationManager.activityType = CLActivityTypeAutomotiveNavigation;
     
