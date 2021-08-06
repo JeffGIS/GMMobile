@@ -494,7 +494,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             delegate:self
                                                                  tag:button.tag
                                                                title:title
-                                                          allowBosch:NO];
+                                                          allowBosch:NO
+                                                  addFromPhotoButton:NO];
 #pragma unused(nvps)
 }
 
