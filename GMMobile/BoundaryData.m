@@ -34,6 +34,10 @@
                                               ofType:@"slt"];
         _MinnesotaPath = [NSBundle.mainBundle pathForResource:@"MinnesotaData"
                                               ofType:@"slt"];
+        int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
+                                                                              error:nil].fileSize;
+        fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_MinnesotaPath
+                                                                              error:nil].fileSize;
         _landusePath = [NSString stringWithFormat:@"%@/landuse.slt",UserDefaults.defaults.sharedFilePath];
         _propfileName =  @"PropertyData.slt";
         _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
