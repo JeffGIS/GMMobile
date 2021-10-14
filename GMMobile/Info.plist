@@ -24,7 +24,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.gssi.newvisionmngame</string>
+			<string>com.gssi.newvisionmetro</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>NVMobile</string>
@@ -52,12 +52,12 @@
 	<string>Create user initiated video content</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Get contacts for email</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Show local properties</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Get location for field survey</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Get location for field survey</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Show local properties</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Create user initiated audio content</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
