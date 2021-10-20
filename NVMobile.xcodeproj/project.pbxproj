@@ -120,14 +120,6 @@
 		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
 		69E8C4321F1057E7001F2995 /* NVGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E8C4311F1057E7001F2995 /* NVGeocoder.m */; };
 		69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */ = {isa = PBXBuildFile; fileRef = 69EE923820127B9A00A610D6 /* VideoTabItem.png */; };
-		69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177331D7A0B7400741C68 /* GoogleMaps.framework */; };
-		69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */; };
-		69F1773A1D7A0B7400741C68 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */; };
-		69F1773B1D7A0B7400741C68 /* GooglePlacePicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177361D7A0B7400741C68 /* GooglePlacePicker.framework */; };
-		69F1773C1D7A0B7400741C68 /* GooglePlaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177371D7A0B7400741C68 /* GooglePlaces.framework */; };
-		69F177481D7A0C6800741C68 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 69F177471D7A0C6800741C68 /* GoogleMaps.bundle */; };
-		69F1774A1D7A0C9400741C68 /* GooglePlacePicker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 69F177491D7A0C9400741C68 /* GooglePlacePicker.bundle */; };
-		69F1774C1D7A0CA400741C68 /* GooglePlaces.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 69F1774B1D7A0CA400741C68 /* GooglePlaces.bundle */; };
 		69F5B2261BC5A3BC00119212 /* editText.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F5B2251BC5A3BC00119212 /* editText.png */; };
 		69F5B2281BC5A56600119212 /* editOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F5B2271BC5A56600119212 /* editOptions.png */; };
 		69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F5B22B1BC5D80F00119212 /* googleIcon.png */; };
@@ -193,6 +185,7 @@
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
+		AC9074C565FF2AD409C594DD /* libPods-NVMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AC4256A6C1CEF62AACAB996 /* libPods-NVMobile.a */; };
 		BB12E2341E9565130063FE4A /* NVCrimeListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB12E2331E9565130063FE4A /* NVCrimeListDelegate.m */; };
 		BB12E2391E9567F40063FE4A /* CrimeList.m in Sources */ = {isa = PBXBuildFile; fileRef = BB12E2381E9567F40063FE4A /* CrimeList.m */; };
 		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
@@ -302,6 +295,7 @@
 /* Begin PBXFileReference section */
 		1F5ADD551CB95D27002D7BED /* PropListField_default.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = PropListField_default.pdf; sourceTree = "<group>"; };
 		1F5ADD571CB95EDA002D7BED /* PropListField_4.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = PropListField_4.pdf; sourceTree = "<group>"; };
+		3655A920DC8A8B9D03466D13 /* Pods-NVMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NVMobile.release.xcconfig"; path = "Target Support Files/Pods-NVMobile/Pods-NVMobile.release.xcconfig"; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6918B2251E9F4D270091C434 /* clockIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clockIcon.png; sourceTree = "<group>"; };
 		691BC0FF1F755319007E0423 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -426,14 +420,6 @@
 		69E8C4301F1057E7001F2995 /* NVGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVGeocoder.h; sourceTree = "<group>"; };
 		69E8C4311F1057E7001F2995 /* NVGeocoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVGeocoder.m; sourceTree = "<group>"; };
 		69EE923820127B9A00A610D6 /* VideoTabItem.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VideoTabItem.png; sourceTree = "<group>"; };
-		69F177331D7A0B7400741C68 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
-		69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
-		69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsCore.framework; sourceTree = "<group>"; };
-		69F177361D7A0B7400741C68 /* GooglePlacePicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GooglePlacePicker.framework; sourceTree = "<group>"; };
-		69F177371D7A0B7400741C68 /* GooglePlaces.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GooglePlaces.framework; sourceTree = "<group>"; };
-		69F177471D7A0C6800741C68 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
-		69F177491D7A0C9400741C68 /* GooglePlacePicker.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlacePicker.bundle; path = GooglePlacePicker.framework/Versions/A/Resources/GooglePlacePicker.bundle; sourceTree = "<group>"; };
-		69F1774B1D7A0CA400741C68 /* GooglePlaces.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlaces.bundle; path = GooglePlaces.framework/Versions/A/Resources/GooglePlaces.bundle; sourceTree = "<group>"; };
 		69F5B2251BC5A3BC00119212 /* editText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editText.png; sourceTree = "<group>"; };
 		69F5B2271BC5A56600119212 /* editOptions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editOptions.png; sourceTree = "<group>"; };
 		69F5B22B1BC5D80F00119212 /* googleIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = googleIcon.png; sourceTree = "<group>"; };
@@ -444,6 +430,7 @@
 		69FDC1F12029141F00E68403 /* RiteHomeLaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = RiteHomeLaunchScreen.storyboard; sourceTree = "<group>"; };
 		69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapIt.png; sourceTree = "<group>"; };
 		69FEC8961CA9AD0F002BF231 /* whiteMapItWithX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapItWithX.png; sourceTree = "<group>"; };
+		8AC4256A6C1CEF62AACAB996 /* libPods-NVMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NVMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A90506391A75DF5A00288850 /* map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map.png; sourceTree = "<group>"; };
 		A90506431A75E12B00288850 /* find.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = find.png; sourceTree = "<group>"; };
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
@@ -535,6 +522,7 @@
 		BBCDF7EC1E513B2800156827 /* censusdata.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = censusdata.slt; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
+		D582A1C8109A4A12BCF6B9E0 /* Pods-NVMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NVMobile.debug.xcconfig"; path = "Target Support Files/Pods-NVMobile/Pods-NVMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
 		EB10EEF81F93AF6B006A6938 /* CreateBatchCrimeMaps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateBatchCrimeMaps.h; sourceTree = "<group>"; };
 		EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateBatchCrimeMaps.m; sourceTree = "<group>"; };
@@ -542,6 +530,7 @@
 		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShapeFileDisplay.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB284171271DE3A400BC4DD7 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		EB2B3B6C202E226800495081 /* PropertyListFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyListFields.h; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -636,7 +625,6 @@
 				69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */,
 				69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */,
 				6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */,
-				69F1773B1D7A0B7400741C68 /* GooglePlacePicker.framework in Frameworks */,
 				698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */,
 				69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */,
 				69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */,
@@ -646,22 +634,19 @@
 				A9A1C0A41B55660E00A3DFD8 /* CoreBluetooth.framework in Frameworks */,
 				A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */,
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
-				69F1773C1D7A0B7400741C68 /* GooglePlaces.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
 				A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */,
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
-				69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */,
 				A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */,
 				A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */,
-				69F1773A1D7A0B7400741C68 /* GoogleMapsCore.framework in Frameworks */,
 				EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */,
 				EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */,
 				EB55226C1A7523BC008CE2D1 /* QuartzCore.framework in Frameworks */,
 				EB55226A1A75239F008CE2D1 /* CoreGraphics.framework in Frameworks */,
-				69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */,
 				EB5522681A75238C008CE2D1 /* SystemConfiguration.framework in Frameworks */,
 				A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */,
+				AC9074C565FF2AD409C594DD /* libPods-NVMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -836,14 +821,6 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				69F1774B1D7A0CA400741C68 /* GooglePlaces.bundle */,
-				69F177491D7A0C9400741C68 /* GooglePlacePicker.bundle */,
-				69F177471D7A0C6800741C68 /* GoogleMaps.bundle */,
-				69F177331D7A0B7400741C68 /* GoogleMaps.framework */,
-				69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */,
-				69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */,
-				69F177361D7A0B7400741C68 /* GooglePlacePicker.framework */,
-				69F177371D7A0B7400741C68 /* GooglePlaces.framework */,
 				699F33BB1D6232AE0074BDFD /* WebKit.framework */,
 				690E829B1C11042A00AB410E /* Assets.bundle */,
 				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
@@ -876,6 +853,7 @@
 				EB5522691A75239F008CE2D1 /* CoreGraphics.framework */,
 				EB5522671A75238C008CE2D1 /* SystemConfiguration.framework */,
 				A9C837271A65B23A005EC4FA /* MapKit.framework */,
+				8AC4256A6C1CEF62AACAB996 /* libPods-NVMobile.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1057,11 +1035,13 @@
 		EB5521C01A61B6A8008CE2D1 = {
 			isa = PBXGroup;
 			children = (
+				EB284171271DE3A400BC4DD7 /* Podfile */,
 				EB966953239B6C33003F3C16 /* Charts.xcodeproj */,
 				691BC0FF1F755319007E0423 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
 				A9C837291A65B27C005EC4FA /* Frameworks */,
 				EB5521CA1A61B6A8008CE2D1 /* Products */,
+				F06AE98749FAA503ABC9EF88 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1137,6 +1117,15 @@
 			name = Themes;
 			sourceTree = "<group>";
 		};
+		F06AE98749FAA503ABC9EF88 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D582A1C8109A4A12BCF6B9E0 /* Pods-NVMobile.debug.xcconfig */,
+				3655A920DC8A8B9D03466D13 /* Pods-NVMobile.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1144,10 +1133,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "NVMobile" */;
 			buildPhases = (
+				9865999DE2E4E428FABD2C45 /* [CP] Check Pods Manifest.lock */,
 				EB5521C51A61B6A8008CE2D1 /* Sources */,
 				EB5521C61A61B6A8008CE2D1 /* Frameworks */,
 				EB5521C71A61B6A8008CE2D1 /* Resources */,
 				69574DFF1DAD2A9800B80799 /* Embed Frameworks */,
+				A8D4B447EDA3211C0CE80AD7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1321,7 +1312,6 @@
 				69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */,
 				695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */,
 				6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */,
-				69F1774C1D7A0CA400741C68 /* GooglePlaces.bundle in Resources */,
 				69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				1F5ADD581CB95EDA002D7BED /* PropListField_4.pdf in Resources */,
@@ -1357,7 +1347,6 @@
 				6991ED2F1FA9115F007306B2 /* redX.png in Resources */,
 				69AEAC79205AF0FC0016DB15 /* finalBeep.mp3 in Resources */,
 				697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */,
-				69F177481D7A0C6800741C68 /* GoogleMaps.bundle in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
 				6918B2261E9F4D270091C434 /* clockIcon.png in Resources */,
 				692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */,
@@ -1372,7 +1361,6 @@
 				698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */,
 				69E2E7E31FD864E800050D10 /* pdfIcon.png in Resources */,
 				69D625571FA3F1F6008D6F08 /* hsvPlay.png in Resources */,
-				69F1774A1D7A0C9400741C68 /* GooglePlacePicker.bundle in Resources */,
 				69E2E7E61FD86E6300050D10 /* NVCrimeIntro.pdf in Resources */,
 				EB6142CA271764240056A9AE /* hourglass3.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
@@ -1433,6 +1421,53 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9865999DE2E4E428FABD2C45 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NVMobile-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A8D4B447EDA3211C0CE80AD7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NVMobile/Pods-NVMobile-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlacePicker/Frameworks/GooglePlacePicker.framework/Resources/GooglePlacePicker.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlacePicker.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NVMobile/Pods-NVMobile-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EB5521C51A61B6A8008CE2D1 /* Sources */ = {
@@ -1581,7 +1616,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
+				"OTHER_LDFLAGS[arch=*]" = "$(inherited)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1639,6 +1674,7 @@
 		};
 		EB5521F01A61B6A8008CE2D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D582A1C8109A4A12BCF6B9E0 /* Pods-NVMobile.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = RiteHomeIcon;
@@ -1662,7 +1698,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionmetro;
 				PRODUCT_NAME = RiteHome;
 				PROVISIONING_PROFILE = "";
@@ -1672,6 +1708,7 @@
 		};
 		EB5521F11A61B6A8008CE2D1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3655A920DC8A8B9D03466D13 /* Pods-NVMobile.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = RiteHomeIcon;
@@ -1695,7 +1732,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionaccess;
 				PRODUCT_NAME = RiteHome;
 				PROVISIONING_PROFILE = "";

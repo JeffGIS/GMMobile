@@ -326,7 +326,7 @@ NSString * GetPropListDirectory (void)
 
 - (BOOL)addVideoClip:(RHClip *)clip
 {
-    BOOL opened = [self open:NO];
+    BOOL opened = [self open:YES];
     int clipID = clip.clipID;
     
     if (!clipID)
@@ -2259,7 +2259,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             values_cenblock = [_rhCompute computeValuesFromCensus:(LPSTR)cenblock.UTF8String];
             values_cenblockgroup = [_rhCompute computeValuesFromCensus:(LPSTR)cenBlockGroup];
             
-            _opened = [self open:NO];
+            _opened = [self open:YES];
             if (_opened)
                 [self startTransaction];
             
