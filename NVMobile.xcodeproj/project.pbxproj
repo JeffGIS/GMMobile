@@ -228,10 +228,6 @@
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB6142C2271761370056A9AE /* MinnesotaData.slt in Resources */ = {isa = PBXBuildFile; fileRef = EB6142C1271761370056A9AE /* MinnesotaData.slt */; };
-		EB6142C7271764240056A9AE /* hourglass2.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6142C3271764230056A9AE /* hourglass2.png */; };
-		EB6142C8271764240056A9AE /* hourglass4.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6142C4271764240056A9AE /* hourglass4.png */; };
-		EB6142C9271764240056A9AE /* hourglass1.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6142C5271764240056A9AE /* hourglass1.png */; };
-		EB6142CA271764240056A9AE /* hourglass3.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6142C6271764240056A9AE /* hourglass3.png */; };
 		EB68767F201A48E000C6728B /* RiteHomeCompute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB68767E201A48E000C6728B /* RiteHomeCompute.m */; };
 		EB69FF41240C2EE5006F7E37 /* VOTING2018_def.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */; };
 		EB69FF42240C2EE5006F7E37 /* VotingMetadata.html in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */; };
@@ -569,10 +565,6 @@
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PropertyData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB6142C1271761370056A9AE /* MinnesotaData.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = MinnesotaData.slt; sourceTree = "<group>"; };
-		EB6142C3271764230056A9AE /* hourglass2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hourglass2.png; path = ../../gmmobile_sav/GMMobile/hourglass2.png; sourceTree = "<group>"; };
-		EB6142C4271764240056A9AE /* hourglass4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hourglass4.png; path = ../../gmmobile_sav/GMMobile/hourglass4.png; sourceTree = "<group>"; };
-		EB6142C5271764240056A9AE /* hourglass1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hourglass1.png; path = ../../gmmobile_sav/GMMobile/hourglass1.png; sourceTree = "<group>"; };
-		EB6142C6271764240056A9AE /* hourglass3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hourglass3.png; path = ../../gmmobile_sav/GMMobile/hourglass3.png; sourceTree = "<group>"; };
 		EB68767D201A48E000C6728B /* RiteHomeCompute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiteHomeCompute.h; sourceTree = "<group>"; };
 		EB68767E201A48E000C6728B /* RiteHomeCompute.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiteHomeCompute.m; sourceTree = "<group>"; };
 		EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VOTING2018_def.txt; sourceTree = "<group>"; };
@@ -1023,10 +1015,6 @@
 		EB4A58131FB5E55900B8B613 /* MinnesotaGameData */ = {
 			isa = PBXGroup;
 			children = (
-				EB6142C5271764240056A9AE /* hourglass1.png */,
-				EB6142C3271764230056A9AE /* hourglass2.png */,
-				EB6142C6271764240056A9AE /* hourglass3.png */,
-				EB6142C4271764240056A9AE /* hourglass4.png */,
 				EB6142C1271761370056A9AE /* MinnesotaData.slt */,
 			);
 			name = MinnesotaGameData;
@@ -1306,7 +1294,6 @@
 				69B46EFE1BC215F100BB7724 /* destinations.png in Resources */,
 				697EEE651E93FF110057CAC0 /* SampleCurbRamp1.jpg in Resources */,
 				A95EC7E41B224BFC0031B903 /* uploadCloud.png in Resources */,
-				EB6142C7271764240056A9AE /* hourglass2.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
 				BB8B96971E8568CA00B6A9F7 /* Narcotics.png in Resources */,
 				69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */,
@@ -1318,7 +1305,6 @@
 				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
 				6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */,
 				692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */,
-				EB6142C9271764240056A9AE /* hourglass1.png in Resources */,
 				69AEAC7A205AF0FC0016DB15 /* beep.mp3 in Resources */,
 				A95EC7E01B21FC280031B903 /* greenPlusSign.png in Resources */,
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
@@ -1362,12 +1348,10 @@
 				69E2E7E31FD864E800050D10 /* pdfIcon.png in Resources */,
 				69D625571FA3F1F6008D6F08 /* hsvPlay.png in Resources */,
 				69E2E7E61FD86E6300050D10 /* NVCrimeIntro.pdf in Resources */,
-				EB6142CA271764240056A9AE /* hourglass3.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,
 				69CE5BF61FF68AD7007D5D1F /* advertiseIcon.png in Resources */,
 				6948ED341EC50D7A00809632 /* NVMobileIcon1024.png in Resources */,
-				EB6142C8271764240056A9AE /* hourglass4.png in Resources */,
 				69FEC88D1CA9A53E002BF231 /* whiteMapIt.png in Resources */,
 				69D625591FA3F2B1008D6F08 /* hsvLoop.png in Resources */,
 				69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */,
