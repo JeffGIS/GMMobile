@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -239,6 +239,8 @@
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
+		EBB430AF2721B4EF00004070 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBB430A82721B2AD00004070 /* Charts.framework */; platformFilter = ios; };
+		EBB430B02721B4EF00004070 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EBB430A82721B2AD00004070 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -260,6 +262,20 @@
 			remoteGlobalIDString = EB5521C81A61B6A8008CE2D1;
 			remoteInfo = GMMobile;
 		};
+		EBB430A72721B2AD00004070 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EBB430A22721B2AC00004070 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
+			remoteInfo = Charts;
+		};
+		EBB430A92721B2AD00004070 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EBB430A22721B2AC00004070 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
+			remoteInfo = ChartsTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -269,6 +285,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				EBB430B02721B4EF00004070 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -569,6 +586,7 @@
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
 		EBADB96A1BFB70E7006FB31B /* Themes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themes.h; sourceTree = "<group>"; };
 		EBADB96B1BFB70E7006FB31B /* Themes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Themes.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EBB430A22721B2AC00004070 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-3.5.0/Charts.xcodeproj"; sourceTree = "<group>"; };
 		EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RiteHomeLogo.png; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
@@ -614,6 +632,7 @@
 				A9A1C0A61B55661500A3DFD8 /* Accelerate.framework in Frameworks */,
 				A9A1C0A41B55660E00A3DFD8 /* CoreBluetooth.framework in Frameworks */,
 				A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */,
+				EBB430AF2721B4EF00004070 /* Charts.framework in Frameworks */,
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
@@ -1016,6 +1035,7 @@
 		EB5521C01A61B6A8008CE2D1 = {
 			isa = PBXGroup;
 			children = (
+				EBB430A22721B2AC00004070 /* Charts.xcodeproj */,
 				EB284171271DE3A400BC4DD7 /* Podfile */,
 				691BC0FF1F755319007E0423 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
@@ -1066,6 +1086,15 @@
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EBB430A32721B2AC00004070 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EBB430A82721B2AD00004070 /* Charts.framework */,
+				EBB430AA2721B2AD00004070 /* ChartsTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		EBFC2A1E1BE668BD00E0C1B3 /* Themes */ = {
@@ -1192,6 +1221,12 @@
 			mainGroup = EB5521C01A61B6A8008CE2D1;
 			productRefGroup = EB5521CA1A61B6A8008CE2D1 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EBB430A32721B2AC00004070 /* Products */;
+					ProjectRef = EBB430A22721B2AC00004070 /* Charts.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EB5521C81A61B6A8008CE2D1 /* NVMobile */,
@@ -1199,6 +1234,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EBB430A82721B2AD00004070 /* Charts.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Charts.framework;
+			remoteRef = EBB430A72721B2AD00004070 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EBB430AA2721B2AD00004070 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = EBB430A92721B2AD00004070 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EB5521C71A61B6A8008CE2D1 /* Resources */ = {
@@ -1644,7 +1696,10 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = GMMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionmetro;
@@ -1678,7 +1733,10 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = GMMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionaccess;
@@ -1701,7 +1759,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = GMMobileTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gssi.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = NVMobileTests;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GMMobile.app/GMMobile";
@@ -1717,7 +1779,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = GMMobileTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gssi.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = NVMobileTests;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GMMobile.app/GMMobile";
