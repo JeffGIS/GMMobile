@@ -4,6 +4,7 @@
 #import "NVDataLoader.h"
 #import "PropertyData.h"
 #import "BoundaryData.h"
+#import "HuntingData.h"
 #import "ShapeFileDisplay.h"
 
 
@@ -275,6 +276,13 @@ Top:
             
         case GetDatabaseSettingHunting:
         {
+            {
+                HuntingData *hd = [[HuntingData alloc] init];
+                
+                if (hd.datasetVersion.integerValue > 1)
+                    rtn = YES;
+            }
+/*
             NSString *fileName = @"Ownership.shp";
             NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
             NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
@@ -287,6 +295,7 @@ Top:
             ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
             if (sfd)
                 rtn = YES;
+ */
             
         }
             break;

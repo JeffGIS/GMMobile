@@ -78,6 +78,7 @@ NUMHardCodedLayers};
 @property int MapitBoundaryOpt;
 @property int MapitBoundaryRefno;
 @property NSString * MapitBoundaryType;
+@property int mapType;
 @property int MapitTargetParcelRefno;
 @property LLPOINT MapitTargetCenterPoint;
 @property CGFloat MapitCirularBoundaryRadiusInMiles;
@@ -85,6 +86,7 @@ NUMHardCodedLayers};
 @property (nonatomic, nullable) MinnesotaGame *mng;
 
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
++(void) setupMapToolbar;
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;

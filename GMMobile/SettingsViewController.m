@@ -178,7 +178,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    int status = 0;
                                    
                                    NSString *toDirectory = path.stringByDeletingLastPathComponent;
-                                   toDirectory = CRAPI.sharedInstance.sharedFilePath;
+                                   toDirectory = UserDefaults.defaults.nonBackedUpFilePath;
                                    if (dataType == GetDatabaseSettingMapleGrove)
                                        toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
                                    if (dataType == GetDatabaseSettingHunting)
@@ -796,9 +796,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)loadHunting:(id)sender
 {
-    NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
     NSString *fileName = @"HuntingFiles.gcf";
-    NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", UserDefaults.defaults.nonBackedUpFilePath];
     [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
                             withIntermediateDirectories:YES
                                              attributes:nil
@@ -808,13 +807,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingHunting;
-    pull.useTestServer = TRUE;//USE_TEST_SERVER;
+    pull.useTestServer = FALSE;//USE_TEST_SERVER;
     
     [_popover showAfter:0.5
-              withTitle:@"Get Hunting Shape Files"];
+              withTitle:@"Get Hunting Files"];
     
     [pull getFile:fileName
-    fromDirectory:@"Hunting"
+    fromDirectory:@"NVMobile/Hunting"
            toFile:fileName
       toDirectory:outputDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];

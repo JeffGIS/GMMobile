@@ -133,6 +133,7 @@
 @property (nonatomic) UIButton *ytReturnButton;
 @property PropertyList *propertyList;
 @property NSString * propYearAndQuarter;
+@property CGPoint mapToolbarCenter;
 
 @end
 
@@ -210,10 +211,12 @@
     _locationCount = _headingCount = 0;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
-    _mapView = GMSMapView.new;
+    _mapView = [[GMSMapView alloc] initWithFrame:self.view.frame];
+    //_mapView = GMSMapView.new;
     _mapView.translatesAutoresizingMaskIntoConstraints = NO;
     _mapView.delegate = self;
     _mapView.mapType = kGMSTypeNormal;
+    [self setMapType];
     _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
@@ -327,16 +330,17 @@
     [self.view addSubview:_secondView];
     [self setupTableView];
     
-    CGPoint mapToolbarCenter = CGPointMake((self.view.frame.size.width / 2.0),
+    _mapToolbarCenter = CGPointMake((self.view.frame.size.width / 2.0),
                                            (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
     
-    _mapToolbar = [MapToolbar showMapToolbarWithCenter:mapToolbarCenter
+    _mapToolbar = [MapToolbar showMapToolbarWithCenter:_mapToolbarCenter
                                                   view:self.view
                                               delegate:self];
     
     _mapToolbar.hidden = YES;
     _mapToolbar.legendOffset = _mapViewLegendOffset;
     CRAPI.sharedInstance.mapToolbar = _mapToolbar;
+    [ConfigurationControl setupMapToolbar];
     CRAPI.sharedInstance.mapVC = self;
     
     NSInteger configIndex = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
@@ -463,7 +467,8 @@
     {
         [self themeLegendWasDraggedOffLeftSide];
         [self clearMapItems];
-        
+        _mapView.mapType = ConfigurationControl.sharedInstance.mapType;
+
         for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
         {
             if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
@@ -534,7 +539,6 @@
     }
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
     {
-        _mapView.mapType = kGMSTypeNone;
         _mapView.settings.scrollGestures = NO;
         _mapView.settings.zoomGestures = NO;
         _mapView.settings.rotateGestures = NO;
@@ -1302,6 +1306,8 @@
         _mapView.mapType = kGMSTypeHybrid;
         [_locationManager requestLocation];
     }
+    [self mapToolbarDidFinishDrag:_mapToolbarCenter];
+
  }
 #pragma mark - EndOfViewDidAppear
 
@@ -3092,9 +3098,8 @@ haveVV:
         else
             _mapView.mapType = kGMSTypeNormal;
     }
-    
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
-        _mapView.mapType = kGMSTypeNone;
+    else
+        _mapView.mapType = ConfigurationControl.sharedInstance.mapType;
 }
 
 - (void)highlightVectorView:(PickedItem *)pi
@@ -5997,6 +6002,37 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             break;
         default:break;
     }
+    ConfigurationControl.sharedInstance.mapType = _mapView.mapType;
+}
+
+- (void)mapToolbarDidToggleMapType
+{
+    GMSMapViewType mapType = ConfigurationControl.sharedInstance.mapType;
+    switch (mapType)
+    {
+        case kGMSTypeNormal:
+            mapType = kGMSTypeHybrid;
+            break;
+        case kGMSTypeHybrid:
+            mapType = kGMSTypeNone;
+            break;
+        default:
+            mapType = kGMSTypeNormal;
+            break;
+    }
+    ConfigurationControl.sharedInstance.mapType = mapType;
+    _mapView.mapType = mapType;
+    [self clearVectorView];
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                        target:self
+                                                      selector:@selector(startVectorView:)
+                                                      userInfo:nil
+                                                       repeats:NO];
+                   });
+
+
 }
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting

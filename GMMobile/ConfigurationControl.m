@@ -172,7 +172,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         layerDefaultZoom[HCLayerMapleGroveFiber] = 11;
         layerDefaultZoom[HCLayerMapleGroveWater] = 11;
         layerDefaultZoom[HCLayerSidewalkPoints] = 14;
-        layerDefaultZoom[HCLayerHunting] = 11;
+        layerDefaultZoom[HCLayerHunting] = 8;
 
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
@@ -189,6 +189,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantLegends] = NO;
@@ -202,6 +203,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantLegends] = NO;
@@ -215,6 +217,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantLegends] = NO;
@@ -228,6 +231,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantLegends] = NO;
@@ -241,6 +245,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantMapTypeButton] = YES;
         configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantLegends] = NO;
@@ -253,7 +258,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = NO;
-        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapTypeButton] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = NO;
@@ -267,6 +273,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantUserLocation] = NO;
         configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantLegends] = NO;
@@ -280,6 +287,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantLegends] = NO;
@@ -293,6 +301,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantLegends] = NO;
@@ -306,6 +315,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantPlat] = YES;
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantLegends] = NO;
@@ -319,6 +329,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantMapTypeButton] = NO;
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantUserLocation] = NO;
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantExtents] = NO;
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantLegends] = NO;
@@ -331,15 +342,16 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantDigitize] = NO;
-        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapTypeButton] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantExtents] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantGrayscale] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantClearMarkers] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantEmailPDF] = NO;
-        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantProgressBar] = NO;
-        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantHelpButton] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantHelpButton] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantReturnButton] = NO;
         
         //setup layers
@@ -485,15 +497,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     if (_currentApp == appID)
         return FALSE;
 
-    MapToolbar *tb = CRAPI.sharedInstance.mapToolbar;
     _currentApp = appID;
     CRAPI.sharedInstance.currentApp = _currentApp;
-    
-    for (int prop = 0; prop < NUMMapToolbarProperty; prop++)
-    {
-        [tb setConfigurationProperty:prop
-                               value:configToobarSegs[_currentApp][prop]];
-    }
     
     if (appID != HCConfigFromSpreadsheet && appID != HCConfigMapleGrovePDF)
     {
@@ -504,7 +509,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.appChanged = YES;
     CRAPI.sharedInstance.currentOverallBoundaryTable = @"BOUNDARY";
-    
+    _mapType = kGMSTypeHybrid;
     switch (_currentApp)
     {
         case HCConfigMetroProp:
@@ -574,7 +579,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         case HCConfigMinnesotaGame:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 17;
             CRAPI.sharedInstance.currentOverallBoundaryTable = @"STATE";
-
+            _mapType = kGMSTypeNone;
             break;
        default:
             CRAPI.sharedInstance.parcelTextOption = 0;
@@ -590,6 +595,16 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     }
     
     return rtn;
+}
+
++(void) setupMapToolbar
+{
+    MapToolbar *tb = CRAPI.sharedInstance.mapToolbar;
+    for (MapToolbarProperty prop = 0; prop < NUMMapToolbarProperty; prop++)
+    {
+        [tb setConfigurationProperty:prop
+                               value:configToobarSegs[CRAPI.sharedInstance.currentApp][prop]];
+    }
 }
 
 - (void)resetLegendPositions
@@ -841,7 +856,10 @@ visibleAtZoom:(CGFloat)zoom
 
 - (BOOL)useMapTypeControl
 {
-    return configToobarSegs[_currentApp][MapToolbarPropertyWantMapType];
+    if (configToobarSegs[_currentApp][MapToolbarPropertyWantMapType] ||
+        configToobarSegs[_currentApp][MapToolbarPropertyWantMapTypeButton])
+        return YES;
+    return NO;
 }
 
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt

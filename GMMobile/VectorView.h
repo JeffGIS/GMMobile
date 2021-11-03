@@ -5,10 +5,14 @@
 #import "MapViewController.h"
 @import GoogleMaps;
 
-#define DISPLAY_DATA_OPTION_NODISPLAY   0
-#define DISPLAY_DATA_OPTION_DISPLAY     1
-#define DISPLAY_DATA_OPTION_HIGHLIGHT   2
-#define DISPLAY_DATA_OPTION_UNHIGHLIGHT 3
+typedef NS_ENUM(NSInteger, DisplayDataOptions)
+{
+    DISPLAY_DATA_OPTION_NODISPLAY,
+    DISPLAY_DATA_OPTION_DISPLAY,
+    DISPLAY_DATA_OPTION_HIGHLIGHT,
+    DISPLAY_DATA_OPTION_UNHIGHLIGHT,
+    NumDisplayDataOptions
+};
 
 @class VectorView;
 
@@ -24,7 +28,7 @@
 
 @property (nonatomic, weak) id <VectorViewDelegate> delegate;
 
-@property int displayDataOption;
+@property DisplayDataOptions displayDataOption;
 @property int displayID;
 @property PickedItem * pickedItem;
 @property int ivv;

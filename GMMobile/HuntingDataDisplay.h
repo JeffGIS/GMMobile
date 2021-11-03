@@ -10,6 +10,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/SymbolDictionary.h"
+#import "HuntingData.h"
 #import "Themes.h"
 
 @interface HuntingDataDisplay : NSObject

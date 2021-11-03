@@ -144,11 +144,16 @@
                                                          numLoops:&numLoops
                                                       polyPartLen:&polyPartLen];
 
-        [_pia loadArea:(int)numPoints
+        if (pPoints)
+        {
+            [_pia loadArea:(int)numPoints
               numLoops:(int)numLoops
            polyPartLen:polyPartLen
                 points:pPoints
          boundaryWidth:5];
+        }
+        else
+            _pia = nil;
         if (pPoints)
             free (pPoints);
         //[FileLister listFilesInDirectory:@"SHARED"
@@ -536,6 +541,7 @@ void checkLLBounds (MNMXCORD * bounds)
                                 if ([self keepGoing] &&
                                     ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
                                 {
+                                    _pia = nil;
                                     HuntingDataDisplay *ud = [[HuntingDataDisplay alloc] init];
                                     ud.processingID = _displayID;
                                     ud.zoom = _zoom;

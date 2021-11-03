@@ -121,11 +121,11 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     }
     
     NSError *error = nil;
-    [AVAudioSession.sharedInstance setCategory:AVAudioSessionCategoryPlayback error:&error];
+/*    [AVAudioSession.sharedInstance setCategory:AVAudioSessionCategoryPlayback error:&error];
     
     if (error)
         NSLog(@"AVAudioSession set category ERROR: %@", error.localizedDescription);
-    
+ */
     HardCodedConfigs appID = NUMHardCodedConfigs;
     
     if ([bundleID isEqualToString:@"com.gssi.newvisionmetro"])
@@ -139,7 +139,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     else if ([bundleID isEqualToString:@"com.gssi.newvisionmngame"])
         appID = HCConfigMinnesotaGame;
-    
+    appID = HCConfigHunting;
     if (appID < NUMHardCodedConfigs)
     {
         [UserDefaults.defaults saveNSInteger:(appID + 1) forKey:@"CurrentConfig"];
