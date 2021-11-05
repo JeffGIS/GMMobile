@@ -27,4 +27,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
               themes:(Themes*)themes
          pointInArea:(PointInArea *)pia;
 
++(CGColorRef) WMAColor;
++(CGColorRef) WPAColor;
++(CGColorRef) NWRColor;
++(CGColorRef) FSAColor;
++(CGColorRef) WalkInColor;
+
 @end

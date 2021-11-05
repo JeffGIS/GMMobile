@@ -12,11 +12,48 @@
 @interface HuntingDataDisplay ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
+@property (nonatomic) CGColorRef WMAColor, WPAColor, NWRColor, FSAColor, WalkInColor;
 @property sqlite3nv *database;
 @property INT64 totRecords,currentRec;
 @end
 
 @implementation HuntingDataDisplay
+
++(CGColorRef) WMAColor
+{
+    return [NVColor boldColors][0*6].CGColor;
+}
++(CGColorRef) WPAColor
+{
+    return [NVColor boldColors][1*6].CGColor;
+}
++(CGColorRef) NWRColor
+{
+    return [NVColor boldColors][2*6].CGColor;
+}
++(CGColorRef) FSAColor
+{
+    return [NVColor boldColors][3*6].CGColor;
+}
++(CGColorRef) WalkInColor
+{
+    return [NVColor boldColors][4*6].CGColor;
+}
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        self.WMAColor = [HuntingDataDisplay WMAColor];
+        self.WPAColor = [HuntingDataDisplay WPAColor];
+        self.NWRColor = [HuntingDataDisplay NWRColor];
+        self.FSAColor = [HuntingDataDisplay FSAColor];
+        self.WalkInColor = [HuntingDataDisplay WalkInColor];
+    }
+    
+    return self;
+}
 
 
 -(void)  displayLayers:(CGContextRef)context
@@ -61,7 +98,24 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         */
         nDisplayed = [self display:context
+                          areaType:@"WMA"
+                             color:_WMAColor
+                          pointInAreas:pia
+                          llCorners:latlonCornerPoints
+                          LLBounds:platlonBounds
+                        viewBounds:pvbounds];
+                 
+        nDisplayed = [self display:context
                           areaType:@"WPA"
+                             color:_WPAColor
+                          pointInAreas:pia
+                          llCorners:latlonCornerPoints
+                          LLBounds:platlonBounds
+                        viewBounds:pvbounds];
+                 
+        nDisplayed = [self display:context
+                          areaType:@"NWR"
+                             color:_NWRColor
                           pointInAreas:pia
                           llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
@@ -69,7 +123,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                  
 
         nDisplayed = [self display:context
-                          areaType:@"WMA"
+                          areaType:@"FSA"
+                             color:_FSAColor
                           pointInAreas:pia
                           llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
@@ -77,25 +132,34 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
         nDisplayed = [self display:context
                           areaType:@"WALKINAREA"
+                             color:_WalkInColor
                           pointInAreas:pia
                           llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
                           viewBounds:pvbounds];
 
-        nDisplayed = [self display:context
-                          areaType:@"OWNERSHIP"
+        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self display:context
+                              areaType:@"OWNERSHIP"
+                                 color:0
                           pointInAreas:pia
-                          llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                          viewBounds:pvbounds];
-
-        nDisplayed = [self displayRoads:context
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+        }
+        if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
+        {
+            nDisplayed = [self displayRoads:context
                                   llCorners:latlonCornerPoints
                                    LLBounds:platlonBounds
                                  viewBounds:pvbounds
                      displayCharacteristics:dc
                                      themes:themes
                                 pointInArea:pia];
+        }
     }
 
 }
@@ -109,6 +173,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
 - (int) display:(CGContextRef)context
        areaType:(NSString*)areaType
+          color:(CGColorRef) color
    pointInAreas:(PointInAreas*)pias
       llCorners:(CORNERPOINTS *) latlonCornerPoints
        LLBounds:(MNMXCORD *)platlonBounds
@@ -198,7 +263,7 @@ NextPass:
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
-        CGColorRef color;
+        
         
         if (pias)
             color = [pias colorForArea:keyval];
@@ -220,11 +285,8 @@ NextPass:
             }
                 break;
             case FWS_COLORS:
-                color = NVColor.blackColor.CGColor;
                 break;
             default:
-                color = [NVColor randomColorFromArray:NVColor.pastelColors
-                                            forString:keyval].CGColor;
                 break;
         }
         nLoaded++;
@@ -318,7 +380,7 @@ LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints)
         count++;
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-    CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+    //CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
 
     return count;
 }

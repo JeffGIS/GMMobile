@@ -161,6 +161,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         strcpy(layerName[HCLayerMapleGroveFiber], "Fiber");
         strcpy(layerName[HCLayerSidewalkPoints], "Sidewalk Points");
         strcpy(layerName[HCLayerHunting], "Hunting Data");
+        strcpy(layerName[HCLayerWetlands], "Wetlands");
+        strcpy(layerName[HCLayerOwnership], "Ownership");
+        strcpy(layerName[HCLayerGAPLandCover], "Land Cover");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
@@ -346,7 +349,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapTypeButton] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantExtents] = NO;
-        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantLegends] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantGrayscale] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantClearMarkers] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantEmailPDF] = NO;
@@ -442,8 +445,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigMinnesotaGame][HCLayerMapleGroveFiber] = NO;
         configLayers[HCConfigMinnesotaGame][HCLayerSidewalkPoints] = NO;
         
-        configLayers[HCConfigHunting][HCLayerAerials] = YES;
-        configLayers[HCConfigHunting][HCLayerParcels] = YES;
+        configLayers[HCConfigHunting][HCLayerAerials] = NO;
+        configLayers[HCConfigHunting][HCLayerParcels] = NO;
         configLayers[HCConfigHunting][HCLayerSewers] = NO;
         configLayers[HCConfigHunting][HCLayerPlanimetric] = NO;
         configLayers[HCConfigHunting][HCLayerAlleys] = NO;
@@ -453,6 +456,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigHunting][HCLayerMapleGroveFiber] = NO;
         configLayers[HCConfigHunting][HCLayerSidewalkPoints] = NO;
         configLayers[HCConfigHunting][HCLayerHunting] = YES;
+        configLayers[HCConfigHunting][HCLayerWetlands] = YES;
+        configLayers[HCConfigHunting][HCLayerOwnership] = YES;
+        configLayers[HCConfigHunting][HCLayerGAPLandCover] = YES;
 
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {

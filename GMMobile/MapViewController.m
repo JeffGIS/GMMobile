@@ -52,6 +52,7 @@
 #import "CCodeLibrary/YTPlayerView.h"
 #import "CCodeLibrary/RiteHome.h"
 #import "CCodeLibrary/NVEmailFileList.h"
+#import "HuntingDataDisplay.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -3127,7 +3128,7 @@ haveVV:
 {
     //static BOOL first = TRUE;
    _waitForVectorViewRefresh = NO;
-    
+    //CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
     if (pdfData)
     {
         [NVSendEmail sendEmailWithSubject:@"PDF from NVMobile"
@@ -3295,6 +3296,7 @@ haveVV:
                        
                        if (_grayscaleMode)
                            [self createGrayscale];
+                       CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
                        if (reDisplay)
                        {
                            UIGraphicsBeginImageContext(self.view.frame.size);
@@ -5216,6 +5218,32 @@ didCompleteWithError:(NSError *)error
     }
 }
 
+- (void)huntingLegend
+{
+    if (_legendView)
+    {
+        [_legendView hideLegendView:YES];
+        _legendView = nil;
+    }
+    else
+    {
+        CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation] + 6.0));
+        
+        if ([self.view.subviews containsObject:_legendView])
+            [_legendView reloadView];
+        
+        else
+        {
+            _legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                        inView:self.view
+                                                containerFrame:_mapView.frame
+                                                      delegate:self
+                                                    selectable:NO
+                                                      animated:YES];
+        }
+    }
+}
+
 - (void)hideDigitizationMode:(UIButton *)button
 {
     _inDigitizationMode = NO;
@@ -5977,8 +6005,28 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectLegends
 {
-    _options = @[@"Alley Centerline Status", @"Alley Wall Status"];
-    
+    _options = @[];
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigHunting:
+            [self performSelector:@selector(huntingLegend) withObject:nil afterDelay:0.3];
+
+            break;
+        case HCConfigMetroProp:
+            CRAPI.sharedInstance.spreadsheetDelegate = NVSpreadsheetDelegate.new;
+            _nvssvc.delegate = CRAPI.sharedInstance.spreadsheetDelegate;
+            _nvssvc.tabBarItem.title = @"Property List";
+            break;
+        case HCConfigCrimes:
+            CRAPI.sharedInstance.spreadsheetDelegate = NVCrimeListDelegate.new;
+            _nvssvc.delegate = CRAPI.sharedInstance.spreadsheetDelegate;
+            _nvssvc.tabBarItem.title = @"Crime List";
+            break;
+        case HCConfigAlleyWalls:
+            _options = @[@"Alley Centerline Status", @"Alley Wall Status", @"Cancel"];
+            break;
+        default:break;
+    }
     if (_options.count > 0)
     {
         _tableViewSetting = PropertyTableViewSettingOptions;
@@ -7174,23 +7222,70 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 
 - (NSUInteger)numberOfRowsInLegendView
 {
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigHunting:
+            return 5;
+            break;
+        case HCConfigMetroProp:
+            break;
+        case HCConfigAlleyWalls:
+            break;
+        default:break;
+    }
     return 3;
 }
 
 - (NSString *)nameForRowInLegendViewAtIndex:(NSUInteger)index
 {
-    NSArray *names = @[@"Completed", @"To Be Done", @"Other"];
+    NSArray *names;
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigHunting:
+            names = @[@"Wildlife Management Area",@"Waterfowl Production Area",@"Wildlife Refuge",@"CRP Area",@"Walk-in Area"];
+            break;
+        case HCConfigMetroProp:
+            break;
+        case HCConfigAlleyWalls:
+            break;
+        default:break;
+    }
     return [names objectAtIndex:index];
 }
 
 - (UIColor *)colorForRowInLegendViewAtIndex:(NSUInteger)index
 {
-    NSArray *colors = @[UserDefaults.defaults.appleBlue, UserDefaults.defaults.darkGreen, UIColor.redColor];
+    UIColor * rtn;
+    NSArray *colors = @[UserDefaults.defaults.appleBlue, UserDefaults.defaults.darkGreen, UIColor.redColor, UIColor.orangeColor];
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigHunting:
+            rtn = [NVColor boldColors][index*6];
+            return rtn;
+            break;
+        case HCConfigMetroProp:
+            break;
+        case HCConfigAlleyWalls:
+            break;
+        default:break;
+    }
+
     return [colors objectAtIndex:index];
 }
 
 - (NSUInteger)countForRowInLegendViewAtIndex:(NSUInteger)index
 {
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigHunting:
+            return -1;
+            break;
+        case HCConfigMetroProp:
+            break;
+        case HCConfigAlleyWalls:
+            break;
+        default:break;
+    }
     NSUInteger array[3] = {123, 456, 789};
     return array[index];
 }
@@ -7198,17 +7293,28 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 - (NSString *)titleForLegendView
 {
     NSString *title = @"";
-    
-    switch(_alleyStatusSetting)
+    switch (ConfigurationControl.sharedInstance.currentApp)
     {
-        case AlleyStatusSettingWall:
-            title = @"Wall Status";
+        case HCConfigHunting:
+            title = @"Area Type";
             break;
-        case AlleyStatusSettingCenterline:
-            title = @"Centerline\nStatus";
+        case HCConfigMetroProp:
+            break;
+        case HCConfigAlleyWalls:
+            switch(_alleyStatusSetting)
+            {
+                case AlleyStatusSettingWall:
+                    title = @"Wall Status";
+                    break;
+                case AlleyStatusSettingCenterline:
+                    title = @"Centerline\nStatus";
+                    break;
+                default:break;
+            }
             break;
         default:break;
     }
+
     
     return title;
 }
