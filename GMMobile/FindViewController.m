@@ -24,11 +24,17 @@
     [self setupButton:_boundariesButton];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+     
+    [super viewWillAppear:animated];
+
+}
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ConfigVC"];
+    
 }
 
 - (void)didReceiveMemoryWarning

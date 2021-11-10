@@ -1141,6 +1141,19 @@
                     withViewController:svc];
     }
     
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
+    {
+        NSString *imagePath = [NSBundle.mainBundle pathForResource:@"find" ofType:@"png"];
+
+        FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
+        findBounds.restorationIdentifier = @"FindBounds";
+        findBounds.delegate = self;
+        [NVTabBarEdit tabBarController:self.tabBarController replaceViewControllerWithID:@"FindVC"
+                    withViewController:findBounds];
+        [NVTabBarEdit tabBarController:self.tabBarController setImage:[UIImage imageWithContentsOfFile:imagePath] forViewControllerWithID:@"FindBounds"];
+        [NVTabBarEdit tabBarController:self.tabBarController setText:@"Find" forViewControllerWithID:@"FindBounds"];
+    }
+    
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
         UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"CurbRampDataOptionsVC"];
@@ -1494,6 +1507,10 @@
     NSString *boundaryType = CRAPI.sharedInstance.currentOverallBoundaryTable;
     _keepZoomExtents = YES;
     
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
+    {
+        boundaryType = CRAPI.sharedInstance.currentOverallBoundaryType;
+    }
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         mapAdj = _tabBarHeight;
@@ -7440,6 +7457,19 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 - (void)endProplist:(NSTimer *)timer
 {
     _propertyList = nil;
+}
+
+- (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
+                 didSelectBounds:(NSString *)bounds
+                            type:(NSString *)type
+                           refno:(int)refno
+{
+    CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+    CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
+    CRAPI.sharedInstance.currentOverallBoundaryType = type;
+    CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+    self.tabBarController.selectedIndex = 0;
+    [findBounds dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -279,7 +279,7 @@ Top:
             {
                 HuntingData *hd = [[HuntingData alloc] init];
                 
-                if (hd.datasetVersion.integerValue > 1)
+                if (hd.datasetVersion.integerValue > 3)
                     rtn = YES;
             }
 /*

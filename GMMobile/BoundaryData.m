@@ -5,6 +5,7 @@
 
 #import "BoundaryData.h"
 #import "PropertyData.h"
+#import "HuntingData.h"
 #import "PropertyList.h"
 #import "CCodeLibrary/CensusData.h"
 #import "ConfigurationControl.h"
@@ -491,6 +492,13 @@
         [types addObject:@"Minneapolis Neighborhoods"];
         [types addObject:@"Minneapolis Sectors"];
     }
+    else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
+    {
+        [types addObject:@"Counties"];
+        [types addObject:@"Cities and Towns"];
+        [types addObject:@"Deer Permit Areas"];
+        [types addObject:@"State Parks"];
+    }
     else
     {
         sqlite3_stmt *statement = NULL;
@@ -518,9 +526,55 @@
     }
     return types;
 }
+- (NSMutableArray *)getBoundaryAreaDataForHuntingType:(NSString *)type
+{
+    NSMutableArray * data = [[NSMutableArray alloc] init];
+    sqlite3_stmt *statement = NULL;
+    NSString *query = [[NSString alloc] init];
+    
+    HuntingData *hd = HuntingData.new;
+    
+    BOOL opened = [hd open];
+    
+    if ([type isEqual:@"Counties"])
+    {
+            query = [NSString stringWithFormat:@"SELECT id,County FROM Counties"];
+    }
+    
+    if ([type isEqual:@"Cities and Towns"])
+    {
+            query = [NSString stringWithFormat:@"SELECT UNIQUEID,FEATURE_NA FROM CITYTOWNDATA WHERE CTU_CLASS = 'CITY'"];
+    }
+    if ([type isEqual:@"Deer Permit Areas"])
+    {
+            query = [NSString stringWithFormat:@"SELECT ID,TITLE FROM DEERZONEAREAS"];
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(hd.database, query.UTF8String, -1, &statement, 0), hd.database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, 1);
+        BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+        baData.refno = refno;
+        baData.name = [NSString stringWithUTF8String:name];
+        [data addObject:baData];
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    
+    [hd close:opened];
+    return data;
+}
 
 - (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type
 {
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        NSMutableArray * data = [self getBoundaryAreaDataForHuntingType:type];
+        return data;
+    }
     NSMutableArray * data = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
@@ -615,16 +669,38 @@
                            ofType:(NSString*)type
 {
     MNMXCORD bounds = {0};
-    
+    sqlite3nv *database;
+
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     NSString * table = [self getTableNameFromType:type];
-    
-    BOOL opened = [self open];
-    
+    HuntingData *hd;
+
+    BOOL opened;
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        hd = HuntingData.new;
+        opened = [hd open];
+        database = hd.database;
+    }
+    else
+    {
+        opened = [self open];
+        database = _database;
+    }
     if ([type isEqualToString:@"BOUNDARY"])
     {
         query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%lli AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+                 refno];
+    }
+    else if ([type isEqualToString:@"Cities and Towns"])
+    {
+        query = [NSString stringWithFormat:@"SELECT CITYTOWN.id,minX,maxX,minY,maxY FROM CITYTOWN,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%lli AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+                 refno];
+    }
+    else if ([type isEqualToString:@"Deer Permit Areas"])
+    {
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM DEERZONEAREAS_index WHERE ID=%lli",
                  refno];
     }
     else
@@ -633,7 +709,7 @@
 
     }
     
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -644,9 +720,11 @@
         bounds.ymx = sqlite3_column_double(statement, 4);
     }
     
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-    
-    [self close:opened];
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+        [hd close:opened];
+    else
+        [self close:opened];
     return bounds;
 }
 

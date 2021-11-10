@@ -523,7 +523,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             {
                 //CRAPI.sharedInstance.selectBoundaryFromMapType = @"Seven County Metro Area";
                 CRAPI.sharedInstance.currentOverallBoundaryName = @"";//@"7 County Metro Area";
-                CRAPI.sharedInstance.currentOverallBoundaryType = @"";//@"Seven County Metro Area";
+                CRAPI.sharedInstance.currentOverallBoundaryType = @"BOUNDARY";//@"Seven County Metro Area";
                 //NVMetroSettings.sharedInstance.currentTextOption = [NVMetroSettings.sharedInstance textOptionsForAreas];
                 CRAPI.sharedInstance.currentOverallBoundaryRefno = 0;//1050000037;
                 NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
@@ -548,7 +548,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         case HCConfigSewers:
         case HCConfigAlleyWalls:
         case HCConfigAlleyWallStatus:
-        case HCConfigCrimes:{
+        case HCConfigCrimes:
+        case HCConfigHunting:
+        {
             CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)[UserDefaults.defaults integerForKey:@"CurrentOverallBoundaryRefno"];
             CRAPI.sharedInstance.parcelTextOption = 2;
             
@@ -581,7 +583,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             CRAPI.sharedInstance.parcelTextOption = 1;
             configLayerZoom[HCConfigMapleGrove][HCLayerSewers][0] = 12;
             break;
-        case HCConfigHunting:
+        //case HCConfigHunting:
         case HCConfigMinnesotaGame:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 17;
             CRAPI.sharedInstance.currentOverallBoundaryTable = @"STATE";
