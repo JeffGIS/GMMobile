@@ -93,6 +93,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                    themes:(Themes*)themes
               pointInArea:(PointInArea *)pia;
 - (LPDPOINT)getPolygonPointsForBoundary:(int)refno
+                                 ofType:(NSString*)type
                               numPoints:(int *)numPoints
                                numLoops:(int *)numLoops
                             polyPartLen:(int **)polyPartLen;

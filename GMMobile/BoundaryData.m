@@ -312,7 +312,7 @@
 
 
 -(void)displayBoundary:(int)refno
-                ofType:(NSString*)areaType
+                ofType:(NSString*)type
                 asMask:(CGFloat)mask
              inContext:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -321,6 +321,23 @@
 {
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
+    sqlite3nv *database;
+    NSString * table = [self getTableNameFromType:type];
+    HuntingData *hd;
+
+    BOOL opened;
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        hd = HuntingData.new;
+        opened = [hd open];
+        database = hd.database;
+    }
+    else
+    {
+        opened = [self open];
+        database = _database;
+    }
+
     DPOINT BasePt;
     int numPoints, numLoops;
     
@@ -328,22 +345,12 @@
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
-    BOOL opened = [self open];
-    NSString * table = [self getTableNameFromType:areaType];
     
-    switch (CRAPI.sharedInstance.project)
-    {
-        case PROJECT_MPLS:
-            query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            break;
-            
-        case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,id FROM %@ WHERE id=%i",table,
-                     refno];
-    }
+    query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,id FROM %@ WHERE id=%i",table,
+                 refno];
+
     
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -381,7 +388,7 @@
             }
             LPDPOINT existingPoints = llpoints;
             int numExistingPoints = numPoints;
-            if (mask)
+            if (CRAPI.sharedInstance.maskBoundsForBounds && mask)
             {
                 UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
                 
@@ -411,8 +418,11 @@
         }
     }
  
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-    [self close:opened];
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+        [hd close:opened];
+    else
+        [self close:opened];
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
 }
@@ -622,6 +632,15 @@
         table = @"PARCELPOLY";
     else if ([areaType isEqualToString:@"STATE"])
         table = @"MINNESOTA.STATE";
+    else if ([areaType isEqualToString:@"Cities and Towns"])
+    {
+        table = @"CITYTOWN";
+    }
+    else if ([areaType isEqualToString:@"Deer Permit Areas"])
+    {
+        table = @"DEERZONEAREAS";
+    }
+
     return table;
 }
 
@@ -729,20 +748,36 @@
 }
 
 - (LPDPOINT)getPolygonPointsForBoundary:(int)refno
+                                 ofType:(NSString*)type
                                numPoints:(int *)numPoints
                                 numLoops:(int *)numLoops
                              polyPartLen:(int **)polyPartLen
 {
+    sqlite3nv *database;
+    HuntingData *hd;
+    NSString * table = [self getTableNameFromType:type];
+
     DPOINT basePoint = {0};
     LPDPOINT llpoints = NULL;
     sqlite3_stmt *statement = NULL;
     if (polyPartLen)
         *polyPartLen = 0;
-    BOOL opened = [self open];
+    BOOL opened;
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        hd = HuntingData.new;
+        opened = [hd open];
+        database = hd.database;
+    }
+    else
+    {
+        opened = [self open];
+        database = _database;
+    }
+
+    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, %@.id FROM %@ WHERE %@.id=%i",table,table,table, refno];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i", refno];
-    
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -777,9 +812,12 @@
         }
     }
     
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
-    [self close:opened];
-    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+        [hd close:opened];
+    else
+        [self close:opened];
+
     return llpoints;
 }
 

@@ -122,13 +122,13 @@
         
     }
     else if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
-        CRAPI.sharedInstance.maskBoundsForBounds &&
+        (CRAPI.sharedInstance.maskBoundsForBounds && CRAPI.sharedInstance.maskTransparency > 0.99) &&
         !CRAPI.sharedInstance.selectBoundaryFromMapType)
     {
         BoundaryData *boundData = [[BoundaryData alloc] init];
         MNMXCORD bounds = [boundData getBoundaryAreaBounds:
                            CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                    ofType:@"BOUNDARY"];
+                                                    ofType:CRAPI.sharedInstance.currentOverallBoundaryType];
         if (bounds.xmn)
         {
             _latlonBounds.xmn = max (_latlonBounds.xmn,bounds.xmn);
@@ -140,6 +140,7 @@
         _pia.maxDimension = 1024;
         
         LPDPOINT pPoints = [boundData getPolygonPointsForBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                           ofType:CRAPI.sharedInstance.currentOverallBoundaryType
                                                         numPoints:&numPoints
                                                          numLoops:&numLoops
                                                       polyPartLen:&polyPartLen];
@@ -589,7 +590,7 @@ void checkLLBounds (MNMXCORD * bounds)
                                     BoundaryData *bd = [[BoundaryData alloc] init];
                                     
                                     [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                 ofType:CRAPI.sharedInstance.currentOverallBoundaryTable
+                                                 ofType:CRAPI.sharedInstance.currentOverallBoundaryType
                                                  asMask:CRAPI.sharedInstance.maskTransparency
                                               inContext:_context
                                               llCorners:&_latlonCornerPoints

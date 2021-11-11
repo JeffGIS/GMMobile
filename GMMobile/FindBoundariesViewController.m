@@ -114,7 +114,7 @@
     
     _maskSlider = UISlider.new;
     _maskSlider.translatesAutoresizingMaskIntoConstraints = NO;
-    [_maskSlider setValue:CRAPI.sharedInstance.maskTransparency animated:NO];
+    [_maskSlider setValue:fabs(CRAPI.sharedInstance.maskTransparency) animated:NO];
     [self.view addSubview:_maskSlider];
     
     [_maskSlider addTarget:self
