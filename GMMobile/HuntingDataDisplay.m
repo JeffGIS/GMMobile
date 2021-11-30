@@ -97,6 +97,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
              pointInArea:pia];
         }
         */
+        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self display:context
+                              areaType:@"OWNERSHIP"
+                                 color:0
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+        }
         nDisplayed = [self display:context
                           areaType:@"WMA"
                              color:_WMAColor
@@ -104,7 +116,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                           llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
                         viewBounds:pvbounds];
-                 
         nDisplayed = [self display:context
                           areaType:@"WPA"
                              color:_WPAColor
@@ -138,18 +149,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                           LLBounds:platlonBounds
                           viewBounds:pvbounds];
 
-        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
-                                         visibleAtZoom:_zoom
-                                               andPass:_passID])
-        {
-            nDisplayed = [self display:context
-                              areaType:@"OWNERSHIP"
-                                 color:0
-                          pointInAreas:pia
-                             llCorners:latlonCornerPoints
-                              LLBounds:platlonBounds
-                            viewBounds:pvbounds];
-        }
         if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
         {
             nDisplayed = [self displayRoads:context
@@ -409,7 +408,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
         
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, STREETNAME FROM ROADS_LINE,ROADS_LINE_index WHERE ROADS_LINE.id=ROADS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, ROADS_LINE.ROUTEID, STREETNAME, FUNCLASS, MATERIAL FROM ROADS_LINE,ROADS_LINE_index,ROADSDATA WHERE ROADS_LINE.id=ROADS_LINE_index.id AND ROADSDATA.ROUTEID=ROADS_LINE.ROUTEID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             _totRecords = [self getQueryCount:query];
             [CRAPI.sharedInstance updateProgress:-1
@@ -430,18 +429,37 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         int nBlobBytes = sqlite3_column_bytes(statement,i);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-                LPSTR cLine = (LPSTR)sqlite3_column_text(statement,i++);
-                int speed = 30;
-                LPSTR pColon = strrchr (cLine,':');
-                if (pColon)
-                {
-                    *pColon++ = 0;
-                    speed = atoi (pColon);
-                    speed = IDNINT (speed / 5.0) * 5;
-                    speed = min (max (15,speed),70);
-                }
-                dc.iValue = speed;
-                dc.width = 1;
+        LPSTR routeid = (LPSTR)sqlite3_column_text(statement,i++);
+        LPSTR streetName = (LPSTR)sqlite3_column_text(statement,i++);
+        LPSTR funclass = (LPSTR)sqlite3_column_text(statement,i++);
+        NSString * funClass = [NSString stringWithUTF8String:funclass];
+        LPSTR material = (LPSTR)sqlite3_column_text(statement,i++);
+        dc.width = 1.5 *(8-funClass.integerValue);
+        char mat = *material;
+        switch (mat)
+        {
+            case 'B':
+                dc.penColor = [UIColor blackColor];
+                dc.width += 1;
+                break;
+
+            case 'C':
+                dc.penColor = [UIColor grayColor];
+                dc.width += 1;
+                break;
+
+            case 'A'://Aggregate
+            case 'D'://dirt
+            case 'G'://gravel
+            case 'O'://other
+            case '\0':
+                dc.penColor = [UIColor brownColor];
+                break;
+
+            default:
+                dc.penColor = [UIColor brownColor];
+                break;
+        }
          int np = 0;
         //if (abs(numPoints)<108000)
         {

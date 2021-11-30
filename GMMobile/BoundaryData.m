@@ -553,7 +553,7 @@
     
     if ([type isEqual:@"Cities and Towns"])
     {
-            query = [NSString stringWithFormat:@"SELECT UNIQUEID,FEATURE_NA FROM CITYTOWNDATA WHERE CTU_CLASS = 'CITY'"];
+            query = [NSString stringWithFormat:@"SELECT UNIQUEID,FEATURE_NAME FROM CITYTOWNDATA WHERE CTU_CLASS = 'CITY'"];
     }
     if ([type isEqual:@"Deer Permit Areas"])
     {
@@ -634,7 +634,7 @@
         table = @"MINNESOTA.STATE";
     else if ([areaType isEqualToString:@"Cities and Towns"])
     {
-        table = @"CITYTOWN";
+        table = @"CITYTOWNAREAS";
     }
     else if ([areaType isEqualToString:@"Deer Permit Areas"])
     {
@@ -714,8 +714,8 @@
     }
     else if ([type isEqualToString:@"Cities and Towns"])
     {
-        query = [NSString stringWithFormat:@"SELECT CITYTOWN.id,minX,maxX,minY,maxY FROM CITYTOWN,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%lli AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
-                 refno];
+        query = [NSString stringWithFormat:@"SELECT %@.id,minX,maxX,minY,maxY FROM %@,%@_index WHERE %@.ID=%lli AND %@_index.id=%@.id",
+                 table,table,table,table,refno,table,table];
     }
     else if ([type isEqualToString:@"Deer Permit Areas"])
     {

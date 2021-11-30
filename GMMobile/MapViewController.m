@@ -7465,9 +7465,15 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
                            refno:(int)refno
 {
     CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-    CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
-    CRAPI.sharedInstance.currentOverallBoundaryType = type;
-    CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+    if (bounds && ![bounds isEqualToString:@""])
+    {
+        CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+        [UserDefaults.defaults saveInteger:refno forKey:@"CurrentOverallBoundaryRefno"];
+        CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
+        [UserDefaults.defaults saveString:bounds forKey:@"CurrentOverallBoundaryName"];
+        CRAPI.sharedInstance.currentOverallBoundaryType = type;
+        [UserDefaults.defaults saveString:type forKey:@"CurrentOverallBoundaryType"];
+    }
     self.tabBarController.selectedIndex = 0;
     [findBounds dismissViewControllerAnimated:YES completion:nil];
 }
