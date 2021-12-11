@@ -155,21 +155,27 @@ Top:
             sel = @selector(loadHunting:);
             break;
             
+        case GetDatabaseSettingNWI:
+            sel = @selector(loadNWIData:);
+            break;
+            
         case GetDatabaseSettingCrimes:
             sel = @selector(loadCrimeData:);
             break;
-            
+
         default:
             break;
     }
     
 #pragma clang diagnostic pop
-    
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05
-                                                  target:_svc
-                                                selector:sel
-                                                userInfo:nil
-                                                 repeats:NO];
+    if (sel)
+    {
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05
+                                                      target:_svc
+                                                    selector:sel
+                                                    userInfo:nil
+                                                     repeats:NO];
+    }
 }
 
 - (BOOL)haveDataset:(FTPDataType)dataSetID
@@ -276,27 +282,19 @@ Top:
             
         case GetDatabaseSettingHunting:
         {
-            {
-                HuntingData *hd = [[HuntingData alloc] init];
-                
-                if (hd.datasetVersion.integerValue > 4)
-                    rtn = YES;
-            }
-/*
-            NSString *fileName = @"Ownership.shp";
-            NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
-            NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
+            HuntingData *hd = [[HuntingData alloc] init];
             
-            NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            int fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:shapeFile
-                                                                       error:nil].fileSize;
-            if (fileSize > 0)
+            if (hd.datasetVersion.integerValue > 4)
                 rtn = YES;
-            ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
-                rtn = YES;
- */
+        }
+            break;
             
+        case GetDatabaseSettingNWI:
+        {
+            HuntingData *hd = [[HuntingData alloc] init];
+            
+            if (hd.NWIVersion.integerValue > 0)
+                rtn = YES;
         }
             break;
             

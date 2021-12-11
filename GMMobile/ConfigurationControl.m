@@ -161,7 +161,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         strcpy(layerName[HCLayerMapleGroveFiber], "Fiber");
         strcpy(layerName[HCLayerSidewalkPoints], "Sidewalk Points");
         strcpy(layerName[HCLayerHunting], "Hunting Data");
-        strcpy(layerName[HCLayerWetlands], "Wetlands");
+        strcpy(layerName[HCLayerNWI], "Wetlands");
         strcpy(layerName[HCLayerOwnership], "Ownership");
         strcpy(layerName[HCLayerGAPLandCover], "Land Cover");
 
@@ -456,7 +456,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigHunting][HCLayerMapleGroveFiber] = NO;
         configLayers[HCConfigHunting][HCLayerSidewalkPoints] = NO;
         configLayers[HCConfigHunting][HCLayerHunting] = YES;
-        configLayers[HCConfigHunting][HCLayerWetlands] = YES;
+        configLayers[HCConfigHunting][HCLayerNWI] = YES;
         configLayers[HCConfigHunting][HCLayerOwnership] = YES;
         configLayers[HCConfigHunting][HCLayerGAPLandCover] = YES;
 
@@ -677,6 +677,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                         break;
                     case HCLayerHunting:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingHunting]];
+                        break;
+                    case HCLayerNWI:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingNWI]];
                         break;
                 }
             }

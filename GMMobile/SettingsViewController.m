@@ -169,6 +169,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingCrimes:
             case GetDatabaseSettingMapleGrove:
             case GetDatabaseSettingHunting:
+            case GetDatabaseSettingNWI:
             case GetDatabaseSettingNVMetro:
             {
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
@@ -181,8 +182,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    toDirectory = UserDefaults.defaults.nonBackedUpFilePath;
                                    if (dataType == GetDatabaseSettingMapleGrove)
                                        toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
-                                   if (dataType == GetDatabaseSettingHunting)
-                                       toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
+                                    if (dataType == GetDatabaseSettingHunting)
+                                        toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
+                                    if (dataType == GetDatabaseSettingNWI)
+                                        toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
                                    if (dataType == GetDatabaseSettingNVMetro)
                                        toDirectory = UserDefaults.defaults.nonBackedUpFilePath;
                                    if (dataType == GetDatabaseSettingCensus)
@@ -245,6 +248,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            }
                                                break;*/
                                            case GetDatabaseSettingHunting:
+                                           case GetDatabaseSettingNWI:
                                            case GetDatabaseSettingMapleGrove:
                                            {
                                                dispatch_async(dispatch_get_main_queue(),
@@ -311,7 +315,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        }
                                        
                                        if (dataType != GetDatabaseSettingMapleGrove &&
-                                           dataType != GetDatabaseSettingHunting)
+                                           dataType != GetDatabaseSettingHunting &&
+                                           dataType != GetDatabaseSettingNWI)
                                        {
                                        FILE *fid = fopen(file.UTF8String, "rb");
                                        if (fid)
@@ -811,6 +816,30 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Hunting Files"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"NVMobile/Hunting"
+           toFile:fileName
+      toDirectory:outputDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+- (IBAction)loadNWIData:(id)sender
+{
+    NSString *fileName = @"NWIFiles.gcf";
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", UserDefaults.defaults.nonBackedUpFilePath];
+    [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.dataType = GetDatabaseSettingNWI;
+    pull.useTestServer = FALSE;//USE_TEST_SERVER;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Wetlands Files"];
     
     [pull getFile:fileName
     fromDirectory:@"NVMobile/Hunting"

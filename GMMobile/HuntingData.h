@@ -19,11 +19,8 @@
 @property int processingID;
 @property sqlite3nv *database;
 @property (atomic) BOOL isOpen;
-@property (nonatomic, copy) NSString *documentsDirectory;
-@property (nonatomic, copy) NSString *fileName;
-@property (nonatomic, copy) NSString *path;
-@property NSInteger fileSize;
 @property (nonatomic, copy) NSString *datasetVersion;
+@property (nonatomic, copy) NSString *NWIVersion;
 @property int zoom;
 @property ItemProcessingPassTypes pass;
 @property int numPass;
