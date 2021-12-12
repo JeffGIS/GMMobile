@@ -25,7 +25,10 @@
 @property ItemProcessingPassTypes pass;
 @property int numPass;
 @property INT64 totRecords;
-
+@property MNMXCORD NWIBounds;
+@property MNMXCORD RoadsBounds;
+@property double huntingFactor;
+@property double NWIFactor;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
 

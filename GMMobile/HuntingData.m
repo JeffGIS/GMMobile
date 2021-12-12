@@ -31,6 +31,7 @@
     
     if (self)
     {
+        _huntingFactor = _NWIFactor = COORDINATE_FACTOR;
         _documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
         _path = [_documentsDirectory stringByAppendingString:@"/Hunting/HuntingData.slt"];
         _pathNWI = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.slt"];
@@ -105,6 +106,18 @@
     }
     
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    query = [NSString stringWithFormat:@"SELECT COORDFactor FROM VERSION"];
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        double factor = sqlite3_column_double(statement, 0);
+        _huntingFactor = factor;
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    st = query_rtree_bbox(_database->db, "ROADS_LINE_index", &_RoadsBounds);
     return version;
 }
 
@@ -124,6 +137,22 @@
     }
     
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    query = [NSString stringWithFormat:@"SELECT COORDFactor FROM NWIDATA.NWI_VERSION"];
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    if (st)
+    {
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            double factor = sqlite3_column_double(statement, 0);
+            _NWIFactor = factor;
+        }
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    st = query_rtree_bbox(_database->db, "NWI_index", &_NWIBounds);
+
     return version;
 }
 
