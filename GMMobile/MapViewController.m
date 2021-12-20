@@ -5707,7 +5707,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             CRAPI.sharedInstance.currentOverallBoundaryType = pi.symbolName;
             CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)pi.refno;*/
             CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
-            [self zoomToActualBounds:pi.llbounds
+            //[self zoomToActualBounds:pi.llbounds
+            //                  adjust:0];
+            HuntingData *hd = HuntingData.new;
+            [self zoomToActualBounds:hd.NWIBounds
                               adjust:0];
         }
 

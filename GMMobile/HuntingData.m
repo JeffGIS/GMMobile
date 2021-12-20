@@ -17,6 +17,7 @@
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *pathNWI;
+@property (nonatomic, copy) NSString *pathNWIBin;
 @property NSInteger fileSize;
 @property double acres;
 @property INT64 currentRec;
@@ -35,10 +36,13 @@
         _documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
         _path = [_documentsDirectory stringByAppendingString:@"/Hunting/HuntingData.slt"];
         _pathNWI = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.slt"];
-        
+        _pathNWIBin = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.bin"];
+
         int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                                  error:nil].fileSize;
         int fileSizeNWI = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWI
+                                                                             error:nil].fileSize;
+        int fileSizeNWIBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWIBin
                                                                              error:nil].fileSize;
 
         _totRecords = -1;
@@ -79,6 +83,8 @@
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS NWIDATA",_pathNWI];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _NWIVersion = [self getNWIVersion];
+            _fidNWIBin = fopen (_pathNWIBin.UTF8String,"rb");
+
         }
     }
     return rtn;
@@ -140,7 +146,7 @@
     query = [NSString stringWithFormat:@"SELECT COORDFactor FROM NWIDATA.NWI_VERSION"];
     
     int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
-    if (st)
+    if (st == SQLITE_OK)
     {
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -152,6 +158,10 @@
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
 
     st = query_rtree_bbox(_database->db, "NWI_index", &_NWIBounds);
+    _NWIBounds.xmn /= _NWIFactor;
+    _NWIBounds.xmx /= _NWIFactor;
+    _NWIBounds.ymn /= _NWIFactor;
+    _NWIBounds.ymx /= _NWIFactor;
 
     return version;
 }
@@ -161,6 +171,7 @@
     if (opened && _isOpen)
     {
         SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
+        fclose(_fidNWIBin);
         NSLog(@"Hunting Database close");
         _isOpen = NO;
     }

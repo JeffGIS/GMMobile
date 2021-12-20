@@ -149,6 +149,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                           LLBounds:platlonBounds
                           viewBounds:pvbounds];
 
+        if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self displayUsingBinFile:context
+                              areaType:@"NWI"
+                                 color:0
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+        }
         if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
         {
             nDisplayed = [self displayRoads:context
@@ -297,7 +309,7 @@ NextPass:
                 withColor:color
                 lineColor:nil
                 lineWidth:0];
-        if (_zoom > 14)
+       /* if (_zoom > 14)
         [self drawUseCode:context
                   nPoints:numPoints
                    nLoops:numLoops
@@ -305,8 +317,218 @@ NextPass:
                    points:llpointsThinned
                 withColor:UIColor.blackColor.CGColor
                  andWidth:3];
-        
+        */
         free (llpointsThinned);
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
+    [hd close:opened];
+    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    return nLoaded;
+    
+}
+
+LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int numPoints,IPOINT basePoint)
+{
+    LPDPOINT pOutPoints = malloc (numPoints * sizeof(DPOINT) + 4);
+    int decompressedSize = 0;
+    LPBYTE pCompressed = {0};
+    LPBYTE pDeCompressed = {0};
+    int lMem = 0;
+    switch (compressType)
+    {
+        case 1:
+        case 11:
+            lMem = numPoints * sizeof (BPOINT);
+            break;
+        case 2:
+        case 12:
+            lMem = numPoints * sizeof (SPOINT);
+            break;
+        default:
+            lMem = numPoints * sizeof (POINT);;
+            break;
+    }
+    fseek(fid, offset, SEEK_SET);
+    pDeCompressed = malloc (lMem+4);
+    if (compressType > 9)
+    {
+        pCompressed = malloc(reclen+4);
+        BigReadF(fid, pCompressed, reclen);
+        decompressedSize = DecompressBinaryRecordUnsafe(pDeCompressed, pCompressed, reclen);
+        free (pCompressed);
+    }
+    else
+        BigReadF(fid, pDeCompressed, reclen);
+    switch (compressType)
+    {
+        case 0:
+        case 10:
+        {
+            LPPOINT pOffsets = (LPSPOINT)pDeCompressed;
+            pOutPoints->x = basePoint.x;
+            pOutPoints->y = basePoint.y;
+            for (int i = 1;i<numPoints;i++)
+            {
+                pOutPoints[i].x = pOffsets[i].x;
+                pOutPoints[i].y = pOffsets[i].y;
+            }
+        }
+            break;
+        case 1:
+        case 11:
+        {
+            LPBPOINT pOffsets = (LPBPOINT)pDeCompressed;
+            pOutPoints->x = basePoint.x;
+            pOutPoints->y = basePoint.y;
+            for (int i = 1;i<numPoints;i++)
+            {
+                pOutPoints[i].x = pOutPoints[i-1].x + pOffsets[i].x;
+                pOutPoints[i].y = pOutPoints[i-1].y + pOffsets[i].y;
+            }
+        }
+            break;
+        case 2:
+        case 12:
+        {
+            LPSPOINT pOffsets = (LPSPOINT)pDeCompressed;
+            pOutPoints->x = basePoint.x;
+            pOutPoints->y = basePoint.y;
+            for (int i = 1;i<numPoints;i++)
+            {
+                pOutPoints[i].x = pOutPoints[i-1].x + pOffsets[i].x;
+                pOutPoints[i].y = pOutPoints[i-1].y + pOffsets[i].y;
+            }
+        }
+            break;
+        default:
+            lMem = 0;
+            break;
+    }
+    free (pDeCompressed);
+    return pOutPoints;
+}
+- (int) displayUsingBinFile:(CGContextRef)context
+       areaType:(NSString*)areaType
+          color:(CGColorRef) color
+   pointInAreas:(PointInAreas*)pias
+      llCorners:(CORNERPOINTS *) latlonCornerPoints
+       LLBounds:(MNMXCORD *)platlonBounds
+     viewBounds:(MNMXCORD *)pvbounds
+{
+    int nLoaded = 0;
+    NSString *query = @"";
+    sqlite3_stmt *statement = NULL;
+    IPOINT BasePt;
+    int numPoints;
+    LPSTR pkeyval;
+    NSString * keyval;
+    int numLoops;
+    NSString * key = areaType;
+    NSString * table = key;
+    HuntingData *hd = HuntingData.new;
+    int colorOpt = 0;
+#define OWNER_COLORS    1
+#define FWS_COLORS      2
+    
+    BOOL opened = [hd open];
+    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    
+    CORNERPOINTS factoredCornerPoints = *latlonCornerPoints;
+    factoredCornerPoints.farLeft.x *= hd.NWIFactor;
+    factoredCornerPoints.farLeft.y *= hd.NWIFactor;
+    factoredCornerPoints.nearLeft.x *= hd.NWIFactor;
+    factoredCornerPoints.nearLeft.y *= hd.NWIFactor;
+    factoredCornerPoints.farRight.x *= hd.NWIFactor;
+    factoredCornerPoints.farRight.y *= hd.NWIFactor;
+    factoredCornerPoints.nearRight.x *= hd.NWIFactor;
+    factoredCornerPoints.nearRight.y *= hd.NWIFactor;
+    _pTranLLtoView = STRANCornersToBoundsP(&factoredCornerPoints, pvbounds);
+    
+    if ([areaType isEqualToString:@"NWI"] )
+    {
+        table = @"NWI";
+        query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, spcc_desc FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+                 platlonBounds->xmn*hd.NWIFactor, platlonBounds->xmx*hd.NWIFactor, platlonBounds->ymn*hd.NWIFactor, platlonBounds->ymx*hd.NWIFactor];
+    }
+NextPass:
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(hd.database, query.UTF8String, -1, &statement, 0), hd.database);
+    
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        BasePt.x = sqlite3_column_int(statement,i++);
+        BasePt.y = sqlite3_column_int(statement,i++);
+        numPoints = sqlite3_column_int(statement,i++);
+        numLoops = sqlite3_column_int(statement,i++);
+        numLoops = 1;
+        int rectype = sqlite3_column_int(statement,i++);
+        int compressionType = sqlite3_column_int(statement,i++);
+        int hasCurves = sqlite3_column_int(statement,i++);
+        INT64 offset = sqlite3_column_int64(statement,i++);
+        int reclen = sqlite3_column_int(statement,i++);
+        INT64 recnum = sqlite3_column_int64(statement,i++);
+        LPSTR pspcc_Desc = (LPSTR)sqlite3_column_text(statement,i++);
+        NSString *spcc_Desc = [NSString stringWithUTF8String:pspcc_Desc];
+
+        if (pias)
+        {
+            double count = [pias countForArea:keyval
+                                   whichCount:0];
+            if (count < 0)
+                continue;
+        }
+        LPDPOINT llpoints = ExpandPoints (hd.fidNWIBin,offset,reclen,compressionType,numPoints,BasePt);
+        LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
+        
+        for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
+        }
+        
+        
+        if (pias)
+            color = [pias colorForArea:keyval];
+        
+        else switch (hasCurves)
+        {
+            case 0:
+                color = NVColor.redColor.CGColor;
+                break;
+            case 1:
+                color = NVColor.blueColor.CGColor;
+                break;
+            default:
+                color = NVColor.redColor.CGColor;
+                break;
+        }
+        //if (!hasCurves)
+        {
+        nLoaded++;
+        [self fillUseCode:context
+                  nPoints:numPoints
+                   points:llpoints
+                withColor:color
+                lineColor:nil
+                lineWidth:0];
+            /*
+        if (_zoom > 14)
+        [self drawUseCode:context
+                  nPoints:numPoints
+                   nLoops:numLoops
+                  partLen:polyPartLen
+                   points:llpoints
+                withColor:UIColor.blackColor.CGColor
+                 andWidth:3];
+             */
+        }
+             
+        free (llpoints);
+        free (polyPartLen);
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);

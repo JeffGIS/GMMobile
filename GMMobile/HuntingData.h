@@ -29,6 +29,7 @@
 @property MNMXCORD RoadsBounds;
 @property double huntingFactor;
 @property double NWIFactor;
+@property FILE *fidNWIBin;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
 
