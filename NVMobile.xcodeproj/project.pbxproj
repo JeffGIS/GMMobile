@@ -209,6 +209,8 @@
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */ = {isa = PBXBuildFile; fileRef = EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */; };
+		EB394F1928D4EC72004FC6C9 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB394F1628D4E13C004FC6C9 /* Charts.framework */; };
+		EB394F1A28D4EC72004FC6C9 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB394F1628D4E13C004FC6C9 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
 		EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB398F091ABC94240043875E /* PlatProfileView.m */; };
 		EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F0D1AC04B530043875E /* censusdatadef.txt */; };
@@ -254,6 +256,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		EB394F1528D4E13C004FC6C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB394F1028D4E13C004FC6C9 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
+			remoteInfo = Charts;
+		};
+		EB394F1728D4E13C004FC6C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB394F1028D4E13C004FC6C9 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
+			remoteInfo = ChartsTests;
+		};
 		EB5521E61A61B6A8008CE2D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EB5521C11A61B6A8008CE2D1 /* Project object */;
@@ -270,6 +286,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				EB394F1A28D4EC72004FC6C9 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -520,6 +537,7 @@
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinnesotaGame.h; sourceTree = "<group>"; };
 		EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MinnesotaGame.m; sourceTree = "<group>"; };
+		EB394F1028D4E13C004FC6C9 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Charts/Charts.xcodeproj; sourceTree = "<group>"; };
 		EB398F061ABC61C40043875E /* landusecodes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = landusecodes.txt; sourceTree = "<group>"; };
 		EB398F081ABC94240043875E /* PlatProfileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatProfileView.h; sourceTree = "<group>"; };
 		EB398F091ABC94240043875E /* PlatProfileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatProfileView.m; sourceTree = "<group>"; };
@@ -617,6 +635,7 @@
 				A9A1C0A61B55661500A3DFD8 /* Accelerate.framework in Frameworks */,
 				A9A1C0A41B55660E00A3DFD8 /* CoreBluetooth.framework in Frameworks */,
 				A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */,
+				EB394F1928D4EC72004FC6C9 /* Charts.framework in Frameworks */,
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
@@ -1006,6 +1025,15 @@
 			name = DataBases;
 			sourceTree = "<group>";
 		};
+		EB394F1128D4E13C004FC6C9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB394F1628D4E13C004FC6C9 /* Charts.framework */,
+				EB394F1828D4E13C004FC6C9 /* ChartsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		EB4A58131FB5E55900B8B613 /* MinnesotaGameData */ = {
 			isa = PBXGroup;
 			children = (
@@ -1021,6 +1049,7 @@
 		EB5521C01A61B6A8008CE2D1 = {
 			isa = PBXGroup;
 			children = (
+				EB394F1028D4E13C004FC6C9 /* Charts.xcodeproj */,
 				EB284171271DE3A400BC4DD7 /* Podfile */,
 				691BC0FF1F755319007E0423 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
@@ -1197,6 +1226,12 @@
 			mainGroup = EB5521C01A61B6A8008CE2D1;
 			productRefGroup = EB5521CA1A61B6A8008CE2D1 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = EB394F1128D4E13C004FC6C9 /* Products */;
+					ProjectRef = EB394F1028D4E13C004FC6C9 /* Charts.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EB5521C81A61B6A8008CE2D1 /* NVMobile */,
@@ -1204,6 +1239,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		EB394F1628D4E13C004FC6C9 /* Charts.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Charts.framework;
+			remoteRef = EB394F1528D4E13C004FC6C9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EB394F1828D4E13C004FC6C9 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = EB394F1728D4E13C004FC6C9 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EB5521C71A61B6A8008CE2D1 /* Resources */ = {
