@@ -148,6 +148,12 @@
     [super viewDidLoad];
     
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
+    UITabBarAppearance *appearance = UITabBarAppearance.new;
+    [appearance configureWithOpaqueBackground];
+    appearance.backgroundColor = [UIColor whiteColor];
+    self.tabBarController.tabBar.backgroundColor = [UIColor whiteColor];
+    self.tabBarController.tabBar.standardAppearance = appearance;
+
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
@@ -6441,6 +6447,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else if (_mapToolbar.center.y < (self.view.frame.size.height * 0.25))
     {
+        goto Bottom;
         [UIView animateWithDuration:0.25
                          animations:^{
                              [_mapToolbar animateToHorizontalOrientation];
@@ -6450,12 +6457,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
                          }];
         
-        _mapToolbar.orientation = MapToolbarOrientationTop;
+        _mapToolbar.orientation = MapToolbarOrientationBottom;
     }
     
     else if (_mapToolbar.center.y > (self.view.frame.size.height * 0.75))
     {
-        [UIView animateWithDuration:0.25
+    Bottom:[UIView animateWithDuration:0.25
                          animations:^{
                              [_mapToolbar animateToHorizontalOrientation];
                              

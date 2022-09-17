@@ -549,7 +549,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         case HCConfigAlleyWalls:
         case HCConfigAlleyWallStatus:
         case HCConfigCrimes:
-        case HCConfigHunting:
+        //case HCConfigHunting:
         {
             CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)[UserDefaults.defaults integerForKey:@"CurrentOverallBoundaryRefno"];
             CRAPI.sharedInstance.parcelTextOption = 2;
@@ -583,11 +583,13 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             CRAPI.sharedInstance.parcelTextOption = 1;
             configLayerZoom[HCConfigMapleGrove][HCLayerSewers][0] = 12;
             break;
-        //case HCConfigHunting:
         case HCConfigMinnesotaGame:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 17;
             CRAPI.sharedInstance.currentOverallBoundaryTable = @"STATE";
             _mapType = kGMSTypeNone;
+            break;
+        case HCConfigHunting:
+            CRAPI.sharedInstance.currentOverallBoundaryRefno =  0;
             break;
        default:
             CRAPI.sharedInstance.parcelTextOption = 0;

@@ -19,6 +19,8 @@
 @property (nonatomic, copy) NSString *pathNWI;
 @property (nonatomic, copy) NSString *pathNWIBin;
 @property NSInteger fileSize;
+@property NSInteger fileSizeNWI;
+@property NSInteger fileSizeNWIBin;
 @property double acres;
 @property INT64 currentRec;
 @property int iPass, ii;
@@ -79,6 +81,10 @@
         {
             _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                                   error:nil].fileSize;
+            _fileSizeNWI = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWI
+                                                                                  error:nil].fileSize;
+            _fileSizeNWIBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWIBin
+                                                                                  error:nil].fileSize;
             _datasetVersion = [self huntingVersion];
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS NWIDATA",_pathNWI];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
@@ -103,7 +109,7 @@
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -112,9 +118,10 @@
     }
     
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    /*
     query = [NSString stringWithFormat:@"SELECT COORDFactor FROM VERSION"];
     
-    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -123,6 +130,7 @@
     }
     
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
+     */
     st = query_rtree_bbox(_database->db, "ROADS_LINE_index", &_RoadsBounds);
     return version;
 }
