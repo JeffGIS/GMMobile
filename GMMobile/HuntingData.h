@@ -21,15 +21,19 @@
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *datasetVersion;
 @property (nonatomic, copy) NSString *NWIVersion;
+@property (nonatomic, copy) NSString *ForestVersion;
 @property int zoom;
 @property ItemProcessingPassTypes pass;
 @property int numPass;
 @property INT64 totRecords;
 @property MNMXCORD NWIBounds;
+@property MNMXCORD ForestBounds;
 @property MNMXCORD RoadsBounds;
 @property double huntingFactor;
 @property double NWIFactor;
+@property double ForestFactor;
 @property FILE *fidNWIBin;
+@property FILE *fidForestBin;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
 

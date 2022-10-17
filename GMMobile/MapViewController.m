@@ -216,7 +216,16 @@
     _firstTimeZoomToCentract = YES;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = _headingCount = 0;
-    _target = CLLocationCoordinate2DMake(44.97, -93.27);
+    MNMXCORD lastBounds;
+    if (![CRAPI.sharedInstance getLastBounds:&lastBounds])
+    {
+        _target = CLLocationCoordinate2DMake(44.97, -93.27);
+    }
+    else
+    {
+        DPOINT midPt = DBoundsMid(&lastBounds);
+        _target = CLLocationCoordinate2DMake(midPt.y,midPt.x);
+    }
     
     _mapView = [[GMSMapView alloc] initWithFrame:self.view.frame];
     //_mapView = GMSMapView.new;
@@ -1306,7 +1315,7 @@
     _firstTimeZoomToCentract = YES;
     if (_firstTimeAppear && _firstTimeZoomToCentract)
     {
-        [self startTrackingUserLocation];
+        //[self startTrackingUserLocation];
     }
     else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries || _fromSpreadsheet || _firstTimeAppear || _keepZoomExtents)
     {
@@ -1326,7 +1335,8 @@
         _mapView.mapType = kGMSTypeHybrid;
         [_locationManager requestLocation];
     }
-    [self mapToolbarDidFinishDrag:_mapToolbarCenter];
+    [self mapToolbarDidFinishDrag:_mapToolbarCenter
+                                    superView:nil];
 
  }
 #pragma mark - EndOfViewDidAppear
@@ -5715,8 +5725,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
             //[self zoomToActualBounds:pi.llbounds
             //                  adjust:0];
-            HuntingData *hd = HuntingData.new;
-            [self zoomToActualBounds:hd.NWIBounds
+            MNMXCORD lastBounds;
+            if (![CRAPI.sharedInstance getLastBounds:&lastBounds])
+            {
+                HuntingData *hd = HuntingData.new;
+                lastBounds = hd.NWIBounds;
+            }
+            [self zoomToActualBounds:lastBounds
                               adjust:0];
         }
 
@@ -6416,11 +6431,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)mapToolbarDidFinishDrag:(CGPoint)locationInSuperview
+                      superView:(UIView *)view;
 {
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat margin = 8.0;
     NSTimeInterval duration = 0.25;
+    int windowWidth = 0;
+    int windowHeight = 0;
     
+    if (_mapToolbar.orientation == MapToolbarOrientationMinimized)
+        return;
+    if (view)
+    {
+        windowWidth= view.frame.size.width;
+        windowHeight = view.frame.size.height;
+    }
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         margin = 4.0;
     
@@ -6444,7 +6469,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [_mapToolbar addExpandButton];
         }];
     }
-    
+    else if (locationInSuperview.x < (_compassSize + (margin * 2.0)) &&
+        locationInSuperview.y > (windowHeight - _compassSize - (margin * 2.0)))
+    {
+        _mapToolbar.previousOrientation = _mapToolbar.orientation;
+        _mapToolbar.orientation = MapToolbarOrientationMinimized;
+        
+        [UIView animateWithDuration:duration animations:^{
+            _mapToolbar.frame = CGRectMake(margin, (windowHeight - _compassSize - margin), _compassSize, _compassSize);
+            _mapToolbar.layer.cornerRadius = 10.0;
+            _compass.center = CGPointMake((_compassSize + (margin * 2.0) + (_compassSize / 2.0)), (statusBarHeight + margin) + (_compassSize / 2.0));
+            
+            for (UIView *subviews in _mapToolbar.subviews)
+            {
+                subviews.alpha = 0.0;
+                subviews.userInteractionEnabled = NO;
+            }
+        } completion:^(BOOL finished) {
+            [_mapToolbar addExpandButton];
+        }];
+    }
+
     else if (_mapToolbar.center.y < (self.view.frame.size.height * 0.25))
     {
         goto Bottom;
@@ -6457,7 +6502,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
                          }];
         
-        _mapToolbar.orientation = MapToolbarOrientationBottom;
+        _mapToolbar.orientation = MapToolbarOrientationTop;
     }
     
     else if (_mapToolbar.center.y > (self.view.frame.size.height * 0.75))

@@ -18,9 +18,13 @@
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *pathNWI;
 @property (nonatomic, copy) NSString *pathNWIBin;
+@property (nonatomic, copy) NSString *pathFOREST;
+@property (nonatomic, copy) NSString *pathFORESTBin;
 @property NSInteger fileSize;
 @property NSInteger fileSizeNWI;
 @property NSInteger fileSizeNWIBin;
+@property NSInteger fileSizeFOREST;
+@property NSInteger fileSizeFORESTBin;
 @property double acres;
 @property INT64 currentRec;
 @property int iPass, ii;
@@ -39,12 +43,18 @@
         _path = [_documentsDirectory stringByAppendingString:@"/Hunting/HuntingData.slt"];
         _pathNWI = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.slt"];
         _pathNWIBin = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.bin"];
+        _pathFOREST = [_documentsDirectory stringByAppendingString:@"/Hunting/forest.slt"];
+        _pathFORESTBin = [_documentsDirectory stringByAppendingString:@"/Hunting/forest.bin"];
 
         int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                                  error:nil].fileSize;
         int fileSizeNWI = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWI
                                                                              error:nil].fileSize;
         int fileSizeNWIBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWIBin
+                                                                             error:nil].fileSize;
+        int fileSizeFOREST = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFOREST
+                                                                             error:nil].fileSize;
+        int fileSizeFORESTBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFORESTBin
                                                                              error:nil].fileSize;
 
         _totRecords = -1;
@@ -85,11 +95,19 @@
                                                                                   error:nil].fileSize;
             _fileSizeNWIBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWIBin
                                                                                   error:nil].fileSize;
+            _fileSizeFOREST = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFOREST
+                                                                                  error:nil].fileSize;
+            _fileSizeFORESTBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFORESTBin
+                                                                                  error:nil].fileSize;
             _datasetVersion = [self huntingVersion];
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS NWIDATA",_pathNWI];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _NWIVersion = [self getNWIVersion];
             _fidNWIBin = fopen (_pathNWIBin.UTF8String,"rb");
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS FORESTDATA",_pathFOREST];
+            rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+           _ForestVersion = [self getForestVersion];
+            _fidForestBin = fopen (_pathFORESTBin.UTF8String,"rb");
 
         }
     }
@@ -150,6 +168,7 @@
         version = [NSString stringWithUTF8String:ver];
     }
     
+        
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
     query = [NSString stringWithFormat:@"SELECT COORDFactor FROM NWIDATA.NWI_VERSION"];
     
@@ -170,6 +189,43 @@
     _NWIBounds.xmx /= _NWIFactor;
     _NWIBounds.ymn /= _NWIFactor;
     _NWIBounds.ymx /= _NWIFactor;
+
+    return version;
+}
+- (NSString *) getForestVersion
+{
+    NSString *version = @"-1";
+    NSString *query = [NSString stringWithFormat:@"SELECT VersionNum FROM FORESTDATA.FOREST_Version"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR ver = (LPSTR)sqlite3_column_text(statement, 0);
+        version = [NSString stringWithUTF8String:ver];
+    }
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    query = [NSString stringWithFormat:@"SELECT COORDFactor FROM FORESTDATA.FOREST_VERSION"];
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    if (st == SQLITE_OK)
+    {
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            double factor = sqlite3_column_double(statement, 0);
+            _ForestFactor = factor;
+        }
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    st = query_rtree_bbox(_database->db, "FOREST_index", &_ForestBounds);
+    _ForestBounds.xmn /= _NWIFactor;
+    _ForestBounds.xmx /= _NWIFactor;
+    _ForestBounds.ymn /= _NWIFactor;
+    _ForestBounds.ymx /= _NWIFactor;
 
     return version;
 }

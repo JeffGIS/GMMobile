@@ -159,6 +159,10 @@ Top:
             sel = @selector(loadNWIData:);
             break;
             
+        case GetDatabaseSettingForest:
+            sel = @selector(loadFORESTData:);
+            break;
+            
         case GetDatabaseSettingCrimes:
             sel = @selector(loadCrimeData:);
             break;
@@ -284,7 +288,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.datasetVersion.integerValue > 4)
+            if (hd.datasetVersion.integerValue > 5)
                 rtn = YES;
         }
             break;
@@ -293,11 +297,18 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.NWIVersion.integerValue > 0)
+            if (hd.NWIVersion.integerValue >= 1)
                 rtn = YES;
         }
             break;
+        case GetDatabaseSettingForest:
+        {
+            HuntingData *hd = [[HuntingData alloc] init];
             
+            if (hd.ForestVersion.integerValue >= 1)
+                rtn = YES;
+        }
+            break;
         default:
             break;
     }

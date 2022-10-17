@@ -162,6 +162,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         strcpy(layerName[HCLayerSidewalkPoints], "Sidewalk Points");
         strcpy(layerName[HCLayerHunting], "Hunting Data");
         strcpy(layerName[HCLayerNWI], "Wetlands");
+        strcpy(layerName[HCLayerForest], "Forest Data");
         strcpy(layerName[HCLayerOwnership], "Ownership");
         strcpy(layerName[HCLayerGAPLandCover], "Land Cover");
 
@@ -457,6 +458,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigHunting][HCLayerSidewalkPoints] = NO;
         configLayers[HCConfigHunting][HCLayerHunting] = YES;
         configLayers[HCConfigHunting][HCLayerNWI] = YES;
+        configLayers[HCConfigHunting][HCLayerForest] = YES;
         configLayers[HCConfigHunting][HCLayerOwnership] = YES;
         configLayers[HCConfigHunting][HCLayerGAPLandCover] = YES;
 
@@ -682,6 +684,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                         break;
                     case HCLayerNWI:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingNWI]];
+                        break;
+                    case HCLayerForest:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingForest]];
                         break;
                 }
             }

@@ -161,6 +161,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
         }
+        if ([ConfigurationControl.sharedInstance layer:HCLayerForest
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self displayUsingBinFile:context
+                              areaType:@"FOREST"
+                                 color:0
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+        }
         if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
         {
             nDisplayed = [self displayRoads:context
