@@ -12,7 +12,7 @@
 @interface HuntingDataDisplay ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
-@property (nonatomic) CGColorRef WMAColor, WPAColor, NWRColor, FSAColor, WalkInColor;
+@property (nonatomic) CGColorRef WMAColor, WPAColor, NWRColor, FSAColor, WalkInColor, LAKESColor;
 @property sqlite3nv *database;
 @property INT64 totRecords,currentRec;
 @end
@@ -39,6 +39,11 @@
 {
     return [NVColor boldColors][4*6].CGColor;
 }
++(CGColorRef) LAKESColor
+{
+    return NVColor.blueColor.CGColor;
+
+}
 - (id)init
 {
     self = [super init];
@@ -50,6 +55,7 @@
         self.NWRColor = [HuntingDataDisplay NWRColor];
         self.FSAColor = [HuntingDataDisplay FSAColor];
         self.WalkInColor = [HuntingDataDisplay WalkInColor];
+        self.LAKESColor = [HuntingDataDisplay LAKESColor];
     }
     
     return self;
@@ -97,7 +103,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
              pointInArea:pia];
         }
         */
-        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
+/*        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
         {
@@ -108,10 +114,17 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                              llCorners:latlonCornerPoints
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
-        }
+        }*/
         nDisplayed = [self display:context
                           areaType:@"WMA"
                              color:_WMAColor
+                          pointInAreas:pia
+                          llCorners:latlonCornerPoints
+                          LLBounds:platlonBounds
+                        viewBounds:pvbounds];
+        nDisplayed = [self display:context
+                          areaType:@"LAKES"
+                             color:_LAKESColor
                           pointInAreas:pia
                           llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
@@ -182,6 +195,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                      displayCharacteristics:dc
                                      themes:themes
                                 pointInArea:pia];
+            nDisplayed = [self displayTrails:context
+                                  llCorners:latlonCornerPoints
+                                   LLBounds:platlonBounds
+                                 viewBounds:pvbounds
+                     displayCharacteristics:dc
+                                     themes:themes
+                                pointInArea:pia];
         }
     }
 
@@ -238,6 +258,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             key = @"OWNER";
             colorOpt = OWNER_COLORS;
+        }
+        if ([table isEqual:@"LAKES"])
+        {
+            key = @"NAME";
         }
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -442,8 +466,12 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     NSString * table = key;
     HuntingData *hd = HuntingData.new;
     int colorOpt = 0;
+    FILE *binFile;
 #define OWNER_COLORS    1
 #define FWS_COLORS      2
+#define typeNWI 1
+#define typeFOREST 2
+    int type;
     
     BOOL opened = [hd open];
     
@@ -463,16 +491,26 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     
     if ([areaType isEqualToString:@"NWI"] )
     {
-        table = @"NWI";
+        type = typeNWI;
+        table = @"NWIDATA.NWI";
+        binFile = hd.fidNWIBin;
         query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, spcc_desc FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.NWIFactor, platlonBounds->xmx*hd.NWIFactor, platlonBounds->ymn*hd.NWIFactor, platlonBounds->ymx*hd.NWIFactor];
     }
+    if ([areaType isEqualToString:@"FOREST"] )
+    {
+        type = typeFOREST;
+        table = @"FORESTDATA.FOREST";
+        binFile = hd.fidForestBin;
+        query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, MN_CTYPE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+                 platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
+    }
 NextPass:
     SQLOK(__FILE__,__LINE__,SQLitePrepare(hd.database, query.UTF8String, -1, &statement, 0), hd.database);
-    
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         int i = 0;
+        int forestCode = 0;
         BasePt.x = sqlite3_column_int(statement,i++);
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
@@ -484,9 +522,34 @@ NextPass:
         INT64 offset = sqlite3_column_int64(statement,i++);
         int reclen = sqlite3_column_int(statement,i++);
         INT64 recnum = sqlite3_column_int64(statement,i++);
-        LPSTR pspcc_Desc = (LPSTR)sqlite3_column_text(statement,i++);
-        NSString *spcc_Desc = [NSString stringWithUTF8String:pspcc_Desc];
-
+        switch (type)
+        {
+            case typeNWI:
+            {
+                LPSTR pspcc_Desc = (LPSTR)sqlite3_column_text(statement,i++);
+                NSString *spcc_Desc = [NSString stringWithUTF8String:pspcc_Desc];
+            }
+                break;
+            case typeFOREST:
+            {
+                int standType = (LPSTR)sqlite3_column_int(statement,i++);
+                int surveyYear = (LPSTR)sqlite3_column_int(statement,i++);
+                int standAge = (LPSTR)sqlite3_column_int(statement,i++);
+                if (standType == 12)
+                {
+                    int TRUEAGE=(2022-surveyYear)+standAge;
+                    if (TRUEAGE>6 && TRUEAGE<15)
+                        forestCode = 3;
+                    else if (TRUEAGE>4 && TRUEAGE<7)
+                        forestCode = 2;
+                    else if (TRUEAGE>14 && TRUEAGE<19)
+                        forestCode = 2;
+                    else
+                        forestCode = 1;
+                }
+            }
+                break;
+        }
         if (pias)
         {
             double count = [pias countForArea:keyval
@@ -494,7 +557,7 @@ NextPass:
             if (count < 0)
                 continue;
         }
-        LPDPOINT llpoints = ExpandPoints (hd.fidNWIBin,offset,reclen,compressionType,numPoints,BasePt);
+        LPDPOINT llpoints = ExpandPoints (binFile,offset,reclen,compressionType,numPoints,BasePt);
         LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
         
         for (int i = 0; i < numPoints; i++)
@@ -502,8 +565,24 @@ NextPass:
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
-        
-        if (pias)
+        if (type == typeFOREST)
+        {
+            switch (forestCode)
+            {
+                default:
+                    color = NVColor.lightGrayColor.CGColor;
+                    break;
+                case 1:
+                    color = NVColor.lightPinkColor.CGColor;
+                    break;
+                case 2:
+                    color = NVColor.mistyRoseColor.CGColor;
+                    break;
+                case 3:
+                    color = NVColor.redColor.CGColor;
+            }
+        }
+        else if (pias)
             color = [pias colorForArea:keyval];
         
         else switch (hasCurves)
@@ -774,7 +853,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         int ip = 0;
         //int ii;
-        
+        //nLoops = 1;
         for (int loop = 0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
@@ -787,8 +866,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 ip++;
             }
             
-            if (loop)
-                ip++;
+            //if (loop)
+            //    ip++;
             
             if (!CGContextIsPathEmpty(context))
             {
@@ -816,6 +895,122 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
     }
 }
+-(int) displayTrails:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+                themes:(Themes*)themes
+           pointInArea:(PointInArea *)pia
+{
+    int nDisplayed = 0;
+    NSString *query = @"";
+    //NSString *querys;
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints, useCode;
+    int numLoops;
+    HuntingData *hd = HuntingData.new;
+    
+    BOOL opened = [hd open];
+    _database = hd.database;
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+        
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, HUNTER_WALKING_TRAILS_LINE.NAME FROM HUNTER_WALKING_TRAILS_LINE,HUNTER_WALKING_TRAILS_LINE_index WHERE HUNTER_WALKING_TRAILS_LINE.id=HUNTER_WALKING_TRAILS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            _totRecords = [self getQueryCount:query];
+            [CRAPI.sharedInstance updateProgress:-1
+                                         current:0
+                                           range:1
+                                       numRanges:1];
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), hd.database);
+    _currentRec = 0;
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        BasePt.x = sqlite3_column_double(statement,i++);
+        BasePt.y = sqlite3_column_double(statement,i++);
+        numPoints = sqlite3_column_int(statement,i++);
+        numLoops = sqlite3_column_int(statement,i++);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+        int nBlobBytes = sqlite3_column_bytes(statement,i);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        LPSTR routeid = (LPSTR)sqlite3_column_text(statement,i++);
+        dc.width = 5.5;
+        dc.penColor = [UIColor orangeColor];
+        
+         int np = 0;
+        //if (abs(numPoints)<108000)
+        {
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+               /* if (np)
+                {
+                    if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                        np++;
+                }
+                else*/
+                    np++;
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+           /* if (np)
+            {
+                if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                    np++;
+            }
+            else*/
+                np++;
+        }
+        if ([themes setDisplayCharacteristics:dc
+                                    displayID:_processingID
+                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+        {
+            
+            [self drawRoad:context
+                      nPoints:np
+                       nLoops:numLoops
+                      partLen:polyPartLen
+                       points:llpoints
+                    withColor:dc.penColor.CGColor
+                     andWidth:dc.width];
+            nDisplayed++;
+        }
+        }
+        free (llpoints);
+        [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
+                                     current:(NSInteger)++_currentRec
+                                       range:0
+                                   numRanges:1];
+        
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    [hd close:opened];
+    return nDisplayed;
+}
+
+
 - (void)fillUseCode:(CGContextRef)context
            nPoints:(int)np
             points:(LPDPOINT)pPoints

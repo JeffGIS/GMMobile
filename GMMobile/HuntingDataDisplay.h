@@ -32,5 +32,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 +(CGColorRef) NWRColor;
 +(CGColorRef) FSAColor;
 +(CGColorRef) WalkInColor;
++(CGColorRef) LAKESColor;
 
 @end

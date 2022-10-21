@@ -1167,12 +1167,15 @@
                     withViewController:findBounds];
         [NVTabBarEdit tabBarController:self.tabBarController setImage:[UIImage imageWithContentsOfFile:imagePath] forViewControllerWithID:@"FindBounds"];
         [NVTabBarEdit tabBarController:self.tabBarController setText:@"Find" forViewControllerWithID:@"FindBounds"];
+ //       UIViewController *cvc = [storyboard instantiateViewControllerWithIdentifier:@"CompassVC"];
+ //       [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cvc atIndex:1];
+ 
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
         UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"CurbRampDataOptionsVC"];
-        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cdvc atIndex:1];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cdvc atIndex:5];
     }
     
     else
@@ -5696,6 +5699,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _locationCount = 0;
 }
 
+-(BOOL) Point:(CGPoint)target InView:(UIView*)view
+{
+    BOOL rtn = TRUE;
+    
+    return rtn;
+}
+
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
@@ -5738,7 +5748,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     else if (_animateToLocation)
     {
-        if (_locationCount < 2)
+        CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
+        if (_locationCount < 2 || !PointInView(target,_mapView))
         {
             GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
                                                                        zoom:_mapView.camera.zoom
@@ -5752,7 +5763,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [_locationManager startUpdatingHeading];
         }
        
-        CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
         _myLocationMarker.center = CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
         _myLocationMarker.hidden = NO;
     }
@@ -7532,5 +7542,17 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     self.tabBarController.selectedIndex = 0;
     [findBounds dismissViewControllerAnimated:YES completion:nil];
 }
-
+BOOL PointInView(CGPoint target,UIView* view)
+{
+    BOOL rtn = TRUE;
+    
+    CGRect frame;
+    frame = view.frame;
+    if (target.x < frame.origin.x ||
+        target.x > frame.origin.x + frame.size.width ||
+        target.y < frame.origin.y ||
+        target.y > frame.origin.y + frame.size.height)
+        rtn = FALSE;
+    return rtn;
+}
 @end
