@@ -1167,8 +1167,8 @@
                     withViewController:findBounds];
         [NVTabBarEdit tabBarController:self.tabBarController setImage:[UIImage imageWithContentsOfFile:imagePath] forViewControllerWithID:@"FindBounds"];
         [NVTabBarEdit tabBarController:self.tabBarController setText:@"Find" forViewControllerWithID:@"FindBounds"];
- //       UIViewController *cvc = [storyboard instantiateViewControllerWithIdentifier:@"CompassVC"];
- //       [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cvc atIndex:1];
+        UIViewController *cvc = [storyboard instantiateViewControllerWithIdentifier:@"CompassVC"];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cvc atIndex:4];
  
     }
     
