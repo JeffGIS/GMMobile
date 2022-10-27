@@ -123,7 +123,7 @@
             </objects>
             <point key="canvasLocation" x="-242" y="-992"/>
         </scene>
-        <!--Compass View Controller-->
+        <!--Compass-->
         <scene sceneID="bC4-6l-DC5">
             <objects>
                 <viewController storyboardIdentifier="CompassVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="u6R-Ia-3Fb" customClass="CompassViewController" sceneMemberID="viewController">
@@ -132,14 +132,25 @@
                         <viewControllerLayoutGuide type="bottom" id="cr6-HU-UV1"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="VlK-Jb-bo8">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="974"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="whM-5t-2fp">
+                                <rect key="frame" x="20" y="28" width="728" height="728"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Compass" image="compass_icon_grey.png" id="inS-oB-1xQ"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
+                    <connections>
+                        <outlet property="compassImage" destination="whM-5t-2fp" id="iX9-US-X6o"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uyr-Wc-ZHl" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="139" y="-1237"/>
+            <point key="canvasLocation" x="138.28125" y="-1237.5"/>
         </scene>
         <!--Map Options-->
         <scene sceneID="ucn-6J-f4B">
@@ -3708,6 +3719,7 @@
     </scenes>
     <resources>
         <image name="applications.png" width="9.8181819915771484" height="9.8181819915771484"/>
+        <image name="compass_icon_grey.png" width="36" height="36"/>
         <image name="criminal.png" width="8.7272729873657227" height="8.7272729873657227"/>
         <image name="destinations.png" width="8.7272729873657227" height="8.7272729873657227"/>
         <image name="fieldOptions.png" width="8.7272729873657227" height="8.7272729873657227"/>

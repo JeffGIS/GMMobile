@@ -11,6 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CompassViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UIImageView *compassImage;
+@property (strong, nonatomic) IBOutlet NSObject *topGuide;
 
 @end
 

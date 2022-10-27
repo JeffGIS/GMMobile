@@ -248,6 +248,8 @@
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
 		EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */; };
+		EBE5A85A2907130B00F0A5A1 /* compass_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A8572907130B00F0A5A1 /* compass_icon.png */; };
+		EBE5A85C29071F8600F0A5A1 /* compass_icon_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */; };
 		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A201BE791C400E0C1B3 /* Theme.m */; };
 		EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */; };
@@ -602,6 +604,8 @@
 		EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PlanimetricData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBD6B8A91BC1CE1200BACC89 /* Destinations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Destinations.h; sourceTree = "<group>"; };
 		EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Destinations.m; sourceTree = "<group>"; };
+		EBE5A8572907130B00F0A5A1 /* compass_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass_icon.png; sourceTree = "<group>"; };
+		EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass_icon_grey.png; sourceTree = "<group>"; };
 		EBF1356E1AE282A30046990F /* ConfigurationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationControl.h; sourceTree = "<group>"; };
 		EBF1356F1AE282A30046990F /* ConfigurationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ConfigurationControl.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBFC2A1F1BE791C400E0C1B3 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
@@ -708,6 +712,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */,
+				EBE5A8572907130B00F0A5A1 /* compass_icon.png */,
 				EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
@@ -945,6 +951,8 @@
 			children = (
 				693BF80A1DAF56370044C602 /* ChartsViewController.h */,
 				693BF80B1DAF56370044C602 /* ChartsViewController.m */,
+				EB6800BB2902D7F8001B6EFE /* CompassViewController.h */,
+				EB6800BC2902D7F8001B6EFE /* CompassViewController.m */,
 				695F860A1F7C45AB002018D8 /* ConfigurationVC.h */,
 				695F860B1F7C45AB002018D8 /* ConfigurationVC.m */,
 				6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */,
@@ -994,8 +1002,6 @@
 				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				BBEC48131D2D466100DD74A0 /* UploadDirectory.h */,
 				BBEC48141D2D466100DD74A0 /* UploadDirectory.m */,
-				EB6800BB2902D7F8001B6EFE /* CompassViewController.h */,
-				EB6800BC2902D7F8001B6EFE /* CompassViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -1311,6 +1317,7 @@
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				A9BB3E1B1B1FA7A3003E1BAF /* blackCrosshairs.png in Resources */,
+				EBE5A85C29071F8600F0A5A1 /* compass_icon_grey.png in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				A95EC7E31B224BFC0031B903 /* downloadCloud.png in Resources */,
@@ -1324,6 +1331,7 @@
 				695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */,
 				6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */,
 				69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */,
+				EBE5A85A2907130B00F0A5A1 /* compass_icon.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				1F5ADD581CB95EDA002D7BED /* PropListField_4.pdf in Resources */,
 				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
