@@ -7,15 +7,34 @@
 //
 
 #import "CompassViewController.h"
+#import "CCodeLibrary/CRAPI.h"
 
 @interface CompassViewController ()
-
+@property UIView *backgroundView;
+@property UIView *dScaView;
+@property UIView *compassTriangleView;
+@property UIView *levelView;
+@property UIView *verticalView;
+@property UIView *lineView;
+@property UIView *geographyInfoView;
+@property CGFloat screenW, screenH;
+@property (nonatomic) CLLocationManager *locationManager;
 @end
 
 @implementation CompassViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _screenW = UIScreen.mainScreen.bounds.size.height;
+    _screenW = UIScreen.mainScreen.bounds.size.width;
+
+    [self configUI];
+    _locationManager = [CRAPI.sharedInstance getLocationManager];
+    _locationManager.headingFilter = kCLHeadingFilterNone;
+    _locationManager.headingOrientation = CLDeviceOrientationFaceUp;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    _locationManager.delegate = self;
+
     // Do any additional setup after loading the view.
     CGRect r = self.view.frame;
     r.size.width = min (self.view.frame.size.width,self.view.frame.size.height);
@@ -24,12 +43,47 @@
     r.origin.x = self.view.frame.size.width * 0.1;
     r.origin.y = r.origin.x;
     [_compassImage setFrame:r];
+    
 }
  - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self DrawCompass];
+    //[self DrawCompass];
+    if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
+    {
+        [_locationManager startUpdatingLocation];
+        [_locationManager startUpdatingHeading];
+    }
+}
 
+-(void)configUI
+{
+    self.view.backgroundColor = UIColor.blackColor;
+    _dScaView = UIView.new;
+    _dScaView.backgroundColor = UIColor.blackColor;
+    _backgroundView = UIView.new;
+    _backgroundView.frame = self.view.bounds;
+    _levelView = UIView.new;
+    _levelView.frame = CGRectMake (0,0,self.view.frame.size.width / 2 - 50, 1);
+    _levelView.center = CGPointMake(self.view.frame.size.width / 2,self.view.frame.size.height / 2);
+    _levelView.backgroundColor = UIColor.whiteColor;
+    _verticalView = UIView.new;
+    _verticalView.frame = CGRectMake (0,0,1,self.view.frame.size.height / 2 - 50);
+    _verticalView.center = CGPointMake(self.view.frame.size.width / 2,self.view.frame.size.height / 2);
+    _verticalView.backgroundColor = UIColor.whiteColor;
+    _lineView = UIView.new;
+    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 20,3,60);
+    _lineView.backgroundColor = UIColor.whiteColor;
+    _compassTriangleView = UIView.new;
+    _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
+    _compassTriangleView.backgroundColor = UIColor.clearColor;
+    [self.view addSubview:_dScaView];
+    [self.view addSubview:_levelView];
+    [self.view addSubview:_verticalView];
+    [self.view addSubview:_lineView];
+    [self.view addSubview:_backgroundView];
+    [self configScaleDial];
+    [self.view addSubview:_compassTriangleView];
 }
 -(UIImage *) DrawCompass
 {
@@ -106,184 +160,112 @@
 //import UIKit
 
 /// 刻度视图
-class DegreeScaleView: UIView {
-    
-    /// 背景视图
-    private lazy var backgroundView: UIView = {
-        let v = UIView(frame: bounds)
-        return v
-    }()
-    
-    /// 水平视图
-    private lazy var levelView: UIView = {
-        let levelView = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.size.width / 2 - 50, height: 1))
-        levelView.center = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
-        levelView.backgroundColor = .white
-        return levelView
-    }()
-    
-    /// 垂直视图
-    private lazy var verticalView: UIView = {
-        let verticalView = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: self.frame.size.height / 2 - 50))
-        verticalView.center = CGPoint(x: self.frame.size.width / 2, y: self.frame.size.height / 2)
-        verticalView.backgroundColor = .white
-        return verticalView
-    }()
-    
-    /// 指针视图
-    private lazy var lineView: UIView = {
-        let lineView = UIView(frame: CGRect(x: self.frame.size.width / 2 - 1.5, y: 20, width: 3, height: 60))
-        lineView.backgroundColor = .white
-        return lineView
-    }()
-    
-    /// 指南针三角视图
-    private lazy var compassTriangleView: UIView = {
-        let triangle = UIView(frame: CGRect(x: 0, y: 0, width: screenW, height: screenW))
-        triangle.backgroundColor = .clear
-        return triangle
-    }()
-    
-    /// 红色三角视图
-    private lazy var redTriangleView = UIView()
-    
-    // MARK: - Initialization
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        clipsToBounds = true
-        layer.cornerRadius = frame.size.width / 2
-        addSubview(backgroundView)
-        addSubview(levelView)
-        addSubview(verticalView)
-        insertSubview(lineView, at: 0)
-        configScaleDial()
-        addSubview(compassTriangleView)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+
+-(CGPoint) calculateTextPositonWithArcCenter: (CGPoint) center
+                                andAngle:(CGFloat) angle
+                                andScale:(CGFloat) scale
+{
+    CGFloat x = (self.view.frame.size.width / 2 - 50) * scale * cosf((angle));
+    CGFloat y = (self.view.frame.size.width / 2 - 50) * scale * sinf((angle));
+    CGPoint rtn = CGPointMake (center.x + x,center.y + y);
+    return rtn;
 }
 
 //MARK: - Update multiple times
-extension DegreeScaleView {
-    
-    /// 计算中心坐标
-    ///
-    /// - Parameters:
-    ///   - center: 中心点
-    ///   - angle: 角度
-    ///   - scale: 刻度
-    /// - Returns: CGPoint
-    private func calculateTextPositon(withArcCenter center: CGPoint, andAngle angle: CGFloat, andScale scale: CGFloat) -> CGPoint {
-        let x = (self.frame.size.width / 2 - 50) * scale * CGFloat(cosf(Float(angle)))
-        let y = (self.frame.size.width / 2 - 50) * scale * CGFloat(sinf(Float(angle)))
-        return CGPoint(x: center.x + x, y: center.y + y)
+-(void) resetDirection:(CGFloat) heading
+{
+    _backgroundView.transform = CGAffineTransformMakeRotation(heading);
+    for (UILabel *label in _backgroundView.subviews)
+    {
+        _backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
+        label.transform = CGAffineTransformMakeRotation( -heading);
     }
-    
-    /// 旋转重置刻度标志的方向
-    ///
-    /// - Parameter heading: 航向
-    public func resetDirection(_ heading: CGFloat) {
-        backgroundView.transform = CGAffineTransform(rotationAngle: heading)
-        for label in backgroundView.subviews {
-            backgroundView.subviews[1].transform = .identity    // 红色三角视图，不旋转。
-            label.transform = CGAffineTransform(rotationAngle: -heading)
-        }
-    }
-    
 }
 
-//MARK: - Configure
-extension DegreeScaleView {
-    
-    /// 配置刻度表
-    private func configScaleDial() {
+- (void) configScaleDial
+{
         
-        /// 360度
-        let degree_360: CGFloat = CGFloat.pi
+    CGFloat degree_360 = M_PI;
         
-        /// 180度
-        let degree_180: CGFloat = degree_360 / 2
+    CGFloat degree_180  = degree_360 / 2;
         
-        /// 角度
-        let angle: CGFloat = degree_360 / 90
+    CGFloat angle = degree_360 / 90;
         
-        /// 方向数组
-        let directionArray = ["N", "E", "S", "W"]
+    NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
         
-        /// 点
-        let po = CGPoint(x: frame.size.width / 2, y: frame.size.height / 2)
+    CGPoint po = CGPointMake (self.view.frame.size.width / 2, self.view.frame.size.height / 2);
         
-        //画圆环，每隔2°画一个弧线，总共180条
-        for i in 0 ..< 180 {
+    for (int i=0;i< 180;i++)
+    {
             
-            /// 开始角度
-            let startAngle: CGFloat = -(degree_180 + degree_360 / 180 / 2) + angle * CGFloat(i)
+        CGFloat startAngle  = -(degree_180 + degree_360 / 180 / 2) + angle * i;
             
-            /// 结束角度
-            let endAngle: CGFloat = startAngle + angle / 2
+        CGFloat endAngle  = startAngle + angle / 2;
             
-            // 创建一个路径对象
-            let bezPath = UIBezierPath(arcCenter: po, radius: frame.size.width / 2 - 70, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:self.view.frame.size.width / 2 - 70 startAngle:startAngle endAngle:endAngle clockwise:true];
+        
             
-            /// 形变图层
-            let shapeLayer = CAShapeLayer()
+        CAShapeLayer * shapeLayer = CAShapeLayer.layer;
             
-            if i % 15 == 0 {
-                // 设置描边色
-                shapeLayer.strokeColor = UIColor.white.cgColor
-                shapeLayer.lineWidth = 20
-            }else {
-                shapeLayer.strokeColor = UIColor.gray.cgColor
-                shapeLayer.lineWidth = 20
+            if (i % 15 == 0)
+            {
+                shapeLayer.strokeColor = UIColor.whiteColor.CGColor;
+                shapeLayer.lineWidth = 20;
             }
-            shapeLayer.path = bezPath.cgPath
-            shapeLayer.fillColor = UIColor.clear.cgColor    // 设置填充路径色
-            backgroundView.layer.addSublayer(shapeLayer)
+            else
+            {
+                shapeLayer.strokeColor = UIColor.grayColor.CGColor;
+                shapeLayer.lineWidth = 20;
+            }
+        shapeLayer.path = bezPath.CGPath;
+        shapeLayer.fillColor = UIColor.clearColor.CGColor;
+        [_backgroundView.layer addSublayer:shapeLayer];
             
-            // 刻度的标注
-            if i % 15 == 0 {
-                /// 刻度的标注 0 30 60...
-                var tickText = "\(i * 2)"
+            if (i % 15 == 0)
+            {
+                NSString *  tickText = [NSString stringWithFormat:@"%i",i * 2];
                 
-                let textAngle: CGFloat = startAngle + (endAngle - startAngle) / 2
+                CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
                 
-                let point: CGPoint = calculateTextPositon(withArcCenter: po, andAngle: textAngle, andScale: 1.15)
+                CGPoint point  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1.15];
                 
                 // UILabel
-                let label = UILabel(frame: CGRect(x: point.x, y: point.y, width: 30, height: 20))
-                label.center = point
-                label.text = tickText
-                label.textColor = .white
-                label.font = UIFont.systemFont(ofSize: 15)
-                label.textAlignment = .center
-                backgroundView.addSubview(label)
+                UILabel* label = UILabel.new;
+                label.frame = CGRectMake(point.x,point.y, 30,20);
+                label.center = point;
+                label.text = tickText;
+                label.textColor = UIColor.whiteColor;
+                label.font = [UIFont systemFontOfSize: 15];
+                label.textAlignment = NSTextAlignmentCenter;
+                [_backgroundView addSubview:label];
                 
-                if i % 45 == 0 {    //北 东 南 西
-                    tickText = directionArray[i / 45]
+                if (i % 45 == 0)
+                {
+                    NSString * tickText = directionArray[i / 45];
                     
-                    let point2: CGPoint = calculateTextPositon(withArcCenter: po, andAngle: textAngle, andScale: 0.65)
+                    CGPoint point2  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 0.65];
                     // UILabel
-                    let label2 = UILabel(frame: CGRect(x: point2.x, y: point2.y, width: 30, height: 30))
-                    label2.center = point2
-                    label2.text = tickText
-                    label2.textColor = .white
-                    label2.font = UIFont.systemFont(ofSize: 27)
-                    label2.textAlignment = .center
+                    UILabel * label2 = UILabel.new;
+                    label2.frame = CGRectMake (point2.x, point2.y,30,30);
+                    label2.center = point2;
+                    label2.text = tickText;
+                    label2.textColor = UIColor.whiteColor;
+                    label2.font = [UIFont systemFontOfSize: 27];
+                    label2.textAlignment = NSTextAlignmentCenter;
                     
-                    if tickText == "北" {
-                        DrawRedTriangleView(point)
+                    if ([tickText isEqual:@"N"])
+                    {
+                        //DrawRedTriangleView(point)
                     }
-                    backgroundView.addSubview(label2)
+                    [_backgroundView addSubview:label];
                 }
             }
         }
     }
-    
-    /// 绘制红色三角形视图
-    private func DrawRedTriangleView(_ point: CGPoint) {
+
+-(void) DrawRedTriangleView:(CGPoint) point
+{
+    /*
         redTriangleView = UIView(frame: CGRect(x: point.x, y: point.y, width: 12, height: 12))
         redTriangleView.center = CGPoint(x: point.x, y: point.y + 17)
         redTriangleView.backgroundColor = .clear
@@ -302,8 +284,116 @@ extension DegreeScaleView {
         triangleLayer.path = trianglePath.cgPath
         triangleLayer.fillColor = UIColor.red.cgColor
         redTriangleView.layer.addSublayer(triangleLayer)
-    }
-    
+     */
 }
+-(CGFloat) heading:(CGFloat)heading fromOrirntation:(UIDeviceOrientation) orientation
+{
+    
+    CGFloat realHeading = heading;
+    
+    switch (orientation)
+    {
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            realHeading = heading - 180;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            realHeading = heading + 90;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            realHeading = heading - 90;
+            break;
+        default:
+            break;
+    }
+    if (realHeading > 360)
+    {
+        realHeading -= 360;
+    }
+    else if (realHeading < 0.0)
+    {
+        realHeading += 366;
+    }
+    return realHeading;
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didUpdateHeading:(CLHeading *)newHeading
+{
+    /*
+        trueHeading     : 真北方向
+        magneticHeading : 磁北方向
+     */
+    /// 获得当前设备
+    UIDevice * device = UIDevice.currentDevice;
+    
+    // 1.判断当前磁力计的角度是否有效(如果此值小于0,代表角度无效)越小越精确
+    if (newHeading.headingAccuracy > 0)
+    {
+        
+        // 2.获取当前设备朝向(磁北方向)数据
+        CGFloat magneticHeading = [self heading:newHeading.magneticHeading fromOrirntation: device.orientation];
+        
+        // 地理航向数据: trueHeading
+        CGFloat trueHeading = [self heading:newHeading.trueHeading fromOrirntation: device.orientation];
+     
+        /// 地磁北方向
+        CGFloat headi = -1.0 * M_PI * newHeading.magneticHeading / 180.0;
+        // 设置角度label文字
+        //geographyInfoView.angleLabel.text = "\(Int(magneticHeading))"
+        
+        // 3.旋转变换
+        [self resetDirection:headi];
+        
+        // 4.当前手机（摄像头)朝向方向
+        //update(newHeading)
+    }
+}
+
+// 判断设备是否需要校验，受到外来磁场干扰时
+-(Bool) locationManagerShouldDisplayHeadingCalibration:(CLLocationManager*)manager
+{
+    return true;
+}
+
+// 定位代理失败回调
+-(void) locationManager:(CLLocationManager*) manager
+       didFailWithError:(NSError*) error
+{
+    //print("定位失败....\(error)")
+}
+
+/// 如果授权状态发生变化时,调用
+///
+/// - Parameters:
+///   - manager: 定位管理器
+///   - status: 当前的授权状态
+-(void) locationManager:(CLLocationManager*)manager
+ didChangeAuthorization:(CLAuthorizationStatus)status
+{
+/*
+    switch status {
+    case .notDetermined:
+        print("用户未决定")
+    case .restricted:
+        print("受限制")
+    case .denied:
+        // 判断当前设备是否支持定位, 并且定位服务是否开启
+        if CLLocationManager.locationServicesEnabled() {
+            print("定位开启,被拒绝")
+        }else {
+            print("定位服务关闭")
+        }
+    case .authorizedAlways:
+        print("前,后台定位授权")
+    case .authorizedWhenInUse:
+        print("前台定位授权")
+    @unknown default:
+        fatalError()
+    }
+ */
+}
+
 
 @end
