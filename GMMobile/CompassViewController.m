@@ -19,6 +19,8 @@
 @property UIView *geographyInfoView;
 @property CGFloat screenW, screenH;
 @property (nonatomic) CLLocationManager *locationManager;
+@property id oldLocationManagerDelegate;
+@property UILabel *directionLabel;
 @end
 
 @implementation CompassViewController
@@ -29,11 +31,6 @@
     _screenW = UIScreen.mainScreen.bounds.size.width;
 
     [self configUI];
-    _locationManager = [CRAPI.sharedInstance getLocationManager];
-    _locationManager.headingFilter = kCLHeadingFilterNone;
-    _locationManager.headingOrientation = CLDeviceOrientationFaceUp;
-    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    _locationManager.delegate = self;
 
     // Do any additional setup after loading the view.
     CGRect r = self.view.frame;
@@ -44,6 +41,17 @@
     r.origin.y = r.origin.x;
     [_compassImage setFrame:r];
     
+}
+-(void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    _locationManager = [CRAPI.sharedInstance getLocationManager];
+    _locationManager.headingFilter = kCLHeadingFilterNone;
+    _locationManager.headingOrientation = CLDeviceOrientationFaceUp;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    _oldLocationManagerDelegate = _locationManager.delegate;
+    _locationManager.delegate = self;
+    self.view.backgroundColor = UIColor.blackColor;
 }
  - (void)viewDidAppear:(BOOL)animated
 {
@@ -56,34 +64,47 @@
     }
 }
 
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    _locationManager.delegate = _oldLocationManagerDelegate;
+}
 -(void)configUI
 {
     self.view.backgroundColor = UIColor.blackColor;
+    
     _dScaView = UIView.new;
     _dScaView.backgroundColor = UIColor.blackColor;
-    _backgroundView = UIView.new;
-    _backgroundView.frame = self.view.bounds;
+    _dScaView.frame = CGRectMake(0,150,_screenW,_screenW);
     _levelView = UIView.new;
-    _levelView.frame = CGRectMake (0,0,self.view.frame.size.width / 2 - 50, 1);
-    _levelView.center = CGPointMake(self.view.frame.size.width / 2,self.view.frame.size.height / 2);
+    _levelView.frame = CGRectMake (0,0,_dScaView.frame.size.width / 2 - 50, 1);
+    _levelView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
     _levelView.backgroundColor = UIColor.whiteColor;
     _verticalView = UIView.new;
-    _verticalView.frame = CGRectMake (0,0,1,self.view.frame.size.height / 2 - 50);
-    _verticalView.center = CGPointMake(self.view.frame.size.width / 2,self.view.frame.size.height / 2);
+    _verticalView.frame = CGRectMake (0,0,1,_dScaView.frame.size.height / 2 - 50);
+    _verticalView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
     _verticalView.backgroundColor = UIColor.whiteColor;
     _lineView = UIView.new;
-    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 20,3,60);
+    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 80,3,60);
     _lineView.backgroundColor = UIColor.whiteColor;
     _compassTriangleView = UIView.new;
     _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
     _compassTriangleView.backgroundColor = UIColor.clearColor;
+    _geographyInfoView = UIView.new;
+    _geographyInfoView.frame =CGRectMake(0, 617, _screenW,165);
+    _geographyInfoView.backgroundColor = UIColor.whiteColor;
+    _dScaView.clipsToBounds = true;
+    _dScaView.layer.cornerRadius = _dScaView.frame.size.width / 2;
+    _backgroundView = UIView.new;
+    _backgroundView.frame = CGRectMake (0,0,_dScaView.frame.size.width,_dScaView.frame.size.height);
+    _backgroundView.backgroundColor = UIColor.blackColor;
+    [_dScaView addSubview:_backgroundView];
+    [_dScaView addSubview:_levelView];
+    [_dScaView addSubview:_verticalView];
+    [self.view insertSubview:_lineView atIndex:0];
+    [_dScaView addSubview:_compassTriangleView];
     [self.view addSubview:_dScaView];
-    [self.view addSubview:_levelView];
-    [self.view addSubview:_verticalView];
-    [self.view addSubview:_lineView];
-    [self.view addSubview:_backgroundView];
     [self configScaleDial];
-    [self.view addSubview:_compassTriangleView];
 }
 -(UIImage *) DrawCompass
 {
@@ -177,14 +198,14 @@
     _backgroundView.transform = CGAffineTransformMakeRotation(heading);
     for (UILabel *label in _backgroundView.subviews)
     {
-        _backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
+        //_backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
         label.transform = CGAffineTransformMakeRotation( -heading);
     }
 }
 
 - (void) configScaleDial
 {
-        
+    //return;
     CGFloat degree_360 = M_PI;
         
     CGFloat degree_180  = degree_360 / 2;
@@ -193,7 +214,7 @@
         
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
         
-    CGPoint po = CGPointMake (self.view.frame.size.width / 2, self.view.frame.size.height / 2);
+    CGPoint po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
         
     for (int i=0;i< 180;i++)
     {
@@ -202,7 +223,7 @@
             
         CGFloat endAngle  = startAngle + angle / 2;
             
-        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:self.view.frame.size.width / 2 - 70 startAngle:startAngle endAngle:endAngle clockwise:true];
+        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:_dScaView.frame.size.width / 2 - 70 startAngle:startAngle endAngle:endAngle clockwise:true];
         
             
         CAShapeLayer * shapeLayer = CAShapeLayer.layer;
@@ -257,7 +278,7 @@
                     {
                         //DrawRedTriangleView(point)
                     }
-                    [_backgroundView addSubview:label];
+                    [_backgroundView addSubview:label2];
                 }
             }
         }
@@ -317,6 +338,44 @@
     }
     return realHeading;
 }
+-(void) update:(CLHeading*)newHeading
+{
+    
+    /// 朝向
+    CLLocationDirection theHeading = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading;
+    theHeading = newHeading.trueHeading;
+    /// 角度
+    int angle = IDNINT(theHeading);
+    
+    switch (angle)
+    {
+    case 0:
+            _directionLabel.text = @"N";
+            break;
+    case 90:
+            _directionLabel.text = @"E";
+            break;
+    case 180:
+            _directionLabel.text = @"S";
+            break;
+   case 270:
+            _directionLabel.text = @"W";
+            break;
+    default:
+            break;
+    }
+    
+    if (angle > 0 && angle < 90)
+    {
+        _directionLabel.text = @"NE";
+    }else if (angle > 90 && angle < 180) {
+        _directionLabel.text = @"SE";
+    }else if (angle > 180 && angle < 270) {
+        _directionLabel.text = @"SW";
+    }else if (angle > 270) {
+        _directionLabel.text = @"NW";
+    }
+}
 
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
@@ -347,7 +406,7 @@
         [self resetDirection:headi];
         
         // 4.当前手机（摄像头)朝向方向
-        //update(newHeading)
+        [self update:newHeading];
     }
 }
 
