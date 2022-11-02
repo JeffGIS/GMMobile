@@ -16,6 +16,7 @@
 @property UIView *levelView;
 @property UIView *verticalView;
 @property UIView *lineView;
+@property UIView *redTriangleView;
 @property UIView *geographyInfoView;
 @property CGFloat screenW, screenH;
 @property (nonatomic) CLLocationManager *locationManager;
@@ -225,7 +226,8 @@
             
         UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:_dScaView.frame.size.width / 2 - 70 startAngle:startAngle endAngle:endAngle clockwise:true];
         
-            
+        if (i % 45 != 0)
+        {
         CAShapeLayer * shapeLayer = CAShapeLayer.layer;
             
             if (i % 15 == 0)
@@ -235,12 +237,13 @@
             }
             else
             {
-                shapeLayer.strokeColor = UIColor.grayColor.CGColor;
+                shapeLayer.strokeColor = UIColor.lightGrayColor.CGColor;
                 shapeLayer.lineWidth = 20;
             }
         shapeLayer.path = bezPath.CGPath;
         shapeLayer.fillColor = UIColor.clearColor.CGColor;
         [_backgroundView.layer addSublayer:shapeLayer];
+        }
             
             if (i % 15 == 0)
             {
@@ -252,7 +255,7 @@
                 
                 // UILabel
                 UILabel* label = UILabel.new;
-                label.frame = CGRectMake(point.x,point.y, 30,20);
+                label.frame = CGRectMake(point.x,point.y, 30,30);
                 label.center = point;
                 label.text = tickText;
                 label.textColor = UIColor.whiteColor;
@@ -264,19 +267,20 @@
                 {
                     NSString * tickText = directionArray[i / 45];
                     
-                    CGPoint point2  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 0.65];
+                    CGPoint point2  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 0.82];
                     // UILabel
                     UILabel * label2 = UILabel.new;
                     label2.frame = CGRectMake (point2.x, point2.y,30,30);
                     label2.center = point2;
                     label2.text = tickText;
                     label2.textColor = UIColor.whiteColor;
-                    label2.font = [UIFont systemFontOfSize: 27];
+                    label2.font = [UIFont boldSystemFontOfSize: 22];
                     label2.textAlignment = NSTextAlignmentCenter;
+                    label2.backgroundColor = UIColor.clearColor;
                     
                     if ([tickText isEqual:@"N"])
                     {
-                        //DrawRedTriangleView(point)
+                        [self DrawRedTriangleView:point];
                     }
                     [_backgroundView addSubview:label2];
                 }
@@ -286,26 +290,26 @@
 
 -(void) DrawRedTriangleView:(CGPoint) point
 {
-    /*
-        redTriangleView = UIView(frame: CGRect(x: point.x, y: point.y, width: 12, height: 12))
-        redTriangleView.center = CGPoint(x: point.x, y: point.y + 17)
-        redTriangleView.backgroundColor = .clear
-        backgroundView.addSubview(redTriangleView)
+    
+    _redTriangleView = UIView.new;
+    _redTriangleView.frame = CGRectMake( point.x,  point.y,  12,  12);
+    _redTriangleView.center = CGPointMake( point.x, point.y + 17);
+    _redTriangleView.backgroundColor = UIColor.clearColor;
+    [_backgroundView addSubview:_redTriangleView];
         
-        // 画三角
-        let trianglePath = UIBezierPath()
-        var point = CGPoint(x: 0, y: 12)
-        trianglePath.move(to: point)
+
+    UIBezierPath *trianglePath = UIBezierPath.new;
+    CGPoint point2f = CGPointMake( 0,  12);
+/*        trianglePath.move(to: point)
         point = CGPoint(x: 12 / 2, y: 0)
         trianglePath.addLine(to: point)
         point = CGPoint(x: 12, y: 12)
         trianglePath.addLine(to: point)
-        trianglePath.close()
-        let triangleLayer = CAShapeLayer()
-        triangleLayer.path = trianglePath.cgPath
-        triangleLayer.fillColor = UIColor.red.cgColor
-        redTriangleView.layer.addSublayer(triangleLayer)
-     */
+        trianglePath.close()*/
+    CAShapeLayer *triangleLayer = CAShapeLayer.layer;
+    triangleLayer.path = trianglePath.CGPath;
+    triangleLayer.fillColor = UIColor.redColor.CGColor;
+    [_redTriangleView.layer addSublayer:triangleLayer];
 }
 -(CGFloat) heading:(CGFloat)heading fromOrirntation:(UIDeviceOrientation) orientation
 {
