@@ -18,7 +18,7 @@
 @property UIView *lineView;
 @property UIView *redTriangleView;
 @property UIView *geographyInfoView;
-@property CGFloat screenW, screenH;
+@property CGFloat screenW, screenH, heightFactor, widthFactor, radius;
 @property (nonatomic) CLLocationManager *locationManager;
 @property id oldLocationManagerDelegate;
 @property UILabel *directionLabel;
@@ -30,7 +30,8 @@
     [super viewDidLoad];
     _screenH = UIScreen.mainScreen.bounds.size.height;
     _screenW = UIScreen.mainScreen.bounds.size.width;
-
+    _heightFactor = _screenH / 568.0;
+    _widthFactor = _screenW / 320.0;
     [self configUI];
 
     // Do any additional setup after loading the view.
@@ -78,11 +79,11 @@
     _dScaView.backgroundColor = UIColor.blackColor;
     _dScaView.frame = CGRectMake(0,0.1*_screenH,_screenW,_screenW);
     _levelView = UIView.new;
-    _levelView.frame = CGRectMake (0,0,_dScaView.frame.size.width / 2 - 50, 1);
+    _levelView.frame = CGRectMake (0,0,_dScaView.frame.size.width / 2 - 80*_widthFactor, 1);
     _levelView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
     _levelView.backgroundColor = UIColor.whiteColor;
     _verticalView = UIView.new;
-    _verticalView.frame = CGRectMake (0,0,1,_dScaView.frame.size.height / 2 - 50);
+    _verticalView.frame = CGRectMake (0,0,1,_dScaView.frame.size.height / 2 - 80*_widthFactor);
     _verticalView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
     _verticalView.backgroundColor = UIColor.whiteColor;
     _lineView = UIView.new;
@@ -187,8 +188,8 @@
                                 andAngle:(CGFloat) angle
                                 andScale:(CGFloat) scale
 {
-    CGFloat x = (self.view.frame.size.width / 2 - 50) * scale * cosf((angle));
-    CGFloat y = (self.view.frame.size.width / 2 - 50) * scale * sinf((angle));
+    CGFloat x = _radius * scale * cosf((angle));
+    CGFloat y = _radius * scale * sinf((angle));
     CGPoint rtn = CGPointMake (center.x + x,center.y + y);
     return rtn;
 }
@@ -199,9 +200,9 @@
     _backgroundView.transform = CGAffineTransformMakeRotation(heading);
     for (UILabel *label in _backgroundView.subviews)
     {
-        //_backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
         label.transform = CGAffineTransformMakeRotation( -heading);
     }
+    _backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
 }
 
 - (void) configScaleDial
@@ -216,7 +217,8 @@
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
         
     CGPoint po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
-        
+    _radius = _dScaView.frame.size.width / 2 - 70*_widthFactor/2;
+
     for (int i=0;i< 180;i++)
     {
             
@@ -224,7 +226,7 @@
             
         CGFloat endAngle  = startAngle + angle / 2;
             
-        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:_dScaView.frame.size.width / 2 - 70 startAngle:startAngle endAngle:endAngle clockwise:true];
+        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:_radius startAngle:startAngle endAngle:endAngle clockwise:true];
         
         if (i % 45 != 0)
         {
@@ -233,12 +235,12 @@
             if (i % 15 == 0)
             {
                 shapeLayer.strokeColor = UIColor.whiteColor.CGColor;
-                shapeLayer.lineWidth = 20;
+                shapeLayer.lineWidth = 20*_widthFactor;
             }
             else
             {
                 shapeLayer.strokeColor = UIColor.lightGrayColor.CGColor;
-                shapeLayer.lineWidth = 20;
+                shapeLayer.lineWidth = 20*_widthFactor;
             }
         shapeLayer.path = bezPath.CGPath;
         shapeLayer.fillColor = UIColor.clearColor.CGColor;
@@ -251,11 +253,11 @@
                 
                 CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
                 
-                CGPoint point  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1.15];
+                CGPoint point  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1.0+.15*_widthFactor];
                 
                 // UILabel
                 UILabel* label = UILabel.new;
-                label.frame = CGRectMake(point.x,point.y, 30,30);
+                label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
                 label.center = point;
                 label.text = tickText;
                 label.textColor = UIColor.whiteColor;
@@ -267,10 +269,10 @@
                 {
                     NSString * tickText = directionArray[i / 45];
                     
-                    CGPoint point2  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 0.82];
+                    CGPoint point2  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1];
                     // UILabel
                     UILabel * label2 = UILabel.new;
-                    label2.frame = CGRectMake (point2.x, point2.y,30,30);
+                    label2.frame = CGRectMake (point2.x, point2.y,30*_widthFactor,30*_widthFactor);
                     label2.center = point2;
                     label2.text = tickText;
                     label2.textColor = UIColor.whiteColor;
@@ -290,22 +292,22 @@
 
 -(void) DrawRedTriangleView:(CGPoint) point
 {
-    
+    CGFloat w = 12 * _widthFactor/2;
     _redTriangleView = UIView.new;
-    _redTriangleView.frame = CGRectMake( point.x,  point.y,  12,  12);
-    _redTriangleView.center = CGPointMake( point.x, point.y + 17);
+    _redTriangleView.frame = CGRectMake( point.x,  point.y,  w,  w);
+    _redTriangleView.center = CGPointMake( point.x, point.y + 17*_widthFactor/2);
     _redTriangleView.backgroundColor = UIColor.clearColor;
     [_backgroundView addSubview:_redTriangleView];
         
 
     UIBezierPath *trianglePath = UIBezierPath.new;
-    CGPoint point2f = CGPointMake( 0,  12);
-/*        trianglePath.move(to: point)
-        point = CGPoint(x: 12 / 2, y: 0)
-        trianglePath.addLine(to: point)
-        point = CGPoint(x: 12, y: 12)
-        trianglePath.addLine(to: point)
-        trianglePath.close()*/
+    CGPoint point2 = CGPointMake( 0,  w);
+    [trianglePath moveToPoint: point2];
+    point2 = CGPointMake(w / 2, 0);
+    [trianglePath addLineToPoint: point2];
+    point2 = CGPointMake(w,w);
+    [trianglePath addLineToPoint:point2];
+    [trianglePath closePath];
     CAShapeLayer *triangleLayer = CAShapeLayer.layer;
     triangleLayer.path = trianglePath.CGPath;
     triangleLayer.fillColor = UIColor.redColor.CGColor;
