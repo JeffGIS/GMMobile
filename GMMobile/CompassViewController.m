@@ -28,7 +28,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _screenW = UIScreen.mainScreen.bounds.size.height;
+    _screenH = UIScreen.mainScreen.bounds.size.height;
     _screenW = UIScreen.mainScreen.bounds.size.width;
 
     [self configUI];
@@ -76,7 +76,7 @@
     
     _dScaView = UIView.new;
     _dScaView.backgroundColor = UIColor.blackColor;
-    _dScaView.frame = CGRectMake(0,150,_screenW,_screenW);
+    _dScaView.frame = CGRectMake(0,0.1*_screenH,_screenW,_screenW);
     _levelView = UIView.new;
     _levelView.frame = CGRectMake (0,0,_dScaView.frame.size.width / 2 - 50, 1);
     _levelView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
@@ -86,7 +86,7 @@
     _verticalView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
     _verticalView.backgroundColor = UIColor.whiteColor;
     _lineView = UIView.new;
-    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 80,3,60);
+    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 0.05*_screenH,3,60);
     _lineView.backgroundColor = UIColor.whiteColor;
     _compassTriangleView = UIView.new;
     _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
