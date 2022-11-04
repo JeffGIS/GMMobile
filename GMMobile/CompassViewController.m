@@ -18,6 +18,7 @@
 @property UIView *lineView;
 @property UIView *redTriangleView;
 @property UIView *geographyInfoView;
+@property UILabel *infoLabel;
 @property CGFloat screenW, screenH, heightFactor, widthFactor, radius;
 @property (nonatomic) CLLocationManager *locationManager;
 @property id oldLocationManagerDelegate;
@@ -93,8 +94,12 @@
     _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
     _compassTriangleView.backgroundColor = UIColor.clearColor;
     _geographyInfoView = UIView.new;
-    _geographyInfoView.frame =CGRectMake(0, 617, _screenW,165);
-    _geographyInfoView.backgroundColor = UIColor.whiteColor;
+    _geographyInfoView.frame =CGRectMake(0, 380*_heightFactor, _screenW,130*_heightFactor);
+    _geographyInfoView.backgroundColor = UIColor.blueColor;
+    _infoLabel = UILabel.new;
+    _infoLabel.frame = CGRectMake (0,0,_geographyInfoView.frame.size.width,_geographyInfoView.frame.size.height/2);
+    _infoLabel.backgroundColor = UIColor.orangeColor;
+    [_geographyInfoView addSubview:_infoLabel];
     _dScaView.clipsToBounds = true;
     _dScaView.layer.cornerRadius = _dScaView.frame.size.width / 2;
     _backgroundView = UIView.new;
@@ -106,6 +111,7 @@
     [self.view insertSubview:_lineView atIndex:0];
     [_dScaView addSubview:_compassTriangleView];
     [self.view addSubview:_dScaView];
+    [self.view addSubview:_geographyInfoView];
     [self configScaleDial];
 }
 -(UIImage *) DrawCompass
@@ -198,9 +204,11 @@
 -(void) resetDirection:(CGFloat) heading
 {
     _backgroundView.transform = CGAffineTransformMakeRotation(heading);
+    int i=0;
     for (UILabel *label in _backgroundView.subviews)
     {
-        label.transform = CGAffineTransformMakeRotation( -heading);
+        if (i++)
+            label.transform = CGAffineTransformMakeRotation( -heading);
     }
     _backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
 }
@@ -217,7 +225,7 @@
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
         
     CGPoint po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
-    _radius = _dScaView.frame.size.width / 2 - 70*_widthFactor/2;
+    _radius = _dScaView.frame.size.width / 2 - 90*_widthFactor/2;
 
     for (int i=0;i< 180;i++)
     {
@@ -253,16 +261,28 @@
                 
                 CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
                 
-                CGPoint point  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1.0+.15*_widthFactor];
+                CGPoint point  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
                 
                 // UILabel
                 UILabel* label = UILabel.new;
                 label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
                 label.center = point;
-                label.text = tickText;
                 label.textColor = UIColor.whiteColor;
-                label.font = [UIFont systemFontOfSize: 15];
+                label.font = [UIFont systemFontOfSize: 12];
                 label.textAlignment = NSTextAlignmentCenter;
+                if (i)
+                {
+                    label.text = tickText;
+                    label.backgroundColor = UIColor.blackColor;
+                }
+                else
+                {
+                    //label.font = [UIFont boldSystemFontOfSize: 26];
+                    //label.text = @"^";
+                    //label.textColor = UIColor.redColor;
+                    label.backgroundColor = UIColor.blackColor;
+                    [self DrawRedTriangleView:label];
+                }
                 [_backgroundView addSubview:label];
                 
                 if (i % 45 == 0)
@@ -282,7 +302,7 @@
                     
                     if ([tickText isEqual:@"N"])
                     {
-                        [self DrawRedTriangleView:point];
+                        
                     }
                     [_backgroundView addSubview:label2];
                 }
@@ -290,28 +310,24 @@
         }
     }
 
--(void) DrawRedTriangleView:(CGPoint) point
+-(void) DrawRedTriangleView:(UILabel*) label
 {
-    CGFloat w = 12 * _widthFactor/2;
-    _redTriangleView = UIView.new;
-    _redTriangleView.frame = CGRectMake( point.x,  point.y,  w,  w);
-    _redTriangleView.center = CGPointMake( point.x, point.y + 17*_widthFactor/2);
-    _redTriangleView.backgroundColor = UIColor.clearColor;
-    [_backgroundView addSubview:_redTriangleView];
+    CGFloat w = label.frame.size.width;
+    CGFloat h = label.frame.size.height;
         
 
     UIBezierPath *trianglePath = UIBezierPath.new;
-    CGPoint point2 = CGPointMake( 0,  w);
+    CGPoint point2 = CGPointMake( 0,  h);
     [trianglePath moveToPoint: point2];
     point2 = CGPointMake(w / 2, 0);
     [trianglePath addLineToPoint: point2];
-    point2 = CGPointMake(w,w);
+    point2 = CGPointMake(w,h);
     [trianglePath addLineToPoint:point2];
     [trianglePath closePath];
     CAShapeLayer *triangleLayer = CAShapeLayer.layer;
     triangleLayer.path = trianglePath.CGPath;
     triangleLayer.fillColor = UIColor.redColor.CGColor;
-    [_redTriangleView.layer addSublayer:triangleLayer];
+    [label.layer addSublayer:triangleLayer];
 }
 -(CGFloat) heading:(CGFloat)heading fromOrirntation:(UIDeviceOrientation) orientation
 {
@@ -351,21 +367,23 @@
     CLLocationDirection theHeading = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading;
     theHeading = newHeading.trueHeading;
     /// 角度
+    ///
+    NSString * directionLabelText;
     int angle = IDNINT(theHeading);
     
     switch (angle)
     {
     case 0:
-            _directionLabel.text = @"N";
+            directionLabelText = @"N";
             break;
     case 90:
-            _directionLabel.text = @"E";
+            directionLabelText = @"E";
             break;
     case 180:
-            _directionLabel.text = @"S";
+            directionLabelText = @"S";
             break;
    case 270:
-            _directionLabel.text = @"W";
+            directionLabelText = @"W";
             break;
     default:
             break;
@@ -373,14 +391,15 @@
     
     if (angle > 0 && angle < 90)
     {
-        _directionLabel.text = @"NE";
+        directionLabelText = @"NE";
     }else if (angle > 90 && angle < 180) {
-        _directionLabel.text = @"SE";
+        directionLabelText = @"SE";
     }else if (angle > 180 && angle < 270) {
-        _directionLabel.text = @"SW";
+        directionLabelText = @"SW";
     }else if (angle > 270) {
-        _directionLabel.text = @"NW";
+        directionLabelText = @"NW";
     }
+    _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -406,7 +425,7 @@
         /// 地磁北方向
         CGFloat headi = -1.0 * M_PI * newHeading.magneticHeading / 180.0;
         // 设置角度label文字
-        //geographyInfoView.angleLabel.text = "\(Int(magneticHeading))"
+        _infoLabel.text = @"\(Int(magneticHeading))";
         
         // 3.旋转变换
         [self resetDirection:headi];
@@ -460,5 +479,9 @@
  */
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
 
 @end

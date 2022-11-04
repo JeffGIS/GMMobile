@@ -152,8 +152,7 @@
     [appearance configureWithOpaqueBackground];
     appearance.backgroundColor = [UIColor whiteColor];
     self.tabBarController.tabBar.backgroundColor = [UIColor whiteColor];
-    self.tabBarController.tabBar.standardAppearance = appearance;
-
+    //self.tabBarController.tabBar.standardAppearance = appearance;
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
@@ -1790,6 +1789,22 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             propData.zoom = _mapView.camera.zoom;
             [propData pickParcel:&llpickPt highlightList:highlightList];
             break;}
+        case HCConfigHunting:
+        {
+            NSMutableArray *optionList = NSMutableArray.array;
+            [optionList addObject:@"Add Flushed Waypoint"];
+            [optionList addObject:@"Add Retrieved Waypoint"];
+            
+         
+            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                              delegate:self
+                                                                                 title:@"Waypoint Options"
+                                                                             textArray:optionList
+                                                                         includeCancel:YES];
+            nvptv.allowsSubtitle = NO;
+
+        }
+            break;
         default:break;
     }
     
