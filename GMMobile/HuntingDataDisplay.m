@@ -203,6 +203,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                      themes:themes
                                 pointInArea:pia];
         }
+        nDisplayed = [self displayWaypoints:context
+                              llCorners:latlonCornerPoints
+                               LLBounds:platlonBounds
+                             viewBounds:pvbounds
+                 displayCharacteristics:dc
+                                 themes:themes
+                            pointInArea:pia];
     }
 
 }
@@ -1107,5 +1114,61 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
     }
 }
+-(int) displayWaypoints:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+                themes:(Themes*)themes
+           pointInArea:(PointInArea *)pia
+{
+    int nDisplayed = 0;
+    NSString *query = @"";
+    //NSString *querys;
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints, useCode;
+    int numLoops;
+    HuntingData *hd = HuntingData.new;
+    NSArray *userWaypointArray = [hd getWaypoints];
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+        
+     
+    _currentRec = 0;
+    CGColorRef starColor = UIColor.orangeColor.CGColor;
+    CGColorRef blackColor = UIColor.blackColor.CGColor;
+
+    for (UserWaypoint* waypoint in userWaypointArray)
+    {
+        DPOINT pt = TranLLPOINT(waypoint.latlon, _pTranLLtoView);
+        dc.width = 5.5;
+        dc.penColor = [UIColor orangeColor];
+        
+        if ([themes setDisplayCharacteristics:dc
+                                    displayID:_processingID
+                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+        {
+            
+            [SymbolDictionary drawPointWithSymbol:context
+                                               at:&pt
+                                      usingSymbol:Star2Sym
+                                             Size:75*UIScreen.mainScreen.scale
+                                        fillColor:starColor
+                                        lineColor:blackColor
+                                        lineWidth:1*UIScreen.mainScreen.scale
+                                          andText:waypoint.name];
+            nDisplayed++;
+        }
+     }
+    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    return nDisplayed;
+}
+
+
 
 @end

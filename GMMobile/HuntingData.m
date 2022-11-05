@@ -189,6 +189,7 @@
         UserWaypoint * wp = UserWaypoint.new;
         wp.refno = refno;
         wp.name = [NSString stringWithUTF8String:name];
+        wp.name = [wp.name stringByReplacingOccurrencesOfString:@".id" withString:[NSString stringWithFormat:@"%i",refno]];
         wp.type = [NSString stringWithUTF8String:type];
         wp.desc = [NSString stringWithUTF8String:desc];
         wp.time = itime;

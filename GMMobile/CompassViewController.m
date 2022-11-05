@@ -19,7 +19,7 @@
 @property UIView *verticalView;
 @property UIView *lineView;
 @property UIView *redTriangleView;
-@property UIView *geographyInfoView;
+@property UIView *profileView;
 @property UILabel *infoLabel;
 @property CGFloat screenW, screenH, heightFactor, widthFactor, radius;
 @property (nonatomic) CLLocationManager *locationManager;
@@ -104,16 +104,16 @@
     _compassTriangleView = UIView.new;
     _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
     _compassTriangleView.backgroundColor = UIColor.clearColor;
-    _geographyInfoView = UIView.new;
-    _geographyInfoView.frame =CGRectMake(0, 380*_heightFactor, _screenW,130*_heightFactor);
-    _geographyInfoView.backgroundColor = UIColor.blueColor;
+    _profileView = UIView.new;
+    _profileView.frame =CGRectMake(0, 380*_heightFactor, _screenW,130*_heightFactor);
+    _profileView.backgroundColor = UIColor.whiteColor;
     _infoLabel = UILabel.new;
-    _infoLabel.frame = CGRectMake (0,0,_geographyInfoView.frame.size.width,_geographyInfoView.frame.size.height/2);
+    _infoLabel.frame = CGRectMake (0,0,_profileView.frame.size.width,_profileView.frame.size.height/2);
     _infoLabel.backgroundColor = UIColor.blackColor;
     _infoLabel.textColor = UIColor.whiteColor;
     _infoLabel.font =[UIFont systemFontOfSize: 42];
     _infoLabel.textAlignment = NSTextAlignmentCenter;
-    [_geographyInfoView addSubview:_infoLabel];
+    [_profileView addSubview:_infoLabel];
     _dScaView.clipsToBounds = true;
     _dScaView.layer.cornerRadius = _dScaView.frame.size.width / 2;
     _backgroundView = UIView.new;
@@ -125,7 +125,7 @@
     [self.view insertSubview:_lineView atIndex:0];
     [_dScaView addSubview:_compassTriangleView];
     [self.view addSubview:_dScaView];
-    [self.view addSubview:_geographyInfoView];
+    [self.view addSubview:_profileView];
     [self configScaleDial];
 }
 -(UIImage *) DrawCompass
@@ -414,7 +414,7 @@
         if (fabs (daz) < 0.2)
         {
             dist = dist / METERS_PER_MILE;
-            _infoLabel.text = [NSString stringWithFormat:@"WP%i: %.2f miles",waypoint.refno,dist];
+            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f miles",waypoint.name,dist];
         }
 
     }
@@ -537,7 +537,7 @@ double HeadingFromAZ (double az)
     {
         double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
         double az = AZMLatLon (currentPoint,waypoint.latlon);
-        NSString *  tickText = [NSString stringWithFormat:@"WP%i",waypoint.refno];
+        NSString *  tickText = waypoint.name;
         
         CGFloat textAngle = az;
         
