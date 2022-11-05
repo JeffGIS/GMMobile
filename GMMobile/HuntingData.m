@@ -14,12 +14,14 @@
 @interface HuntingData ()
 
 @property (nonatomic, copy) NSString *documentsDirectory;
+@property (nonatomic, copy) NSString *backedUpDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *pathNWI;
 @property (nonatomic, copy) NSString *pathNWIBin;
 @property (nonatomic, copy) NSString *pathFOREST;
 @property (nonatomic, copy) NSString *pathFORESTBin;
+@property (nonatomic, copy) NSString *usersHuntingData;
 @property NSInteger fileSize;
 @property NSInteger fileSizeNWI;
 @property NSInteger fileSizeNWIBin;
@@ -30,6 +32,16 @@
 @property int iPass, ii;
 @end
 
+@implementation UserWaypoint
+@synthesize refno;
+@synthesize latlon;
+@synthesize name;
+@synthesize type;
+@synthesize desc;
+@synthesize time;
+@synthesize displayOnCompass;
+
+@end
 
 @implementation HuntingData
 - (id)init
@@ -40,12 +52,14 @@
     {
         _huntingFactor = _NWIFactor = COORDINATE_FACTOR;
         _documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
+        _backedUpDirectory = UserDefaults.defaults.localFilePath;
         _path = [_documentsDirectory stringByAppendingString:@"/Hunting/HuntingData.slt"];
         _pathNWI = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.slt"];
         _pathNWIBin = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.bin"];
         _pathFOREST = [_documentsDirectory stringByAppendingString:@"/Hunting/forest.slt"];
         _pathFORESTBin = [_documentsDirectory stringByAppendingString:@"/Hunting/forest.bin"];
-
+        _usersHuntingData = [_backedUpDirectory stringByAppendingString:@"/UsersHuntingData.slt"];
+        
         int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                                  error:nil].fileSize;
         int fileSizeNWI = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathNWI
@@ -84,6 +98,15 @@
     BOOL rtn = FALSE;
     if (!_isOpen)
     {
+        BOOL delete = NO;
+        if (delete)
+            [NSFileManager.defaultManager removeItemAtPath:_usersHuntingData
+                                                     error:nil];
+       if (![NSFileManager.defaultManager fileExistsAtPath:_usersHuntingData])
+        {
+            [self createUsersData];
+        }
+
         _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_path.UTF8String, &_database), _database);
         NSLog(@"Hunting Database open");
         
@@ -106,14 +129,79 @@
             _fidNWIBin = fopen (_pathNWIBin.UTF8String,"rb");
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS FORESTDATA",_pathFOREST];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
-           _ForestVersion = [self getForestVersion];
+            _ForestVersion = [self getForestVersion];
             _fidForestBin = fopen (_pathFORESTBin.UTF8String,"rb");
-
-        }
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS USERDATA",_usersHuntingData];
+            rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+       }
     }
     return rtn;
 }
 
+-(BOOL) createUsersData
+{
+    BOOL rtn = TRUE;
+    _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_usersHuntingData.UTF8String, &_database), _database);
+    NSString *cmd = @"CREATE TABLE IF NOT EXISTS UserWayPoints (id INTEGER PRIMARY KEY AUTOINCREMENT,Name CHAR(32), Type CHAR(32), LAT DOUBLE,LON DOUBLE, TimeCreated INT, Description CHAR(256), DisplayOnCompass INT)";
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
+    _isOpen = FALSE;
+    return rtn;
+}
+
+-(BOOL)addWaypoint:(NSString*)name
+              type:(NSString *)type
+            latlon:(LLPOINT)ll
+       description:(NSString *)desc
+  displayOnCompass:(BOOL)displayOnCompass
+{
+    BOOL opened = [self open];
+    int iTime = NSDate.timeIntervalSinceReferenceDate;
+
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO USERDATA.UserWayPoints (Name,Type,LAT,LON,TimeCreated,Description,DisplayOnCompass) VALUES('%@','%@',%f,%f,%i,'%@',%i)",name,type,ll.lat,ll.lon,iTime,desc,displayOnCompass];
+    BOOL rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    [self close:opened];
+    return rtn;
+}
+-(NSArray *)getWaypoints
+{
+    NSMutableArray *array = NSMutableArray.new;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM USERDATA.UserWayPoints"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        int refno = sqlite3_column_int(statement, i++);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR type = (LPSTR)sqlite3_column_text(statement, i++);
+        double lat = sqlite3_column_double(statement, i++);
+        double lon = sqlite3_column_double(statement, i++);
+        int itime = sqlite3_column_int(statement, i++);
+        LPSTR desc = (LPSTR)sqlite3_column_text(statement, i++);
+        int displayOnCompass = sqlite3_column_int(statement, i++);
+        LLPOINT latlon;
+        latlon.lat = lat;
+        latlon.lon = lon;
+        UserWaypoint * wp = UserWaypoint.new;
+        wp.refno = refno;
+        wp.name = [NSString stringWithUTF8String:name];
+        wp.type = [NSString stringWithUTF8String:type];
+        wp.desc = [NSString stringWithUTF8String:desc];
+        wp.time = itime;
+        wp.displayOnCompass = displayOnCompass;
+        wp.latlon = latlon;
+        [array addObject:wp];
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    [self close:opened];
+    return array;
+}
 - (BOOL)executeCmd:(LPCSTR)cmd
 {
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);
@@ -236,6 +324,7 @@
     {
         SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         fclose(_fidNWIBin);
+        fclose(_fidForestBin);
         NSLog(@"Hunting Database close");
         _isOpen = NO;
     }

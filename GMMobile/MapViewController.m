@@ -135,6 +135,7 @@
 @property PropertyList *propertyList;
 @property NSString * propYearAndQuarter;
 @property CGPoint mapToolbarCenter;
+@property LLPOINT llPickedPt;
 
 @end
 
@@ -1660,6 +1661,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     LLPOINT llpickPt = {0};
     llpickPt.lat = coordinate.latitude;
     llpickPt.lon = coordinate.longitude;
+    _llPickedPt = llpickPt;
     CRAPI.sharedInstance.lastPickPoint = llpickPt;
     
     NSMutableArray *highlightList = NSMutableArray.array;
@@ -1794,7 +1796,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             NSMutableArray *optionList = NSMutableArray.array;
             [optionList addObject:@"Add Flushed Waypoint"];
             [optionList addObject:@"Add Retrieved Waypoint"];
-            
+            [optionList addObject:@"Add Compass Waypoint"];
+
          
             NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                               delegate:self
@@ -6723,7 +6726,12 @@ didSelectPDFButtonWithText:(NSString *)text
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    if ([text isEqualToString:@"View Overall Property Report"])
+    if ([text isEqualToString:@"Add Compass Waypoint"])
+    {
+        HuntingData *hd = HuntingData.new;
+        [hd addWaypoint:@"R.id" type:@"RoutePoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
+    }
+    else if ([text isEqualToString:@"View Overall Property Report"])
     {
         
     }

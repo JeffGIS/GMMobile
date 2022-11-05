@@ -15,6 +15,16 @@
 #import "Themes.h"
 #import "NVMetroSettings.h"
 
+@interface UserWaypoint : NSObject
+@property (nonatomic) int refno;
+@property (atomic) LLPOINT latlon;
+@property (nonatomic) NSString * name;
+@property (nonatomic) NSString *type;
+@property (nonatomic) NSString *desc;
+@property int time;
+@property int displayOnCompass;
+@end
+
 @interface HuntingData : NSObject
 @property int processingID;
 @property sqlite3nv *database;
@@ -36,5 +46,11 @@
 @property FILE *fidForestBin;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
+-(BOOL)addWaypoint:(NSString*)name
+              type:(NSString *)type
+            latlon:(LLPOINT)ll
+       description:(NSString *)desc
+  displayOnCompass:(BOOL)displayOnCompass;
+-(NSArray *)getWaypoints;
 
 @end

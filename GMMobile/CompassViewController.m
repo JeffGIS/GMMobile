@@ -8,6 +8,8 @@
 
 #import "CompassViewController.h"
 #import "CCodeLibrary/CRAPI.h"
+#import "HuntingData.h"
+
 
 @interface CompassViewController ()
 @property UIView *backgroundView;
@@ -23,6 +25,11 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property id oldLocationManagerDelegate;
 @property UILabel *directionLabel;
+@property NSMutableArray * userWaypointLabels;
+@property CGPoint po;
+@property LLPOINT currentPoint;
+@property NSArray <UserWaypoint*> *userWaypointArray;
+
 @end
 
 @implementation CompassViewController
@@ -55,6 +62,10 @@
     _oldLocationManagerDelegate = _locationManager.delegate;
     _locationManager.delegate = self;
     self.view.backgroundColor = UIColor.blackColor;
+    HuntingData *hd = HuntingData.new;
+    
+    _userWaypointArray = [hd getWaypoints];
+
 }
  - (void)viewDidAppear:(BOOL)animated
 {
@@ -98,7 +109,10 @@
     _geographyInfoView.backgroundColor = UIColor.blueColor;
     _infoLabel = UILabel.new;
     _infoLabel.frame = CGRectMake (0,0,_geographyInfoView.frame.size.width,_geographyInfoView.frame.size.height/2);
-    _infoLabel.backgroundColor = UIColor.orangeColor;
+    _infoLabel.backgroundColor = UIColor.blackColor;
+    _infoLabel.textColor = UIColor.whiteColor;
+    _infoLabel.font =[UIFont systemFontOfSize: 42];
+    _infoLabel.textAlignment = NSTextAlignmentCenter;
     [_geographyInfoView addSubview:_infoLabel];
     _dScaView.clipsToBounds = true;
     _dScaView.layer.cornerRadius = _dScaView.frame.size.width / 2;
@@ -224,7 +238,7 @@
         
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
         
-    CGPoint po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
+    _po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
     _radius = _dScaView.frame.size.width / 2 - 90*_widthFactor/2;
 
     for (int i=0;i< 180;i++)
@@ -234,7 +248,7 @@
             
         CGFloat endAngle  = startAngle + angle / 2;
             
-        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:po radius:_radius startAngle:startAngle endAngle:endAngle clockwise:true];
+        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:_po radius:_radius startAngle:startAngle endAngle:endAngle clockwise:true];
         
         if (i % 45 != 0)
         {
@@ -261,7 +275,7 @@
                 
                 CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
                 
-                CGPoint point  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
+                CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
                 
                 // UILabel
                 UILabel* label = UILabel.new;
@@ -289,7 +303,7 @@
                 {
                     NSString * tickText = directionArray[i / 45];
                     
-                    CGPoint point2  = [self calculateTextPositonWithArcCenter: po andAngle: textAngle andScale: 1];
+                    CGPoint point2  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1];
                     // UILabel
                     UILabel * label2 = UILabel.new;
                     label2.frame = CGRectMake (point2.x, point2.y,30*_widthFactor,30*_widthFactor);
@@ -371,37 +385,51 @@
     NSString * directionLabelText;
     int angle = IDNINT(theHeading);
     
-    switch (angle)
-    {
-    case 0:
-            directionLabelText = @"N";
-            break;
-    case 90:
-            directionLabelText = @"E";
-            break;
-    case 180:
-            directionLabelText = @"S";
-            break;
-   case 270:
-            directionLabelText = @"W";
-            break;
-    default:
-            break;
-    }
-    
-    if (angle > 0 && angle < 90)
-    {
+    directionLabelText = @"N";
+    if (theHeading > 22.5)
         directionLabelText = @"NE";
-    }else if (angle > 90 && angle < 180) {
+    if (theHeading > 90 - 22.5)
+        directionLabelText = @"E";
+    if (theHeading > 90 + 22.5)
         directionLabelText = @"SE";
-    }else if (angle > 180 && angle < 270) {
+    if (theHeading > 180 - 22.5)
+        directionLabelText = @"S";
+    if (theHeading > 180 + 22.5)
         directionLabelText = @"SW";
-    }else if (angle > 270) {
+    if (theHeading > 270 - 22.5)
+        directionLabelText = @"W";
+    if (theHeading > 270 + 22.5)
         directionLabelText = @"NW";
-    }
-    _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
-}
+    if (theHeading > 270 + 45)
+        directionLabelText = @"N";
 
+    _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
+    for (UserWaypoint* waypoint in _userWaypointArray)
+    {
+        double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
+        double az = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
+        double azDeg = RadiansToDegrees (az);
+        double curAz = DegreesToRadians(theHeading);
+        double daz = DeltaAZD(az, curAz);
+        if (fabs (daz) < 0.2)
+        {
+            dist = dist / METERS_PER_MILE;
+            _infoLabel.text = [NSString stringWithFormat:@"WP%i: %.2f miles",waypoint.refno,dist];
+        }
+
+    }
+ 
+}
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    for (CLLocation * loc in locations)
+    {
+        _currentPoint.lat = loc.coordinate.latitude;
+        _currentPoint.lon = loc.coordinate.longitude;
+    }
+    [self removeUserWaypoints];
+    [self addUserWaypoints:_currentPoint];
+}
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
@@ -425,7 +453,7 @@
         /// 地磁北方向
         CGFloat headi = -1.0 * M_PI * newHeading.magneticHeading / 180.0;
         // 设置角度label文字
-        _infoLabel.text = @"\(Int(magneticHeading))";
+        //_infoLabel.text = @"\(Int(magneticHeading))";
         
         // 3.旋转变换
         [self resetDirection:headi];
@@ -479,6 +507,57 @@
  */
 }
 
+-(void) removeUserWaypoints
+{
+    if (_userWaypointLabels)
+    {
+        for (UILabel * label in _userWaypointLabels)
+        {
+            [label removeFromSuperview];
+        }
+    }
+}
+double HeadingFromAZ (double az)
+{
+    double heading = az + HALFPI;
+    heading = LTWOPI (heading);
+    return heading;
+}
+-(int)addUserWaypoints:(LLPOINT)currentPoint
+{
+    LLPOINT p1,p2;
+    p1 = currentPoint;
+    p2 = currentPoint;
+    p2.lon -= 1;
+    double az = HeadingFromAZ(AZMLatLon (p1,p2));
+    az = HeadingFromAZ(AZMLatLon (p2,p1));
+    _userWaypointLabels = NSMutableArray.new;
+    int userWaypointIndex = _backgroundView.subviews.count;
+    for (UserWaypoint* waypoint in _userWaypointArray)
+    {
+        double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
+        double az = AZMLatLon (currentPoint,waypoint.latlon);
+        NSString *  tickText = [NSString stringWithFormat:@"WP%i",waypoint.refno];
+        
+        CGFloat textAngle = az;
+        
+        CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0-.2*_widthFactor];
+        
+        // UILabel
+        UILabel* label = UILabel.new;
+        label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
+        label.center = point;
+        label.textColor = UIColor.whiteColor;
+        label.font = [UIFont systemFontOfSize: 12];
+        label.textAlignment = NSTextAlignmentCenter;
+        label.text = tickText;
+        label.backgroundColor = UIColor.purpleColor;
+        [_backgroundView addSubview:label];
+        [_userWaypointLabels addObject:label];
+        
+    }
+    
+}
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
