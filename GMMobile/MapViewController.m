@@ -136,6 +136,7 @@
 @property NSString * propYearAndQuarter;
 @property CGPoint mapToolbarCenter;
 @property LLPOINT llPickedPt;
+@property BOOL locationTrackingEnabled;
 
 @end
 
@@ -1340,6 +1341,8 @@
     }
     [self mapToolbarDidFinishDrag:_mapToolbarCenter
                                     superView:nil];
+    if (_locationTrackingEnabled)
+        [self startTrackingUserLocation];
 
  }
 #pragma mark - EndOfViewDidAppear
@@ -5694,10 +5697,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     else
     {
         if (enabled)
+        {
+            _locationTrackingEnabled = YES;
             [self startTrackingUserLocation];
-        
+        }
         else
+        {
+            _locationTrackingEnabled = NO;
             [self stopTrackingUserLocation];
+        }
     }
 }
 

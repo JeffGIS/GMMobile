@@ -29,6 +29,7 @@
 @property CGPoint po;
 @property LLPOINT currentPoint;
 @property NSArray <UserWaypoint*> *userWaypointArray;
+@property double maxWaypointDist;
 
 @end
 
@@ -55,6 +56,7 @@
 -(void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    _maxWaypointDist = 5.0 * METERS_PER_MILE;
     _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.headingFilter = kCLHeadingFilterNone;
     _locationManager.headingOrientation = CLDeviceOrientationFaceUp;
@@ -81,6 +83,8 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [_locationManager stopUpdatingHeading];
+    [_locationManager stopUpdatingLocation];
     _locationManager.delegate = _oldLocationManagerDelegate;
 }
 -(void)configUI
@@ -536,24 +540,30 @@ double HeadingFromAZ (double az)
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
         double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
-        double az = AZMLatLon (currentPoint,waypoint.latlon);
-        NSString *  tickText = waypoint.name;
-        
-        CGFloat textAngle = az;
-        
-        CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0-.2*_widthFactor];
-        
-        // UILabel
-        UILabel* label = UILabel.new;
-        label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
-        label.center = point;
-        label.textColor = UIColor.whiteColor;
-        label.font = [UIFont systemFontOfSize: 12];
-        label.textAlignment = NSTextAlignmentCenter;
-        label.text = tickText;
-        label.backgroundColor = UIColor.purpleColor;
-        [_backgroundView addSubview:label];
-        [_userWaypointLabels addObject:label];
+        if (dist < _maxWaypointDist)
+        {
+            double az = AZMLatLon (currentPoint,waypoint.latlon);
+            double azd = RadiansToDegrees (az);
+            double az2 = HeadingFromAZ (az);
+            double az2d = RadiansToDegrees (az2);
+            NSString *  tickText = waypoint.name;
+            
+            CGFloat textAngle = az;
+            
+            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0-.2*_widthFactor];
+            
+            // UILabel
+            UILabel* label = UILabel.new;
+            label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
+            label.center = point;
+            label.textColor = UIColor.whiteColor;
+            label.font = [UIFont systemFontOfSize: 12];
+            label.textAlignment = NSTextAlignmentCenter;
+            label.text = tickText;
+            label.backgroundColor = UIColor.purpleColor;
+            [_backgroundView addSubview:label];
+            [_userWaypointLabels addObject:label];
+        }
         
     }
     
