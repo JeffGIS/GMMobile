@@ -1140,6 +1140,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     _currentRec = 0;
     CGColorRef starColor = UIColor.orangeColor.CGColor;
     CGColorRef blackColor = UIColor.blackColor.CGColor;
+    CGColorRef whiteColor = UIColor.whiteColor.CGColor;
 
     for (UserWaypoint* waypoint in userWaypointArray)
     {
@@ -1151,13 +1152,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     displayID:_processingID
                                  compareClass:nil] != DO_NOT_DISPLAY_ITEM)
         {
-            
+            int size = 75*UIScreen.mainScreen.scale;
             [SymbolDictionary drawPointWithSymbol:context
                                                at:&pt
                                       usingSymbol:Star2Sym
-                                             Size:75*UIScreen.mainScreen.scale
+                                             Size:size
                                         fillColor:starColor
-                                        lineColor:blackColor
+                                        lineColor:whiteColor
                                         lineWidth:1*UIScreen.mainScreen.scale
                                           andText:waypoint.name];
             nDisplayed++;

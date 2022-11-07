@@ -378,52 +378,6 @@
     }
     return realHeading;
 }
--(void) update:(CLHeading*)newHeading
-{
-    
-    /// 朝向
-    CLLocationDirection theHeading = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading;
-    theHeading = newHeading.trueHeading;
-    /// 角度
-    ///
-    NSString * directionLabelText;
-    int angle = IDNINT(theHeading);
-    
-    directionLabelText = @"N";
-    if (theHeading > 22.5)
-        directionLabelText = @"NE";
-    if (theHeading > 90 - 22.5)
-        directionLabelText = @"E";
-    if (theHeading > 90 + 22.5)
-        directionLabelText = @"SE";
-    if (theHeading > 180 - 22.5)
-        directionLabelText = @"S";
-    if (theHeading > 180 + 22.5)
-        directionLabelText = @"SW";
-    if (theHeading > 270 - 22.5)
-        directionLabelText = @"W";
-    if (theHeading > 270 + 22.5)
-        directionLabelText = @"NW";
-    if (theHeading > 270 + 45)
-        directionLabelText = @"N";
-
-    _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
-    for (UserWaypoint* waypoint in _userWaypointArray)
-    {
-        double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
-        double az = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
-        double azDeg = RadiansToDegrees (az);
-        double curAz = DegreesToRadians(theHeading);
-        double daz = DeltaAZD(az, curAz);
-        if (fabs (daz) < 0.2)
-        {
-            dist = dist / METERS_PER_MILE;
-            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f miles",waypoint.name,dist];
-        }
-
-    }
- 
-}
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
     for (CLLocation * loc in locations)
@@ -546,11 +500,17 @@ double HeadingFromAZ (double az)
             double azd = RadiansToDegrees (az);
             double az2 = HeadingFromAZ (az);
             double az2d = RadiansToDegrees (az2);
+            double maxScale = 1.0-.2*_widthFactor;
+            double scale = maxScale;
             NSString *  tickText = waypoint.name;
             
             CGFloat textAngle = az;
             
-            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0-.2*_widthFactor];
+            if (dist < 0.15 * METERS_PER_MILE)
+            {
+                scale = maxScale * (dist/(0.15 * METERS_PER_MILE));
+            }
+            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: scale];
             
             // UILabel
             UILabel* label = UILabel.new;
@@ -568,6 +528,60 @@ double HeadingFromAZ (double az)
     }
     
 }
+-(void) update:(CLHeading*)newHeading
+{
+    
+    /// 朝向
+    CLLocationDirection theHeading = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading;
+    theHeading = newHeading.trueHeading;
+    /// 角度
+    ///
+    NSString * directionLabelText;
+    int angle = IDNINT(theHeading);
+    
+    directionLabelText = @"N";
+    if (theHeading > 22.5)
+        directionLabelText = @"NE";
+    if (theHeading > 90 - 22.5)
+        directionLabelText = @"E";
+    if (theHeading > 90 + 22.5)
+        directionLabelText = @"SE";
+    if (theHeading > 180 - 22.5)
+        directionLabelText = @"S";
+    if (theHeading > 180 + 22.5)
+        directionLabelText = @"SW";
+    if (theHeading > 270 - 22.5)
+        directionLabelText = @"W";
+    if (theHeading > 270 + 22.5)
+        directionLabelText = @"NW";
+    if (theHeading > 270 + 45)
+        directionLabelText = @"N";
+
+    _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
+    for (UserWaypoint* waypoint in _userWaypointArray)
+    {
+        double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
+        double az = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
+        double azDeg = RadiansToDegrees (az);
+        double curAz = DegreesToRadians(theHeading);
+        if (dist < 0.02 * METERS_PER_MILE)
+        {
+            _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f meters)",waypoint.name,dist];
+        }
+        else
+        {
+            double daz = DeltaAZD(az, curAz);
+            if (fabs (daz) < 0.2)
+            {
+                dist = dist / METERS_PER_MILE;
+                _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f miles",waypoint.name,dist];
+            }
+        }
+
+    }
+ 
+}
+
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
