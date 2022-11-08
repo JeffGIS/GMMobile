@@ -255,7 +255,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int colorOpt = 0;
 #define OWNER_COLORS    1
 #define FWS_COLORS      2
-    
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    CGFloat fontSize = 32.0 * screenScale;
+    int textZoom = 14;
     BOOL opened = [hd open];
     
     CloseTRANS2P(&_pTranLLtoView);
@@ -281,6 +283,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         if ([table isEqual:@"LAKES"])
         {
             key = @"NAME";
+            textZoom = 8;
         }
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -356,23 +359,43 @@ NextPass:
                 break;
         }
         nLoaded++;
-        LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints);
-        free (llpoints);
+        LPDPOINT llpointsThinned = llpoints;//ThinPoints (llpoints,&numPoints);
+        //free (llpoints);
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpointsThinned
                 withColor:color
                 lineColor:nil
                 lineWidth:0];
-       /* if (_zoom > 14)
-        [self drawUseCode:context
-                  nPoints:numPoints
-                   nLoops:numLoops
-                  partLen:polyPartLen
-                   points:llpointsThinned
-                withColor:UIColor.blackColor.CGColor
-                 andWidth:3];
-        */
+        if (_zoom >= textZoom)
+        {
+            [self drawUseCode:context
+                      nPoints:numPoints
+                       nLoops:numLoops
+                      partLen:polyPartLen
+                       points:llpointsThinned
+                    withColor:UIColor.blackColor.CGColor
+                     andWidth:3];
+            if (keyval.length)
+            {
+                UIColor *textColor = UIColor.blackColor;
+                CGFloat minFontSize = fontSize / 3;
+                [NVTextDrawing drawText:keyval
+                              inContext:context
+                          withinPolygon:llpointsThinned
+                          withNumPoints:numPoints
+                            andNumLoops:numLoops
+                                loopLen:polyPartLen
+                           withinBounds:pvbounds
+                               fontSize:fontSize
+                            minFontSize:minFontSize
+                              textColor:textColor
+                            shadowColor:nil
+                           processingID:_processingID];
+
+            }
+        }
+        
         free (llpointsThinned);
     }
     
@@ -486,6 +509,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     HuntingData *hd = HuntingData.new;
     int colorOpt = 0;
     FILE *binFile;
+    CGColorRef blackColor = NVColor.blackColor.CGColor;
 #define OWNER_COLORS    1
 #define FWS_COLORS      2
 #define typeNWI 1
@@ -495,6 +519,8 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     int type;
     
     BOOL opened = [hd open];
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    CGFloat fontSize = 32.0 * screenScale;
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
@@ -540,6 +566,8 @@ NextPass:
     {
         int i = 0;
         int forestCode = 0;
+        NSString * text = @"";
+
         BasePt.x = sqlite3_column_int(statement,i++);
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
@@ -557,6 +585,7 @@ NextPass:
             {
                 LPSTR pspcc_Desc = (LPSTR)sqlite3_column_text(statement,i++);
                 NSString *spcc_Desc = [NSString stringWithUTF8String:pspcc_Desc];
+                text = spcc_Desc;
             }
                 break;
             case typeFOREST:
@@ -584,6 +613,7 @@ NextPass:
                 double acres = sqlite3_column_double(statement,i++);
                 double pctforty = sqlite3_column_double(statement,i++);
                 acres *= pctforty / 100;
+                text = [NSString stringWithUTF8String:landtype];
             }
                 break;
         }
@@ -641,18 +671,38 @@ NextPass:
                   nPoints:numPoints
                    points:llpoints
                 withColor:color
-                lineColor:nil
+                lineColor:blackColor
                 lineWidth:0];
-            /*
+        
         if (_zoom > 14)
-        [self drawUseCode:context
-                  nPoints:numPoints
-                   nLoops:numLoops
-                  partLen:polyPartLen
-                   points:llpoints
-                withColor:UIColor.blackColor.CGColor
-                 andWidth:3];
-             */
+        {
+            [self drawUseCode:context
+                      nPoints:numPoints
+                       nLoops:numLoops
+                      partLen:polyPartLen
+                       points:llpoints
+                    withColor:UIColor.blackColor.CGColor
+                     andWidth:3];
+            
+            if (text.length)
+            {
+                UIColor *textColor = UIColor.blackColor;
+                CGFloat minFontSize = fontSize / 3;
+                [NVTextDrawing drawText:text
+                              inContext:context
+                          withinPolygon:llpoints
+                          withNumPoints:numPoints
+                            andNumLoops:numLoops
+                                loopLen:polyPartLen
+                           withinBounds:pvbounds
+                               fontSize:fontSize
+                            minFontSize:minFontSize
+                              textColor:textColor
+                            shadowColor:nil
+                           processingID:_processingID];
+            }
+        }
+
         }
              
         free (llpoints);
@@ -699,6 +749,8 @@ LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints)
     
     LPDPOINT llPointsThinned = malloc(*pNumPoints * sizeof(DPOINT) + 4);
     int numThinnedPoints = 0;
+    numThinnedPoints = *pNumPoints;
+    /*
     lastx = RoundToHundred (&llPoints->x);
     lasty = RoundToHundred (&llPoints->y);
     llPointsThinned[numThinnedPoints++] = *llPoints++;
@@ -714,6 +766,7 @@ LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints)
         }
     }
     *pNumPoints = numThinnedPoints;
+     */
     return llPointsThinned;
 }
 

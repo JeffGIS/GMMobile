@@ -2025,6 +2025,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                                            fontSize:fontSize
                                         minFontSize:minFontSize
                                           textColor:textColor
+                                        shadowColor:nil
                                        processingID:_processingID];
                         }
                         
@@ -2717,6 +2718,7 @@ NextPass:
                                fontSize:fontSize
                             minFontSize:minFontSize
                               textColor:textColor
+                            shadowColor:nil
                            processingID:_processingID];
                 if (!st && from == TFONVMetroDisplay && nTextFields>1)
                 {

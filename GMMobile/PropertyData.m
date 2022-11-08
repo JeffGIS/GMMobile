@@ -1829,6 +1829,7 @@ return _version;
                    fontSize:fontSize
                 minFontSize:minFontSize
                   textColor:textColor
+                shadowColor:nil
                processingID:_processingID];
     if (polyPartLen)
         free (polyPartLen);

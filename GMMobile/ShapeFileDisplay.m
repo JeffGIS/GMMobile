@@ -689,6 +689,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                                                          fontSize:fontSize
                                                                       minFontSize:minFontSize
                                                                         textColor:textColor
+                                                                      shadowColor:nil
                                                                      processingID:_processingID];
                                             }
                                         }
