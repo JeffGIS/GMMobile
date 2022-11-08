@@ -21,12 +21,16 @@
 @property (nonatomic, copy) NSString *pathNWIBin;
 @property (nonatomic, copy) NSString *pathFOREST;
 @property (nonatomic, copy) NSString *pathFORESTBin;
+@property (nonatomic, copy) NSString *pathFEESURF;
+@property (nonatomic, copy) NSString *pathFEESURFBin;
 @property (nonatomic, copy) NSString *usersHuntingData;
 @property NSInteger fileSize;
 @property NSInteger fileSizeNWI;
 @property NSInteger fileSizeNWIBin;
 @property NSInteger fileSizeFOREST;
 @property NSInteger fileSizeFORESTBin;
+@property NSInteger fileSizeFEESURF;
+@property NSInteger fileSizeFEESURFBin;
 @property double acres;
 @property INT64 currentRec;
 @property int iPass, ii;
@@ -58,6 +62,8 @@
         _pathNWIBin = [_documentsDirectory stringByAppendingString:@"/Hunting/NWI.bin"];
         _pathFOREST = [_documentsDirectory stringByAppendingString:@"/Hunting/forest.slt"];
         _pathFORESTBin = [_documentsDirectory stringByAppendingString:@"/Hunting/forest.bin"];
+        _pathFEESURF = [_documentsDirectory stringByAppendingString:@"/Hunting/feesurf.slt"];
+        _pathFEESURFBin = [_documentsDirectory stringByAppendingString:@"/Hunting/feesurf.bin"];
         _usersHuntingData = [_backedUpDirectory stringByAppendingString:@"/UsersHuntingData.slt"];
         
         int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
@@ -69,6 +75,10 @@
         int fileSizeFOREST = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFOREST
                                                                              error:nil].fileSize;
         int fileSizeFORESTBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFORESTBin
+                                                                             error:nil].fileSize;
+        int fileSizeFEESURF = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFEESURF
+                                                                             error:nil].fileSize;
+        int fileSizeFEESURFBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFEESURFBin
                                                                              error:nil].fileSize;
 
         _totRecords = -1;
@@ -122,6 +132,10 @@
                                                                                   error:nil].fileSize;
             _fileSizeFORESTBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFORESTBin
                                                                                   error:nil].fileSize;
+            _fileSizeFEESURF = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFEESURF
+                                                                                  error:nil].fileSize;
+            _fileSizeFEESURFBin = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathFEESURFBin
+                                                                                  error:nil].fileSize;
             _datasetVersion = [self huntingVersion];
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS NWIDATA",_pathNWI];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
@@ -131,6 +145,10 @@
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _ForestVersion = [self getForestVersion];
             _fidForestBin = fopen (_pathFORESTBin.UTF8String,"rb");
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS FEESURFDATA",_pathFEESURF];
+            rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            _FEESURFVersion = [self getFEESURFVersion];
+            _fidFEESURFBin = fopen (_pathFEESURFBin.UTF8String,"rb");
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS USERDATA",_usersHuntingData];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
        }
@@ -318,6 +336,43 @@
 
     return version;
 }
+- (NSString *) getFEESURFVersion
+{
+    NSString *version = @"-1";
+    NSString *query = [NSString stringWithFormat:@"SELECT VersionNum FROM FEESURFDATA.FEESURF_Version"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR ver = (LPSTR)sqlite3_column_text(statement, 0);
+        version = [NSString stringWithUTF8String:ver];
+    }
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    query = [NSString stringWithFormat:@"SELECT COORDFactor FROM FEESURFDATA.FEESURF_VERSION"];
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    if (st == SQLITE_OK)
+    {
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            double factor = sqlite3_column_double(statement, 0);
+            _ForestFactor = factor;
+        }
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    st = query_rtree_bbox(_database->db, "FEESURF_index", &_ForestBounds);
+    _FEESURFBounds.xmn /= _NWIFactor;
+    _FEESURFBounds.xmx /= _NWIFactor;
+    _FEESURFBounds.ymn /= _NWIFactor;
+    _FEESURFBounds.ymx /= _NWIFactor;
+
+    return version;
+}
 
 - (void)close:(BOOL)opened
 {
@@ -326,6 +381,7 @@
         SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
         fclose(_fidNWIBin);
         fclose(_fidForestBin);
+        fclose(_fidFEESURFBin);
         NSLog(@"Hunting Database close");
         _isOpen = NO;
     }

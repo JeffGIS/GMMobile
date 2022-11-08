@@ -165,6 +165,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         strcpy(layerName[HCLayerForest], "Forest Data");
         strcpy(layerName[HCLayerOwnership], "Ownership");
         strcpy(layerName[HCLayerGAPLandCover], "Land Cover");
+        strcpy(layerName[HCLayerFEESURF], "FEESURF");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
@@ -459,6 +460,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigHunting][HCLayerHunting] = YES;
         configLayers[HCConfigHunting][HCLayerNWI] = YES;
         configLayers[HCConfigHunting][HCLayerForest] = YES;
+        configLayers[HCConfigHunting][HCLayerFEESURF] = YES;
         configLayers[HCConfigHunting][HCLayerOwnership] = YES;
         configLayers[HCConfigHunting][HCLayerGAPLandCover] = YES;
 
@@ -687,6 +689,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                         break;
                     case HCLayerForest:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingForest]];
+                        break;
+                    case HCLayerFEESURF:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingFEESURF]];
                         break;
                 }
             }

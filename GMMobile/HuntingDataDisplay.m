@@ -186,6 +186,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
         }
+        if ([ConfigurationControl.sharedInstance layer:HCLayerFEESURF
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self displayUsingBinFile:context
+                              areaType:@"FEESURF"
+                                 color:0
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+        }
         if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
         {
             nDisplayed = [self displayRoads:context
@@ -478,6 +490,8 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
 #define FWS_COLORS      2
 #define typeNWI 1
 #define typeFOREST 2
+#define typeFEESURF 3
+    
     int type;
     
     BOOL opened = [hd open];
@@ -504,12 +518,20 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, spcc_desc FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.NWIFactor, platlonBounds->xmx*hd.NWIFactor, platlonBounds->ymn*hd.NWIFactor, platlonBounds->ymx*hd.NWIFactor];
     }
-    if ([areaType isEqualToString:@"FOREST"] )
+    else if ([areaType isEqualToString:@"FOREST"] )
     {
         type = typeFOREST;
         table = @"FORESTDATA.FOREST";
         binFile = hd.fidForestBin;
         query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, MN_CTYPE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+                 platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
+    }
+    else if ([areaType isEqualToString:@"FEESURF"] )
+    {
+        type = typeFEESURF;
+        table = @"FEESURFDATA.FEESURF";
+        binFile = hd.fidFEESURFBin;
+        query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM,LANDTYPE, SU_ACRES,SU_PCTFORTY FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
     }
 NextPass:
@@ -554,6 +576,14 @@ NextPass:
                     else
                         forestCode = 1;
                 }
+            }
+                break;
+            case typeFEESURF:
+            {
+                LPSTR landtype = (LPSTR)sqlite3_column_text(statement,i++);
+                double acres = sqlite3_column_double(statement,i++);
+                double pctforty = sqlite3_column_double(statement,i++);
+                acres *= pctforty / 100;
             }
                 break;
         }

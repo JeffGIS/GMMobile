@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerGAPLandCover,
     HCLayerSidewalkPoints,
     HCLayerForest,
+    HCLayerFEESURF,
 NUMHardCodedLayers};
 
 @interface ApplicationObject : NSObject

@@ -309,6 +309,9 @@ Top:
                 rtn = YES;
         }
             break;
+        case GetDatabaseSettingFEESURF:
+            rtn = YES;
+            break;
         default:
             break;
     }

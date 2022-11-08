@@ -32,18 +32,22 @@
 @property (nonatomic, copy) NSString *datasetVersion;
 @property (nonatomic, copy) NSString *NWIVersion;
 @property (nonatomic, copy) NSString *ForestVersion;
+@property (nonatomic, copy) NSString *FEESURFVersion;
 @property int zoom;
 @property ItemProcessingPassTypes pass;
 @property int numPass;
 @property INT64 totRecords;
 @property MNMXCORD NWIBounds;
 @property MNMXCORD ForestBounds;
+@property MNMXCORD FEESURFBounds;
 @property MNMXCORD RoadsBounds;
 @property double huntingFactor;
 @property double NWIFactor;
 @property double ForestFactor;
+@property double FEESURFFactor;
 @property FILE *fidNWIBin;
 @property FILE *fidForestBin;
+@property FILE *fidFEESURFBin;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
 -(BOOL)addWaypoint:(NSString*)name
