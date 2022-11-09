@@ -362,6 +362,16 @@ NextPass:
         nLoaded++;
         LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
         free (llpoints);
+        int totpntj = 0;
+        int totpntk = 0;
+        if (numLoops > 1)
+            for (int i=0;i<numLoops;i++)
+        {
+            int j = polyPartLenThinned[i];
+            int k = polyPartLen[i];
+            totpntj += j;
+            totpntk += k;
+        }
         [self fillArea:context
                nPoints:numPoints
                 points:llpointsThinned
@@ -573,13 +583,15 @@ NextPass:
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
         numLoops = sqlite3_column_int(statement,i++);
-        numLoops = 1;
+        //numLoops = 1;
         int rectype = sqlite3_column_int(statement,i++);
         int compressionType = sqlite3_column_int(statement,i++);
         int hasCurves = sqlite3_column_int(statement,i++);
         INT64 offset = sqlite3_column_int64(statement,i++);
         int reclen = sqlite3_column_int(statement,i++);
         INT64 recnum = sqlite3_column_int64(statement,i++);
+        if (recnum == 170552 && _zoom > 14)
+            ii=1;
         switch (type)
         {
             case typeNWI:
@@ -617,8 +629,7 @@ NextPass:
                 text = [NSString stringWithUTF8String:landtype];
             }
                 break;
-        }
-        if (pias)
+        }        if (pias)
         {
             double count = [pias countForArea:keyval
                                    whichCount:0];
@@ -628,6 +639,8 @@ NextPass:
         LPDPOINT llpoints = ExpandPoints (binFile,offset,reclen,compressionType,numPoints,BasePt);
         LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
         LPINT polyPartLenThinned = 0;
+        if (numLoops > 1)
+            BigReadF(binFile, polyPartLen, numLoops*sizeof(int));
         for (int i = 0; i < numPoints; i++)
         {
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
@@ -769,7 +782,7 @@ LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumLoops,LPINT po
             if (pointIndexInLoop == polyPartLen[inLoop])
             {
                 inLoop++;
-                pointIndexInLoop = 0;
+                pointIndexInLoop = 1;
                 polyPartLenThinned[inLoop] = polyPartLen[inLoop];
             }
             else

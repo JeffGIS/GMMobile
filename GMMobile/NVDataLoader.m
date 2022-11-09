@@ -297,7 +297,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.NWIVersion.integerValue >= 2)
+            if (hd.NWIVersion.integerValue >= 3)
                 rtn = YES;
         }
             break;
