@@ -42,7 +42,7 @@
 +(CGColorRef) LAKESColor
 {
     return NVColor.blueColor.CGColor;
-
+    
 }
 - (id)init
 {
@@ -84,119 +84,119 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                            andPass:_passID])
     {
         /*
-        fileName = @"Carlton_County.shp";
-        fileName = @"Ownership.shp";
-        dc.elementType = ParcelBoundary;
-        dc.elementType = Ownership;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
-        {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
-        }
-        */
-/*        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
-                                         visibleAtZoom:_zoom
-                                               andPass:_passID])
-        {
-            nDisplayed = [self display:context
-                              areaType:@"OWNERSHIP"
-                                 color:0
-                          pointInAreas:pia
-                             llCorners:latlonCornerPoints
-                              LLBounds:platlonBounds
-                            viewBounds:pvbounds];
-        }*/
+         fileName = @"Carlton_County.shp";
+         fileName = @"Ownership.shp";
+         dc.elementType = ParcelBoundary;
+         dc.elementType = Ownership;
+         shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+         sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+         if (sfd)
+         {
+         sfd.zoom = _zoom;
+         sfd.processingID = _processingID;
+         [sfd display:context
+         displayCharacteristics:dc
+         llCorners:latlonCornerPoints
+         LLBounds:platlonBounds
+         viewBounds:pvbounds
+         themes:themes
+         pointInArea:pia];
+         }
+         */
+        /*        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
+         visibleAtZoom:_zoom
+         andPass:_passID])
+         {
+         nDisplayed = [self display:context
+         areaType:@"OWNERSHIP"
+         color:0
+         pointInAreas:pia
+         llCorners:latlonCornerPoints
+         LLBounds:platlonBounds
+         viewBounds:pvbounds];
+         }*/
         nDisplayed = [self display:context
                           areaType:@"WMA"
                              color:_WMAColor
-                          pointInAreas:pia
-                          llCorners:latlonCornerPoints
+                      pointInAreas:pia
+                         llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
                         viewBounds:pvbounds];
         nDisplayed = [self display:context
                           areaType:@"LAKES"
                              color:_LAKESColor
-                          pointInAreas:pia
-                          llCorners:latlonCornerPoints
+                      pointInAreas:pia
+                         llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
                         viewBounds:pvbounds];
         nDisplayed = [self display:context
                           areaType:@"WPA"
                              color:_WPAColor
-                          pointInAreas:pia
-                          llCorners:latlonCornerPoints
+                      pointInAreas:pia
+                         llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
                         viewBounds:pvbounds];
-                 
+        
         nDisplayed = [self display:context
                           areaType:@"NWR"
                              color:_NWRColor
-                          pointInAreas:pia
-                          llCorners:latlonCornerPoints
+                      pointInAreas:pia
+                         llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
                         viewBounds:pvbounds];
-                 
-
+        
+        
         nDisplayed = [self display:context
                           areaType:@"FSA"
                              color:_FSAColor
-                          pointInAreas:pia
-                          llCorners:latlonCornerPoints
+                      pointInAreas:pia
+                         llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
-                          viewBounds:pvbounds];
-
+                        viewBounds:pvbounds];
+        
         nDisplayed = [self display:context
                           areaType:@"WALKINAREA"
                              color:_WalkInColor
-                          pointInAreas:pia
-                          llCorners:latlonCornerPoints
+                      pointInAreas:pia
+                         llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
-                          viewBounds:pvbounds];
-
+                        viewBounds:pvbounds];
+        
         if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
         {
             nDisplayed = [self displayUsingBinFile:context
-                              areaType:@"NWI"
-                                 color:0
-                          pointInAreas:pia
-                             llCorners:latlonCornerPoints
-                              LLBounds:platlonBounds
-                            viewBounds:pvbounds];
+                                          areaType:@"NWI"
+                                             color:0
+                                      pointInAreas:pia
+                                         llCorners:latlonCornerPoints
+                                          LLBounds:platlonBounds
+                                        viewBounds:pvbounds];
         }
         if ([ConfigurationControl.sharedInstance layer:HCLayerForest
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
         {
             nDisplayed = [self displayUsingBinFile:context
-                              areaType:@"FOREST"
-                                 color:0
-                          pointInAreas:pia
-                             llCorners:latlonCornerPoints
-                              LLBounds:platlonBounds
-                            viewBounds:pvbounds];
+                                          areaType:@"FOREST"
+                                             color:0
+                                      pointInAreas:pia
+                                         llCorners:latlonCornerPoints
+                                          LLBounds:platlonBounds
+                                        viewBounds:pvbounds];
         }
         if ([ConfigurationControl.sharedInstance layer:HCLayerFEESURF
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
         {
             nDisplayed = [self displayUsingBinFile:context
-                              areaType:@"FEESURF"
-                                 color:0
-                          pointInAreas:pia
-                             llCorners:latlonCornerPoints
-                              LLBounds:platlonBounds
-                            viewBounds:pvbounds];
+                                          areaType:@"FEESURF"
+                                             color:0
+                                      pointInAreas:pia
+                                         llCorners:latlonCornerPoints
+                                          LLBounds:platlonBounds
+                                        viewBounds:pvbounds];
         }
         if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
         {
@@ -208,22 +208,22 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                      themes:themes
                                 pointInArea:pia];
             nDisplayed = [self displayTrails:context
+                                   llCorners:latlonCornerPoints
+                                    LLBounds:platlonBounds
+                                  viewBounds:pvbounds
+                      displayCharacteristics:dc
+                                      themes:themes
+                                 pointInArea:pia];
+        }
+        nDisplayed = [self displayWaypoints:context
                                   llCorners:latlonCornerPoints
                                    LLBounds:platlonBounds
                                  viewBounds:pvbounds
                      displayCharacteristics:dc
                                      themes:themes
                                 pointInArea:pia];
-        }
-        nDisplayed = [self displayWaypoints:context
-                              llCorners:latlonCornerPoints
-                               LLBounds:platlonBounds
-                             viewBounds:pvbounds
-                 displayCharacteristics:dc
-                                 themes:themes
-                            pointInArea:pia];
     }
-
+    
 }
 - (BOOL)continueProcessing
 {
@@ -300,6 +300,7 @@ NextPass:
         numPoints = sqlite3_column_int(statement,2);
         numLoops = sqlite3_column_int(statement,3);
         int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        int *polyPartLenThinned=0;
         //int nBlobBytes = sqlite3_column_bytes(statement,4);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
@@ -359,23 +360,23 @@ NextPass:
                 break;
         }
         nLoaded++;
-        LPDPOINT llpointsThinned = llpoints;//ThinPoints (llpoints,&numPoints);
-        //free (llpoints);
-        [self fillUseCode:context
-                  nPoints:numPoints
-                   points:llpointsThinned
-                withColor:color
-                lineColor:nil
-                lineWidth:0];
+        LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
+        free (llpoints);
+        [self fillArea:context
+               nPoints:numPoints
+                points:llpointsThinned
+             withColor:color
+             lineColor:nil
+             lineWidth:0];
         if (_zoom >= textZoom)
         {
-            [self drawUseCode:context
-                      nPoints:numPoints
-                       nLoops:numLoops
-                      partLen:polyPartLen
-                       points:llpointsThinned
-                    withColor:UIColor.blackColor.CGColor
-                     andWidth:3];
+            [self drawArea:context
+                   nPoints:numPoints
+                    nLoops:numLoops
+                   partLen:polyPartLenThinned
+                    points:llpointsThinned
+                 withColor:UIColor.blackColor.CGColor
+                  andWidth:3];
             if (keyval.length)
             {
                 UIColor *textColor = UIColor.blackColor;
@@ -385,18 +386,18 @@ NextPass:
                           withinPolygon:llpointsThinned
                           withNumPoints:numPoints
                             andNumLoops:numLoops
-                                loopLen:polyPartLen
+                                loopLen:polyPartLenThinned
                            withinBounds:pvbounds
                                fontSize:fontSize
                             minFontSize:minFontSize
                               textColor:textColor
                             shadowColor:nil
                            processingID:_processingID];
-
+                
             }
         }
-        
         free (llpointsThinned);
+        free (polyPartLenThinned);
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
@@ -489,12 +490,12 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     return pOutPoints;
 }
 - (int) displayUsingBinFile:(CGContextRef)context
-       areaType:(NSString*)areaType
-          color:(CGColorRef) color
-   pointInAreas:(PointInAreas*)pias
-      llCorners:(CORNERPOINTS *) latlonCornerPoints
-       LLBounds:(MNMXCORD *)platlonBounds
-     viewBounds:(MNMXCORD *)pvbounds
+                   areaType:(NSString*)areaType
+                      color:(CGColorRef) color
+               pointInAreas:(PointInAreas*)pias
+                  llCorners:(CORNERPOINTS *) latlonCornerPoints
+                   LLBounds:(MNMXCORD *)platlonBounds
+                 viewBounds:(MNMXCORD *)pvbounds
 {
     int nLoaded = 0;
     NSString *query = @"";
@@ -567,7 +568,7 @@ NextPass:
         int i = 0;
         int forestCode = 0;
         NSString * text = @"";
-
+        
         BasePt.x = sqlite3_column_int(statement,i++);
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
@@ -626,7 +627,7 @@ NextPass:
         }
         LPDPOINT llpoints = ExpandPoints (binFile,offset,reclen,compressionType,numPoints,BasePt);
         LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
-        
+        LPINT polyPartLenThinned = 0;
         for (int i = 0; i < numPoints; i++)
         {
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
@@ -666,45 +667,50 @@ NextPass:
         }
         //if (!hasCurves)
         {
-        nLoaded++;
-        [self fillUseCode:context
-                  nPoints:numPoints
-                   points:llpoints
-                withColor:color
-                lineColor:blackColor
-                lineWidth:0];
-        
-        if (_zoom > 14)
-        {
-            [self drawUseCode:context
-                      nPoints:numPoints
-                       nLoops:numLoops
-                      partLen:polyPartLen
-                       points:llpoints
-                    withColor:UIColor.blackColor.CGColor
-                     andWidth:3];
+            nLoaded++;
+            [self fillArea:context
+                   nPoints:numPoints
+                    points:llpoints
+                 withColor:color
+                 lineColor:blackColor
+                 lineWidth:0];
             
-            if (text.length)
+            if (_zoom > 14)
             {
-                UIColor *textColor = UIColor.blackColor;
-                CGFloat minFontSize = fontSize / 3;
-                [NVTextDrawing drawText:text
-                              inContext:context
-                          withinPolygon:llpoints
-                          withNumPoints:numPoints
-                            andNumLoops:numLoops
-                                loopLen:polyPartLen
-                           withinBounds:pvbounds
-                               fontSize:fontSize
-                            minFontSize:minFontSize
-                              textColor:textColor
-                            shadowColor:nil
-                           processingID:_processingID];
+                LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
+            
+                
+                [self drawArea:context
+                       nPoints:numPoints
+                        nLoops:numLoops
+                       partLen:polyPartLenThinned
+                        points:llpointsThinned
+                     withColor:UIColor.blackColor.CGColor
+                      andWidth:3];
+                
+                if (text.length)
+                {
+                    UIColor *textColor = UIColor.blackColor;
+                    CGFloat minFontSize = fontSize / 3;
+                    [NVTextDrawing drawText:text
+                                  inContext:context
+                              withinPolygon:llpointsThinned
+                              withNumPoints:numPoints
+                                andNumLoops:numLoops
+                                    loopLen:polyPartLenThinned
+                               withinBounds:pvbounds
+                                   fontSize:fontSize
+                                minFontSize:minFontSize
+                                  textColor:textColor
+                                shadowColor:nil
+                               processingID:_processingID];
+                }
+                free (llpointsThinned);
+                free (polyPartLenThinned);
             }
+            
         }
-
-        }
-             
+        
         free (llpoints);
         free (polyPartLen);
     }
@@ -743,30 +749,50 @@ INT64 RoundToHundred (LPDOUBLE pDval)
     return rtn;
 }
 
-LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints)
+LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumLoops,LPINT polyPartLen,LPINT *ppolyPartLenThinned,LPMNMXCORD pBounds)
 {
     INT64 lastx,lasty,thisx, thisy;
-    
-    LPDPOINT llPointsThinned = malloc(*pNumPoints * sizeof(DPOINT) + 4);
+    int inLoop = 0;
+    int pointIndexInLoop = 1;
     int numThinnedPoints = 0;
-    numThinnedPoints = *pNumPoints;
-    /*
+    LPDPOINT llPointsThinned = malloc(*pNumPoints * sizeof(DPOINT) + 4);
+    LPINT polyPartLenThinned = malloc(*pNumLoops*sizeof(int)+4);
+    if (*pNumLoops > 1)
+        polyPartLenThinned[0] = polyPartLen[0];
     lastx = RoundToHundred (&llPoints->x);
     lasty = RoundToHundred (&llPoints->y);
     llPointsThinned[numThinnedPoints++] = *llPoints++;
     for (int i = 1;i<*pNumPoints;i++,llPoints++)
     {
+        if (*pNumLoops > 1)
+        {
+            if (pointIndexInLoop == polyPartLen[inLoop])
+            {
+                inLoop++;
+                pointIndexInLoop = 0;
+                polyPartLenThinned[inLoop] = polyPartLen[inLoop];
+            }
+            else
+                pointIndexInLoop++;
+        }
         thisx = RoundToHundred (&llPoints->x);
         thisy = RoundToHundred (&llPoints->y);
-        if (thisx != lastx || thisy != lasty)
+        if ((thisx != lastx || thisy != lasty) )
         {
-            llPointsThinned[numThinnedPoints++] = *llPoints;
+            if (DPointInBounds(llPoints, pBounds))
+                llPointsThinned[numThinnedPoints++] = *llPoints;
+            else if (*pNumLoops > 1)
+                polyPartLenThinned[inLoop]--;
             lastx = thisx;
             lasty = thisy;
         }
+        else if (*pNumLoops > 1)
+        {
+            polyPartLenThinned[inLoop]--;
+        }
     }
     *pNumPoints = numThinnedPoints;
-     */
+    *ppolyPartLenThinned = polyPartLenThinned;
     return llPointsThinned;
 }
 
@@ -775,7 +801,7 @@ LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints)
     sqlite3_stmt *statement = NULL;
     INT64 count = 0;
     CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
-
+    
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, NULL), _database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
@@ -783,17 +809,17 @@ LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints)
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     //CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
-
+    
     return count;
 }
 
 -(int) displayRoads:(CGContextRef)context
-             llCorners:(CORNERPOINTS *) latlonCornerPoints
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+          llCorners:(CORNERPOINTS *) latlonCornerPoints
+           LLBounds:(MNMXCORD *)platlonBounds
+         viewBounds:(MNMXCORD *)pvbounds
 displayCharacteristics:(DisplayCharacteristics *)dc
-                themes:(Themes*)themes
-           pointInArea:(PointInArea *)pia
+             themes:(Themes*)themes
+        pointInArea:(PointInArea *)pia
 {
     int nDisplayed = 0;
     NSString *query = @"";
@@ -810,14 +836,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
-        
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, ROADS_LINE.ROUTEID, STREETNAME, FUNCLASS, MATERIAL FROM ROADS_LINE,ROADS_LINE_index,ROADSDATA WHERE ROADS_LINE.id=ROADS_LINE_index.id AND ROADSDATA.ROUTEID=ROADS_LINE.ROUTEID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            _totRecords = [self getQueryCount:query];
-            [CRAPI.sharedInstance updateProgress:-1
-                                         current:0
-                                           range:1
-                                       numRanges:1];
+    
+    query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, ROADS_LINE.ROUTEID, STREETNAME, FUNCLASS, MATERIAL FROM ROADS_LINE,ROADS_LINE_index,ROADSDATA WHERE ROADS_LINE.id=ROADS_LINE_index.id AND ROADSDATA.ROUTEID=ROADS_LINE.ROUTEID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    _totRecords = [self getQueryCount:query];
+    [CRAPI.sharedInstance updateProgress:-1
+                                 current:0
+                                   range:1
+                               numRanges:1];
     
     SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), hd.database);
     _currentRec = 0;
@@ -845,12 +871,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 dc.penColor = [UIColor blackColor];
                 dc.width += 1;
                 break;
-
+                
             case 'C':
                 dc.penColor = [UIColor grayColor];
                 dc.width += 1;
                 break;
-
+                
             case 'A'://Aggregate
             case 'D'://dirt
             case 'G'://gravel
@@ -858,61 +884,61 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             case '\0':
                 dc.penColor = [UIColor brownColor];
                 break;
-
+                
             default:
                 dc.penColor = [UIColor brownColor];
                 break;
         }
-         int np = 0;
+        int np = 0;
         //if (abs(numPoints)<108000)
         {
-        if (numPoints < 0)
-        {
-            numPoints = -numPoints;
-            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-            
-            for (int i = 0; i < numPoints; i++)
+            if (numPoints < 0)
             {
-                llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
-               /* if (np)
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
                 {
-                    if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
-                        np++;
+                    llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                    /* if (np)
+                     {
+                     if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                     np++;
+                     }
+                     else*/
+                    np++;
                 }
-                else*/
-                    np++;
             }
-        }
-        
-        else for (int i = 0; i < numPoints; i++)
-        {
-            llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
-           /* if (np)
-            {
-                if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
-                    np++;
-            }
-            else*/
-                np++;
-        }
-        if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID
-                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
-        {
             
-            [self drawRoad:context
-                      nPoints:np
-                       nLoops:numLoops
-                      partLen:polyPartLen
-                       points:llpoints
-                    withColor:dc.penColor.CGColor
-                     andWidth:dc.width];
-            nDisplayed++;
-        }
+            else for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                /* if (np)
+                 {
+                 if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                 np++;
+                 }
+                 else*/
+                np++;
+            }
+            if ([themes setDisplayCharacteristics:dc
+                                        displayID:_processingID
+                                     compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+            {
+                
+                [self drawRoad:context
+                       nPoints:np
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:dc.penColor.CGColor
+                      andWidth:dc.width];
+                nDisplayed++;
+            }
         }
         free (llpoints);
         [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
@@ -930,12 +956,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 }
 
 - (void)drawRoad:(CGContextRef)context
-             nPoints:(int)np
-              nLoops:(int)nLoops
-             partLen:(int *)pPartLen
-              points:(LPDPOINT)pPoints
-           withColor:(CGColorRef)color
-           andWidth:(CGFloat)width
+         nPoints:(int)np
+          nLoops:(int)nLoops
+         partLen:(int *)pPartLen
+          points:(LPDPOINT)pPoints
+       withColor:(CGColorRef)color
+        andWidth:(CGFloat)width
 {
     CGContextSetLineWidth(context, width*3);
     
@@ -986,12 +1012,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
 }
 -(int) displayTrails:(CGContextRef)context
-             llCorners:(CORNERPOINTS *) latlonCornerPoints
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+           llCorners:(CORNERPOINTS *) latlonCornerPoints
+            LLBounds:(MNMXCORD *)platlonBounds
+          viewBounds:(MNMXCORD *)pvbounds
 displayCharacteristics:(DisplayCharacteristics *)dc
-                themes:(Themes*)themes
-           pointInArea:(PointInArea *)pia
+              themes:(Themes*)themes
+         pointInArea:(PointInArea *)pia
 {
     int nDisplayed = 0;
     NSString *query = @"";
@@ -1008,14 +1034,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
-        
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, HUNTER_WALKING_TRAILS_LINE.NAME FROM HUNTER_WALKING_TRAILS_LINE,HUNTER_WALKING_TRAILS_LINE_index WHERE HUNTER_WALKING_TRAILS_LINE.id=HUNTER_WALKING_TRAILS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            _totRecords = [self getQueryCount:query];
-            [CRAPI.sharedInstance updateProgress:-1
-                                         current:0
-                                           range:1
-                                       numRanges:1];
+    
+    query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, HUNTER_WALKING_TRAILS_LINE.NAME FROM HUNTER_WALKING_TRAILS_LINE,HUNTER_WALKING_TRAILS_LINE_index WHERE HUNTER_WALKING_TRAILS_LINE.id=HUNTER_WALKING_TRAILS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    _totRecords = [self getQueryCount:query];
+    [CRAPI.sharedInstance updateProgress:-1
+                                 current:0
+                                   range:1
+                               numRanges:1];
     
     SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), hd.database);
     _currentRec = 0;
@@ -1034,56 +1060,56 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         dc.width = 5.5;
         dc.penColor = [UIColor orangeColor];
         
-         int np = 0;
+        int np = 0;
         //if (abs(numPoints)<108000)
         {
-        if (numPoints < 0)
-        {
-            numPoints = -numPoints;
-            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-            
-            for (int i = 0; i < numPoints; i++)
+            if (numPoints < 0)
             {
-                llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
-               /* if (np)
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
                 {
-                    if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
-                        np++;
+                    llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                    /* if (np)
+                     {
+                     if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                     np++;
+                     }
+                     else*/
+                    np++;
                 }
-                else*/
-                    np++;
             }
-        }
-        
-        else for (int i = 0; i < numPoints; i++)
-        {
-            llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
-           /* if (np)
-            {
-                if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
-                    np++;
-            }
-            else*/
-                np++;
-        }
-        if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID
-                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
-        {
             
-            [self drawRoad:context
-                      nPoints:np
-                       nLoops:numLoops
-                      partLen:polyPartLen
-                       points:llpoints
-                    withColor:dc.penColor.CGColor
-                     andWidth:dc.width];
-            nDisplayed++;
-        }
+            else for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                /* if (np)
+                 {
+                 if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                 np++;
+                 }
+                 else*/
+                np++;
+            }
+            if ([themes setDisplayCharacteristics:dc
+                                        displayID:_processingID
+                                     compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+            {
+                
+                [self drawRoad:context
+                       nPoints:np
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:dc.penColor.CGColor
+                      andWidth:dc.width];
+                nDisplayed++;
+            }
         }
         free (llpoints);
         [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
@@ -1101,12 +1127,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 }
 
 
-- (void)fillUseCode:(CGContextRef)context
-           nPoints:(int)np
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
-          lineColor:(CGColorRef)lineColor
-          lineWidth:(float)lineWidth
+- (void)fillArea:(CGContextRef)context
+         nPoints:(int)np
+          points:(LPDPOINT)pPoints
+       withColor:(CGColorRef)color
+       lineColor:(CGColorRef)lineColor
+       lineWidth:(float)lineWidth
 {
     //CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -1118,10 +1144,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     for (int i = 1; i < np; i++)
     {
-//        double x=pPoints[i].x, y=pPoints[i].y;
+        //        double x=pPoints[i].x, y=pPoints[i].y;
         CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
     }
-//        CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+    //        CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
     
     CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
     CGContextClosePath(context);
@@ -1141,20 +1167,20 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
     }
 }
-- (void)drawUseCode:(CGContextRef)context
-            nPoints:(int)np
-             nLoops:(int)nLoops
-            partLen:(int *)pPartLen
-             points:(LPDPOINT)pPoints
-          withColor:(CGColorRef)color
-           andWidth:(CGFloat)width
+- (void)drawArea:(CGContextRef)context
+         nPoints:(int)np
+          nLoops:(int)nLoops
+         partLen:(int *)pPartLen
+          points:(LPDPOINT)pPoints
+       withColor:(CGColorRef)color
+        andWidth:(CGFloat)width
 {
     CGContextSetLineWidth(context, width);
     
     if (nLoops > 1)
     {
         int ip = 0;
-        //int ii;
+        int ii;
         
         for (int loop = 0; loop < nLoops; loop++)
         {
@@ -1198,12 +1224,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
 }
 -(int) displayWaypoints:(CGContextRef)context
-             llCorners:(CORNERPOINTS *) latlonCornerPoints
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
-displayCharacteristics:(DisplayCharacteristics *)dc
-                themes:(Themes*)themes
-           pointInArea:(PointInArea *)pia
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds
+ displayCharacteristics:(DisplayCharacteristics *)dc
+                 themes:(Themes*)themes
+            pointInArea:(PointInArea *)pia
 {
     int nDisplayed = 0;
     NSString *query = @"";
@@ -1218,13 +1244,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
-        
-     
+    
+    
     _currentRec = 0;
     CGColorRef starColor = UIColor.orangeColor.CGColor;
     CGColorRef blackColor = UIColor.blackColor.CGColor;
     CGColorRef whiteColor = UIColor.whiteColor.CGColor;
-
+    
     for (UserWaypoint* waypoint in userWaypointArray)
     {
         DPOINT pt = TranLLPOINT(waypoint.latlon, _pTranLLtoView);
@@ -1246,7 +1272,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                           andText:waypoint.name];
             nDisplayed++;
         }
-     }
+    }
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);

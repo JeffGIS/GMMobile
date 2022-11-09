@@ -565,6 +565,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            
                                        }
                                    }
+                    else
+                    {
+                        dispatch_async(dispatch_get_main_queue(),
+                                       ^{
+                            _popover.title = @"Failed to decompress file";
+                        });
+                    }
+
                                ;
                                });
             }
