@@ -288,7 +288,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.datasetVersion.integerValue > 5)
+            if (hd.datasetVersion.integerValue > 6)
                 rtn = YES;
         }
             break;
@@ -297,7 +297,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.NWIVersion.integerValue >= 3)
+            if (hd.NWIVersion.integerValue >= 8)
                 rtn = YES;
         }
             break;
@@ -305,7 +305,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.ForestVersion.integerValue >= 1)
+            if (hd.ForestVersion.integerValue >= 2)
                 rtn = YES;
         }
             break;

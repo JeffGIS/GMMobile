@@ -77,7 +77,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *shapeFile;
     int  nDisplayed;
     
-    if (ConfigurationControl.sharedInstance.mapType == kGMSTypeHybrid)
+    if (ConfigurationControl.sharedInstance.mapType == kGMSTypeHybrid ||
+        ConfigurationControl.sharedInstance.mapType == kGMSTypeNormal)
         return;
     if ([ConfigurationControl.sharedInstance layer:HCLayerHunting
                                      visibleAtZoom:_zoom
@@ -146,13 +147,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         viewBounds:pvbounds];
         
         
-        nDisplayed = [self display:context
+ /*       nDisplayed = [self display:context
                           areaType:@"FSA"
                              color:_FSAColor
                       pointInAreas:pia
                          llCorners:latlonCornerPoints
                           LLBounds:platlonBounds
-                        viewBounds:pvbounds];
+                        viewBounds:pvbounds];*/
         
         nDisplayed = [self display:context
                           areaType:@"WALKINAREA"
@@ -299,9 +300,13 @@ NextPass:
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
         numLoops = sqlite3_column_int(statement,3);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        if (numLoops < 2)
+            ii = 1;
+        int *polyPartLenBlob = (int *)sqlite3_column_blob(statement,4);
         int *polyPartLenThinned=0;
-        //int nBlobBytes = sqlite3_column_bytes(statement,4);
+        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        LPINT polyPartLen = malloc (nBlobBytes + 4);
+        memmove (polyPartLen,polyPartLenBlob,nBlobBytes);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
@@ -360,54 +365,81 @@ NextPass:
                 break;
         }
         nLoaded++;
-        LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
-        free (llpoints);
-        int totpntj = 0;
-        int totpntk = 0;
-        if (numLoops > 1)
-            for (int i=0;i<numLoops;i++)
+        int numPointsOrig = numPoints;
+        BOOL doThinning = FALSE;
+        if (_zoom < 111)
+            doThinning = TRUE;
+        if (doThinning)
         {
-            int j = polyPartLenThinned[i];
-            int k = polyPartLen[i];
-            totpntj += j;
-            totpntk += k;
-        }
-        [self fillArea:context
-               nPoints:numPoints
-                points:llpointsThinned
-             withColor:color
-             lineColor:nil
-             lineWidth:0];
-        if (_zoom >= textZoom)
-        {
-            [self drawArea:context
-                   nPoints:numPoints
-                    nLoops:numLoops
-                   partLen:polyPartLenThinned
-                    points:llpointsThinned
-                 withColor:UIColor.blackColor.CGColor
-                  andWidth:3];
-            if (keyval.length)
+            LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
+            int totpntj = 0;
+            int totpntk = 0;
+            int numNewLoops = 0;
+            if (numLoops > 1)
             {
-                UIColor *textColor = UIColor.blackColor;
-                CGFloat minFontSize = fontSize / 3;
-                [NVTextDrawing drawText:keyval
-                              inContext:context
-                          withinPolygon:llpointsThinned
-                          withNumPoints:numPoints
-                            andNumLoops:numLoops
-                                loopLen:polyPartLenThinned
-                           withinBounds:pvbounds
-                               fontSize:fontSize
-                            minFontSize:minFontSize
-                              textColor:textColor
-                            shadowColor:nil
-                           processingID:_processingID];
-                
+                LPINT newPolyPartLenThinned = malloc (numLoops * sizeof(int)+4);
+                for (int i=0;i<numLoops;i++)
+                {
+                    int j = polyPartLenThinned[i];
+                    int k = polyPartLen[i];
+                    if (j)
+                        newPolyPartLenThinned[numNewLoops++] = j;
+                    totpntj += j;
+                    totpntk += k;
+                }
+                if (totpntj != numPoints)
+                    ii = 1;
+                if (totpntk != numPointsOrig)
+                    ii = 1;
+                free (polyPartLenThinned);
+                polyPartLenThinned = newPolyPartLenThinned;
+                numLoops = numNewLoops;
+            }
+            free (llpoints);
+            free (polyPartLen);
+            llpoints = llpointsThinned;
+            polyPartLen = polyPartLenThinned;
+        }
+        
+        if (numPoints > 2)
+        {
+            [self fillArea:context
+                   nPoints:numPoints
+                    points:llpoints
+                 withColor:color
+                 lineColor:nil
+                 lineWidth:0];
+            if (_zoom >= textZoom)
+            {
+                [self drawArea:context
+                       nPoints:numPoints
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:UIColor.blackColor.CGColor
+                      andWidth:1];
+                if (keyval.length)
+                {
+                    UIColor *textColor = UIColor.blackColor;
+                    CGFloat minFontSize = fontSize / 3;
+                    [NVTextDrawing drawText:keyval
+                                  inContext:context
+                              withinPolygon:llpoints
+                              withNumPoints:numPoints
+                                andNumLoops:numLoops
+                                    loopLen:polyPartLen
+                               withinBounds:pvbounds
+                                   fontSize:fontSize
+                                minFontSize:minFontSize
+                                  textColor:textColor
+                                shadowColor:UIColor.yellowColor
+                               processingID:_processingID];
+                    
+                }
             }
         }
-        free (llpointsThinned);
-        free (polyPartLenThinned);
+        free (llpoints);
+        free (polyPartLen);
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
@@ -508,6 +540,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
                  viewBounds:(MNMXCORD *)pvbounds
 {
     int nLoaded = 0;
+    int textZoom = 16;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     IPOINT BasePt;
@@ -552,7 +585,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         type = typeNWI;
         table = @"NWIDATA.NWI";
         binFile = hd.fidNWIBin;
-        query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, spcc_desc FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+        query = [NSString stringWithFormat:@"SELECT RECNUM,OBJECTID,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen, spcc_desc FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.NWIFactor, platlonBounds->xmx*hd.NWIFactor, platlonBounds->ymn*hd.NWIFactor, platlonBounds->ymx*hd.NWIFactor];
     }
     else if ([areaType isEqualToString:@"FOREST"] )
@@ -560,7 +593,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         type = typeFOREST;
         table = @"FORESTDATA.FOREST";
         binFile = hd.fidForestBin;
-        query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM, MN_CTYPE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+        query = [NSString stringWithFormat:@"SELECT RECNUM,RECNUM,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen, MN_CTYPE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
     }
     else if ([areaType isEqualToString:@"FEESURF"] )
@@ -568,7 +601,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         type = typeFEESURF;
         table = @"FEESURFDATA.FEESURF";
         binFile = hd.fidFEESURFBin;
-        query = [NSString stringWithFormat:@"SELECT FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,RECNUM,LANDTYPE, SU_ACRES,SU_PCTFORTY FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+        query = [NSString stringWithFormat:@"SELECT RECNUM,RECNUM,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen,LANDTYPE, SU_ACRES,SU_PCTFORTY FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
     }
 NextPass:
@@ -579,6 +612,10 @@ NextPass:
         int forestCode = 0;
         NSString * text = @"";
         
+        INT64 recnum = sqlite3_column_int64(statement,i++);
+        INT64 objectid = sqlite3_column_int64(statement,i++);
+        //if (objectid != 524665)
+        //    continue;
         BasePt.x = sqlite3_column_int(statement,i++);
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
@@ -589,7 +626,6 @@ NextPass:
         int hasCurves = sqlite3_column_int(statement,i++);
         INT64 offset = sqlite3_column_int64(statement,i++);
         int reclen = sqlite3_column_int(statement,i++);
-        INT64 recnum = sqlite3_column_int64(statement,i++);
         if (recnum == 170552 && _zoom > 14)
             ii=1;
         switch (type)
@@ -606,9 +642,10 @@ NextPass:
                 int standType = (LPSTR)sqlite3_column_int(statement,i++);
                 int surveyYear = (LPSTR)sqlite3_column_int(statement,i++);
                 int standAge = (LPSTR)sqlite3_column_int(statement,i++);
+                int TRUEAGE=(2022-surveyYear)+standAge;
+                text = [NSString stringWithFormat:@"Type:%i\nAge:%i",standType,TRUEAGE];
                 if (standType == 12)
                 {
-                    int TRUEAGE=(2022-surveyYear)+standAge;
                     if (TRUEAGE>6 && TRUEAGE<15)
                         forestCode = 3;
                     else if (TRUEAGE>4 && TRUEAGE<7)
@@ -629,7 +666,8 @@ NextPass:
                 text = [NSString stringWithUTF8String:landtype];
             }
                 break;
-        }        if (pias)
+        }
+        if (pias)
         {
             double count = [pias countForArea:keyval
                                    whichCount:0];
@@ -639,8 +677,12 @@ NextPass:
         LPDPOINT llpoints = ExpandPoints (binFile,offset,reclen,compressionType,numPoints,BasePt);
         LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
         LPINT polyPartLenThinned = 0;
+        LPMNMXCORD polyBounds = malloc (numLoops * sizeof(MNMXCORD) + 4);
         if (numLoops > 1)
+        {
             BigReadF(binFile, polyPartLen, numLoops*sizeof(int));
+            BigReadF(binFile, polyBounds, numLoops*sizeof(MNMXCORD));
+        }
         for (int i = 0; i < numPoints; i++)
         {
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
@@ -681,51 +723,94 @@ NextPass:
         //if (!hasCurves)
         {
             nLoaded++;
-            [self fillArea:context
-                   nPoints:numPoints
-                    points:llpoints
-                 withColor:color
-                 lineColor:blackColor
-                 lineWidth:0];
-            
-            if (_zoom > 14)
+            BOOL doThinning = FALSE;
+            if (_zoom < 12)
+                doThinning = TRUE;
+            if (doThinning)
             {
+                int numPointsOrig = numPoints;
                 LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
-            
-                
-                [self drawArea:context
-                       nPoints:numPoints
-                        nLoops:numLoops
-                       partLen:polyPartLenThinned
-                        points:llpointsThinned
-                     withColor:UIColor.blackColor.CGColor
-                      andWidth:3];
-                
-                if (text.length)
+                int totpntj = 0;
+                int totpntk = 0;
+                int numNewLoops = 0;
+                if (numLoops > 1)
                 {
-                    UIColor *textColor = UIColor.blackColor;
-                    CGFloat minFontSize = fontSize / 3;
-                    [NVTextDrawing drawText:text
-                                  inContext:context
-                              withinPolygon:llpointsThinned
-                              withNumPoints:numPoints
-                                andNumLoops:numLoops
-                                    loopLen:polyPartLenThinned
-                               withinBounds:pvbounds
-                                   fontSize:fontSize
-                                minFontSize:minFontSize
-                                  textColor:textColor
-                                shadowColor:nil
-                               processingID:_processingID];
+                    LPINT newPolyPartLenThinned = malloc (numLoops * sizeof(int)+4);
+                    for (int i=0;i<numLoops;i++)
+                    {
+                        int j = polyPartLenThinned[i];
+                        int k = polyPartLen[i];
+                        if (j)
+                            newPolyPartLenThinned[numNewLoops++] = j;
+                        totpntj += j;
+                        totpntk += k;
+                    }
+                    if (totpntj != numPoints)
+                        ii = 1;
+                    if (totpntk != numPointsOrig)
+                        ii = 1;
+                    free (polyPartLenThinned);
+                    polyPartLenThinned = newPolyPartLenThinned;
+                    numLoops = numNewLoops;
                 }
-                free (llpointsThinned);
-                free (polyPartLenThinned);
+                free (llpoints);
+                free (polyPartLen);
+                llpoints = llpointsThinned;
+                polyPartLen = polyPartLenThinned;
+            }
+            LPDPOINT llpointsThinned = RemoveOutOfBoundsPolys (llpoints,&numPoints,&numLoops,polyPartLen,polyBounds,&polyPartLenThinned,pvbounds);
+            if (llpointsThinned)
+            {
+                free (llpoints);
+                free (polyPartLen);
+                llpoints = llpointsThinned;
+                polyPartLen = polyPartLenThinned;
+
+            }
+            if (numPoints > 2)
+            {
+                [self fillArea:context
+                       nPoints:numPoints
+                        points:llpoints
+                     withColor:color
+                     lineColor:blackColor
+                     lineWidth:0];
+                
+                if (_zoom >= textZoom)
+                {
+                    [self drawArea:context
+                           nPoints:numPoints
+                            nLoops:numLoops
+                           partLen:polyPartLen
+                            points:llpoints
+                         withColor:UIColor.blackColor.CGColor
+                          andWidth:1.5];
+                    
+                    if (text.length)
+                    {
+                        UIColor *textColor = UIColor.blackColor;
+                        CGFloat minFontSize = fontSize / 3;
+                        [NVTextDrawing drawText:text
+                                      inContext:context
+                                  withinPolygon:llpoints
+                                  withNumPoints:numPoints
+                                    andNumLoops:numLoops
+                                        loopLen:polyPartLen
+                                   withinBounds:pvbounds
+                                       fontSize:fontSize
+                                    minFontSize:minFontSize
+                                      textColor:textColor
+                                    shadowColor:nil
+                                   processingID:_processingID];
+                    }
+                }
             }
             
         }
         
         free (llpoints);
         free (polyPartLen);
+        free (polyBounds);
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
@@ -764,49 +849,102 @@ INT64 RoundToHundred (LPDOUBLE pDval)
 
 LPDPOINT ThinPoints (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumLoops,LPINT polyPartLen,LPINT *ppolyPartLenThinned,LPMNMXCORD pBounds)
 {
-    INT64 lastx,lasty,thisx, thisy;
+    int lastx,lasty,thisx, thisy;
     int inLoop = 0;
-    int pointIndexInLoop = 1;
+    int pointIndexInLoop = -1;
     int numThinnedPoints = 0;
+    static BOOL keepAll = FALSE;
     LPDPOINT llPointsThinned = malloc(*pNumPoints * sizeof(DPOINT) + 4);
     LPINT polyPartLenThinned = malloc(*pNumLoops*sizeof(int)+4);
+    DPOINT firstPoint;
     if (*pNumLoops > 1)
+    {
         polyPartLenThinned[0] = polyPartLen[0];
+        pointIndexInLoop = 0;
+    }
+    firstPoint = *llPoints;
     lastx = RoundToHundred (&llPoints->x);
     lasty = RoundToHundred (&llPoints->y);
     llPointsThinned[numThinnedPoints++] = *llPoints++;
     for (int i = 1;i<*pNumPoints;i++,llPoints++)
     {
+        BOOL skipPoint = FALSE;
         if (*pNumLoops > 1)
         {
             if (pointIndexInLoop == polyPartLen[inLoop])
             {
                 inLoop++;
-                pointIndexInLoop = 1;
+                pointIndexInLoop = 0;
                 polyPartLenThinned[inLoop] = polyPartLen[inLoop];
+                lastx = lasty = -1000000;
+                //skipPoint = TRUE;
             }
             else
                 pointIndexInLoop++;
         }
-        thisx = RoundToHundred (&llPoints->x);
-        thisy = RoundToHundred (&llPoints->y);
-        if ((thisx != lastx || thisy != lasty) )
+        if (!skipPoint)
         {
-            if (DPointInBounds(llPoints, pBounds))
+            thisx = RoundToHundred (&llPoints->x);
+            thisy = RoundToHundred (&llPoints->y);
+            if ((thisx != lastx) || (thisy != lasty) || keepAll)
+            {
                 llPointsThinned[numThinnedPoints++] = *llPoints;
-            else if (*pNumLoops > 1)
-                polyPartLenThinned[inLoop]--;
+            }
+            else
+            {
+                if (*pNumLoops > 1)
+                {
+                    polyPartLenThinned[inLoop]--;
+                }
+            }
             lastx = thisx;
             lasty = thisy;
-        }
-        else if (*pNumLoops > 1)
-        {
-            polyPartLenThinned[inLoop]--;
         }
     }
     *pNumPoints = numThinnedPoints;
     *ppolyPartLenThinned = polyPartLenThinned;
     return llPointsThinned;
+}
+LPDPOINT RemoveOutOfBoundsPolys  (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumLoops,LPINT polyPartLen,LPMNMXCORD polyBounds,LPINT *ppolyPartLenThinned,LPMNMXCORD pBounds)
+{
+    LPDPOINT thinnedPoints = 0;
+    if (*pNumLoops < 2)
+        return thinnedPoints;
+    int iPoint = 0;
+    int numNewLoops = 0;
+    int numNewPoints = 0;
+    int inc = 0;
+    if (*pNumPoints > 600000)
+        ii = 1;
+    thinnedPoints = malloc (*pNumPoints * sizeof(DPOINT)+4);
+    LPINT polyPartLenThinned = malloc (*pNumLoops * sizeof(int)+4);
+    for (int iLoop = 0;iLoop< *pNumLoops;iLoop++)
+    {
+        MNMXCORD loopBounds = PolyBounds(&llPoints[iPoint], polyPartLen[iLoop]);
+        if (BoundsInBounds(&loopBounds,pBounds,1))
+        {
+            polyPartLenThinned[numNewLoops++] = polyPartLen[iLoop];
+            memmove (&thinnedPoints[numNewPoints],&llPoints[iPoint],(polyPartLen[iLoop]+inc)*sizeof(DPOINT));
+            numNewPoints += polyPartLen[iLoop] + inc;
+        }
+        inc = 1;
+        iPoint += polyPartLen[iLoop];
+        if (iLoop)
+            iPoint++;
+    }
+    if (!numNewLoops)
+    {
+        free (thinnedPoints);
+        thinnedPoints = 0;
+        free (polyPartLenThinned);
+    }
+    else
+    {
+        *ppolyPartLenThinned = polyPartLenThinned;
+    }
+    *pNumPoints = numNewPoints;
+    *pNumLoops = numNewLoops;
+    return thinnedPoints;
 }
 
 - (INT64)getQueryCount:(NSString*)query
@@ -987,7 +1125,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            //ii = pPartLen[loop];
+            ii = pPartLen[loop];
             
             for (int i = 1; i < pPartLen[loop]; i++)
             {
@@ -1065,8 +1203,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         BasePt.y = sqlite3_column_double(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
         numLoops = sqlite3_column_int(statement,i++);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
         int nBlobBytes = sqlite3_column_bytes(statement,i);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+        int nBlobBytes2 = sqlite3_column_bytes(statement,i);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         LPSTR routeid = (LPSTR)sqlite3_column_text(statement,i++);
@@ -1108,6 +1247,15 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                  }
                  else*/
                 np++;
+            }
+            int nLoopTot = 0;
+            if (numLoops > 1)
+            {
+                numLoops--;
+                for (int i = 0;i < numLoops;i++)
+                {
+                    nLoopTot += polyPartLen[i];
+                }
             }
             if ([themes setDisplayCharacteristics:dc
                                         displayID:_processingID
@@ -1188,7 +1336,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
        withColor:(CGColorRef)color
         andWidth:(CGFloat)width
 {
-    CGContextSetLineWidth(context, width);
+    CGContextSetLineWidth(context, width*4);
     
     if (nLoops > 1)
     {
@@ -1199,9 +1347,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            //ii = pPartLen[loop];
-            
-            for (int i = 1; i < pPartLen[loop]; i++)
+            ii = pPartLen[loop];
+            int iEndLoop = pPartLen[loop];
+            for (int i = 1; i < iEndLoop; i++)
             {
                 CGContextAddLineToPoint(context, pPoints[ip].x, pPoints[ip].y);
                 ip++;
@@ -1213,6 +1361,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             if (!CGContextIsPathEmpty(context))
             {
                 CGContextSetStrokeColorWithColor(context,color);
+                //color = UIColor.greenColor.CGColor;
                 CGContextDrawPath(context, kCGPathStroke);
             }
         }

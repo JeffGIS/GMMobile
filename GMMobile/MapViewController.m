@@ -137,7 +137,7 @@
 @property CGPoint mapToolbarCenter;
 @property LLPOINT llPickedPt;
 @property BOOL locationTrackingEnabled;
-
+@property BOOL amAcceptingHeading;
 @end
 
 @implementation MapViewController
@@ -218,7 +218,9 @@
     _digitizationMode = DigitizationModeCustom;
     _locationCount = _headingCount = 0;
     MNMXCORD lastBounds;
-    if (![CRAPI.sharedInstance getLastBounds:&lastBounds])
+    float zoom = 12.0;
+    if (![CRAPI.sharedInstance getLastBounds:&lastBounds
+                                     andZoom:&zoom])
     {
         _target = CLLocationCoordinate2DMake(44.97, -93.27);
     }
@@ -237,7 +239,7 @@
     _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
-    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:12.0];
+    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:zoom];
     [self.view addSubview:_mapView];
     [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
@@ -1343,6 +1345,8 @@
                                     superView:nil];
     if (_locationTrackingEnabled)
         [self startTrackingUserLocation];
+    if (_amAcceptingHeading)
+        [_locationManager startUpdatingHeading];
 
  }
 #pragma mark - EndOfViewDidAppear
@@ -2568,6 +2572,8 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if (position.bearing == 0.0)
         [self hideCompass];
+    else
+        ii = 1;
     
     if ([self.view.subviews containsObject:_nvdv])
     {
@@ -5592,7 +5598,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                        fromMinY:minYpt.y
                          toMaxY:maxYpt.y];
     }
-    
+    if (pBearing != 0)
+        ii = 1;
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
                                                             bearing:pBearing
@@ -5735,6 +5742,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
+    if (!_locationTrackingEnabled)
+        return;
     _currentLocation = [locations.firstObject coordinate];
     _locationCount++;
     
@@ -5777,6 +5786,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
         if (_locationCount < 2 || !PointInView(target,_mapView))
         {
+            if (_mapView.camera.bearing != 0)
+                ii = 1;
             GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
                                                                        zoom:_mapView.camera.zoom
                                                                     bearing:_mapView.camera.bearing
@@ -5786,9 +5797,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [_mapView moveCamera:update];
             
             if (_mapToolbar.applyRotation && CLLocationManager.headingAvailable)
+            {
+                _amAcceptingHeading = TRUE;
                 [_locationManager startUpdatingHeading];
+            }
         }
-       
         _myLocationMarker.center = CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
         _myLocationMarker.hidden = NO;
     }
@@ -5907,6 +5920,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
+    if (!_amAcceptingHeading)
+        return;
+    if (newHeading.trueHeading != 0)
+        ii = 1;
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_mapView.camera.target
                                                                zoom:_mapView.camera.zoom
                                                             bearing:newHeading.trueHeading
