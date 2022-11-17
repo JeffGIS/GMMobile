@@ -488,13 +488,13 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         case 0:
         case 10:
         {
-            LPPOINT pOffsets = (LPSPOINT)pDeCompressed;
+            LPPOINT pOffsets = (LPPOINT)pDeCompressed;
             pOutPoints->x = basePoint.x;
             pOutPoints->y = basePoint.y;
             for (int i = 1;i<numPoints;i++)
             {
-                pOutPoints[i].x = pOffsets[i].x;
-                pOutPoints[i].y = pOffsets[i].y;
+                pOutPoints[i].x = pOutPoints[i-1].x + pOffsets[i].x;
+                pOutPoints[i].y = pOutPoints[i-1].y + pOffsets[i].y;
             }
         }
             break;
@@ -579,7 +579,8 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     factoredCornerPoints.nearRight.x *= hd.NWIFactor;
     factoredCornerPoints.nearRight.y *= hd.NWIFactor;
     _pTranLLtoView = STRANCornersToBoundsP(&factoredCornerPoints, pvbounds);
-    
+    _pTranViewtoLL = STRANBoundsToCornersP(&factoredCornerPoints, pvbounds);
+
     if ([areaType isEqualToString:@"NWI"] )
     {
         type = typeNWI;
@@ -616,9 +617,13 @@ NextPass:
         INT64 objectid = sqlite3_column_int64(statement,i++);
         //if (objectid != 524665)
         //    continue;
+        //if (objectid != 2372183)
+        //    continue;
         BasePt.x = sqlite3_column_int(statement,i++);
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
+        if (numPoints > 500000)
+            continue;
         numLoops = sqlite3_column_int(statement,i++);
         //numLoops = 1;
         int rectype = sqlite3_column_int(statement,i++);
@@ -677,15 +682,47 @@ NextPass:
         LPDPOINT llpoints = ExpandPoints (binFile,offset,reclen,compressionType,numPoints,BasePt);
         LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
         LPINT polyPartLenThinned = 0;
+        MNMXCORD bounds1;
         LPMNMXCORD polyBounds = malloc (numLoops * sizeof(MNMXCORD) + 4);
         if (numLoops > 1)
         {
             BigReadF(binFile, polyPartLen, numLoops*sizeof(int));
             BigReadF(binFile, polyBounds, numLoops*sizeof(MNMXCORD));
+            bounds1 = *polyBounds;
+            for (int iPoly=0;iPoly<numLoops;iPoly++)
+            {
+                DPOINT minPoint, maxPoint;
+                
+                minPoint.x = polyBounds[iPoly].xmn * hd.NWIFactor;
+                maxPoint.x = polyBounds[iPoly].xmx * hd.NWIFactor;
+                minPoint.y = polyBounds[iPoly].ymn * hd.NWIFactor;
+                maxPoint.y = polyBounds[iPoly].ymx * hd.NWIFactor;
+                minPoint = TranDPOINTP(&minPoint, _pTranLLtoView);
+                maxPoint = TranDPOINTP(&maxPoint, _pTranLLtoView);
+                polyBounds[iPoly].xmn = minPoint.x;
+                polyBounds[iPoly].xmx = maxPoint.x;
+                polyBounds[iPoly].ymn = minPoint.y;
+                polyBounds[iPoly].ymx = maxPoint.y;
+            }
         }
+        MNMXCORD bounds2;
+        DBoundsInit (&bounds2);
         for (int i = 0; i < numPoints; i++)
         {
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
+            DPOINT pt = llpoints[i] ;
+            DPOINT point = TranDPOINTP(&pt, _pTranViewtoLL);
+            point.x /= hd.NWIFactor;
+            point.y /= hd.NWIFactor;
+            AddDPointToMinMax(&point, &bounds2);
+            if (i == polyPartLen[0])
+            {
+                double diff=bounds1.xmn - bounds2.xmn;
+                diff = bounds1.xmx - bounds2.xmx;
+                diff = bounds1.ymn - bounds2.ymn;
+                diff = bounds1.ymx - bounds2.ymx;
+                ii = 1;
+            }
         }
         
         if (type == typeFOREST)
@@ -920,6 +957,7 @@ LPDPOINT RemoveOutOfBoundsPolys  (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumL
     LPINT polyPartLenThinned = malloc (*pNumLoops * sizeof(int)+4);
     for (int iLoop = 0;iLoop< *pNumLoops;iLoop++)
     {
+       // MNMXCORD loopBounds = polyBounds[iLoop];
         MNMXCORD loopBounds = PolyBounds(&llPoints[iPoint], polyPartLen[iLoop]);
         if (BoundsInBounds(&loopBounds,pBounds,1))
         {
