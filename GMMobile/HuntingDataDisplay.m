@@ -594,7 +594,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         type = typeFOREST;
         table = @"FORESTDATA.FOREST";
         binFile = hd.fidForestBin;
-        query = [NSString stringWithFormat:@"SELECT RECNUM,RECNUM,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen, MN_CTYPE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
+        query = [NSString stringWithFormat:@"SELECT RECNUM,RECNUM,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen, MN_CTYPE.MN_CTYPE,MN_CTYPE.VALUE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index,FORESTDATA.MN_CTYPE WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND FORESTDATA.MN_CTYPE.MN_CTYPE=FORESTDATA.FOREST.MN_CTYPE",table,table,table,table,
                  platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
     }
     else if ([areaType isEqualToString:@"FEESURF"] )
@@ -645,10 +645,11 @@ NextPass:
             case typeFOREST:
             {
                 int standType = (LPSTR)sqlite3_column_int(statement,i++);
+                LPSTR standDesc = (LPSTR)sqlite3_column_text(statement,i++);
                 int surveyYear = (LPSTR)sqlite3_column_int(statement,i++);
                 int standAge = (LPSTR)sqlite3_column_int(statement,i++);
                 int TRUEAGE=(2022-surveyYear)+standAge;
-                text = [NSString stringWithFormat:@"Type:%i\nAge:%i",standType,TRUEAGE];
+                text = [NSString stringWithFormat:@"Type:%s\nAge:%i",standDesc,TRUEAGE];
                 if (standType == 12)
                 {
                     if (TRUEAGE>6 && TRUEAGE<15)
@@ -715,7 +716,7 @@ NextPass:
             point.x /= hd.NWIFactor;
             point.y /= hd.NWIFactor;
             AddDPointToMinMax(&point, &bounds2);
-            if (i == polyPartLen[0])
+            if (numLoops > 0 && i == polyPartLen[0])
             {
                 double diff=bounds1.xmn - bounds2.xmn;
                 diff = bounds1.xmx - bounds2.xmx;
@@ -957,7 +958,7 @@ LPDPOINT RemoveOutOfBoundsPolys  (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumL
     LPINT polyPartLenThinned = malloc (*pNumLoops * sizeof(int)+4);
     for (int iLoop = 0;iLoop< *pNumLoops;iLoop++)
     {
-       // MNMXCORD loopBounds = polyBounds[iLoop];
+        MNMXCORD loopBounds1 = polyBounds[iLoop];
         MNMXCORD loopBounds = PolyBounds(&llPoints[iPoint], polyPartLen[iLoop]);
         if (BoundsInBounds(&loopBounds,pBounds,1))
         {

@@ -305,7 +305,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.ForestVersion.integerValue >= 2)
+            if (hd.ForestVersion.integerValue >= 3)
                 rtn = YES;
         }
             break;
