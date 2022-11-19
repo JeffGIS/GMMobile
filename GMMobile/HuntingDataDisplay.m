@@ -367,7 +367,7 @@ NextPass:
         nLoaded++;
         int numPointsOrig = numPoints;
         BOOL doThinning = FALSE;
-        if (_zoom < 111)
+        if (_zoom < 1)
             doThinning = TRUE;
         if (doThinning)
         {
@@ -540,7 +540,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
                  viewBounds:(MNMXCORD *)pvbounds
 {
     int nLoaded = 0;
-    int textZoom = 16;
+    int textZoom = 14;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     IPOINT BasePt;
@@ -649,7 +649,10 @@ NextPass:
                 int surveyYear = (LPSTR)sqlite3_column_int(statement,i++);
                 int standAge = (LPSTR)sqlite3_column_int(statement,i++);
                 int TRUEAGE=(2022-surveyYear)+standAge;
-                text = [NSString stringWithFormat:@"Type:%s\nAge:%i",standDesc,TRUEAGE];
+                if (standAge > 0)
+                    text = [NSString stringWithFormat:@"%s\nAge:%i",standDesc,TRUEAGE];
+                else
+                    text = [NSString stringWithFormat:@"%s",standDesc];
                 if (standType == 12)
                 {
                     if (TRUEAGE>6 && TRUEAGE<15)
@@ -762,7 +765,7 @@ NextPass:
         {
             nLoaded++;
             BOOL doThinning = FALSE;
-            if (_zoom < 12)
+            if (_zoom < 1)
                 doThinning = TRUE;
             if (doThinning)
             {
@@ -958,8 +961,8 @@ LPDPOINT RemoveOutOfBoundsPolys  (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumL
     LPINT polyPartLenThinned = malloc (*pNumLoops * sizeof(int)+4);
     for (int iLoop = 0;iLoop< *pNumLoops;iLoop++)
     {
-        MNMXCORD loopBounds1 = polyBounds[iLoop];
-        MNMXCORD loopBounds = PolyBounds(&llPoints[iPoint], polyPartLen[iLoop]);
+        MNMXCORD loopBounds = polyBounds[iLoop];
+        //MNMXCORD loopBounds = PolyBounds(&llPoints[iPoint], polyPartLen[iLoop]);
         if (BoundsInBounds(&loopBounds,pBounds,1))
         {
             polyPartLenThinned[numNewLoops++] = polyPartLen[iLoop];

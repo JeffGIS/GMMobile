@@ -87,10 +87,54 @@
     [_locationManager stopUpdatingLocation];
     _locationManager.delegate = _oldLocationManagerDelegate;
 }
+
+BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
+{
+    BOOL rtn = FALSE;
+    if (superView)
+    {
+        if (PointInView (pt,superView))
+        {
+            CGRect viewFrame = view.frame;
+            CGRect superFrame = superView.frame;
+            
+            viewFrame.origin.x += superFrame.origin.x;
+            viewFrame.origin.y += superFrame.origin.y;
+            rtn = PointInCGRect(pt,viewFrame);
+        }
+    }
+    else
+        rtn  = PointInView (pt,view);
+     
+    return rtn;
+}
+//The event handling method
+- (void)handleSingleTap:(UITapGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateEnded)
+        {
+  CGPoint location = [sender locationInView:sender.view];
+    NSLog([NSString stringWithFormat:@"Tap at:%f %f",location.x,location.y]);
+            if (PointInSuperView(location,_infoLabel,_profileView))
+                NSLog (@"In infoLabel");
+            else if (PointInSuperView(location,_profileView,self.view))
+                NSLog (@"In profileView");
+            else if (PointInSuperView(location,_dScaView,self.view))
+                NSLog (@"In dScaView");
+            else if (PointInSuperView(location,self.view,nil))
+                NSLog (@"In main view");
+
+        }
+}
+
 -(void)configUI
 {
     self.view.backgroundColor = UIColor.blackColor;
-    
+    [self.view setMultipleTouchEnabled:YES];
+    UITapGestureRecognizer *singleFingerTap =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handleSingleTap:)];
+ 
     _dScaView = UIView.new;
     _dScaView.backgroundColor = UIColor.blackColor;
     _dScaView.frame = CGRectMake(0,0.1*_screenH,_screenW,_screenW);
@@ -123,6 +167,8 @@
     _backgroundView = UIView.new;
     _backgroundView.frame = CGRectMake (0,0,_dScaView.frame.size.width,_dScaView.frame.size.height);
     _backgroundView.backgroundColor = UIColor.blackColor;
+    [_dScaView setUserInteractionEnabled:NO];
+    [_dScaView setUserInteractionEnabled:NO];
     [_dScaView addSubview:_backgroundView];
     [_dScaView addSubview:_levelView];
     [_dScaView addSubview:_verticalView];
@@ -130,6 +176,9 @@
     [_dScaView addSubview:_compassTriangleView];
     [self.view addSubview:_dScaView];
     [self.view addSubview:_profileView];
+    [self.view setUserInteractionEnabled:YES];
+    [self.view addGestureRecognizer:singleFingerTap];
+
     [self configScaleDial];
 }
 -(UIImage *) DrawCompass

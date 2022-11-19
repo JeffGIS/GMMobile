@@ -7590,17 +7590,4 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     self.tabBarController.selectedIndex = 0;
     [findBounds dismissViewControllerAnimated:YES completion:nil];
 }
-BOOL PointInView(CGPoint target,UIView* view)
-{
-    BOOL rtn = TRUE;
-    
-    CGRect frame;
-    frame = view.frame;
-    if (target.x < frame.origin.x ||
-        target.x > frame.origin.x + frame.size.width ||
-        target.y < frame.origin.y ||
-        target.y > frame.origin.y + frame.size.height)
-        rtn = FALSE;
-    return rtn;
-}
 @end
