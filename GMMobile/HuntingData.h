@@ -23,6 +23,7 @@
 @property (nonatomic) NSString *desc;
 @property int time;
 @property int displayOnCompass;
+@property CGFloat headingInDeg;
 @end
 
 @interface HuntingData : NSObject
@@ -56,5 +57,7 @@
        description:(NSString *)desc
   displayOnCompass:(BOOL)displayOnCompass;
 -(NSArray *)getWaypoints;
+-(int) deleteAllWaypoints;
+-(int) deleteWaypointsOfType:(NSString*)type;
 
 @end

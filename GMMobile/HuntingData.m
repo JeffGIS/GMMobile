@@ -167,6 +167,30 @@
     return rtn;
 }
 
+-(int) deleteAllWaypoints
+{
+    BOOL opened = [self open];
+    NSString *cmd;
+    BOOL rtn;
+    
+    cmd = [NSString stringWithFormat:@"DELETE FROM USERDATA.UserWayPoints"];
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    [self close:opened];
+    return rtn;
+}
+-(int) deleteWaypointsOfType:(NSString*)type
+{
+    BOOL opened = [self open];
+    NSString *cmd;
+    BOOL rtn;
+    
+    cmd = [NSString stringWithFormat:@"DELETE FROM USERDATA.UserWayPoints WHERE type=%@",type];
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    [self close:opened];
+    return rtn;
+
+}
+
 -(BOOL)addWaypoint:(NSString*)name
               type:(NSString *)type
             latlon:(LLPOINT)ll
@@ -175,9 +199,16 @@
 {
     BOOL opened = [self open];
     int iTime = NSDate.timeIntervalSinceReferenceDate;
-
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO USERDATA.UserWayPoints (Name,Type,LAT,LON,TimeCreated,Description,DisplayOnCompass) VALUES('%@','%@',%f,%f,%i,'%@',%i)",name,type,ll.lat,ll.lon,iTime,desc,displayOnCompass];
-    BOOL rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    NSString *cmd;
+    BOOL rtn;
+    
+    if ([type isEqual:@"Vehicle"])
+    {
+        cmd = [NSString stringWithFormat:@"DELETE FROM USERDATA.UserWayPoints WHERE Type = 'Vehicle'"];
+        rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    }
+    cmd = [NSString stringWithFormat:@"INSERT INTO USERDATA.UserWayPoints (Name,Type,LAT,LON,TimeCreated,Description,DisplayOnCompass) VALUES('%@','%@',%f,%f,%i,'%@',%i)",name,type,ll.lat,ll.lon,iTime,desc,displayOnCompass];
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     [self close:opened];
     return rtn;
 }

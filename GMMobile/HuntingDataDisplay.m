@@ -1451,26 +1451,40 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     
     _currentRec = 0;
-    CGColorRef starColor = UIColor.orangeColor.CGColor;
     CGColorRef blackColor = UIColor.blackColor.CGColor;
     CGColorRef whiteColor = UIColor.whiteColor.CGColor;
     
     for (UserWaypoint* waypoint in userWaypointArray)
     {
+        CGColorRef fillColor = UIColor.orangeColor.CGColor;
         DPOINT pt = TranLLPOINT(waypoint.latlon, _pTranLLtoView);
-        dc.width = 5.5;
+        dc.width = 4;
         dc.penColor = [UIColor orangeColor];
-        
+        PointSymbols symbol = CircleSym;
+        if ([waypoint.type isEqual:@"Vehicle"])
+        {
+            dc.penColor = [UIColor greenColor];
+            fillColor = UIColor.greenColor.CGColor;
+            dc.width = 8;
+            symbol = Star2Sym;
+        }
+        if ([waypoint.type isEqual:@"CompassPoint"])
+        {
+            dc.penColor = [UIColor blueColor];
+            fillColor = UIColor.blueColor.CGColor;
+            dc.width = 5;
+            symbol = TriangleSym;
+        }
         if ([themes setDisplayCharacteristics:dc
                                     displayID:_processingID
                                  compareClass:nil] != DO_NOT_DISPLAY_ITEM)
         {
-            int size = 75*UIScreen.mainScreen.scale;
+            int size = dc.width*UIScreen.mainScreen.scale*10;
             [SymbolDictionary drawPointWithSymbol:context
                                                at:&pt
-                                      usingSymbol:Star2Sym
+                                      usingSymbol:symbol
                                              Size:size
-                                        fillColor:starColor
+                                        fillColor:fillColor
                                         lineColor:whiteColor
                                         lineWidth:1*UIScreen.mainScreen.scale
                                           andText:waypoint.name];

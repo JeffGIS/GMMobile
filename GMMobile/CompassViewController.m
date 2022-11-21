@@ -10,6 +10,13 @@
 #import "CCodeLibrary/CRAPI.h"
 #import "HuntingData.h"
 
+@interface CompassShapeLayer: CAShapeLayer
+@property UIColor *baseColor;
+@property UIColor *currentColor;
+@property CGFloat heading;
+@end
+@implementation CompassShapeLayer
+@end
 
 @interface CompassViewController ()
 @property UIView *backgroundView;
@@ -26,10 +33,12 @@
 @property id oldLocationManagerDelegate;
 @property UILabel *directionLabel;
 @property NSMutableArray * userWaypointLabels;
+@property NSMutableArray * tickShapes;
 @property CGPoint po;
 @property LLPOINT currentPoint;
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
+@property CGFloat currentHeading;
 
 @end
 
@@ -42,7 +51,7 @@
     _heightFactor = _screenH / 568.0;
     _widthFactor = _screenW / 320.0;
     [self configUI];
-
+    
     // Do any additional setup after loading the view.
     CGRect r = self.view.frame;
     r.size.width = min (self.view.frame.size.width,self.view.frame.size.height);
@@ -67,9 +76,9 @@
     HuntingData *hd = HuntingData.new;
     
     _userWaypointArray = [hd getWaypoints];
-
+    
 }
- - (void)viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     //[self DrawCompass];
@@ -105,26 +114,36 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     }
     else
         rtn  = PointInView (pt,view);
-     
+    
     return rtn;
 }
 //The event handling method
 - (void)handleSingleTap:(UITapGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        int numTouches = sender.numberOfTouches;
+        CGPoint location = [sender locationInView:sender.view];
+        CGPoint locationInView;
+        NSLog([NSString stringWithFormat:@"Tap at:%f %f",location.x,location.y]);
+        if (PointInSuperView(location,_infoLabel,_profileView))
         {
-  CGPoint location = [sender locationInView:sender.view];
-    NSLog([NSString stringWithFormat:@"Tap at:%f %f",location.x,location.y]);
-            if (PointInSuperView(location,_infoLabel,_profileView))
-                NSLog (@"In infoLabel");
-            else if (PointInSuperView(location,_profileView,self.view))
-                NSLog (@"In profileView");
-            else if (PointInSuperView(location,_dScaView,self.view))
-                NSLog (@"In dScaView");
-            else if (PointInSuperView(location,self.view,nil))
-                NSLog (@"In main view");
-
+            NSLog (@"In infoLabel");
+            locationInView = [sender locationOfTouch:0 inView:_infoLabel];
+            [self infoLabelPicked:locationInView];
         }
+        else if (PointInSuperView(location,_profileView,self.view))
+        {
+            NSLog (@"In profileView");
+            locationInView = [sender locationOfTouch:0 inView:_profileView];
+            [self profileViewPicked:locationInView];
+        }
+        else if (PointInSuperView(location,_dScaView,self.view))
+            NSLog (@"In dScaView");
+        else if (PointInSuperView(location,self.view,nil))
+            NSLog (@"In main view");
+        
+    }
 }
 
 -(void)configUI
@@ -132,9 +151,9 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
     UITapGestureRecognizer *singleFingerTap =
-      [[UITapGestureRecognizer alloc] initWithTarget:self
-                                              action:@selector(handleSingleTap:)];
- 
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(handleSingleTap:)];
+    
     _dScaView = UIView.new;
     _dScaView.backgroundColor = UIColor.blackColor;
     _dScaView.frame = CGRectMake(0,0.1*_screenH,_screenW,_screenW);
@@ -147,7 +166,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     _verticalView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
     _verticalView.backgroundColor = UIColor.whiteColor;
     _lineView = UIView.new;
-    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 0.05*_screenH,3,60);
+    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 0.05*_screenH,5,65);
     _lineView.backgroundColor = UIColor.whiteColor;
     _compassTriangleView = UIView.new;
     _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
@@ -178,7 +197,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view addSubview:_profileView];
     [self.view setUserInteractionEnabled:YES];
     [self.view addGestureRecognizer:singleFingerTap];
-
+    
     [self configScaleDial];
 }
 -(UIImage *) DrawCompass
@@ -190,76 +209,54 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [[UIColor blackColor]setFill];
     CGContextFillRect(context, self.view.frame);
     [[UIColor whiteColor] setStroke];
-
+    
     // make circle rect 5 px from border
     CGRect circleRect = CGRectInset(rect, 5, 5);
-
+    
     // draw circle
     CGContextStrokeEllipseInRect(context, circleRect);
-
+    
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     CGRect r = self.view.frame;
     _compassImage.image = image;
     return image;
 }
+
+- (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
+{
+    // begin a graphics context of sufficient size
+    UIGraphicsBeginImageContext(image.size);
     
-    - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
-    {
-        // begin a graphics context of sufficient size
-        UIGraphicsBeginImageContext(image.size);
-
-        // draw original image into the context
-        [image drawAtPoint:CGPointZero];
-
-        // get the context for CoreGraphics
-        CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-        // set stroking color and draw circle
-        [[UIColor redColor] setStroke];
-
-        // make circle rect 5 px from border
-        CGRect circleRect = CGRectMake(0, 0,
-                    image.size.width,
-                    image.size.height);
-        circleRect = CGRectInset(circleRect, 5, 5);
-
-        // draw circle
-        CGContextStrokeEllipseInRect(ctx, circleRect);
-
-        // make image out of bitmap context
-        UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
-
-        // free the context
-        UIGraphicsEndImageContext();
-
-        return retImage;
-    }
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    // draw original image into the context
+    [image drawAtPoint:CGPointZero];
+    
+    // get the context for CoreGraphics
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    
+    // set stroking color and draw circle
+    [[UIColor redColor] setStroke];
+    
+    // make circle rect 5 px from border
+    CGRect circleRect = CGRectMake(0, 0,
+                                   image.size.width,
+                                   image.size.height);
+    circleRect = CGRectInset(circleRect, 5, 5);
+    
+    // draw circle
+    CGContextStrokeEllipseInRect(ctx, circleRect);
+    
+    // make image out of bitmap context
+    UIImage *retImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    // free the context
+    UIGraphicsEndImageContext();
+    
+    return retImage;
 }
-*/
-
-//  DegreeScaleView.swift
-//  CompassExample
-//
-//  Created by Liu Chuan on 2018/3/8.
-//  Copyright © 2018年 LC. All rights reserved.
-//
-
-//import UIKit
-
-/// 刻度视图
 
 -(CGPoint) calculateTextPositonWithArcCenter: (CGPoint) center
-                                andAngle:(CGFloat) angle
-                                andScale:(CGFloat) scale
+                                    andAngle:(CGFloat) angle
+                                    andScale:(CGFloat) scale
 {
     CGFloat x = _radius * scale * cosf((angle));
     CGFloat y = _radius * scale * sinf((angle));
@@ -284,105 +281,116 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 {
     //return;
     CGFloat degree_360 = M_PI;
-        
+    
     CGFloat degree_180  = degree_360 / 2;
-        
+    
     CGFloat angle = degree_360 / 90;
-        
+    
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
-        
+    
     _po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
     _radius = _dScaView.frame.size.width / 2 - 90*_widthFactor/2;
-
+    
+    //create 2 degree ticks
+    _tickShapes = NSMutableArray.new;
     for (int i=0;i< 180;i++)
     {
-            
         CGFloat startAngle  = -(degree_180 + degree_360 / 180 / 2) + angle * i;
-            
         CGFloat endAngle  = startAngle + angle / 2;
-            
+        
         UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:_po radius:_radius startAngle:startAngle endAngle:endAngle clockwise:true];
         
-        if (i % 45 != 0)
+        //if (i % 45 != 0)
         {
-        CAShapeLayer * shapeLayer = CAShapeLayer.layer;
+            CompassShapeLayer * shapeLayer = CompassShapeLayer.new;
             
             if (i % 15 == 0)
             {
-                shapeLayer.strokeColor = UIColor.whiteColor.CGColor;
+                shapeLayer.baseColor = UIColor.whiteColor;
+                shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
                 shapeLayer.lineWidth = 20*_widthFactor;
             }
             else
             {
-                shapeLayer.strokeColor = UIColor.lightGrayColor.CGColor;
+                shapeLayer.baseColor = UIColor.lightGrayColor;
+                shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
                 shapeLayer.lineWidth = 20*_widthFactor;
             }
-        shapeLayer.path = bezPath.CGPath;
-        shapeLayer.fillColor = UIColor.clearColor.CGColor;
-        [_backgroundView.layer addSublayer:shapeLayer];
+            shapeLayer.currentColor = shapeLayer.baseColor;
+            shapeLayer.path = bezPath.CGPath;
+            shapeLayer.fillColor = UIColor.clearColor.CGColor;
+            shapeLayer.heading = i * 2 + 1;
+            [_backgroundView.layer addSublayer:shapeLayer];
+            [_tickShapes addObject:shapeLayer];
         }
+    }
+    //create 30 degree labels
+    for (int i=0;i< 180;i++)
+    {
+        if (i % 15 == 0)
+        {
+            CGFloat startAngle  = -(degree_180 + degree_360 / 180 / 2) + angle * i;
+            CGFloat endAngle  = startAngle + angle / 2;
+            NSString *  tickText = [NSString stringWithFormat:@"%i",i * 2];
             
-            if (i % 15 == 0)
+            CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
+            
+            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
+            
+            // UILabel
+            UILabel* label = UILabel.new;
+            label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
+            label.center = point;
+            label.textColor = UIColor.whiteColor;
+            label.font = [UIFont systemFontOfSize: 12];
+            label.textAlignment = NSTextAlignmentCenter;
+            if (i)
             {
-                NSString *  tickText = [NSString stringWithFormat:@"%i",i * 2];
+                label.text = tickText;
+                label.backgroundColor = UIColor.blackColor;
+            }
+            else
+            {
+                //label.font = [UIFont boldSystemFontOfSize: 26];
+                //label.text = @"^";
+                //label.textColor = UIColor.redColor;
+                label.backgroundColor = UIColor.blackColor;
+                [self DrawRedTriangleView:label];
+            }
+            [_backgroundView addSubview:label];
+            
+            if (i % 45 == 0)
+            {
+                //create NESW labels
+                NSString * tickText = directionArray[i / 45];
                 
-                CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
-                
-                CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
-                
+                CGPoint point2  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1];
                 // UILabel
-                UILabel* label = UILabel.new;
-                label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
-                label.center = point;
-                label.textColor = UIColor.whiteColor;
-                label.font = [UIFont systemFontOfSize: 12];
-                label.textAlignment = NSTextAlignmentCenter;
-                if (i)
-                {
-                    label.text = tickText;
-                    label.backgroundColor = UIColor.blackColor;
-                }
-                else
-                {
-                    //label.font = [UIFont boldSystemFontOfSize: 26];
-                    //label.text = @"^";
-                    //label.textColor = UIColor.redColor;
-                    label.backgroundColor = UIColor.blackColor;
-                    [self DrawRedTriangleView:label];
-                }
-                [_backgroundView addSubview:label];
+                UILabel * label2 = UILabel.new;
+                label2.frame = CGRectMake (point2.x, point2.y,30*_widthFactor,30*_widthFactor);
+                label2.center = point2;
+                label2.text = tickText;
+                label2.textColor = UIColor.whiteColor;
+                label2.font = [UIFont boldSystemFontOfSize: 26];
+                label2.textAlignment = NSTextAlignmentCenter;
+                label2.backgroundColor = UIColor.clearColor;
                 
-                if (i % 45 == 0)
+                if ([tickText isEqual:@"N"])
                 {
-                    NSString * tickText = directionArray[i / 45];
                     
-                    CGPoint point2  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1];
-                    // UILabel
-                    UILabel * label2 = UILabel.new;
-                    label2.frame = CGRectMake (point2.x, point2.y,30*_widthFactor,30*_widthFactor);
-                    label2.center = point2;
-                    label2.text = tickText;
-                    label2.textColor = UIColor.whiteColor;
-                    label2.font = [UIFont boldSystemFontOfSize: 22];
-                    label2.textAlignment = NSTextAlignmentCenter;
-                    label2.backgroundColor = UIColor.clearColor;
-                    
-                    if ([tickText isEqual:@"N"])
-                    {
-                        
-                    }
-                    [_backgroundView addSubview:label2];
                 }
+                [_backgroundView addSubview:label2];
             }
         }
     }
+}
 
 -(void) DrawRedTriangleView:(UILabel*) label
 {
     CGFloat w = label.frame.size.width;
     CGFloat h = label.frame.size.height;
-        
-
+    
+    
     UIBezierPath *trianglePath = UIBezierPath.new;
     CGPoint point2 = CGPointMake( 0,  h);
     [trianglePath moveToPoint: point2];
@@ -440,78 +448,39 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
-    /*
-        trueHeading     : 真北方向
-        magneticHeading : 磁北方向
-     */
-    /// 获得当前设备
     UIDevice * device = UIDevice.currentDevice;
     
-    // 1.判断当前磁力计的角度是否有效(如果此值小于0,代表角度无效)越小越精确
     if (newHeading.headingAccuracy > 0)
     {
         
-        // 2.获取当前设备朝向(磁北方向)数据
         CGFloat magneticHeading = [self heading:newHeading.magneticHeading fromOrirntation: device.orientation];
         
-        // 地理航向数据: trueHeading
-        CGFloat trueHeading = [self heading:newHeading.trueHeading fromOrirntation: device.orientation];
-     
-        /// 地磁北方向
+       CGFloat trueHeading = [self heading:newHeading.trueHeading fromOrirntation: device.orientation];
+        
         CGFloat headi = -1.0 * M_PI * newHeading.magneticHeading / 180.0;
-        // 设置角度label文字
         //_infoLabel.text = @"\(Int(magneticHeading))";
         
-        // 3.旋转变换
         [self resetDirection:headi];
         
-        // 4.当前手机（摄像头)朝向方向
         [self update:newHeading];
     }
 }
 
-// 判断设备是否需要校验，受到外来磁场干扰时
 -(Bool) locationManagerShouldDisplayHeadingCalibration:(CLLocationManager*)manager
 {
     return true;
 }
 
-// 定位代理失败回调
 -(void) locationManager:(CLLocationManager*) manager
        didFailWithError:(NSError*) error
 {
-    //print("定位失败....\(error)")
+    NSLog(@"Location manager error");
 }
 
-/// 如果授权状态发生变化时,调用
-///
-/// - Parameters:
-///   - manager: 定位管理器
-///   - status: 当前的授权状态
 -(void) locationManager:(CLLocationManager*)manager
  didChangeAuthorization:(CLAuthorizationStatus)status
 {
-/*
-    switch status {
-    case .notDetermined:
-        print("用户未决定")
-    case .restricted:
-        print("受限制")
-    case .denied:
-        // 判断当前设备是否支持定位, 并且定位服务是否开启
-        if CLLocationManager.locationServicesEnabled() {
-            print("定位开启,被拒绝")
-        }else {
-            print("定位服务关闭")
-        }
-    case .authorizedAlways:
-        print("前,后台定位授权")
-    case .authorizedWhenInUse:
-        print("前台定位授权")
-    @unknown default:
-        fatalError()
-    }
- */
+    NSLog(@"Location manager changed autorization");
 }
 
 -(void) removeUserWaypoints
@@ -543,7 +512,7 @@ double HeadingFromAZ (double az)
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
         double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
-        if (dist < _maxWaypointDist)
+        if (dist < _maxWaypointDist || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
         {
             double az = AZMLatLon (currentPoint,waypoint.latlon);
             double azd = RadiansToDegrees (az);
@@ -563,28 +532,133 @@ double HeadingFromAZ (double az)
             
             // UILabel
             UILabel* label = UILabel.new;
-            label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
-            label.center = point;
-            label.textColor = UIColor.whiteColor;
-            label.font = [UIFont systemFontOfSize: 12];
-            label.textAlignment = NSTextAlignmentCenter;
+            CGFloat factor = 1;
+            CGFloat fontSize = 12;
             label.text = tickText;
-            label.backgroundColor = UIColor.purpleColor;
-            [_backgroundView addSubview:label];
+            label.font = [UIFont systemFontOfSize: fontSize];
+            label.textAlignment = NSTextAlignmentCenter;
+            if ([waypoint.type isEqual:@"Vehicle"])
+            {
+                factor = 1.2;
+                fontSize = 24;
+                label.backgroundColor = UIColor.greenColor;
+                label.textColor = UIColor.blackColor;
+                label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+            }
+            else if ([waypoint.type isEqual:@"CompassPoint"])
+            {
+                factor = 1.2;
+                fontSize = 12;
+                label.backgroundColor = UIColor.blueColor;
+                label.textColor = UIColor.whiteColor;
+                label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+            }
+            else
+            {
+                label.backgroundColor = UIColor.lightGrayColor;
+                label.textColor = UIColor.blackColor;
+            }
+            if (waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            {
+                label.backgroundColor = UIColor.redColor;
+                label.textColor = UIColor.whiteColor;
+                factor = 1.2;
+                label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+            }
+            label.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+            label.center = point;
+            label.clipsToBounds = true;
+            label.layer.cornerRadius = label.frame.size.width / 2;
+            
+              [_backgroundView addSubview:label];
             [_userWaypointLabels addObject:label];
         }
         
     }
     
 }
+-(CGFloat) getSelectedWaypointHeading
+{
+    CGFloat rtn = 0;
+    for (UserWaypoint* waypoint in _userWaypointArray)
+    {
+        if (waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            rtn = waypoint.headingInDeg;
+    };
+    return rtn;
+}
+-(void) createRedTicks
+{
+    CGFloat wpAz = 0;
+    
+    double curHead = _currentHeading;
+    double wpHead = [self getSelectedWaypointHeading];
+    double minHead = min (curHead,wpHead);
+    double maxHead = max (curHead,wpHead);
+    int opt = 1;
+    if (maxHead - minHead > 180)
+        opt = 2;
+    int numRed = 0;
+    for (CompassShapeLayer* shapeLayer in _tickShapes)
+    {
+        double tickHead = shapeLayer.heading;
+        BOOL setRed = FALSE;
+        if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+        {
+            if (opt == 1)
+            {
+                if (tickHead  >= minHead && tickHead  <= maxHead)
+                    setRed = TRUE;
+            }
+            else
+            {
+                if (tickHead  > maxHead || tickHead < minHead)
+                    setRed = TRUE;
+            }
+        }
+        else
+            _lineView.backgroundColor = UIColor.whiteColor;
+
+        if (setRed)
+        {
+            numRed++;
+            if (shapeLayer.currentColor != UIColor.redColor)
+            {
+                shapeLayer.strokeColor = UIColor.redColor.CGColor;
+                shapeLayer.currentColor = UIColor.redColor;
+            }
+        }
+        else
+        {
+            if (shapeLayer.currentColor != shapeLayer.baseColor)
+            {
+                shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
+                shapeLayer.currentColor = shapeLayer.baseColor;
+            }
+        }
+    }
+    if (numRed > 2)
+        _lineView.backgroundColor = UIColor.redColor;
+    else
+        _lineView.backgroundColor = UIColor.whiteColor;
+
+}
+-(void) infoLabelPicked:(CGPoint)atPoint
+{
+    CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+    return;
+}
+-(void) profileViewPicked:(CGPoint)atPoint
+{
+    return;
+}
 -(void) update:(CLHeading*)newHeading
 {
-    
-    /// 朝向
     CLLocationDirection theHeading = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading;
     theHeading = newHeading.trueHeading;
-    /// 角度
-    ///
+    _currentHeading = theHeading;
+    [self createRedTicks];
+
     NSString * directionLabelText;
     int angle = IDNINT(theHeading);
     
@@ -605,13 +679,15 @@ double HeadingFromAZ (double az)
         directionLabelText = @"NW";
     if (theHeading > 270 + 45)
         directionLabelText = @"N";
-
+    
     _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
+    CRAPI.sharedInstance.currentFocusWaypoint = -1;
+    
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
         double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
-        double az = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
-        double azDeg = RadiansToDegrees (az);
+        double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
+        waypoint.headingInDeg = RadiansToDegrees (wpaz);
         double curAz = DegreesToRadians(theHeading);
         if (dist < 0.02 * METERS_PER_MILE)
         {
@@ -619,16 +695,18 @@ double HeadingFromAZ (double az)
         }
         else
         {
-            double daz = DeltaAZD(az, curAz);
+            double daz = DeltaAZD(wpaz, curAz);
             if (fabs (daz) < 0.2)
             {
+                CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
                 dist = dist / METERS_PER_MILE;
                 _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f miles",waypoint.name,dist];
+                
             }
         }
-
+        
     }
- 
+    
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
