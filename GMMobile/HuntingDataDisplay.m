@@ -15,6 +15,7 @@
 @property (nonatomic) CGColorRef WMAColor, WPAColor, NWRColor, FSAColor, WalkInColor, LAKESColor;
 @property sqlite3nv *database;
 @property INT64 totRecords,currentRec;
+@property int topScore;
 @end
 
 @implementation HuntingDataDisplay
@@ -56,6 +57,7 @@
         self.FSAColor = [HuntingDataDisplay FSAColor];
         self.WalkInColor = [HuntingDataDisplay WalkInColor];
         self.LAKESColor = [HuntingDataDisplay LAKESColor];
+        self.topScore = 400;
     }
     
     return self;
@@ -217,6 +219,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                  pointInArea:pia];
         }
         nDisplayed = [self displayWaypoints:context
+                                  llCorners:latlonCornerPoints
+                                   LLBounds:platlonBounds
+                                 viewBounds:pvbounds
+                     displayCharacteristics:dc
+                                     themes:themes
+                                pointInArea:pia];
+        nDisplayed = [self displayEdgePoints:context
                                   llCorners:latlonCornerPoints
                                    LLBounds:platlonBounds
                                  viewBounds:pvbounds
@@ -552,7 +561,10 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     NSString * table = key;
     HuntingData *hd = HuntingData.new;
     int colorOpt = 0;
+    int forestType, forestAge;
     FILE *binFile;
+    NSString *savePointsFile = nil;
+    FILE *savePointsFID = nil;
     CGColorRef blackColor = NVColor.blackColor.CGColor;
 #define OWNER_COLORS    1
 #define FWS_COLORS      2
@@ -596,6 +608,12 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         binFile = hd.fidForestBin;
         query = [NSString stringWithFormat:@"SELECT RECNUM,RECNUM,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen, MN_CTYPE.MN_CTYPE,MN_CTYPE.VALUE,SURVEY_YR,STAND_AGE,MN_SIZE,MN_DENS,UTYPE,USIZE,UDENSE FROM %@,%@_index,FORESTDATA.MN_CTYPE WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND FORESTDATA.MN_CTYPE.MN_CTYPE=FORESTDATA.FOREST.MN_CTYPE",table,table,table,table,
                  platlonBounds->xmn*hd.ForestFactor, platlonBounds->xmx*hd.ForestFactor, platlonBounds->ymn*hd.ForestFactor, platlonBounds->ymx*hd.ForestFactor];
+        if (CRAPI.sharedInstance.evaluateEdges)
+        {
+            savePointsFile = [NSString stringWithFormat:@"%@savedPoints.bin", NSTemporaryDirectory()];
+            savePointsFID = fopen (savePointsFile.UTF8String,"w+b");
+        }
+        
     }
     else if ([areaType isEqualToString:@"FEESURF"] )
     {
@@ -645,14 +663,19 @@ NextPass:
             case typeFOREST:
             {
                 int standType = (LPSTR)sqlite3_column_int(statement,i++);
+                forestType = standType;
                 LPSTR standDesc = (LPSTR)sqlite3_column_text(statement,i++);
                 int surveyYear = (LPSTR)sqlite3_column_int(statement,i++);
                 int standAge = (LPSTR)sqlite3_column_int(statement,i++);
                 int TRUEAGE=(2022-surveyYear)+standAge;
+                forestAge = TRUEAGE;
                 if (standAge > 0)
                     text = [NSString stringWithFormat:@"%s\nAge:%i",standDesc,TRUEAGE];
                 else
+                {
                     text = [NSString stringWithFormat:@"%s",standDesc];
+                    forestAge = 0;
+                }
                 if (standType == 12)
                 {
                     if (TRUEAGE>6 && TRUEAGE<15)
@@ -731,6 +754,8 @@ NextPass:
         
         if (type == typeFOREST)
         {
+            if (savePointsFID)
+                forestCode = 0;
             switch (forestCode)
             {
                 default:
@@ -767,10 +792,30 @@ NextPass:
             BOOL doThinning = FALSE;
             if (_zoom < 1)
                 doThinning = TRUE;
-            if (doThinning)
+            if (doThinning || savePointsFID)
             {
                 int numPointsOrig = numPoints;
                 LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
+                if (savePointsFID)
+                {
+                    LPPOINT intPoints = malloc (numPoints * sizeof(POINT)+4);
+                    int numInPoints = 0;
+                    for (int i = 0; i< numPoints;i++)
+                    {
+                        intPoints[numInPoints].x = llpointsThinned[i].x;
+                        intPoints[numInPoints].y = llpointsThinned[i].y;
+                        if (POINTInBounds (&intPoints[numInPoints],pvbounds))
+                            numInPoints++;
+                    }
+                    if (numInPoints)
+                    {
+                        BigWriteF(savePointsFID,&numInPoints,sizeof(int),-1);
+                        BigWriteF(savePointsFID,&forestType,sizeof(int),-1);
+                        BigWriteF(savePointsFID,&forestAge,sizeof(int),-1);
+                        int nwritten = BigWriteF(savePointsFID, intPoints, numInPoints * sizeof(POINT),-1) + 4;
+                    }
+                    free (intPoints);
+                }
                 int totpntj = 0;
                 int totpntk = 0;
                 int numNewLoops = 0;
@@ -859,6 +904,15 @@ NextPass:
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
+    if (savePointsFID)
+    {
+        int flen = fseek(savePointsFID, 0, SEEK_END);
+        flen = ftell (savePointsFID);
+        fseek(savePointsFID, 0, SEEK_SET);
+        [self evaluateEdges:savePointsFID];
+        fclose (savePointsFID);
+        DeleteFile(savePointsFile);
+    }
     return nLoaded;
     
 }
@@ -1496,7 +1550,319 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2P(&_pTranViewtoLL);
     return nDisplayed;
 }
+-(int) displayEdgePoints:(CGContextRef)context
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds
+ displayCharacteristics:(DisplayCharacteristics *)dc
+                 themes:(Themes*)themes
+            pointInArea:(PointInArea *)pia
+{
+    if (!CRAPI.sharedInstance.evaluateEdges)
+        return 0;
+    int nDisplayed = 0;
+    NSString *query = @"";
+    //NSString *querys;
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints, useCode;
+    int numLoops;
+    HuntingData *hd = HuntingData.new;
+    int maxScore;
+    NSArray *userWaypointArray = [self getEdgePoints:&maxScore];
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+    
+    _currentRec = 0;
+    CGColorRef blackColor = UIColor.blackColor.CGColor;
+    CGColorRef whiteColor = UIColor.whiteColor.CGColor;
+    
+    for (UserWaypoint* waypoint in userWaypointArray)
+    {
+        CGColorRef fillColor = UIColor.orangeColor.CGColor;
+        DPOINT pt;
+        pt.x = waypoint.latlon.lon;
+        pt.y = waypoint.latlon.lat;
+        dc.width = 4;
+        dc.penColor = [UIColor orangeColor];
+        PointSymbols symbol = CircleSym;
+        if ([waypoint.type isEqual:@"EdgePoint"])
+        {
+            UIColor *c = [UIColor colorWithRed:1 green:0 blue:0 alpha:waypoint.name.floatValue/maxScore];
+            dc.penColor = c;
+            fillColor = c.CGColor;
+            dc.width = 2;
+            symbol = CircleSym;
+        }
+        if ([themes setDisplayCharacteristics:dc
+                                    displayID:_processingID
+                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+        {
+            int size = dc.width*UIScreen.mainScreen.scale*10;
+            [SymbolDictionary drawPointWithSymbol:context
+                                               at:&pt
+                                      usingSymbol:symbol
+                                             Size:size
+                                        fillColor:fillColor
+                                        lineColor:fillColor
+                                        lineWidth:1*UIScreen.mainScreen.scale];
+            nDisplayed++;
+        }
+    }
+    
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    return nDisplayed;
+}
 
+-(void) evaluateEdges:(FILE*) fid
+{
+    sqlite3nv *database;
+    sqlite3_stmt *statement = NULL;
 
+    NSString *cmd = @"CREATE TABLE EDGES (Point INTEGER PRIMARY KEY, val1 INT, val2 INT, val3 INT,age1 INT, age2 INT, age3 INT, score INT)";
+    int numPoints;
+    
+    NSString *savePointsDB= [NSString stringWithFormat:@"%@savedPoints.slt", NSTemporaryDirectory()];
+    DeleteFile (savePointsDB);
+    BOOL isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(savePointsDB.UTF8String, &database), database);
+    
+    BOOL rtn = !SQLOK("",0,SQLiteExec(database, cmd.UTF8String, 0, 0, 0), database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(database, "BEGIN", 0, 0, 0), database);
 
+    int val1,val2,val3,score;
+    int age1,age2,age3;
+    while (BigReadF(fid,&numPoints,sizeof(int)))
+    {
+        int forestType, forestAge;
+        BigReadF (fid,&forestType,sizeof(int));
+        BigReadF (fid,&forestAge,sizeof(int));
+        LPPOINT pPoints = malloc (numPoints*sizeof(POINT)+4);
+        BigReadF (fid,pPoints,numPoints*sizeof(POINT));
+        for (int i = 0;i<numPoints;i++)
+        {
+            INT64 pt,pt2;
+            int ptx, pty;
+            pt = (INT64)pPoints[i].x * UINT_MAX + (INT64)pPoints[i].y;
+            NSString *query = [NSString stringWithFormat:@"SELECT * FROM EDGES WHERE Point = %lli",pt];
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0),database);
+            int haveRec = 0;
+            while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+            {
+                int i = 0;
+                haveRec++;
+                pt2 = sqlite3_column_int64(statement,i++);
+                val1 = sqlite3_column_int(statement,i++);
+                val2 = sqlite3_column_int(statement,i++);
+                val3 = sqlite3_column_int(statement,i++);
+                age1 = sqlite3_column_int(statement,i++);
+                age2 = sqlite3_column_int(statement,i++);
+                age3 = sqlite3_column_int(statement,i++);
+                score = sqlite3_column_int(statement,i++);
+            }
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+            cmd = nil;
+            if (haveRec)
+            {
+                if (val2 == 0)
+                {
+                    if (val1 != forestType)
+                    {
+                        score *= ScoreForest (forestType,forestAge);
+                        cmd = [NSString stringWithFormat:@"UPDATE EDGES set val2 = %i, age2 = %i, score = %i WHERE Point = %lli",forestType,forestAge,score,pt];
+                    }
+                    else
+                    {
+                        score = ScoreForest (forestType,(forestAge+age1)/2);
+                        cmd = [NSString stringWithFormat:@"UPDATE EDGES set val1 = %i, age1 = %i, score = %i WHERE Point = %lli",forestType,(forestAge+age1)/2,score,pt];
+                    }
+                }
+                else if (val3 == 0)
+                {
+                    if (val1 != forestType && val2 != forestType)
+                    {
+                        score *= ScoreForest (forestType,forestAge);
+                        cmd = [NSString stringWithFormat:@"UPDATE EDGES set val3 = %i, age3 = %i, score = %i  WHERE Point = %lli",forestType,forestAge,score,pt];
+                    }
+                }
+                if (cmd)
+                    rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(database, cmd.UTF8String, 0, 0, 0), database);
+            }
+            else
+            {
+                score = ScoreForest (forestType,forestAge);
+                cmd = [NSString stringWithFormat:@"INSERT INTO EDGES VALUES(%lli,%i,0,0,%i,0,0,%i)",pt,forestType,forestAge,score];
+                rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(database, cmd.UTF8String, 0, 0, 0), database);
+            }
+        }
+        free (pPoints);
+    }
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM EDGES WHERE Score > 1"];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0),database);
+    int haveRec = 0;
+    INT64 pt;
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        pt = sqlite3_column_int64(statement,i++);
+        val1 = sqlite3_column_int(statement,i++);
+        val2 = sqlite3_column_int(statement,i++);
+        val3 = sqlite3_column_int(statement,i++);
+        age1 = sqlite3_column_int(statement,i++);
+        age2 = sqlite3_column_int(statement,i++);
+        age3 = sqlite3_column_int(statement,i++);
+        score = sqlite3_column_int(statement,i++);
+        haveRec++;
+    }
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+
+    SQLOK(__FILE__,__LINE__,SQLiteExec(database, "COMMIT", 0, 0, 0),database);
+    rtn = SQLOK(__FILE__,__LINE__,SQLite_Close(&database),database);
+}
+
+int ScoreForest (int type, int age)
+{
+    int rtn = 1;
+    if (type == 12)
+    {
+        //aspen
+        if (age>6 && age<15)
+            rtn = 25;
+        else if (age>4 && age<7)
+            rtn = 20;
+        else if (age>14 && age<25)
+            rtn = 20;
+        else
+            rtn = 10;
+    }
+    else if (type == 13)
+    {
+        //birch
+        if (age>7 && age<15)
+            rtn = 15;
+        else if (age>4 && age<7)
+            rtn = 12;
+        else if (age>14 && age<25)
+            rtn = 10;
+        else
+            rtn = 5;
+    }
+    else if (type > 50 && type < 60)
+    {
+        //pines
+        if (age>9 && age<25)
+            rtn = 15;
+        else if (age>4 && age<8)
+            rtn = 5;
+        else if (age>25 && age<59)
+            rtn = 10;
+        else
+            rtn = 5;
+    }
+
+    return rtn;
+}
+
+-(NSArray*) getEdgePoints:(int *)maxScore
+{
+    NSMutableArray *array = NSMutableArray.new;
+    NSString *savePointsDB= [NSString stringWithFormat:@"%@savedPoints.slt", NSTemporaryDirectory()];
+    sqlite3nv *database;
+    sqlite3_stmt *statement = NULL;
+
+    *maxScore = 0;
+    BOOL isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(savePointsDB.UTF8String, &database), database);
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM EDGES WHERE Score > 1 AND val3 = 0"];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0),database);
+    int haveRec = 0;
+    INT64 pt;
+    int val1,val2,val3,age1,age2,age3,score;
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        pt = sqlite3_column_int64(statement,i++);
+        val1 = sqlite3_column_int(statement,i++);
+        val2 = sqlite3_column_int(statement,i++);
+        val3 = sqlite3_column_int(statement,i++);
+        age1 = sqlite3_column_int(statement,i++);
+        age2 = sqlite3_column_int(statement,i++);
+        age3 = sqlite3_column_int(statement,i++);
+        score = sqlite3_column_int(statement,i++);
+        score = min (score,_topScore);
+        UserWaypoint* waypoint = UserWaypoint.new;
+        waypoint.refno = haveRec;
+        waypoint.type = @"EdgePoint";
+        LLPOINT ptll;
+        ptll.lat = pt % UINT_MAX;
+        ptll.lon = pt / UINT_MAX;
+        waypoint.latlon = ptll;
+        waypoint.name = [NSString stringWithFormat:@"%i",score];
+        *maxScore = max (*maxScore,score);
+        [array addObject:waypoint];
+        haveRec++;
+    }
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+
+    SQLOK(__FILE__,__LINE__,SQLite_Close(&database),database);
+    *maxScore = _topScore;
+    
+    DeleteFile (savePointsDB);
+
+    return array;
+}
+/*
+MN_CTYPE    VALUE    enumerated    Main Cover Type
+0    None
+1    Ash
+6    Willow
+9    Lowland Hardwoods
+12    Aspen
+13    Birch
+14    Balm of Gilead
+15    Cottonwood
+17    Hybrid Poplar
+20    Northern Hardwoods
+25    Walnut
+30    Oak
+40    Central Hardwoods
+51    White Pine
+52    Norway Pine
+53    Jack Pine
+54    Scotch Pine
+55    Ponderosa Pine
+61    White Spruce
+62    Balsam Fir
+64    Norway Spruce
+70    Upland Larch
+71    Black Spruce-Lowland
+72    Tamarack
+73    White Cedar
+74    Black Spruce-Upland
+75    Stagnant Spruce
+76    Stagnant Tamarack
+77    Stagnant Cedar
+78    Offsite Aspen
+79    Offsite Oak
+81    Red Cedar
+82    Cutover Area
+83    Lowland Grass
+84    Upland Grass
+85    Lowland Brush
+86    Upland Brush
+87    Duff
+88    Moss
+90    Unknown
+91    Agricultural
+92    Industrial Develop
+93    Recreation Develop
+94    Roads
+95    Rock Outcrop
+96    Permanent Water
+97    Nonpermanent Water
+98    Marsh
+99    Muskeg
+*/
 @end

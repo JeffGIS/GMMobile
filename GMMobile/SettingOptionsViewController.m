@@ -131,7 +131,7 @@
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
                   @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Search Realtor Listings",
-                  @"Test Height Calculator"];
+                  @"Test Height Calculator",@"Toggle Evaluator"];
     
     [_tableView reloadData];
 }
@@ -738,6 +738,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Test Height Calculator"])
     {
         [self testHeightCalculator];
+    }
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Toggle Evaluator"])
+    {
+        CRAPI.sharedInstance.evaluateEdges = !CRAPI.sharedInstance.evaluateEdges;
     }
 }
 
