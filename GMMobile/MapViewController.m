@@ -141,8 +141,11 @@
 @property int numCurrentRoutePoints;
 @property CAShapeLayer *routeLayer;
 @property CAShapeLayer *trackLayer;
+@property CAShapeLayer *scaleLayer;
 @property BOOL amTrackingRoute;
 @property BOOL displayTrackingRoute;
+@property UILabel *scaleLabel;
+
 @end
 
 @implementation MapViewController
@@ -2192,6 +2195,66 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         CGPointMake(targetPoint.x, (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
 }
+-(void) displayScalebar
+{
+    int lineWidth = 5;
+    CGRect tbframe = _mapToolbar.frame;
+    if (_scaleLayer)
+        [_scaleLayer removeFromSuperlayer];
+    if (_scaleLabel)
+        [_scaleLabel removeFromSuperview];
+    _scaleLayer = CAShapeLayer.layer;
+    _scaleLayer.strokeColor = UIColor.redColor.CGColor;
+    _scaleLayer.fillColor = UIColor.redColor.CGColor;
+    _scaleLayer.lineWidth = lineWidth;
+    UIBezierPath *path = UIBezierPath.bezierPath;
+    CGPoint pt1, pt2, pt3;
+    pt1.x = _mapView.frame.origin.x;
+    pt1.y = tbframe.origin.y - (lineWidth*2 + 15);
+    [path moveToPoint:pt1];
+    pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
+    pt2.y = pt1.y;
+    [path addLineToPoint:pt2];
+    [path moveToPoint:pt1];
+    pt3.x = pt1.x + lineWidth*2;
+    pt3.y = pt1.y - lineWidth*2;
+    [path addLineToPoint:pt3];
+    pt3.x = pt1.x + lineWidth*2;
+    pt3.y = pt1.y + lineWidth*2;
+    [path addLineToPoint:pt3];
+    [path moveToPoint:pt2];
+    pt3.x = pt2.x - lineWidth*2;
+    pt3.y = pt2.y - lineWidth*2;
+    [path addLineToPoint:pt3];
+    pt3.x = pt2.x - lineWidth*2;
+    pt3.y = pt2.y + lineWidth*2;
+    [path addLineToPoint:pt3];
+    _scaleLayer.path = path.CGPath;
+    [_mapView.layer addSublayer:_scaleLayer];
+    CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
+    CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
+    LLPOINT ptll1, ptll2;
+    ptll1.lon = ptcl1.longitude;
+    ptll1.lat = ptcl1.latitude;
+    ptll2.lon = ptcl2.longitude;
+    ptll2.lat = ptcl2.latitude;
+    double dist = ArcDistanceLL(ptll1, ptll2);
+    dist /= METERS_PER_MILE;
+    CGPoint pt = pt1;
+    int width = 250, height=30;
+    pt.x += pt2.x/2;
+    _scaleLabel = UILabel.new;
+    _scaleLabel.backgroundColor = UIColor.clearColor;
+    _scaleLabel.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
+    pt.y-=height/2;
+    _scaleLabel.center = pt;
+    _scaleLabel.textColor = UIColor.redColor;
+    _scaleLabel.font = [UIFont systemFontOfSize: height -4];
+    _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
+    _scaleLabel.textAlignment = NSTextAlignmentCenter;
+
+    [_mapView addSubview:_scaleLabel];
+}
 -(void) displayCurrentRoute
 {
     [self clearCurrentRoute];
@@ -3518,6 +3581,7 @@ haveVV:
                            [self createGrayscale];
                        [self displayCurrentRoute];
                        [self displayTrackRoute];
+                       [self displayScalebar];
                        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
                        if (reDisplay)
                        {
@@ -6772,6 +6836,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
         [self.view bringSubviewToFront:_legendScrollView];
+    [self displayScalebar];
 }
 
 - (void)mapToolbarDidWantExpand

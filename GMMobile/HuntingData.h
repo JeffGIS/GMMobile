@@ -16,7 +16,7 @@
 #import "NVMetroSettings.h"
 
 @interface UserWaypoint : NSObject
-@property (nonatomic) int refno;
+@property (nonatomic) INT64 refno;
 @property (nonatomic) LLPOINT latlon;
 @property (nonatomic) NSString * name;
 @property (nonatomic) NSString *type;
