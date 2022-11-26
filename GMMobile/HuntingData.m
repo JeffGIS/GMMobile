@@ -184,7 +184,7 @@
     NSString *cmd;
     BOOL rtn;
     
-    cmd = [NSString stringWithFormat:@"DELETE FROM USERDATA.UserWayPoints WHERE type=%@",type];
+    cmd = [NSString stringWithFormat:@"DELETE FROM USERDATA.UserWayPoints WHERE type = '%@'",type];
     rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     [self close:opened];
     return rtn;

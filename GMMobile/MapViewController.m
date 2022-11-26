@@ -1844,6 +1844,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [optionList addObject:@"________________________"];
                 [optionList addObject:@"Mark Vehicle Location"];
                 [optionList addObject:@"________________________"];
+                [optionList addObject:@"Delete all Compass Waypoints"];
                 [optionList addObject:@"Delete All Waypoints"];
                 
                 
@@ -2258,6 +2259,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 -(void) displayCurrentRoute
 {
     [self clearCurrentRoute];
+    HuntingData *hd = HuntingData.new;
+    [hd deleteWaypointsOfType:@"RoutePoint"];
     int n = CRAPI.sharedInstance.currentRoute.count;
     if (CRAPI.sharedInstance.currentRoute.count > 1)
     {
@@ -2268,8 +2271,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         UIBezierPath *path = UIBezierPath.bezierPath;
         NSNumber *npt = CRAPI.sharedInstance.currentRoute[0];
         int ipt = 0;
-        HuntingData *hd = HuntingData.new;
-        [hd deleteWaypointsOfType:@"RoutePoint"];
         for (NSNumber *npt in CRAPI.sharedInstance.currentRoute)
         {
             CGPoint pt = npt.CGPointValue;
@@ -2383,6 +2384,7 @@ LLPOINT CGPointToLLPoint (CGPoint inPt)
             NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
             [CRAPI.sharedInstance.currentRoute addObject:routePoint];
             [self displayCurrentRoute];
+            [self vectorViewRefresh];
         }
         return;
     }
@@ -7014,22 +7016,40 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            HuntingData *hd = HuntingData.new;
             [self displayTrackRoute];
+            [self vectorViewRefresh];
+
         }
         else if ([text isEqualToString:@"Clear Route"])
         {
             CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
-            [self displayCurrentRoute];
+            HuntingData *hd = HuntingData.new;
+            [hd deleteWaypointsOfType:@"RoutePoint"];
+
+            [self vectorViewRefresh];
+
+        }
+        else if ([text isEqualToString:@"Delete all Compass Waypoints"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd deleteWaypointsOfType:@"CompassPoint"];
+            [self vectorViewRefresh];
+
         }
         else if ([text isEqualToString:@"Delete All Waypoints"])
         {
             HuntingData *hd = HuntingData.new;
             [hd deleteAllWaypoints];
+            [self vectorViewRefresh];
+
         }
         else if ([text isEqualToString:@"Add Compass Waypoint"])
         {
             HuntingData *hd = HuntingData.new;
             [hd addWaypoint:@"C.id" type:@"CompassPoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
+            [self vectorViewRefresh];
+
         }
         else
             return;

@@ -79,160 +79,163 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *shapeFile;
     int  nDisplayed;
     
-    if (ConfigurationControl.sharedInstance.mapType == kGMSTypeHybrid ||
-        ConfigurationControl.sharedInstance.mapType == kGMSTypeNormal)
-        return;
-    if ([ConfigurationControl.sharedInstance layer:HCLayerHunting
-                                     visibleAtZoom:_zoom
-                                           andPass:_passID])
-    {
-        /*
-         fileName = @"Carlton_County.shp";
-         fileName = @"Ownership.shp";
-         dc.elementType = ParcelBoundary;
-         dc.elementType = Ownership;
-         shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-         sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-         if (sfd)
-         {
-         sfd.zoom = _zoom;
-         sfd.processingID = _processingID;
-         [sfd display:context
-         displayCharacteristics:dc
-         llCorners:latlonCornerPoints
-         LLBounds:platlonBounds
-         viewBounds:pvbounds
-         themes:themes
-         pointInArea:pia];
-         }
-         */
-        /*        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
-         visibleAtZoom:_zoom
-         andPass:_passID])
-         {
-         nDisplayed = [self display:context
-         areaType:@"OWNERSHIP"
-         color:0
-         pointInAreas:pia
-         llCorners:latlonCornerPoints
-         LLBounds:platlonBounds
-         viewBounds:pvbounds];
-         }*/
-        nDisplayed = [self display:context
-                          areaType:@"WMA"
-                             color:_WMAColor
-                      pointInAreas:pia
-                         llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                        viewBounds:pvbounds];
-        nDisplayed = [self display:context
-                          areaType:@"LAKES"
-                             color:_LAKESColor
-                      pointInAreas:pia
-                         llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                        viewBounds:pvbounds];
-        nDisplayed = [self display:context
-                          areaType:@"WPA"
-                             color:_WPAColor
-                      pointInAreas:pia
-                         llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                        viewBounds:pvbounds];
-        
-        nDisplayed = [self display:context
-                          areaType:@"NWR"
-                             color:_NWRColor
-                      pointInAreas:pia
-                         llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                        viewBounds:pvbounds];
-        
-        
- /*       nDisplayed = [self display:context
-                          areaType:@"FSA"
-                             color:_FSAColor
-                      pointInAreas:pia
-                         llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                        viewBounds:pvbounds];*/
-        
-        nDisplayed = [self display:context
-                          areaType:@"WALKINAREA"
-                             color:_WalkInColor
-                      pointInAreas:pia
-                         llCorners:latlonCornerPoints
-                          LLBounds:platlonBounds
-                        viewBounds:pvbounds];
-        
-        if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
+    if (ConfigurationControl.sharedInstance.mapType != kGMSTypeHybrid &&
+        ConfigurationControl.sharedInstance.mapType != kGMSTypeNormal)
+    
+    {        
+        if ([ConfigurationControl.sharedInstance layer:HCLayerHunting
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
         {
-            nDisplayed = [self displayUsingBinFile:context
-                                          areaType:@"NWI"
-                                             color:0
-                                      pointInAreas:pia
-                                         llCorners:latlonCornerPoints
-                                          LLBounds:platlonBounds
-                                        viewBounds:pvbounds];
+            /*
+             fileName = @"Carlton_County.shp";
+             fileName = @"Ownership.shp";
+             dc.elementType = ParcelBoundary;
+             dc.elementType = Ownership;
+             shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+             sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+             if (sfd)
+             {
+             sfd.zoom = _zoom;
+             sfd.processingID = _processingID;
+             [sfd display:context
+             displayCharacteristics:dc
+             llCorners:latlonCornerPoints
+             LLBounds:platlonBounds
+             viewBounds:pvbounds
+             themes:themes
+             pointInArea:pia];
+             }
+             */
+            /*        if ([ConfigurationControl.sharedInstance layer:HCLayerOwnership
+             visibleAtZoom:_zoom
+             andPass:_passID])
+             {
+             nDisplayed = [self display:context
+             areaType:@"OWNERSHIP"
+             color:0
+             pointInAreas:pia
+             llCorners:latlonCornerPoints
+             LLBounds:platlonBounds
+             viewBounds:pvbounds];
+             }*/
+            nDisplayed = [self display:context
+                              areaType:@"WMA"
+                                 color:_WMAColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+            nDisplayed = [self display:context
+                              areaType:@"LAKES"
+                                 color:_LAKESColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+            nDisplayed = [self display:context
+                              areaType:@"WPA"
+                                 color:_WPAColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+            
+            nDisplayed = [self display:context
+                              areaType:@"NWR"
+                                 color:_NWRColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+            
+            
+            /*       nDisplayed = [self display:context
+             areaType:@"FSA"
+             color:_FSAColor
+             pointInAreas:pia
+             llCorners:latlonCornerPoints
+             LLBounds:platlonBounds
+             viewBounds:pvbounds];*/
+            
+            nDisplayed = [self display:context
+                              areaType:@"WALKINAREA"
+                                 color:_WalkInColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+            
+            if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
+                                             visibleAtZoom:_zoom
+                                                   andPass:_passID])
+            {
+                nDisplayed = [self displayUsingBinFile:context
+                                              areaType:@"NWI"
+                                                 color:0
+                                          pointInAreas:pia
+                                             llCorners:latlonCornerPoints
+                                              LLBounds:platlonBounds
+                                            viewBounds:pvbounds];
+            }
+            if ([ConfigurationControl.sharedInstance layer:HCLayerForest
+                                             visibleAtZoom:_zoom
+                                                   andPass:_passID])
+            {
+                nDisplayed = [self displayUsingBinFile:context
+                                              areaType:@"FOREST"
+                                                 color:0
+                                          pointInAreas:pia
+                                             llCorners:latlonCornerPoints
+                                              LLBounds:platlonBounds
+                                            viewBounds:pvbounds];
+            }
+            if ([ConfigurationControl.sharedInstance layer:HCLayerFEESURF
+                                             visibleAtZoom:_zoom
+                                                   andPass:_passID])
+            {
+                nDisplayed = [self displayUsingBinFile:context
+                                              areaType:@"FEESURF"
+                                                 color:0
+                                          pointInAreas:pia
+                                             llCorners:latlonCornerPoints
+                                              LLBounds:platlonBounds
+                                            viewBounds:pvbounds];
+            }
+            if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
+            {
+                nDisplayed = [self displayRoads:context
+                                      llCorners:latlonCornerPoints
+                                       LLBounds:platlonBounds
+                                     viewBounds:pvbounds
+                         displayCharacteristics:dc
+                                         themes:themes
+                                    pointInArea:pia];
+                nDisplayed = [self displayTrails:context
+                                       llCorners:latlonCornerPoints
+                                        LLBounds:platlonBounds
+                                      viewBounds:pvbounds
+                          displayCharacteristics:dc
+                                          themes:themes
+                                     pointInArea:pia];
+            }
+            nDisplayed = [self displayEdgePoints:context
+                                       llCorners:latlonCornerPoints
+                                        LLBounds:platlonBounds
+                                      viewBounds:pvbounds
+                          displayCharacteristics:dc
+                                          themes:themes
+                                     pointInArea:pia];
         }
-        if ([ConfigurationControl.sharedInstance layer:HCLayerForest
-                                         visibleAtZoom:_zoom
-                                               andPass:_passID])
-        {
-            nDisplayed = [self displayUsingBinFile:context
-                                          areaType:@"FOREST"
-                                             color:0
-                                      pointInAreas:pia
-                                         llCorners:latlonCornerPoints
-                                          LLBounds:platlonBounds
-                                        viewBounds:pvbounds];
-        }
-        if ([ConfigurationControl.sharedInstance layer:HCLayerFEESURF
-                                         visibleAtZoom:_zoom
-                                               andPass:_passID])
-        {
-            nDisplayed = [self displayUsingBinFile:context
-                                          areaType:@"FEESURF"
-                                             color:0
-                                      pointInAreas:pia
-                                         llCorners:latlonCornerPoints
-                                          LLBounds:platlonBounds
-                                        viewBounds:pvbounds];
-        }
-        if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
-        {
-            nDisplayed = [self displayRoads:context
-                                  llCorners:latlonCornerPoints
-                                   LLBounds:platlonBounds
-                                 viewBounds:pvbounds
-                     displayCharacteristics:dc
-                                     themes:themes
-                                pointInArea:pia];
-            nDisplayed = [self displayTrails:context
-                                   llCorners:latlonCornerPoints
-                                    LLBounds:platlonBounds
-                                  viewBounds:pvbounds
-                      displayCharacteristics:dc
-                                      themes:themes
-                                 pointInArea:pia];
-        }
-        nDisplayed = [self displayWaypoints:context
-                                  llCorners:latlonCornerPoints
-                                   LLBounds:platlonBounds
-                                 viewBounds:pvbounds
-                     displayCharacteristics:dc
-                                     themes:themes
-                                pointInArea:pia];
-        nDisplayed = [self displayEdgePoints:context
-                                  llCorners:latlonCornerPoints
-                                   LLBounds:platlonBounds
-                                 viewBounds:pvbounds
-                     displayCharacteristics:dc
-                                     themes:themes
-                                pointInArea:pia];
     }
+    nDisplayed = [self displayWaypoints:context
+                              llCorners:latlonCornerPoints
+                               LLBounds:platlonBounds
+                             viewBounds:pvbounds
+                 displayCharacteristics:dc
+                                 themes:themes
+                            pointInArea:pia];
+
     
 }
 - (BOOL)continueProcessing

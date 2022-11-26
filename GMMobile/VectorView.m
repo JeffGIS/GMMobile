@@ -53,7 +53,6 @@
     {
         CGLayerRelease(_vectorLayer);
         NSLog (@"VectorView dealloc");
-        NSLog (@"Vector layer released");
     }
     [self freeResources];
 }
