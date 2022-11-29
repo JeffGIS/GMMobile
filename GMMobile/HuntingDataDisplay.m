@@ -1533,6 +1533,20 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             dc.width = 5;
             symbol = TriangleSym;
         }
+        if ([waypoint.type isEqual:@"FlushPoint"])
+        {
+            dc.penColor = [UIColor blueColor];
+            fillColor = UIColor.yellowColor.CGColor;
+            dc.width = 5;
+            symbol = SquareSym;
+        }
+        if ([waypoint.type isEqual:@"RetrievePoint"])
+        {
+            dc.penColor = [UIColor blueColor];
+            fillColor = UIColor.brownColor.CGColor;
+            dc.width = 5;
+            symbol = SquareSym;
+        }
         if ([themes setDisplayCharacteristics:dc
                                     displayID:_processingID
                                  compareClass:nil] != DO_NOT_DISPLAY_ITEM)

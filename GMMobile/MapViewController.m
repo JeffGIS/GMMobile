@@ -145,7 +145,7 @@
 @property BOOL amTrackingRoute;
 @property BOOL displayTrackingRoute;
 @property UILabel *scaleLabel;
-
+@property int  pickedRefno;
 @end
 
 @implementation MapViewController
@@ -1353,7 +1353,10 @@
     [self mapToolbarDidFinishDrag:_mapToolbarCenter
                                     superView:nil];
     if (_locationTrackingEnabled)
+    {
         [self startTrackingUserLocation];
+        [_mapToolbar selectMyLocationButton];
+    }
     if (_amAcceptingHeading)
         [_locationManager startUpdatingHeading];
 
@@ -1365,7 +1368,7 @@
     [super viewWillDisappear:animated];
     
     _currentScreenHeight = self.view.frame.size.height;
-    [self stopTrackingUserLocation];
+    [self stopTrackingUserLocation:NO];
     if (_nvssvc)
         [_nvssvc.delegate closeList];
 }
@@ -1535,7 +1538,7 @@
 - (void)extentZoom
 {
 
-    [self stopTrackingUserLocation];
+    [self stopTrackingUserLocation:YES];
     CGFloat mapAdj = 0.0;
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
@@ -1670,10 +1673,30 @@
         [_mapView animateToCameraPosition:camera];
     }
 }
-
+-(int) pickWaypointofType:(NSString*) type
+                       at:(CGPoint)pickedPt
+               withRadius:(float)pixels
+{
+    int rtn = 0;
+    HuntingData *hd = HuntingData.new;
+    NSArray *wpArray = [hd getWaypointsOfType:type];
+    
+    for (UserWaypoint *wp in wpArray)
+    {
+        CLLocationCoordinate2D llpt;
+        llpt.latitude = wp.latlon.lat;
+        llpt.longitude = wp.latlon.lon;
+        CGPoint pt = [self pointForCoordinate:llpt];
+        float dist = LDIST(pt.x,pt.y, pickedPt.x, pickedPt.y);
+        if (dist <= pixels)
+            rtn = wp.refno;
+    }
+    return rtn;
+}
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
+    CGPoint pickPt = [self pointForCoordinate:coordinate];
     LLPOINT llpickPt = {0};
     llpickPt.lat = coordinate.latitude;
     llpickPt.lon = coordinate.longitude;
@@ -1809,6 +1832,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             break;}
         case HCConfigHunting:
         {
+            HuntingData *hd = HuntingData.new;
             if (_numCurrentRoutePoints)
             {
                 CGPoint llp = {0};
@@ -1817,37 +1841,53 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _numCurrentRoutePoints++;
                 NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
                 [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+                NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
+                [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(llp) description:@"" displayOnCompass:YES];
                 [self displayCurrentRoute];
             }
             else
             {
                 NSMutableArray *optionList = NSMutableArray.array;
-                [optionList addObject:@"Add Flushed Waypoint"];
-                [optionList addObject:@"Add Retrieved Waypoint"];
-                [optionList addObject:@"Add Compass Waypoint"];
-                if (CRAPI.sharedInstance.currentRoute.count)
+                _pickedRefno = [self pickWaypointofType:@"RoutePoint" at:pickPt withRadius:25];
+                if (_pickedRefno)
                 {
-                    [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Save Route"];
-                    [optionList addObject:@"Clear Route"];
+                    NSString *txt = [NSString stringWithFormat:@"Target this Route Waypoint"];
+                   [optionList addObject:txt];
                 }
-                if (CRAPI.sharedInstance.currentTrackRoute.count)
+                else
                 {
+                    [optionList addObject:@"Mark Vehicle Location"];
                     [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Stop Tracking Location"];
-                    if (_displayTrackingRoute)
-                        [optionList addObject:@"Hide Tracking Route"];
+                    [optionList addObject:@"Add Flushed Waypoint"];
+                    [optionList addObject:@"Add Retrieved Waypoint"];
+                    [optionList addObject:@"Add Compass Waypoint"];
+                    [optionList addObject:@"________________________"];
+                    if (CRAPI.sharedInstance.currentRoute.count)
+                    {
+                        [optionList addObject:@"Save Route"];
+                        [optionList addObject:@"Clear Route"];
+                    }
                     else
-                        [optionList addObject:@"Show Tracking Route"];
-                    [optionList addObject:@"Clear Tracking Route"];
+                        [optionList addObject:@"Start Route"];
+                    
+                    if (CRAPI.sharedInstance.currentTrackRoute.count)
+                    {
+                        [optionList addObject:@"________________________"];
+                        [optionList addObject:@"Stop Tracking Location"];
+                        if (_displayTrackingRoute)
+                            [optionList addObject:@"Hide Tracking Route"];
+                        else
+                            [optionList addObject:@"Show Tracking Route"];
+                        [optionList addObject:@"Save Tracking Route"];
+                        [optionList addObject:@"Clear Tracking Route"];
+                    }
+                    [optionList addObject:@"________________________"];
+                    [optionList addObject:@"Delete all Compass Waypoints"];
+                    [optionList addObject:@"Delete All Waypoints"];
+                    [optionList addObject:@"________________________"];
+                    [optionList addObject:@"Display Saved Track Route"];
+                    
                 }
-                [optionList addObject:@"________________________"];
-                [optionList addObject:@"Mark Vehicle Location"];
-                [optionList addObject:@"________________________"];
-                [optionList addObject:@"Delete all Compass Waypoints"];
-                [optionList addObject:@"Delete All Waypoints"];
-                
-                
                 NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                                   delegate:self
                                                                                      title:@"Waypoint Options"
@@ -2260,7 +2300,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self clearCurrentRoute];
     HuntingData *hd = HuntingData.new;
-    [hd deleteWaypointsOfType:@"RoutePoint"];
     int n = CRAPI.sharedInstance.currentRoute.count;
     if (CRAPI.sharedInstance.currentRoute.count > 1)
     {
@@ -2276,7 +2315,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             CGPoint pt = npt.CGPointValue;
             CLLocationCoordinate2D llpt={pt.y,pt.x};
             NSString *name = [NSString stringWithFormat:@"R%i",ipt+1];
-            [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(pt) description:@"" displayOnCompass:YES];
             pt = [_mapView.projection pointForCoordinate:llpt];
             if (!ipt++)
                 [path moveToPoint:pt];
@@ -2300,13 +2338,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _trackLayer.fillColor = nil;
         _trackLayer.lineWidth = 3;
         UIBezierPath *path = UIBezierPath.bezierPath;
-        NSNumber *npt = CRAPI.sharedInstance.currentTrackRoute[0];
+        TrackRoutePoint *npt = CRAPI.sharedInstance.currentTrackRoute[0];
         int ipt = 0;
-        for (NSNumber *npt in CRAPI.sharedInstance.currentTrackRoute)
+        for (TrackRoutePoint *npt in CRAPI.sharedInstance.currentTrackRoute)
         {
-            CGPoint pt = npt.CGPointValue;
-            CLLocationCoordinate2D llpt={pt.y,pt.x};
-            pt = [_mapView.projection pointForCoordinate:llpt];
+            CLLocationCoordinate2D llpt;
+            llpt.latitude = npt.latlon.lat;
+            llpt.longitude = npt.latlon.lon;
+            CGPoint pt = [_mapView.projection pointForCoordinate:llpt];
             if (!ipt++)
                 [path moveToPoint:pt];
             else
@@ -2321,20 +2360,29 @@ LLPOINT CGPointToLLPoint (CGPoint inPt)
     LLPOINT rtn = {inPt.x,inPt.y};
     return rtn;
 }
+CGPoint LLPointToCGPoint (LLPOINT inPt)
+{
+    CGPoint rtn = {inPt.lon,inPt.lat};
+    return rtn;
+}
 -(void) addPointToTrackRoute:(CLLocationCoordinate2D) location
 {
     if (_amTrackingRoute)
     {
-        CGPoint llpt = {location.longitude,location.latitude};
-        NSNumber *routePoint = [NSNumber valueWithCGPoint:llpt];
+        TrackRoutePoint *routePoint = TrackRoutePoint.new;
+        routePoint.time = NSDate.timeIntervalSinceReferenceDate;
+        LLPOINT llpt;
+        llpt.lat = location.latitude;
+        llpt.lon = location.longitude;
+        routePoint.latlon = llpt;
+
         BOOL addIt = TRUE;
         int npt = CRAPI.sharedInstance.currentTrackRoute.count;
         if (npt)
         {
-            NSNumber *lastPoint = CRAPI.sharedInstance.currentTrackRoute[npt-1];
-            CGPoint lastpt = lastPoint.CGPointValue;
-            double dist = ArcDistanceLL(CGPointToLLPoint(llpt),CGPointToLLPoint(lastpt));
-            if (dist < 10)
+            TrackRoutePoint *lastPoint = CRAPI.sharedInstance.currentTrackRoute[npt-1];
+            double dist = ArcDistanceLL(routePoint.latlon,lastPoint.latlon);
+            if (dist < 1)
                 addIt = FALSE;
         }
         if (addIt)
@@ -2365,6 +2413,7 @@ LLPOINT CGPointToLLPoint (CGPoint inPt)
     }
     if (CRAPI.sharedInstance.currentApp ==  HCConfigHunting)
     {
+        HuntingData *hd = HuntingData.new;
         if (gesture.state == UIGestureRecognizerStateEnded)
         {
             CGPoint gesturePoint  = [gesture locationOfTouch:0 inView:self.view];
@@ -2374,17 +2423,17 @@ LLPOINT CGPointToLLPoint (CGPoint inPt)
             llp.y = gestureLocation.latitude;
             llp.x = gestureLocation.longitude;
             
-            if (!_numCurrentRoutePoints++)
+            if (_numCurrentRoutePoints++)
             {
-                CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
-                [self clearCurrentRoute];
+                NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+                [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+                NSString * name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
+                [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(llp) description:@"" displayOnCompass:YES];
+                [self displayCurrentRoute];
+                [self vectorViewRefresh];
             }
-            else
-                _numCurrentRoutePoints = 0;
-            NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
-            [CRAPI.sharedInstance.currentRoute addObject:routePoint];
-            [self displayCurrentRoute];
-            [self vectorViewRefresh];
+            _numCurrentRoutePoints = 0;
+
         }
         return;
     }
@@ -5924,7 +5973,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)mapToolbarDidSelectUserLocation:(BOOL)enabled
 {
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
-        [self stopTrackingUserLocation];
+        [self stopTrackingUserLocation:YES];
     
     else
     {
@@ -5934,7 +5983,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         else
         {
-            [self stopTrackingUserLocation];
+            [self stopTrackingUserLocation:YES];
         }
     }
 }
@@ -5949,13 +5998,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (void)stopTrackingUserLocation
+- (void)stopTrackingUserLocation:(BOOL)setEnabled
 {
     [_locationManager stopUpdatingLocation];
     [_mapToolbar deselectMyLocationButton];
     _myLocationMarker.hidden = YES;
     _locationCount = 0;
-    _locationTrackingEnabled = NO;
+    if (setEnabled)
+        _locationTrackingEnabled = NO;
 }
 
 -(BOOL) Point:(CGPoint)target InView:(UIView*)view
@@ -6040,7 +6090,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else if (_locationCount > 2)
     {
-        [self stopTrackingUserLocation];
+        [self stopTrackingUserLocation:YES];
         [self beginLocationRouteTrace];
     }
 }
@@ -6998,7 +7048,10 @@ didSelectPDFButtonWithText:(NSString *)text
             }
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:_llPickedPt description:@"" displayOnCompass:YES];
             if (!_locationTrackingEnabled)
+            {
                 [self startTrackingUserLocation];
+                [_mapToolbar selectMyLocationButton];
+            }
         }
         else if ([text isEqualToString:@"Stop Tracking Location"])
         {
@@ -7013,11 +7066,32 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             _displayTrackingRoute = FALSE;
         }
+        else if ([text isEqualToString:@"Save Tracking Route"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            _amTrackingRoute = FALSE;
+        }
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            HuntingData *hd = HuntingData.new;
             [self displayTrackRoute];
+            [self vectorViewRefresh];
+
+        }
+        else if ([text isEqualToString:@"Start Route"])
+        {
+            CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
+            CGPoint llp = LLPointToCGPoint(_llPickedPt);
+            _numCurrentRoutePoints++;
+            NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+            [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+
+            HuntingData *hd = HuntingData.new;
+            [hd deleteWaypointsOfType:@"RoutePoint"];
+            [hd addWaypoint:@"1" type:@"RoutePoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
+            _numCurrentRoutePoints = 1;
             [self vectorViewRefresh];
 
         }
@@ -7026,7 +7100,7 @@ didSelectPDFButtonWithText:(NSString *)text
             CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
             HuntingData *hd = HuntingData.new;
             [hd deleteWaypointsOfType:@"RoutePoint"];
-
+            CRAPI.sharedInstance.currentSelectedWaypoint = -1;
             [self vectorViewRefresh];
 
         }
@@ -7042,15 +7116,64 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd deleteAllWaypoints];
             [self vectorViewRefresh];
-
+        }
+        else if ([text isEqualToString:@"Target this Route Waypoint"])
+        {
+            HuntingData *hd = HuntingData.new;
+            NSArray *routePoints = [hd getWaypointsOfType:@"RoutePoint"];
+            for (UserWaypoint *wp in routePoints)
+            {
+                if (wp.refno < _pickedRefno)
+                    [hd deleteWaypointWithRefno:wp.refno];
+            }
+            CRAPI.sharedInstance.currentSelectedWaypoint = _pickedRefno;
+            [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Add Compass Waypoint"])
         {
             HuntingData *hd = HuntingData.new;
             [hd addWaypoint:@"C.id" type:@"CompassPoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
             [self vectorViewRefresh];
+        }
+        else if ([text isEqualToString:@"Add Flushed Waypoint"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd addWaypoint:@"F1" type:@"FlushPoint" latlon:_llPickedPt description:@"" displayOnCompass:NO];
+            [self vectorViewRefresh];
+        }
+        else if ([text isEqualToString:@"Add Retrieved Waypoint"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd addWaypoint:@"R1" type:@"RetrievePoint" latlon:_llPickedPt description:@"" displayOnCompass:NO];
+            [self vectorViewRefresh];
+        }
+        else if ([text isEqualToString:@"Display Saved Track Route"])
+        {
+            [popoverTableView hide:YES];
+
+            HuntingData *hd = HuntingData.new;
+            NSArray * trArray = [hd getTrackRoutes];
+            NSMutableArray *optionList = NSMutableArray.array;
+            for (NSNumber * n in trArray)
+            {
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                dateFormatter.timeStyle = NSDateFormatterShortStyle;
+                dateFormatter.dateStyle = NSDateFormatterShortStyle;
+                [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+                NSString *when = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSinceReferenceDate:n.integerValue]];
+                NSString *info = [hd getTrackInfo:n.integerValue];
+                when = [when stringByAppendingString:[NSString stringWithFormat:@"\n%@",info]];
+                [optionList addObject:when];
+            }
+            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                              delegate:self
+                                                                                 title:@"Saved Track Routes"
+                                                                             textArray:optionList
+                                                                         includeCancel:YES];
+            nvptv.allowsSubtitle = NO;
 
         }
+
         else
             return;
     }

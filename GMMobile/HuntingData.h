@@ -26,6 +26,12 @@
 @property CGFloat headingInDeg;
 @end
 
+@interface TrackRoutePoint : NSObject
+@property (nonatomic) INT64 refno;
+@property (nonatomic) LLPOINT latlon;
+@property int time;
+@end
+
 @interface HuntingData : NSObject
 @property int processingID;
 @property sqlite3nv *database;
@@ -57,7 +63,12 @@
        description:(NSString *)desc
   displayOnCompass:(BOOL)displayOnCompass;
 -(NSArray *)getWaypoints;
+-(NSArray *)getWaypointsOfType:(NSString *)wantType;
 -(int) deleteAllWaypoints;
 -(int) deleteWaypointsOfType:(NSString*)type;
-
+-(int) deleteWaypointsWithName:(NSString*)name;
+-(void) saveTrackRoute:(NSArray*)trackRoutePoints;
+-(int) deleteWaypointWithRefno:(int)refno;
+-(NSArray *) getTrackRoutes;
+-(NSString *)getTrackInfo:(int)savedTime;
 @end

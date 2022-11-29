@@ -7,8 +7,6 @@
 //
 
 #import "CompassViewController.h"
-#import "CCodeLibrary/CRAPI.h"
-#import "HuntingData.h"
 
 @interface CompassShapeLayer: CAShapeLayer
 @property UIColor *baseColor;
@@ -19,6 +17,7 @@
 @end
 
 @interface CompassViewController ()
+@property UITapGestureRecognizer * singleFingerTap;
 @property UIView *backgroundView;
 @property UIView *dScaView;
 @property UIView *compassTriangleView;
@@ -39,6 +38,10 @@
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
 @property CGFloat currentHeading;
+@property int infoLabelOption;
+@property int currentRoutePointNumber;
+@property float atDistance;
+@property float closeDistance;
 
 @end
 
@@ -50,6 +53,8 @@
     _screenW = UIScreen.mainScreen.bounds.size.width;
     _heightFactor = _screenH / 568.0;
     _widthFactor = _screenW / 320.0;
+    _atDistance = 15;
+    _closeDistance = 100;
     [self configUI];
     
     // Do any additional setup after loading the view.
@@ -150,8 +155,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 {
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
-    UITapGestureRecognizer *singleFingerTap =
-    [[UITapGestureRecognizer alloc] initWithTarget:self
+    _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(handleSingleTap:)];
     
     _dScaView = UIView.new;
@@ -186,8 +190,6 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     _backgroundView = UIView.new;
     _backgroundView.frame = CGRectMake (0,0,_dScaView.frame.size.width,_dScaView.frame.size.height);
     _backgroundView.backgroundColor = UIColor.blackColor;
-    [_dScaView setUserInteractionEnabled:NO];
-    [_dScaView setUserInteractionEnabled:NO];
     [_dScaView addSubview:_backgroundView];
     [_dScaView addSubview:_levelView];
     [_dScaView addSubview:_verticalView];
@@ -196,7 +198,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view addSubview:_dScaView];
     [self.view addSubview:_profileView];
     [self.view setUserInteractionEnabled:YES];
-    [self.view addGestureRecognizer:singleFingerTap];
+    [self.view addGestureRecognizer:_singleFingerTap];
     
     [self configScaleDial];
 }
@@ -511,69 +513,71 @@ double HeadingFromAZ (double az)
     int userWaypointIndex = _backgroundView.subviews.count;
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
-        double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
-        if (dist < _maxWaypointDist || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+        if (waypoint.displayOnCompass)
         {
-            double az = AZMLatLon (currentPoint,waypoint.latlon);
-            double azd = RadiansToDegrees (az);
-            double az2 = HeadingFromAZ (az);
-            double az2d = RadiansToDegrees (az2);
-            double maxScale = 1.0-.2*_widthFactor;
-            double scale = maxScale;
-            NSString *  tickText = waypoint.name;
-            
-            CGFloat textAngle = az;
-            
-            if (dist < 0.15 * METERS_PER_MILE)
+            double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
+            if ((dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"]) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
-                scale = maxScale * (dist/(0.15 * METERS_PER_MILE));
+                double az = AZMLatLon (currentPoint,waypoint.latlon);
+                double azd = RadiansToDegrees (az);
+                double az2 = HeadingFromAZ (az);
+                double az2d = RadiansToDegrees (az2);
+                double maxScale = 1.0-.2*_widthFactor;
+                double scale = maxScale;
+                NSString *  tickText = waypoint.name;
+                
+                CGFloat textAngle = az;
+                
+                if (dist < _closeDistance)
+                {
+                    scale = maxScale * (dist/_closeDistance);
+                }
+                CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: scale];
+                
+                // UILabel
+                UILabel* label = UILabel.new;
+                CGFloat factor = 1;
+                CGFloat fontSize = 12;
+                label.text = tickText;
+                label.font = [UIFont systemFontOfSize: fontSize];
+                label.textAlignment = NSTextAlignmentCenter;
+                if ([waypoint.type isEqual:@"Vehicle"])
+                {
+                    factor = 1.2;
+                    fontSize = 24;
+                    label.backgroundColor = UIColor.greenColor;
+                    label.textColor = UIColor.blackColor;
+                    label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+                }
+                else if ([waypoint.type isEqual:@"CompassPoint"])
+                {
+                    factor = 1.2;
+                    fontSize = 12;
+                    label.backgroundColor = UIColor.blueColor;
+                    label.textColor = UIColor.whiteColor;
+                    label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+                }
+                else
+                {
+                    label.backgroundColor = UIColor.lightGrayColor;
+                    label.textColor = UIColor.blackColor;
+                }
+                if (waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+                {
+                    label.backgroundColor = UIColor.redColor;
+                    label.textColor = UIColor.whiteColor;
+                    factor = 1.2;
+                    label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+                }
+                label.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+                label.center = point;
+                label.clipsToBounds = true;
+                label.layer.cornerRadius = label.frame.size.width / 2;
+                
+                [_backgroundView addSubview:label];
+                [_userWaypointLabels addObject:label];
             }
-            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: scale];
-            
-            // UILabel
-            UILabel* label = UILabel.new;
-            CGFloat factor = 1;
-            CGFloat fontSize = 12;
-            label.text = tickText;
-            label.font = [UIFont systemFontOfSize: fontSize];
-            label.textAlignment = NSTextAlignmentCenter;
-            if ([waypoint.type isEqual:@"Vehicle"])
-            {
-                factor = 1.2;
-                fontSize = 24;
-                label.backgroundColor = UIColor.greenColor;
-                label.textColor = UIColor.blackColor;
-                label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
-            }
-            else if ([waypoint.type isEqual:@"CompassPoint"])
-            {
-                factor = 1.2;
-                fontSize = 12;
-                label.backgroundColor = UIColor.blueColor;
-                label.textColor = UIColor.whiteColor;
-                label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
-            }
-            else
-            {
-                label.backgroundColor = UIColor.lightGrayColor;
-                label.textColor = UIColor.blackColor;
-            }
-            if (waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
-            {
-                label.backgroundColor = UIColor.redColor;
-                label.textColor = UIColor.whiteColor;
-                factor = 1.2;
-                label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
-            }
-            label.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
-            label.center = point;
-            label.clipsToBounds = true;
-            label.layer.cornerRadius = label.frame.size.width / 2;
-            
-              [_backgroundView addSubview:label];
-            [_userWaypointLabels addObject:label];
         }
-        
     }
     
 }
@@ -645,9 +649,82 @@ double HeadingFromAZ (double az)
 }
 -(void) infoLabelPicked:(CGPoint)atPoint
 {
-    CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+    HuntingData *hd = HuntingData.new;
+    
+    switch (_infoLabelOption)
+    {
+        case 2: //make current pt focus
+            CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+            break;
+        case 1: //make next route point focus
+        {
+            if (_currentRoutePointNumber > 0)
+            {
+                [hd deleteWaypointWithRefno:_currentRoutePointNumber];
+                NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+                if (routePointArray.count > 0)
+                {
+                    CRAPI.sharedInstance.currentSelectedWaypoint = routePointArray[0].refno;
+                    _currentRoutePointNumber = routePointArray[0].refno;
+                }
+                else
+                {
+                    CRAPI.sharedInstance.currentSelectedWaypoint = -1;
+                    _currentRoutePointNumber = 0;
+                }
+                _userWaypointArray = [hd getWaypoints];
+            }
+        }
+            break;
+        default:
+        {
+            
+            NSMutableArray *optionList = NSMutableArray.array;
+            NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+            if (routePointArray.count > 0)
+                [optionList addObject:@"Start Route"];
+            [_dScaView setUserInteractionEnabled:NO];
+            [_backgroundView setUserInteractionEnabled:NO];
+            [_profileView setUserInteractionEnabled:NO];
+            [self.view setMultipleTouchEnabled:NO];
+            [_singleFingerTap setEnabled:NO];
+            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                              delegate:self
+                                                                                 title:@"Compass Point Options"
+                                                                             textArray:optionList
+                                                                         includeCancel:YES];
+            nvptv.allowsSubtitle = NO;
+             
+            
+        }
+           break;
+    }
+
     return;
 }
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    HuntingData *hd = HuntingData.new;
+    if ([text isEqualToString:@"Start Route"])
+    {
+        NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+        UserWaypoint* waypoint = routePointArray[0];
+        CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
+    }
+    [popoverTableView hide:YES];
+    [_singleFingerTap setEnabled:YES];
+
+}
+
+-(void) popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+    [_singleFingerTap setEnabled:YES];
+
+}
+
 -(void) profileViewPicked:(CGPoint)atPoint
 {
     return;
@@ -681,33 +758,60 @@ double HeadingFromAZ (double az)
         directionLabelText = @"N";
     
     _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
+    _infoLabelOption = 0;
     CRAPI.sharedInstance.currentFocusWaypoint = -1;
     
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
-        double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
-        double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
-        waypoint.headingInDeg = RadiansToDegrees (wpaz);
-        double curAz = DegreesToRadians(theHeading);
-        if (dist < 0.02 * METERS_PER_MILE)
+        if (waypoint.displayOnCompass)
         {
-            _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f meters)",waypoint.name,dist];
-        }
-        else
-        {
-            double daz = DeltaAZD(wpaz, curAz);
-            if (fabs (daz) < 0.2)
+            if (![waypoint.type isEqual:@"RoutePoint"] || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
-                CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
-                dist = dist / METERS_PER_MILE;
-                _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f miles",waypoint.name,dist];
-                
+                double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
+                double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
+                waypoint.headingInDeg = RadiansToDegrees (wpaz);
+                double curAz = DegreesToRadians(theHeading);
+                if (dist < _atDistance && [waypoint.type isEqual:@"RoutePoint"])
+                {
+                    _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f meters)",waypoint.name,dist];
+                    _infoLabel.textColor = UIColor.redColor;
+                    if ([waypoint.type isEqual:@"RoutePoint"])
+                        _currentRoutePointNumber = waypoint.refno;
+                    else
+                        _currentRoutePointNumber = 0;
+                    _infoLabelOption = 1;
+                    break;
+                }
+                else
+                {
+                    double daz = DeltaAZD(wpaz, curAz);
+                    if (fabs (daz) < 0.2)
+                    {
+                        NSString *units = @"miles";
+                        CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
+                        if (dist / METERS_PER_MILE < 0.1)
+                        {
+                            units = @"yards";
+                            dist = dist / METERS_PER_YARD;
+                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.0f %@",waypoint.name,dist,units];
+                        }
+                        else
+                        {
+                            dist = dist / METERS_PER_MILE;
+                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@",waypoint.name,dist,units];
+                        }
+                        _infoLabel.textColor = UIColor.whiteColor;
+                       _infoLabelOption = 2;
+                        
+                    }
+                }
             }
         }
         
     }
     
 }
+
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {

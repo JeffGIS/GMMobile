@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CCodeLibrary/CRAPI.h"
+#import "HuntingData.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CompassViewController : UIViewController<CLLocationManagerDelegate>
+@interface CompassViewController : UIViewController<CLLocationManagerDelegate,NVPopoverTableViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *compassImage;
 @property (strong, nonatomic) IBOutlet NSObject *topGuide;
 
