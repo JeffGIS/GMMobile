@@ -758,7 +758,6 @@
             [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
         
         _mapView.userInteractionEnabled = YES;
-        _compass.hidden = NO;
         
         [self showMarkersAndInfoWindows:NO];
     }
@@ -2252,66 +2251,125 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 -(void) displayScalebar
 {
-    if (_hideScaleBar)
-        return;
-    int lineWidth = 5;
-    CGRect tbframe = _mapToolbar.frame;
-    if (!_compass.isHidden)
-        tbframe = _compass.frame;
+    CGRect mvf = _mapView.frame;
+    CGRect sf = self.view.frame;
     if (_scaleLayer)
         [_scaleLayer removeFromSuperlayer];
     if (_scaleLabel)
         [_scaleLabel removeFromSuperview];
-    _scaleLayer = CAShapeLayer.layer;
+    _scaleLabel = _scaleLayer = nil;
+     if (_hideScaleBar)
+        return;
+    float lineWidth = 5;
+    CGRect tbframe = _mapToolbar.frame;
+    if (!_compass.isHidden)
+        tbframe = _compass.frame;
+   _scaleLayer = CAShapeLayer.layer;
     _scaleLayer.strokeColor = UIColor.redColor.CGColor;
     _scaleLayer.fillColor = UIColor.redColor.CGColor;
     _scaleLayer.lineWidth = lineWidth;
     UIBezierPath *path = UIBezierPath.bezierPath;
     CGPoint pt1, pt2, pt3;
-    pt1.x = _mapView.frame.origin.x;
-    pt1.y = tbframe.origin.y - (lineWidth*2);
-    [path moveToPoint:pt1];
-    pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
-    pt2.y = pt1.y;
-    [path addLineToPoint:pt2];
-    [path moveToPoint:pt1];
-    pt3.x = pt1.x + lineWidth*2;
-    pt3.y = pt1.y - lineWidth*2;
-    [path addLineToPoint:pt3];
-    pt3.x = pt1.x + lineWidth*2;
-    pt3.y = pt1.y + lineWidth*2;
-    [path addLineToPoint:pt3];
-    [path moveToPoint:pt2];
-    pt3.x = pt2.x - lineWidth*2;
-    pt3.y = pt2.y - lineWidth*2;
-    [path addLineToPoint:pt3];
-    pt3.x = pt2.x - lineWidth*2;
-    pt3.y = pt2.y + lineWidth*2;
-    [path addLineToPoint:pt3];
-    _scaleLayer.path = path.CGPath;
-    [self.view.layer addSublayer:_scaleLayer];
-    CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
-    CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
-    LLPOINT ptll1, ptll2;
-    ptll1.lon = ptcl1.longitude;
-    ptll1.lat = ptcl1.latitude;
-    ptll2.lon = ptcl2.longitude;
-    ptll2.lat = ptcl2.latitude;
-    double dist = ArcDistanceLL(ptll1, ptll2);
-    dist /= METERS_PER_MILE;
-    CGPoint pt = pt1;
-    int width = 250, height=30;
-    pt.x += pt2.x/2;
-    _scaleLabel = UILabel.new;
-    _scaleLabel.backgroundColor = UIColor.clearColor;
-    _scaleLabel.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
-    pt.y-=height/2;
-    _scaleLabel.center = pt;
-    _scaleLabel.textColor = UIColor.redColor;
-    _scaleLabel.font = [UIFont systemFontOfSize: height -4];
-    _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
-    _scaleLabel.textAlignment = NSTextAlignmentCenter;
+    if (tbframe.size.width > tbframe.size.height)
+    {
+        pt1.x = _mapView.frame.origin.x;
+        pt1.y = tbframe.origin.y - (lineWidth*2);
+        [path moveToPoint:pt1];
+        pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
+        pt2.y = pt1.y;
+        [path addLineToPoint:pt2];
+        [path moveToPoint:pt1];
+        pt3.x = pt1.x + lineWidth*2;
+        pt3.y = pt1.y - lineWidth*2;
+        [path addLineToPoint:pt3];
+        pt3.x = pt1.x + lineWidth*2;
+        pt3.y = pt1.y + lineWidth*2;
+        [path addLineToPoint:pt3];
+        [path addLineToPoint:pt1];
+        [path moveToPoint:pt2];
+        pt3.x = pt2.x - lineWidth*2;
+        pt3.y = pt2.y - lineWidth*2;
+        [path addLineToPoint:pt3];
+        pt3.x = pt2.x - lineWidth*2;
+        pt3.y = pt2.y + lineWidth*2;
+        [path addLineToPoint:pt3];
+        [path addLineToPoint:pt2];
+        _scaleLayer.path = path.CGPath;
+        CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
+        CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
+        LLPOINT ptll1, ptll2;
+        ptll1.lon = ptcl1.longitude;
+        ptll1.lat = ptcl1.latitude;
+        ptll2.lon = ptcl2.longitude;
+        ptll2.lat = ptcl2.latitude;
+        double dist = ArcDistanceLL(ptll1, ptll2);
+        dist /= METERS_PER_MILE;
+        CGPoint pt = pt1;
+        int width = 250, height=30;
+        pt.x += pt2.x/2;
+        _scaleLabel = UILabel.new;
+        _scaleLabel.backgroundColor = UIColor.clearColor;
+        _scaleLabel.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
+        pt.y-=height/2;
+        _scaleLabel.center = pt;
+        _scaleLabel.textColor = UIColor.redColor;
+        _scaleLabel.shadowColor = UIColor.whiteColor;
+        _scaleLabel.font = [UIFont systemFontOfSize: height -4];
+        _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
+        _scaleLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    else
+    {
+        pt1.y = _mapView.frame.origin.y;
+        pt1.x = tbframe.origin.x + tbframe.size.width + (lineWidth*2);
+        [path moveToPoint:pt1];
+        pt2.y = _mapView.frame.size.height + _mapView.frame.origin.y;
+        pt2.x = pt1.x;
+        [path addLineToPoint:pt2];
+        [path moveToPoint:pt1];
+        pt3.y = pt1.y + lineWidth*2;
+        pt3.x = pt1.x - lineWidth*2;
+        [path addLineToPoint:pt3];
+        pt3.y = pt1.y + lineWidth*2;
+        pt3.x = pt1.x + lineWidth*2;
+        [path addLineToPoint:pt3];
+        [path addLineToPoint:pt1];
+        [path moveToPoint:pt2];
+        pt3.y = pt2.y - lineWidth*2;
+        pt3.x = pt2.x - lineWidth*2;
+        [path addLineToPoint:pt3];
+        pt3.y = pt2.y - lineWidth*2;
+        pt3.x = pt2.x + lineWidth*2;
+        [path addLineToPoint:pt3];
+        [path addLineToPoint:pt2];
+        _scaleLayer.path = path.CGPath;
+        CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
+        CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
+        LLPOINT ptll1, ptll2;
+        ptll1.lon = ptcl1.longitude;
+        ptll1.lat = ptcl1.latitude;
+        ptll2.lon = ptcl2.longitude;
+        ptll2.lat = ptcl2.latitude;
+        double dist = ArcDistanceLL(ptll1, ptll2);
+        dist /= METERS_PER_MILE;
+        CGPoint pt = pt1;
+        int width = 250, height=30;
+        pt.y = (pt1.y + pt2.y) /2 - mvf.origin.y / 2;
+        _scaleLabel = UILabel.new;
+        _scaleLabel.backgroundColor = UIColor.clearColor;
+        _scaleLabel.frame = CGRectMake(pt.x+height,pt.y-width*2, width,height);
+        pt.x+=height/2;
+        _scaleLabel.center = pt;
+        _scaleLabel.textColor = UIColor.redColor;
+        _scaleLabel.shadowColor = UIColor.whiteColor;
+        _scaleLabel.font = [UIFont systemFontOfSize: height -4];
+        _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
+        _scaleLabel.textAlignment = NSTextAlignmentCenter;
+        _scaleLabel.transform = CGAffineTransformMakeRotation(HALFPI*3);
 
+    }
+
+    [self.view.layer addSublayer:_scaleLayer];
     [self.view addSubview:_scaleLabel];
 }
 -(void) displayCurrentRoute
@@ -5042,6 +5100,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         _continueLoad = NO;
     else
         [popoverView hide];
+    _hideScaleBar = NO;
+    [self displayScalebar];
 }
 
 - (void)displayCensusDataChart
@@ -6923,6 +6983,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [self restoreMapToolbarPosition];
     [self updateCompassPosition:YES];
+    [self displayScalebar];
 }
 
 - (void)restoreMapToolbarPosition
@@ -6975,6 +7036,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
 {
     [popoverTableView hide:YES];
+    _hideScaleBar = NO;
+    [self displayScalebar];
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
@@ -7239,6 +7302,7 @@ didSelectPDFButtonWithText:(NSString *)text
     }
     _hideScaleBar = FALSE;
     [popoverTableView hide:YES];
+    [self displayScalebar];
 }
 
 - (void)returnFromYTPlayer:(UIButton *)button

@@ -131,7 +131,7 @@
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
                   @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Search Realtor Listings",
-                  @"Test Height Calculator",@"Toggle Evaluator"];
+                  @"Test Height Calculator",@"Toggle Evaluater",@"Save Evaluater Max Value",@"Clear Evaluater Max Value"];
     
     [_tableView reloadData];
 }
@@ -740,9 +740,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self testHeightCalculator];
     }
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Toggle Evaluator"])
+              isEqualToString:@"Toggle Evaluater"])
     {
         CRAPI.sharedInstance.evaluateEdges = !CRAPI.sharedInstance.evaluateEdges;
+    }
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Save Evaluater Max Value"])
+    {
+        CRAPI.sharedInstance.maxEvaluaterScore = CRAPI.sharedInstance.currentEvaluaterScore;
+    }
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Clear Evaluater Max Value"])
+    {
+        CRAPI.sharedInstance.maxEvaluaterScore = 0;
     }
 }
 

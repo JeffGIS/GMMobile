@@ -1586,7 +1586,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int pointID, lastPointID;
     float score, lastScore;
     NSArray *userWaypointArray = [self getEdgePoints:&maxScore];
- 
+    CRAPI.sharedInstance.currentEvaluaterScore = maxScore;
+    if (CRAPI.sharedInstance.maxEvaluaterScore)
+        maxScore = CRAPI.sharedInstance.maxEvaluaterScore;
+     
+    
     for (UserWaypoint* waypoint in userWaypointArray)
     {
         CGColorRef fillColor = UIColor.orangeColor.CGColor;
@@ -1613,7 +1617,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else if (numPoints > 1)
         {
-            UIColor *c = [UIColor colorWithRed:1 green:0 blue:0 alpha:lastScore/maxScore];
+            UIColor *c = [UIColor colorWithRed:1 green:0 blue:0 alpha:min(lastScore/maxScore,1)];
             CGContextSetLineWidth(context, lineWidth);
             CGContextSetStrokeColorWithColor(context,c.CGColor);
             CGContextStrokePath(context);
@@ -1636,7 +1640,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     if (numPoints > 1)
     {
-        UIColor *c = [UIColor colorWithRed:1 green:0 blue:0 alpha:lastScore/maxScore];
+        UIColor *c = [UIColor colorWithRed:1 green:0 blue:0 alpha:min(lastScore/maxScore,1)];
         CGContextSetLineWidth(context, lineWidth);
         CGContextSetStrokeColorWithColor(context,c.CGColor);
         CGContextStrokePath(context);
