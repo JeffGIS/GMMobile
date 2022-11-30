@@ -237,8 +237,10 @@
         DPOINT midPt = DBoundsMid(&lastBounds);
         _target = CLLocationCoordinate2DMake(midPt.y,midPt.x);
     }
-    
-    _mapView = [[GMSMapView alloc] initWithFrame:self.view.frame];
+    CGRect mapFrame = self.view.frame;
+    mapFrame.origin.y = 48;
+    int top = self.view.safeAreaInsets.top;
+    _mapView = [[GMSMapView alloc] initWithFrame:mapFrame];
     //_mapView = GMSMapView.new;
     _mapView.translatesAutoresizingMaskIntoConstraints = NO;
     _mapView.delegate = self;
@@ -249,7 +251,7 @@
     _mapView.settings.tiltGestures = NO;
     _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:zoom];
     [self.view addSubview:_mapView];
-    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
+    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:top bottom:0.0];
     
     _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
     
@@ -326,7 +328,7 @@
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
         [_locationManager requestWhenInUseAuthorization];
     
-    self.view.backgroundColor = UIColor.whiteColor;
+    self.view.backgroundColor = UIColor.blackColor;
     
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.hideAtCancel = NO;
@@ -430,6 +432,12 @@
     [_legendMinimizeButton addTarget:self
                               action:@selector(expandLegends:)
                     forControlEvents:UIControlEventTouchUpInside];
+    top = self.view.safeAreaInsets.top;
+    ii = top;
+}
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)becameActive:(id)selector
@@ -451,7 +459,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    CGRect r = _mapView.frame;
+    r = self.view.frame;
     if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
     {
 
@@ -773,6 +782,9 @@
     
     if (!_tableView.hidden)
         [_tableView reloadData];
+    int top = self.view.safeAreaInsets.top;
+    ii = top;
+
 }
 
 - (void)setZoom:(float)zoom
@@ -2251,7 +2263,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     UIBezierPath *path = UIBezierPath.bezierPath;
     CGPoint pt1, pt2, pt3;
     pt1.x = _mapView.frame.origin.x;
-    pt1.y = tbframe.origin.y - (lineWidth*2 + 15);
+    pt1.y = tbframe.origin.y - (lineWidth*2);
     [path moveToPoint:pt1];
     pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
     pt2.y = pt1.y;
@@ -2271,7 +2283,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     pt3.y = pt2.y + lineWidth*2;
     [path addLineToPoint:pt3];
     _scaleLayer.path = path.CGPath;
-    [_mapView.layer addSublayer:_scaleLayer];
+    [self.view.layer addSublayer:_scaleLayer];
     CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
     CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
     LLPOINT ptll1, ptll2;
@@ -2294,7 +2306,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
     _scaleLabel.textAlignment = NSTextAlignmentCenter;
 
-    [_mapView addSubview:_scaleLabel];
+    [self.view addSubview:_scaleLabel];
 }
 -(void) displayCurrentRoute
 {
@@ -5833,8 +5845,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             return 0.0;
         }
     }
-    
-    return 20.0;
+    int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    return top;
 }
 
 - (BOOL)isHennepinCountyPID:(NSString *)PID
@@ -7052,6 +7064,10 @@ didSelectPDFButtonWithText:(NSString *)text
                 [self startTrackingUserLocation];
                 [_mapToolbar selectMyLocationButton];
             }
+            int top = self.view.safeAreaInsets.top;
+            CGRect r = self.view.frame;
+            r = _mapView.frame;
+            [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Stop Tracking Location"])
         {

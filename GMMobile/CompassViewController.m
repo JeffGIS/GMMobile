@@ -42,6 +42,7 @@
 @property int currentRoutePointNumber;
 @property float atDistance;
 @property float closeDistance;
+@property int statusBarHeight;
 
 @end
 
@@ -49,6 +50,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    CGRect r = self.view.frame;
+    r = UIScreen.mainScreen.bounds;
+    _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     _screenH = UIScreen.mainScreen.bounds.size.height;
     _screenW = UIScreen.mainScreen.bounds.size.width;
     _heightFactor = _screenH / 568.0;
@@ -56,16 +60,7 @@
     _atDistance = 15;
     _closeDistance = 100;
     [self configUI];
-    
-    // Do any additional setup after loading the view.
-    CGRect r = self.view.frame;
-    r.size.width = min (self.view.frame.size.width,self.view.frame.size.height);
-    r.size.width *= 0.8;
-    r.size.height = r.size.width;
-    r.origin.x = self.view.frame.size.width * 0.1;
-    r.origin.y = r.origin.x;
-    [_compassImage setFrame:r];
-    
+        
 }
 -(void) viewWillAppear:(BOOL)animated
 {
@@ -77,7 +72,6 @@
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _oldLocationManagerDelegate = _locationManager.delegate;
     _locationManager.delegate = self;
-    self.view.backgroundColor = UIColor.blackColor;
     HuntingData *hd = HuntingData.new;
     
     _userWaypointArray = [hd getWaypoints];
@@ -150,9 +144,13 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
         
     }
 }
-
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
 -(void)configUI
 {
+    int top = self.view.safeAreaInsets.top;
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
     _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -201,27 +199,6 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view addGestureRecognizer:_singleFingerTap];
     
     [self configScaleDial];
-}
--(UIImage *) DrawCompass
-{
-    
-    CGRect rect = CGRectMake(0, 0, 100, 100);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    [[UIColor blackColor]setFill];
-    CGContextFillRect(context, self.view.frame);
-    [[UIColor whiteColor] setStroke];
-    
-    // make circle rect 5 px from border
-    CGRect circleRect = CGRectInset(rect, 5, 5);
-    
-    // draw circle
-    CGContextStrokeEllipseInRect(context, circleRect);
-    
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    CGRect r = self.view.frame;
-    _compassImage.image = image;
-    return image;
 }
 
 - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
