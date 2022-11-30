@@ -2256,6 +2256,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         return;
     int lineWidth = 5;
     CGRect tbframe = _mapToolbar.frame;
+    if (!_compass.isHidden)
+        tbframe = _compass.frame;
     if (_scaleLayer)
         [_scaleLayer removeFromSuperlayer];
     if (_scaleLabel)
@@ -7665,6 +7667,7 @@ didSelectPDFButtonWithText:(NSString *)text
 - (void)compassTapped:(UIButton *)button
 {
     [_mapView animateToBearing:0.0];
+    [self hideCompass];
 }
 
 - (void)hideCompass
