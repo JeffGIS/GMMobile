@@ -146,6 +146,7 @@
 @property BOOL displayTrackingRoute;
 @property UILabel *scaleLabel;
 @property int  pickedRefno;
+@property BOOL hideScaleBar;
 @end
 
 @implementation MapViewController
@@ -1367,7 +1368,7 @@
     if (_locationTrackingEnabled)
     {
         [self startTrackingUserLocation];
-        [_mapToolbar selectMyLocationButton];
+        [_mapToolbar selectMyLocationButton:YES];
     }
     if (_amAcceptingHeading)
         [_locationManager startUpdatingHeading];
@@ -1900,6 +1901,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [optionList addObject:@"Display Saved Track Route"];
                     
                 }
+                _hideScaleBar = TRUE;
                 NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                                   delegate:self
                                                                                      title:@"Waypoint Options"
@@ -2250,6 +2252,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 -(void) displayScalebar
 {
+    if (_hideScaleBar)
+        return;
     int lineWidth = 5;
     CGRect tbframe = _mapToolbar.frame;
     if (_scaleLayer)
@@ -7062,11 +7066,8 @@ didSelectPDFButtonWithText:(NSString *)text
             if (!_locationTrackingEnabled)
             {
                 [self startTrackingUserLocation];
-                [_mapToolbar selectMyLocationButton];
             }
-            int top = self.view.safeAreaInsets.top;
-            CGRect r = self.view.frame;
-            r = _mapView.frame;
+            [_mapToolbar selectMyLocationButton:YES];
             [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Stop Tracking Location"])
@@ -7234,7 +7235,7 @@ didSelectPDFButtonWithText:(NSString *)text
                                               type:MarkerInfoWindowTypePID];
         }
     }
-    
+    _hideScaleBar = FALSE;
     [popoverTableView hide:YES];
 }
 
