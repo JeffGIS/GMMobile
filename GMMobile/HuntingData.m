@@ -268,6 +268,7 @@
     sqlite3_stmt *statement = NULL;
     int timeCreated = 0;
     int firstTime = 0;
+    int totPoints = 0;
     LLPOINT lastPoint;
     double totDist = 0;
     int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
@@ -290,11 +291,12 @@
             double dist = ArcDistanceLL(lastPoint, pt);
             totDist += dist;
         }
+        totPoints++;
     }
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
     double totMiles = totDist / METERS_PER_MILE;
     int minutes = timeCreated - firstTime;
-    info = [NSString stringWithFormat:@"%i Minutes (%.2f Miles)",minutes,totMiles];
+    info = [NSString stringWithFormat:@"%i Minutes (%.2f Miles)\n%i Points",minutes,totMiles,totPoints];
     [self close:opened];
  
     return info;

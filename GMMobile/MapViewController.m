@@ -1897,7 +1897,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [optionList addObject:@"Delete all Compass Waypoints"];
                     [optionList addObject:@"Delete All Waypoints"];
                     [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Display Saved Track Route"];
+                    [optionList addObject:@"Display Saved Track Routes"];
                     
                 }
                 _hideScaleBar = TRUE;
@@ -2249,14 +2249,19 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         CGPointMake(targetPoint.x, (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
 }
--(void) displayScalebar
+-(void) removeScaleBar
 {
-    CGRect mvf = _mapView.frame;
-    CGRect sf = self.view.frame;
     if (_scaleLayer)
         [_scaleLayer removeFromSuperlayer];
     if (_scaleLabel)
         [_scaleLabel removeFromSuperview];
+
+}
+-(void) displayScalebar
+{
+    CGRect mvf = _mapView.frame;
+    CGRect sf = self.view.frame;
+    [self removeScaleBar];
     _scaleLabel = _scaleLayer = nil;
      if (_hideScaleBar)
         return;
@@ -7229,10 +7234,11 @@ didSelectPDFButtonWithText:(NSString *)text
             [hd addWaypoint:@"R1" type:@"RetrievePoint" latlon:_llPickedPt description:@"" displayOnCompass:NO];
             [self vectorViewRefresh];
         }
-        else if ([text isEqualToString:@"Display Saved Track Route"])
+        else if ([text isEqualToString:@"Display Saved Track Routes"])
         {
             [popoverTableView hide:YES];
-
+            [self removeScaleBar];
+            _hideScaleBar = YES;
             HuntingData *hd = HuntingData.new;
             NSArray * trArray = [hd getTrackRoutes];
             NSMutableArray *optionList = NSMutableArray.array;
@@ -7244,7 +7250,7 @@ didSelectPDFButtonWithText:(NSString *)text
                 [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
                 NSString *when = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSinceReferenceDate:n.integerValue]];
                 NSString *info = [hd getTrackInfo:n.integerValue];
-                when = [when stringByAppendingString:[NSString stringWithFormat:@"\n%@",info]];
+                when = [when stringByAppendingString:[NSString stringWithFormat:@"\n%@||Route:%i",info,n.integerValue]];
                 [optionList addObject:when];
             }
             NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
@@ -7253,7 +7259,24 @@ didSelectPDFButtonWithText:(NSString *)text
                                                                              textArray:optionList
                                                                          includeCancel:YES];
             nvptv.allowsSubtitle = NO;
+            return;
 
+        }
+        else if ([text containsString:@"|Route:"])
+        {
+            [popoverTableView hide:YES];
+            _hideScaleBar = YES;
+            NSMutableArray *optionList = NSMutableArray.array;
+            [optionList addObject:@"Display Saved Route"];
+            [optionList addObject:@"Delete Saved Route"];
+
+            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                              delegate:self
+                                                                                 title:@"Track Route Options"
+                                                                             textArray:optionList
+                                                                         includeCancel:YES];
+            nvptv.allowsSubtitle = NO;
+            return;
         }
 
         else
