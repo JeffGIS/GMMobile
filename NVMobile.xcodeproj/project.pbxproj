@@ -712,9 +712,6 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */,
-				EBE5A8572907130B00F0A5A1 /* compass_icon.png */,
-				EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A9CBF20C1A81558C006AC88E /* arrow.png */,
@@ -731,6 +728,8 @@
 				A9B6F3481AE46DC3003FD71E /* checkmark.png */,
 				694F00731C1B229C0074AF72 /* clearMarkers.png */,
 				6918B2251E9F4D270091C434 /* clockIcon.png */,
+				EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */,
+				EBE5A8572907130B00F0A5A1 /* compass_icon.png */,
 				A97DFB731AAE5E6E00F225DD /* compass.png */,
 				695F860F1F7C4895002018D8 /* config.png */,
 				A9F3933B1AEA961400DF9574 /* coolArrow.png */,
@@ -791,6 +790,7 @@
 				69674A261BFBBB30001C5C0B /* resizeIn.png */,
 				69674A271BFBBB30001C5C0B /* resizeOut.png */,
 				69CE5BF21FF68AD6007D5D1F /* returnIcon.png */,
+				EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */,
 				697EEE641E93FF110057CAC0 /* SampleCurbRamp1.jpg */,
 				697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */,
 				A90506441A75E12B00288850 /* settings.png */,

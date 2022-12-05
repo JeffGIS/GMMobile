@@ -43,6 +43,7 @@
 @property float atDistance;
 @property float closeDistance;
 @property int statusBarHeight;
+@property UIButton *optionsButton;
 
 @end
 
@@ -155,7 +156,15 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view setMultipleTouchEnabled:YES];
     _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(handleSingleTap:)];
+    _optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _optionsButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _optionsButton.frame = CGRectMake(0,0,40,40);
     
+    [_optionsButton setImage:[UIImage imageWithContentsOfFile:
+                      [NSBundle.mainBundle pathForResource:@"list"
+                                                    ofType:@"png"]]
+                forState:UIControlStateNormal];
+
     _dScaView = UIView.new;
     _dScaView.backgroundColor = UIColor.blackColor;
     _dScaView.frame = CGRectMake(0,0.1*_screenH,_screenW,_screenW);
