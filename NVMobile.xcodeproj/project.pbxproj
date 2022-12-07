@@ -243,6 +243,7 @@
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
+		EBAEBB3D294000540004D22D /* windArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAEBB3A294000540004D22D /* windArrow.png */; };
 		EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -595,6 +596,7 @@
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
 		EBADB96A1BFB70E7006FB31B /* Themes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themes.h; sourceTree = "<group>"; };
 		EBADB96B1BFB70E7006FB31B /* Themes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Themes.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EBAEBB3A294000540004D22D /* windArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = windArrow.png; sourceTree = "<group>"; };
 		EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RiteHomeLogo.png; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
@@ -712,6 +714,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBAEBB3A294000540004D22D /* windArrow.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A9CBF20C1A81558C006AC88E /* arrow.png */,
@@ -1390,6 +1393,7 @@
 				69D625591FA3F2B1008D6F08 /* hsvLoop.png in Resources */,
 				69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
+				EBAEBB3D294000540004D22D /* windArrow.png in Resources */,
 				EB6142C2271761370056A9AE /* MinnesotaData.slt in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,

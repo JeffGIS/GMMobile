@@ -151,19 +151,12 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 }
 -(void)configUI
 {
-    int top = self.view.safeAreaInsets.top;
+    int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
     _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(handleSingleTap:)];
-    _optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _optionsButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
-    _optionsButton.frame = CGRectMake(0,0,40,40);
-    
-    [_optionsButton setImage:[UIImage imageWithContentsOfFile:
-                      [NSBundle.mainBundle pathForResource:@"list"
-                                                    ofType:@"png"]]
-                forState:UIControlStateNormal];
 
     _dScaView = UIView.new;
     _dScaView.backgroundColor = UIColor.blackColor;
@@ -202,12 +195,50 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [_dScaView addSubview:_verticalView];
     [self.view insertSubview:_lineView atIndex:0];
     [_dScaView addSubview:_compassTriangleView];
+
+    _optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _optionsButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _optionsButton.backgroundColor = UIColor.whiteColor;
+    _optionsButton.frame = CGRectMake(left,top,40,40);
+
+    [_optionsButton setImage:[UIImage imageWithContentsOfFile:
+                      [NSBundle.mainBundle pathForResource:@"list"
+                                                    ofType:@"png"]]
+                forState:UIControlStateNormal];
+    [_optionsButton addTarget:self
+                               action:@selector(optionsButtonTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+    [self.view  addSubview:_optionsButton];
+
     [self.view addSubview:_dScaView];
     [self.view addSubview:_profileView];
     [self.view setUserInteractionEnabled:YES];
     [self.view addGestureRecognizer:_singleFingerTap];
     
     [self configScaleDial];
+}
+
+-(void) optionsButtonTapped
+{
+    HuntingData *hd = HuntingData.new;
+    NSMutableArray *optionList = NSMutableArray.array;
+    NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+    if (routePointArray.count > 0)
+        [optionList addObject:@"Start Route"];
+    [optionList addObject:@"Get Weather Data"];
+    [_dScaView setUserInteractionEnabled:NO];
+    [_backgroundView setUserInteractionEnabled:NO];
+    [_profileView setUserInteractionEnabled:NO];
+    [self.view setMultipleTouchEnabled:NO];
+    [_singleFingerTap setEnabled:NO];
+    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                      delegate:self
+                                                                         title:@"Compass Options"
+                                                                     textArray:optionList
+                                                                 includeCancel:YES];
+    nvptv.allowsSubtitle = NO;
+     
+
 }
 
 - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
@@ -257,9 +288,10 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 {
     _backgroundView.transform = CGAffineTransformMakeRotation(heading);
     int i=0;
+    int n = _backgroundView.subviews.count;
     for (UILabel *label in _backgroundView.subviews)
     {
-        if (i++)
+        if (i++ && i < n)
             label.transform = CGAffineTransformMakeRotation( -heading);
     }
     _backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
@@ -565,6 +597,26 @@ double HeadingFromAZ (double az)
             }
         }
     }
+    //add wind
+    //UIButton * wind = [UIButton buttonWithType:UIButtonTypeCustom];
+    az = 2;
+    CGFloat windSpeed = 20;
+    CGFloat factor = 1.3;
+    CGFloat windDir = 1.5;
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.25];
+    UIImageView *wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor)];
+    wind.backgroundColor = UIColor.clearColor;
+    UIImage *img = [SymbolDictionary imageOfArrow:wind.frame lineWidth:3 lineColor:UIColor.greenColor fillColor:UIColor.blueColor];
+    wind.image = img;//[UIImage imageWithContentsOfFile:                      [NSBundle.mainBundle pathForResource:@"windArrow"                                                    ofType:@"png"]];
+
+    wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+    wind.center = point;
+    wind.clipsToBounds = true;
+    //wind.layer.cornerRadius = wind.frame.size.width / 2;
+    wind.transform = CGAffineTransformMakeRotation( windDir);
+    [_backgroundView addSubview:wind];
+    [_userWaypointLabels addObject:wind];
+
     
 }
 -(CGFloat) getSelectedWaypointHeading
@@ -698,6 +750,12 @@ double HeadingFromAZ (double az)
         NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
         UserWaypoint* waypoint = routePointArray[0];
         CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
+    }
+    if ([text isEqualToString:@"Get Weather Data"])
+    {
+        
+        NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
+        ii = 1;
     }
     [popoverTableView hide:YES];
     [_singleFingerTap setEnabled:YES];

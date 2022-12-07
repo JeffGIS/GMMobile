@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CompassViewController : UIViewController<CLLocationManagerDelegate,NVPopoverTableViewDelegate>
+@interface CompassViewController : UIViewController<CLLocationManagerDelegate,NVPopoverTableViewDelegate,NSURLConnectionDataDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *compassImage;
 @property (strong, nonatomic) IBOutlet NSObject *topGuide;
 
