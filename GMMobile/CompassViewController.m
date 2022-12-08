@@ -44,8 +44,11 @@
 @property float closeDistance;
 @property int statusBarHeight;
 @property UIButton *optionsButton;
+@property UILabel *weatherLabel;
+@property UIButton *weatherButton;
 @property WeatherData * wd;
 @property int currentWindSpeed;
+@property int currentTemp;
 @property float currentWindDirection;
 @property int skipRot;
 
@@ -160,6 +163,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 {
     int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
+    int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
     _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -216,6 +220,29 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
                                action:@selector(optionsButtonTapped)
                      forControlEvents:UIControlEventTouchUpInside];
     [self.view  addSubview:_optionsButton];
+    
+    _weatherLabel = UILabel.new;
+    _weatherLabel.frame = CGRectMake(right-160,top,160,50);
+    _weatherLabel.backgroundColor = UIColor.blueColor;
+    _weatherLabel.textColor = UIColor.whiteColor;
+    _weatherLabel.font =[UIFont boldSystemFontOfSize: 42];
+    _weatherLabel.adjustsFontSizeToFitWidth = YES;
+    _weatherLabel.textAlignment = NSTextAlignmentCenter;
+    _weatherLabel.numberOfLines = 2;
+    _weatherLabel.text = @"";
+     _weatherButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_weatherButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    //_weatherButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _weatherButton.backgroundColor = UIColor.clearColor;
+    _weatherButton.frame = _weatherLabel.frame;
+    _weatherButton.layer.borderColor = UIColor.whiteColor.CGColor;
+    _weatherButton.layer.borderWidth = 1;
+
+    [_weatherButton addTarget:self
+                               action:@selector(weatherButtonTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+    [self.view  addSubview:_weatherLabel];
+    [self.view  addSubview:_weatherButton];
 
     [self.view addSubview:_dScaView];
     [self.view addSubview:_profileView];
@@ -246,6 +273,11 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     nvptv.allowsSubtitle = NO;
      
 
+}
+
+-(void) weatherButtonTapped
+{
+    [self getWeatherData];
 }
 
 - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
@@ -638,7 +670,7 @@ double HeadingFromAZ (double az)
     [_backgroundView addSubview:label];
     [_userWaypointLabels addObject:label];
 
-    if ( _currentWindSpeed >= 0)
+    if ( _currentWindSpeed > 0)
     {
         CGFloat windSpeed =  _currentWindSpeed;
         CGFloat factor = 1.8;
@@ -832,10 +864,16 @@ double HeadingFromAZ (double az)
     NSString * windData = textAfter (data,@"{\"speed\":");
     windData = textBefore(windData, @"}");
     NSString * speed = textBefore(windData, @",");
-    
+    NSString * temp = textAfter (data,@"\"temp\":");
+    temp = textBefore (temp,@",");
+    _currentTemp = IDNINT (temp.floatValue);
     _currentWindSpeed = IDNINT(speed.floatValue);
     NSString * dir = textAfter (windData,@":");
     _currentWindDirection = DegreesToRadians(dir.integerValue);
+    [NSOperationQueue.mainQueue addOperationWithBlock:^{
+        _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph",_currentTemp,_currentWindSpeed];
+   }];
+
     //3.35,"deg":213,"gust":3.12}
    return;
 }
