@@ -44,6 +44,10 @@
 @property float closeDistance;
 @property int statusBarHeight;
 @property UIButton *optionsButton;
+@property WeatherData * wd;
+@property int currentWindSpeed;
+@property float currentWindDirection;
+@property int skipRot;
 
 @end
 
@@ -51,6 +55,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _wd = WeatherData.new;
+    _currentWindSpeed = -1;
     CGRect r = self.view.frame;
     r = UIScreen.mainScreen.bounds;
     _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
@@ -60,6 +66,7 @@
     _widthFactor = _screenW / 320.0;
     _atDistance = 15;
     _closeDistance = 100;
+    _skipRot = 0;
     [self configUI];
         
 }
@@ -82,7 +89,7 @@
 {
     [super viewDidAppear:animated];
     //[self DrawCompass];
-    if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
+    //if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
     {
         [_locationManager startUpdatingLocation];
         [_locationManager startUpdatingHeading];
@@ -291,10 +298,10 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     int n = _backgroundView.subviews.count;
     for (UILabel *label in _backgroundView.subviews)
     {
-        if (i++ && i < n)
+        if (i++ && i < n-_skipRot)
             label.transform = CGAffineTransformMakeRotation( -heading);
     }
-    _backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
+    //_backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
 }
 
 - (void) configScaleDial
@@ -457,10 +464,15 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 }
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
+    static bool first = true;
     for (CLLocation * loc in locations)
     {
         _currentPoint.lat = loc.coordinate.latitude;
         _currentPoint.lon = loc.coordinate.longitude;
+        if (first)
+            [self getWeatherData];
+        first = false;
+
     }
     [self removeUserWaypoints];
     [self addUserWaypoints:_currentPoint];
@@ -599,25 +611,74 @@ double HeadingFromAZ (double az)
     }
     //add wind
     //UIButton * wind = [UIButton buttonWithType:UIButtonTypeCustom];
-    az = 2;
-    CGFloat windSpeed = 20;
-    CGFloat factor = 1.3;
-    CGFloat windDir = 1.5;
-    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.25];
-    UIImageView *wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor)];
-    wind.backgroundColor = UIColor.clearColor;
-    UIImage *img = [SymbolDictionary imageOfArrow:wind.frame lineWidth:3 lineColor:UIColor.greenColor fillColor:UIColor.blueColor];
-    wind.image = img;//[UIImage imageWithContentsOfFile:                      [NSBundle.mainBundle pathForResource:@"windArrow"                                                    ofType:@"png"]];
-
-    wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
-    wind.center = point;
-    wind.clipsToBounds = true;
-    //wind.layer.cornerRadius = wind.frame.size.width / 2;
-    wind.transform = CGAffineTransformMakeRotation( windDir);
-    [_backgroundView addSubview:wind];
-    [_userWaypointLabels addObject:wind];
-
+    int iTime = NSDate.timeIntervalSinceReferenceDate;
+    CGFloat sunAlt;
+    CGFloat sunAz = [self getAzOfSun:iTime
+                         altitude:&sunAlt];
+    UILabel* label = UILabel.new;
+    CGFloat factor = 1;
+    CGFloat fontSize = 12;
+    int degreesAboveHorizon = IDNINT (sunAlt);
+    CGFloat pctYellow = max (0.2,degreesAboveHorizon/90.0);
+    UIColor *sunColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:pctYellow];
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andScale: 1.2];
+    label.font = [UIFont systemFontOfSize: fontSize];
+    label.textAlignment = NSTextAlignmentCenter;
+    factor = 1.2;
+    fontSize = 24;
+    label.text = [NSString stringWithFormat:@"%i",degreesAboveHorizon];
+    label.backgroundColor = sunColor;
+    label.textColor = UIColor.blackColor;
+    label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+    label.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+    label.center = point;
+    label.clipsToBounds = true;
+    label.layer.cornerRadius = label.frame.size.width / 2;
     
+    [_backgroundView addSubview:label];
+    [_userWaypointLabels addObject:label];
+
+    if ( _currentWindSpeed >= 0)
+    {
+        CGFloat windSpeed =  _currentWindSpeed;
+        CGFloat factor = 1.8;
+        CGFloat windDir = _currentWindDirection;
+        windDir = LTWOPI (windDir - HALFPI);
+        CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.22];
+        UIImageView *wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
+        UILabel *windLabel = [[UILabel alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
+        wind.backgroundColor = UIColor.clearColor;
+        windLabel.backgroundColor = UIColor.clearColor;
+        UIColor *blue = [[UIColor alloc] initWithRed:0.0
+                                               green:0
+                                                blue:1
+                                               alpha:1];
+        
+        UIImage *img = [SymbolDictionary imageOfArrow:wind.frame
+                                            lineWidth:2
+                                            lineColor:UIColor.whiteColor
+                                            fillColor:blue
+                                             withText:nil];
+        wind.image = img;//[UIImage imageWithContentsOfFile:                      [NSBundle.mainBundle pathForResource:@"windArrow"                                                    ofType:@"png"]];
+        
+        //wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+        wind.center = point;
+        wind.clipsToBounds = true;
+        windLabel.text = [NSString stringWithFormat:@"%i",_currentWindSpeed];
+        windLabel.textColor = UIColor.whiteColor;
+        windLabel.textAlignment = NSTextAlignmentCenter;
+        windLabel.center = point;
+        //wind.layer.cornerRadius = wind.frame.size.width / 2;
+        wind.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+        windLabel.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+        [_userWaypointLabels addObject:wind];
+        [_backgroundView addSubview:wind];
+        [_backgroundView addSubview:windLabel];
+        [_userWaypointLabels addObject:windLabel];
+        _skipRot = 1;
+    }
+
+ 
 }
 -(CGFloat) getSelectedWaypointHeading
 {
@@ -753,15 +814,48 @@ double HeadingFromAZ (double az)
     }
     if ([text isEqualToString:@"Get Weather Data"])
     {
-        
-        NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
+        [self getWeatherData];
+        //NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
         ii = 1;
     }
     [popoverTableView hide:YES];
     [_singleFingerTap setEnabled:YES];
 
 }
+-(void) getWeatherData
+{
+    [_wd getCurrentWeather:_currentPoint delegate:self];
 
+}
+- (void)weatherDataaDidReturnData:(NSString*)data
+{
+    NSString * windData = textAfter (data,@"{\"speed\":");
+    windData = textBefore(windData, @"}");
+    NSString * speed = textBefore(windData, @",");
+    
+    _currentWindSpeed = IDNINT(speed.floatValue);
+    NSString * dir = textAfter (windData,@":");
+    _currentWindDirection = DegreesToRadians(dir.integerValue);
+    //3.35,"deg":213,"gust":3.12}
+   return;
+}
+- (void)weatherDataaDidReturnError:(NSString *) message
+{
+    
+}
+- (CGFloat) getAzOfSun:(time_t)iTime
+              altitude:(CGFloat*)pAlt
+{
+    struct tm tmtime = *localtime (&iTime);
+    CGFloat rtn = 100;
+    
+    double Altitude=0, Az;
+    DPOINT pt = LLPointToDPoint(_currentPoint);
+    GetAltitudeAndAzOfSun (pt,0,iTime,&Altitude,&Az);
+    *pAlt = Altitude;
+    rtn = DegreesToRadians (Az-90);
+    return rtn;
+}
 -(void) popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
 {
     [popoverTableView hide:YES];
