@@ -50,6 +50,7 @@
 @property int currentWindSpeed;
 @property int currentTemp;
 @property float currentWindDirection;
+@property NSString *currentWeatherDesc;
 @property int skipRot;
 
 @end
@@ -222,13 +223,13 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view  addSubview:_optionsButton];
     
     _weatherLabel = UILabel.new;
-    _weatherLabel.frame = CGRectMake(right-160,top,160,50);
-    _weatherLabel.backgroundColor = UIColor.blueColor;
+    _weatherLabel.frame = CGRectMake(right-160,top,160,60);
+    _weatherLabel.backgroundColor = UIColor.clearColor;
     _weatherLabel.textColor = UIColor.whiteColor;
-    _weatherLabel.font =[UIFont boldSystemFontOfSize: 42];
+    _weatherLabel.font =[UIFont systemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
     _weatherLabel.textAlignment = NSTextAlignmentCenter;
-    _weatherLabel.numberOfLines = 2;
+    _weatherLabel.numberOfLines = 3;
     _weatherLabel.text = @"";
      _weatherButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_weatherButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
@@ -236,7 +237,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     _weatherButton.backgroundColor = UIColor.clearColor;
     _weatherButton.frame = _weatherLabel.frame;
     _weatherButton.layer.borderColor = UIColor.whiteColor.CGColor;
-    _weatherButton.layer.borderWidth = 1;
+    _weatherButton.layer.borderWidth = 0;
 
     [_weatherButton addTarget:self
                                action:@selector(weatherButtonTapped)
@@ -278,6 +279,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 -(void) weatherButtonTapped
 {
     [self getWeatherData];
+    [self configUI];
 }
 
 - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
@@ -641,35 +643,40 @@ double HeadingFromAZ (double az)
             }
         }
     }
-    //add wind
-    //UIButton * wind = [UIButton buttonWithType:UIButtonTypeCustom];
+    //add sun
     int iTime = NSDate.timeIntervalSinceReferenceDate;
     CGFloat sunAlt;
     CGFloat sunAz = [self getAzOfSun:iTime
                          altitude:&sunAlt];
     UILabel* label = UILabel.new;
-    CGFloat factor = 1;
-    CGFloat fontSize = 12;
+    CGFloat factor = 1.2;
     int degreesAboveHorizon = IDNINT (sunAlt);
-    CGFloat pctYellow = max (0.2,degreesAboveHorizon/90.0);
+    CGFloat pctYellow;
+    
+    if (degreesAboveHorizon < -6)
+        pctYellow = 0.2;
+    else if (degreesAboveHorizon < 0)
+        pctYellow = 0.2 + 0.4 * (6 + degreesAboveHorizon)/ 6.0;
+    else if (degreesAboveHorizon < 6)
+        pctYellow = 0.2 + 0.4 + 0.3 * degreesAboveHorizon / 6.0;
+    else
+        pctYellow = 0.9;
     UIColor *sunColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:pctYellow];
-    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andScale: 1.2];
-    label.font = [UIFont systemFontOfSize: fontSize];
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andScale: 1.24];
     label.textAlignment = NSTextAlignmentCenter;
-    factor = 1.2;
-    fontSize = 24;
+    int fontSize = 20;
     label.text = [NSString stringWithFormat:@"%i",degreesAboveHorizon];
     label.backgroundColor = sunColor;
     label.textColor = UIColor.blackColor;
     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
-    label.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+    label.frame = CGRectMake(point.x,point.y, factor*28*_widthFactor,factor*28*_widthFactor);
     label.center = point;
     label.clipsToBounds = true;
     label.layer.cornerRadius = label.frame.size.width / 2;
     
     [_backgroundView addSubview:label];
     [_userWaypointLabels addObject:label];
-
+//add wind
     if ( _currentWindSpeed > 0)
     {
         CGFloat windSpeed =  _currentWindSpeed;
@@ -859,25 +866,20 @@ double HeadingFromAZ (double az)
     [_wd getCurrentWeather:_currentPoint delegate:self];
 
 }
-- (void)weatherDataaDidReturnData:(NSString*)data
+- (void)weatherDataDidReturnData:(WeatherRecord*)data
 {
-    NSString * windData = textAfter (data,@"{\"speed\":");
-    windData = textBefore(windData, @"}");
-    NSString * speed = textBefore(windData, @",");
-    NSString * temp = textAfter (data,@"\"temp\":");
-    temp = textBefore (temp,@",");
-    _currentTemp = IDNINT (temp.floatValue);
-    _currentWindSpeed = IDNINT(speed.floatValue);
-    NSString * dir = textAfter (windData,@":");
-    _currentWindDirection = DegreesToRadians(dir.integerValue);
+    _currentTemp = data.temp;
+    _currentWindSpeed = data.windSpeed;
+    _currentWindDirection = data.windDir;
+    _currentWeatherDesc = data.desc;
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
-        _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph",_currentTemp,_currentWindSpeed];
+        _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];
    }];
 
     //3.35,"deg":213,"gust":3.12}
    return;
 }
-- (void)weatherDataaDidReturnError:(NSString *) message
+- (void)weatherDataDidReturnError:(NSString *) message
 {
     
 }

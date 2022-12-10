@@ -358,7 +358,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantHelpButton] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantReturnButton] = NO;
-        
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantWeatherButton] = YES;
+
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
         configLayers[HCConfigSewers][HCLayerParcels] = YES;
