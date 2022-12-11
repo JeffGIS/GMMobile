@@ -69,7 +69,7 @@
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate, WeatherDataDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -147,6 +147,7 @@
 @property UILabel *scaleLabel;
 @property int  pickedRefno;
 @property BOOL hideScaleBar;
+@property NSMutableArray * forcastDates;
 @end
 
 @implementation MapViewController
@@ -6309,7 +6310,55 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [self performSelector:@selector(clearMapItems) withObject:nil afterDelay:0.3];
 }
+- (void) mapToolbarDidSelectWeatherButton:(BOOL)longPressed
+{
+    WeatherData *weatherData = WeatherData.new;
+    LLPOINT llp;
+    _currentPosition = [GMSCameraPosition cameraWithTarget:_mapView.camera.target
+                                                      zoom:_mapView.camera.zoom];
 
+    llp.lat = _currentPosition.target.latitude;
+    llp.lon = _currentPosition.target.longitude;
+    if (longPressed)
+    {
+        [weatherData getWeatherForcast:llp
+                               forTime:0
+                              delegate:self];
+    }
+    else
+    {
+        [weatherData getCurrentWeather:llp delegate:self];
+    }
+}
+- (void)weatherDataDidReturnData:(WeatherRecord*)data
+{
+    ii=1;
+}
+- (void) weatherDataDidReturnError:(NSString *)message
+{
+    NSLog (message);
+}
+- (void)weatherDataDidReturnForcast:(NSArray *)forcast
+{
+    _forcastDates = [WeatherData getDatesFromForcast:forcast];
+    [self performSelectorOnMainThread:@selector(displayForcast)
+                           withObject:nil
+                        waitUntilDone:NO];
+
+}
+-(void) displayForcast
+{
+    [self hideScaleBar];
+    NVPopoverTableView *nvptv =
+    [NVPopoverTableView showPopoverTableViewInView:self.view
+                                          delegate:self
+                                             title:@"Select a Date and Time"
+                                         textArray:_forcastDates
+                                     includeCancel:YES];
+    nvptv.identifier = @"forcast";
+    nvptv.parseTextToButtons = NO;
+    
+}
 - (void)clearMapItems
 {
     for (MarkerButton *markers in _markerArray)
@@ -7120,7 +7169,15 @@ didSelectPDFButtonWithText:(NSString *)text
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
+    if ([popoverTableView.identifier isEqual:@"forcast"])
+    {
+        NSString *time = textAfter(text,@"||");
+        if (time)
+        {
+            
+        }
+    }
+    else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
     {
         if ([text isEqualToString:@"Mark Vehicle Location"])
         {
@@ -7262,7 +7319,7 @@ didSelectPDFButtonWithText:(NSString *)text
             return;
 
         }
-        else if ([text containsString:@"|Route:"])
+        else if ([text containsString:@"Route:"])
         {
             [popoverTableView hide:YES];
             _hideScaleBar = YES;

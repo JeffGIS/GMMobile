@@ -244,6 +244,7 @@
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
 		EBAEBB3D294000540004D22D /* windArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAEBB3A294000540004D22D /* windArrow.png */; };
+		EBAEBD692944F6500004D22D /* weather.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAEBD662944F6500004D22D /* weather.png */; };
 		EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -597,6 +598,7 @@
 		EBADB96A1BFB70E7006FB31B /* Themes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themes.h; sourceTree = "<group>"; };
 		EBADB96B1BFB70E7006FB31B /* Themes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Themes.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBAEBB3A294000540004D22D /* windArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = windArrow.png; sourceTree = "<group>"; };
+		EBAEBD662944F6500004D22D /* weather.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = weather.png; sourceTree = "<group>"; };
 		EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RiteHomeLogo.png; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
@@ -714,6 +716,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBAEBD662944F6500004D22D /* weather.png */,
 				EBAEBB3A294000540004D22D /* windArrow.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
@@ -1285,6 +1288,7 @@
 				BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */,
 				691B5DCC1E520E3300C90383 /* landuse.slt in Resources */,
 				691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */,
+				EBAEBD692944F6500004D22D /* weather.png in Resources */,
 				691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */,
 				EB5EC3C327207566002E3E7A /* hourglass1.png in Resources */,
 				690E829D1C11044700AB410E /* Assets.bundle in Resources */,

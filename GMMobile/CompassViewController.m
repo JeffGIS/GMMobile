@@ -223,7 +223,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view  addSubview:_optionsButton];
     
     _weatherLabel = UILabel.new;
-    _weatherLabel.frame = CGRectMake(right-160,top,160,60);
+    _weatherLabel.frame = CGRectMake(right-160,top,160,55);
     _weatherLabel.backgroundColor = UIColor.clearColor;
     _weatherLabel.textColor = UIColor.whiteColor;
     _weatherLabel.font =[UIFont systemFontOfSize: 20];
@@ -681,7 +681,7 @@ double HeadingFromAZ (double az)
     {
         CGFloat windSpeed =  _currentWindSpeed;
         CGFloat factor = 1.8;
-        CGFloat windDir = _currentWindDirection;
+        CGFloat windDir = DegreesToRadians (_currentWindDirection);
         windDir = LTWOPI (windDir - HALFPI);
         CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.22];
         UIImageView *wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
