@@ -148,10 +148,11 @@
 @property UILabel *scaleLabel;
 @property int  pickedRefno;
 @property BOOL hideScaleBar;
-@property NSMutableArray * forcastDates;
+@property NSMutableArray * forecastDates;
 @property WeatherRecord * currentWeatherData;
 @property UIImageView* windImage;
-@property UILabel *weatherLabel;
+@property UILabel * weatherLabel;
+@property NSArray * currentForecast;
 @end
 
 @implementation MapViewController
@@ -2490,8 +2491,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     //wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
     _windImage.center = point;
     _windImage.clipsToBounds = true;
-    _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i\nWind Speed:%i\n%@",_currentWeatherData.temp,_currentWeatherData.windSpeed,_currentWeatherData.desc];
-    _weatherLabel.numberOfLines = 3;
+    NSString * dayAndTime = [WeatherData forecastDayandTime:_currentWeatherData.timeStamp];
+    _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%i mph\n%@",dayAndTime,_currentWeatherData.temp,_currentWeatherData.windSpeed,_currentWeatherData.desc];
+    _weatherLabel.numberOfLines = 4;
     _weatherLabel.font =[UIFont boldSystemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
 
@@ -2500,7 +2502,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _weatherLabel.center = point;
     //wind.layer.cornerRadius = wind.frame.size.width / 2;
     _windImage.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
-    _weatherLabel.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+    CGFloat labelRot = windDir-HALFPI;
+    if (windDir > HALFPI && windDir < HALFPI * 3)
+        labelRot += PY;
+    _weatherLabel.transform = CGAffineTransformMakeRotation(labelRot);
     [self.view addSubview:_windImage];
     [self.view addSubview:_weatherLabel];
     [self.view bringSubviewToFront:_weatherLabel];
@@ -6401,7 +6406,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         llp.lon = _currentPosition.target.longitude;
         if (longPressed)
         {
-            [weatherData getWeatherForcast:llp
+            [weatherData getWeatherforecast:llp
                                    forTime:0
                                   delegate:self];
         }
@@ -6422,24 +6427,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     NSLog (message);
 }
-- (void)weatherDataDidReturnForcast:(NSArray *)forcast
+- (void)weatherDataDidReturnforecast:(NSArray *)forecast
 {
-    _forcastDates = [WeatherData getDatesFromForcast:forcast];
-    [self performSelectorOnMainThread:@selector(displayForcast)
+    _currentForecast = forecast;
+    _forecastDates = [WeatherData getDatesFromforecast:forecast];
+    [self performSelectorOnMainThread:@selector(displayforecast)
                            withObject:nil
                         waitUntilDone:NO];
 
 }
--(void) displayForcast
+-(void) displayforecast
 {
-    [self hideScaleBar];
+    [self removeScaleBar];
+    _hideScaleBar = YES;
+
     NVPopoverTableView *nvptv =
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
                                              title:@"Select a Date and Time"
-                                         textArray:_forcastDates
+                                         textArray:_forecastDates
                                      includeCancel:YES];
-    nvptv.identifier = @"forcast";
+    nvptv.identifier = @"forecast";
     nvptv.parseTextToButtons = NO;
     
 }
@@ -7253,12 +7261,17 @@ didSelectPDFButtonWithText:(NSString *)text
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    if ([popoverTableView.identifier isEqual:@"forcast"])
+    if ([popoverTableView.identifier isEqual:@"forecast"])
     {
-        NSString *time = textAfter(text,@"||");
+        NSString *time = textAfter(text,@"|");
         if (time)
         {
-            
+            time_t itime = time.integerValue;
+            _currentWeatherData = [WeatherData getRecordFromForecast:_currentForecast atTime:itime];
+            [self performSelectorOnMainThread:@selector(vectorViewRefresh)
+                                   withObject:nil
+                                waitUntilDone:NO];
+
         }
     }
     else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
