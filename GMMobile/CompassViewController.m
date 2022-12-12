@@ -37,6 +37,7 @@
 @property LLPOINT currentPoint;
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
+@property CLHeading*  nowHeading;
 @property CGFloat currentHeading;
 @property int infoLabelOption;
 @property int currentRoutePointNumber;
@@ -71,9 +72,20 @@
     _atDistance = 15;
     _closeDistance = 100;
     _skipRot = 0;
+
     [self configUI];
         
 }
+-(BOOL) shouldAutorotate
+{
+    return FALSE;
+}
+
+-(void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    return;
+}
+
 -(void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -514,21 +526,14 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
-    UIDevice * device = UIDevice.currentDevice;
     
     if (newHeading.headingAccuracy > 0)
     {
         
-        CGFloat magneticHeading = [self heading:newHeading.magneticHeading fromOrirntation: device.orientation];
-        
-       CGFloat trueHeading = [self heading:newHeading.trueHeading fromOrirntation: device.orientation];
-        
-        CGFloat headi = -1.0 * M_PI * newHeading.magneticHeading / 180.0;
-        //_infoLabel.text = @"\(Int(magneticHeading))";
-        
-        [self resetDirection:headi];
-        
-        [self update:newHeading];
+        _nowHeading = newHeading;
+        [self performSelectorOnMainThread:@selector(update)
+                               withObject:nil
+                            waitUntilDone:NO];
     }
 }
 
@@ -907,10 +912,20 @@ double HeadingFromAZ (double az)
 {
     return;
 }
--(void) update:(CLHeading*)newHeading
+-(void) update
 {
-    CLLocationDirection theHeading = newHeading.magneticHeading > 0 ? newHeading.magneticHeading : newHeading.trueHeading;
-    theHeading = newHeading.trueHeading;
+    UIDevice * device = UIDevice.currentDevice;
+    CGFloat magneticHeading = [self heading:_nowHeading.magneticHeading fromOrirntation: device.orientation];
+    
+    CGFloat trueHeading = [self heading:_nowHeading.trueHeading fromOrirntation: device.orientation];
+    
+    CGFloat headi = -1.0 * M_PI * _nowHeading.magneticHeading / 180.0;
+    //_infoLabel.text = @"\(Int(magneticHeading))";
+    [self resetDirection:headi];
+
+
+    CLLocationDirection theHeading = _nowHeading.magneticHeading > 0 ? _nowHeading.magneticHeading : _nowHeading.trueHeading;
+    theHeading = _nowHeading.trueHeading;
     _currentHeading = theHeading;
     [self createRedTicks];
 

@@ -142,12 +142,16 @@
 @property CAShapeLayer *routeLayer;
 @property CAShapeLayer *trackLayer;
 @property CAShapeLayer *scaleLayer;
+@property CAShapeLayer *weatherLayer;
 @property BOOL amTrackingRoute;
 @property BOOL displayTrackingRoute;
 @property UILabel *scaleLabel;
 @property int  pickedRefno;
 @property BOOL hideScaleBar;
 @property NSMutableArray * forcastDates;
+@property WeatherRecord * currentWeatherData;
+@property UIImageView* windImage;
+@property UILabel *weatherLabel;
 @end
 
 @implementation MapViewController
@@ -2437,6 +2441,71 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [_mapView.layer addSublayer:_trackLayer];
     }
 }
+-(void) clearCurrentWeatherData
+{
+    [_windImage removeFromSuperview];
+    [_weatherLabel removeFromSuperview];
+}
+
+-(void) displayWeatherData
+{
+    [self clearCurrentWeatherData];
+    if (!_currentWeatherData)
+        return;
+/*    _weatherLayer = CAShapeLayer.layer;
+    _weatherLayer.strokeColor = UIColor.greenColor.CGColor;
+    _weatherLayer.fillColor = UIColor.blueColor.CGColor;
+    _weatherLayer.lineWidth = 3;
+    UIBezierPath *path = UIBezierPath.bezierPath;
+    CGPoint pt;
+    [path moveToPoint:pt];
+    [path addLineToPoint:pt];
+    [path closePath];
+    [path strokeWithBlendMode:kCGBlendModeNormal alpha:0.5];
+    [path fillWithBlendMode:kCGBlendModeNormal alpha:0.5];
+    _trackLayer.path = path.CGPath;
+    [_mapView.layer addSublayer:_trackLayer];
+*/
+    CGFloat windDir = DegreesToRadians (_currentWeatherData.windDir);
+    windDir = LTWOPI (windDir - HALFPI);
+    CGPoint point  = {CGRectGetMidX(self.view.frame),CGRectGetMidY(self.view.frame)};
+    int width = min (self.view.frame.size.width,self.view.frame.size.height);
+    width *=  0.9;
+    CGRect windRect = CGRectMake (point.x,point.y,width,width);
+    _windImage = [[UIImageView alloc] initWithFrame:windRect];
+    _weatherLabel = [[UILabel alloc] initWithFrame:windRect];
+    _windImage.backgroundColor = UIColor.clearColor;
+    _weatherLabel.backgroundColor = UIColor.clearColor;
+    UIColor *blue = [[UIColor alloc] initWithRed:0.0
+                                           green:0
+                                            blue:1
+                                           alpha:.5];
+    
+    UIImage *img = [SymbolDictionary imageOfArrow:_windImage.frame
+                                        lineWidth:2
+                                        lineColor:UIColor.whiteColor
+                                        fillColor:blue
+                                         withText:nil];
+    _windImage.image = img;
+    //wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+    _windImage.center = point;
+    _windImage.clipsToBounds = true;
+    _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i\nWind Speed:%i\n%@",_currentWeatherData.temp,_currentWeatherData.windSpeed,_currentWeatherData.desc];
+    _weatherLabel.numberOfLines = 3;
+    _weatherLabel.font =[UIFont boldSystemFontOfSize: 20];
+    _weatherLabel.adjustsFontSizeToFitWidth = YES;
+
+    _weatherLabel.textColor = UIColor.whiteColor;
+    _weatherLabel.textAlignment = NSTextAlignmentCenter;
+    _weatherLabel.center = point;
+    //wind.layer.cornerRadius = wind.frame.size.width / 2;
+    _windImage.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+    _weatherLabel.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+    [self.view addSubview:_windImage];
+    [self.view addSubview:_weatherLabel];
+    [self.view bringSubviewToFront:_weatherLabel];
+}
+
 LLPOINT CGPointToLLPoint (CGPoint inPt)
 {
     LLPOINT rtn = {inPt.x,inPt.y};
@@ -3715,6 +3784,7 @@ haveVV:
                        [self displayCurrentRoute];
                        [self displayTrackRoute];
                        [self displayScalebar];
+                       [self displayWeatherData];
                        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
                        if (reDisplay)
                        {
@@ -6312,27 +6382,41 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 - (void) mapToolbarDidSelectWeatherButton:(BOOL)longPressed
 {
-    WeatherData *weatherData = WeatherData.new;
-    LLPOINT llp;
-    _currentPosition = [GMSCameraPosition cameraWithTarget:_mapView.camera.target
-                                                      zoom:_mapView.camera.zoom];
-
-    llp.lat = _currentPosition.target.latitude;
-    llp.lon = _currentPosition.target.longitude;
-    if (longPressed)
+    if (_currentWeatherData)
     {
-        [weatherData getWeatherForcast:llp
-                               forTime:0
-                              delegate:self];
+        _currentWeatherData = nil;
+        [self performSelectorOnMainThread:@selector(vectorViewRefresh)
+                               withObject:nil
+                            waitUntilDone:NO];
+
     }
     else
     {
-        [weatherData getCurrentWeather:llp delegate:self];
+        WeatherData *weatherData = WeatherData.new;
+        LLPOINT llp;
+        _currentPosition = [GMSCameraPosition cameraWithTarget:_mapView.camera.target
+                                                          zoom:_mapView.camera.zoom];
+        
+        llp.lat = _currentPosition.target.latitude;
+        llp.lon = _currentPosition.target.longitude;
+        if (longPressed)
+        {
+            [weatherData getWeatherForcast:llp
+                                   forTime:0
+                                  delegate:self];
+        }
+        else
+        {
+            [weatherData getCurrentWeather:llp delegate:self];
+        }
     }
 }
 - (void)weatherDataDidReturnData:(WeatherRecord*)data
 {
-    ii=1;
+    _currentWeatherData = data;
+    [self performSelectorOnMainThread:@selector(vectorViewRefresh)
+                           withObject:nil
+                        waitUntilDone:NO];
 }
 - (void) weatherDataDidReturnError:(NSString *)message
 {
