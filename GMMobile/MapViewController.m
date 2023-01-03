@@ -141,7 +141,7 @@
 @property int numCurrentRoutePoints;
 @property CAShapeLayer *routeLayer;
 @property CAShapeLayer *trackLayer;
-@property CAShapeLayer *scaleLayer;
+@property CAShapeLayer *scaleLayer, *scaleLayer2;
 @property CAShapeLayer *weatherLayer;
 @property BOOL amTrackingRoute;
 @property BOOL displayTrackingRoute;
@@ -2259,6 +2259,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     if (_scaleLayer)
         [_scaleLayer removeFromSuperlayer];
+    if (_scaleLayer2)
+        [_scaleLayer2 removeFromSuperlayer];
     if (_scaleLabel)
         [_scaleLabel removeFromSuperview];
 
@@ -2273,39 +2275,60 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         return;
     float lineWidth = 5;
     CGRect tbframe = _mapToolbar.frame;
+    CGPoint pt1, pt2, pt3, pt4, pt5, pt6;
     if (!_compass.isHidden)
         tbframe = _compass.frame;
-   _scaleLayer = CAShapeLayer.layer;
+    _scaleLayer = CAShapeLayer.layer;
+    _scaleLayer2 = CAShapeLayer.layer;
+    CAShapeLayer *layer = _scaleLayer;
     _scaleLayer.strokeColor = UIColor.redColor.CGColor;
     _scaleLayer.fillColor = UIColor.redColor.CGColor;
     _scaleLayer.lineWidth = lineWidth;
-    UIBezierPath *path = UIBezierPath.bezierPath;
-    CGPoint pt1, pt2, pt3;
     if (tbframe.size.width > tbframe.size.height)
     {
-        pt1.x = _mapView.frame.origin.x;
-        pt1.y = tbframe.origin.y - (lineWidth*2);
-        [path moveToPoint:pt1];
-        pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
-        pt2.y = pt1.y;
-        [path addLineToPoint:pt2];
-        [path moveToPoint:pt1];
-        pt3.x = pt1.x + lineWidth*2;
-        pt3.y = pt1.y - lineWidth*2;
-        [path addLineToPoint:pt3];
-        pt3.x = pt1.x + lineWidth*2;
-        pt3.y = pt1.y + lineWidth*2;
-        [path addLineToPoint:pt3];
-        [path addLineToPoint:pt1];
-        [path moveToPoint:pt2];
-        pt3.x = pt2.x - lineWidth*2;
-        pt3.y = pt2.y - lineWidth*2;
-        [path addLineToPoint:pt3];
-        pt3.x = pt2.x - lineWidth*2;
-        pt3.y = pt2.y + lineWidth*2;
-        [path addLineToPoint:pt3];
-        [path addLineToPoint:pt2];
-        _scaleLayer.path = path.CGPath;
+        {
+            UIBezierPath *path = UIBezierPath.bezierPath;
+            pt1.x = _mapView.frame.origin.x;
+            pt1.y = tbframe.origin.y - (lineWidth*2);
+            [path moveToPoint:pt1];
+            pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
+            pt2.y = pt1.y;
+            [path addLineToPoint:pt2];
+            [path moveToPoint:pt1];
+            pt3.x = pt1.x + lineWidth*2;
+            pt3.y = pt1.y - lineWidth*2;
+            [path addLineToPoint:pt3];
+            pt4.x = pt1.x + lineWidth*2;
+            pt4.y = pt1.y + lineWidth*2;
+            [path addLineToPoint:pt4];
+            [path addLineToPoint:pt1];
+            [path moveToPoint:pt2];
+            pt5.x = pt2.x - lineWidth*2;
+            pt5.y = pt2.y - lineWidth*2;
+            [path addLineToPoint:pt5];
+            pt6.x = pt2.x - lineWidth*2;
+            pt6.y = pt2.y + lineWidth*2;
+            [path addLineToPoint:pt6];
+            [path addLineToPoint:pt2];
+            layer.path = path.CGPath;
+            _scaleLayer2.strokeColor = UIColor.whiteColor.CGColor;
+            _scaleLayer2.fillColor = UIColor.whiteColor.CGColor;
+            path = UIBezierPath.bezierPath;
+            lineWidth = 2;
+            _scaleLayer2.lineWidth = lineWidth;
+            layer = _scaleLayer2;
+            [path moveToPoint:pt1];
+            [path addLineToPoint:pt2];
+            [path moveToPoint:pt1];
+            [path addLineToPoint:pt3];
+            [path addLineToPoint:pt4];
+            [path addLineToPoint:pt1];
+            [path moveToPoint:pt2];
+            [path addLineToPoint:pt5];
+            [path addLineToPoint:pt6];
+            [path addLineToPoint:pt2];
+            layer.path = path.CGPath;
+        }
         CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
         CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
         LLPOINT ptll1, ptll2;
@@ -2325,12 +2348,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel.center = pt;
         _scaleLabel.textColor = UIColor.redColor;
         _scaleLabel.shadowColor = UIColor.whiteColor;
+        _scaleLabel.shadowOffset = CGSizeMake(3,0);
         _scaleLabel.font = [UIFont systemFontOfSize: height -4];
         _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
         _scaleLabel.textAlignment = NSTextAlignmentCenter;
     }
     else
     {
+        UIBezierPath *path = UIBezierPath.bezierPath;
         pt1.y = _mapView.frame.origin.y;
         pt1.x = tbframe.origin.x + tbframe.size.width + (lineWidth*2);
         [path moveToPoint:pt1];
@@ -2381,6 +2406,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 
     [self.view.layer addSublayer:_scaleLayer];
+    [self.view.layer addSublayer:_scaleLayer2];
     [self.view addSubview:_scaleLabel];
 }
 -(void) displayCurrentRoute
