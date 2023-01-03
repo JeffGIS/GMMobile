@@ -2513,8 +2513,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _windImage.center = point;
     _windImage.clipsToBounds = true;
     NSString * dayAndTime = [WeatherData forecastDayandTime:_currentWeatherData.timeStamp];
-    _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%i mph\n%i deg\n%@",dayAndTime,_currentWeatherData.temp,_currentWeatherData.windSpeed,_currentWeatherData.windDir,_currentWeatherData.desc];
-    _weatherLabel.numberOfLines = 5;
+    NSString * windFrom = [WeatherData compassFromDeg:_currentWeatherData.windDir];
+    _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%@ %i mph\n%@",dayAndTime,_currentWeatherData.temp,windFrom,_currentWeatherData.windSpeed,_currentWeatherData.desc];
+    _weatherLabel.numberOfLines = 4;
     _weatherLabel.font =[UIFont boldSystemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
 
