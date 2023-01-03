@@ -2470,29 +2470,22 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 -(void) clearCurrentWeatherData
 {
-    [_windImage removeFromSuperview];
-    [_weatherLabel removeFromSuperview];
+    if (_windImage)
+    {
+        [_windImage removeFromSuperview];
+        [_weatherLabel removeFromSuperview];
+        _windImage = nil;
+        _weatherLabel = nil;
+    }
 }
 
 -(void) displayWeatherData
 {
     [self clearCurrentWeatherData];
+    if (_hideScaleBar)
+       return;
     if (!_currentWeatherData)
         return;
-/*    _weatherLayer = CAShapeLayer.layer;
-    _weatherLayer.strokeColor = UIColor.greenColor.CGColor;
-    _weatherLayer.fillColor = UIColor.blueColor.CGColor;
-    _weatherLayer.lineWidth = 3;
-    UIBezierPath *path = UIBezierPath.bezierPath;
-    CGPoint pt;
-    [path moveToPoint:pt];
-    [path addLineToPoint:pt];
-    [path closePath];
-    [path strokeWithBlendMode:kCGBlendModeNormal alpha:0.5];
-    [path fillWithBlendMode:kCGBlendModeNormal alpha:0.5];
-    _trackLayer.path = path.CGPath;
-    [_mapView.layer addSublayer:_trackLayer];
-*/
     CGFloat windDirDeg = _currentWeatherData.windDir;
     CGFloat windDir = DegreesToRadians (windDirDeg);
     windDir = LTWOPI (windDir - HALFPI);
@@ -5211,6 +5204,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         [popoverView hide];
     _hideScaleBar = NO;
     [self displayScalebar];
+    [self displayWeatherData];
 }
 
 - (void)displayCensusDataChart
@@ -6468,7 +6462,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [self removeScaleBar];
     _hideScaleBar = YES;
-
+    [self clearCurrentWeatherData];
     NVPopoverTableView *nvptv =
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
@@ -7212,6 +7206,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [popoverTableView hide:YES];
     _hideScaleBar = NO;
     [self displayScalebar];
+    [self displayWeatherData];
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
@@ -7421,6 +7416,7 @@ didSelectPDFButtonWithText:(NSString *)text
             [popoverTableView hide:YES];
             [self removeScaleBar];
             _hideScaleBar = YES;
+            [self clearCurrentWeatherData];
             HuntingData *hd = HuntingData.new;
             NSArray * trArray = [hd getTrackRoutes];
             NSMutableArray *optionList = NSMutableArray.array;
@@ -7448,6 +7444,7 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             [popoverTableView hide:YES];
             _hideScaleBar = YES;
+            [self clearCurrentWeatherData];
             NSMutableArray *optionList = NSMutableArray.array;
             [optionList addObject:@"Display Saved Route"];
             [optionList addObject:@"Delete Saved Route"];
