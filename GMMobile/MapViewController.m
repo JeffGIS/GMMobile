@@ -2467,14 +2467,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _trackLayer.path = path.CGPath;
     [_mapView.layer addSublayer:_trackLayer];
 */
-    CGFloat windDir = DegreesToRadians (_currentWeatherData.windDir);
+    CGFloat windDirDeg = _currentWeatherData.windDir;
+    CGFloat windDir = DegreesToRadians (windDirDeg);
     windDir = LTWOPI (windDir - HALFPI);
     CGPoint point  = {CGRectGetMidX(self.view.frame),CGRectGetMidY(self.view.frame)};
     int width = min (self.view.frame.size.width,self.view.frame.size.height);
     width *=  0.9;
     CGRect windRect = CGRectMake (point.x,point.y,width,width);
+    CGRect windLabelRect = CGRectMake (point.x,point.y,width/2,width);
     _windImage = [[UIImageView alloc] initWithFrame:windRect];
-    _weatherLabel = [[UILabel alloc] initWithFrame:windRect];
+    _weatherLabel = [[UILabel alloc] initWithFrame:windLabelRect];
     _windImage.backgroundColor = UIColor.clearColor;
     _weatherLabel.backgroundColor = UIColor.clearColor;
     UIColor *blue = [[UIColor alloc] initWithRed:0.0
@@ -2492,8 +2494,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _windImage.center = point;
     _windImage.clipsToBounds = true;
     NSString * dayAndTime = [WeatherData forecastDayandTime:_currentWeatherData.timeStamp];
-    _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%i mph\n%@",dayAndTime,_currentWeatherData.temp,_currentWeatherData.windSpeed,_currentWeatherData.desc];
-    _weatherLabel.numberOfLines = 4;
+    _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%i mph\n%i deg\n%@",dayAndTime,_currentWeatherData.temp,_currentWeatherData.windSpeed,_currentWeatherData.windDir,_currentWeatherData.desc];
+    _weatherLabel.numberOfLines = 5;
     _weatherLabel.font =[UIFont boldSystemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
 
@@ -2503,7 +2505,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     //wind.layer.cornerRadius = wind.frame.size.width / 2;
     _windImage.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
     CGFloat labelRot = windDir-HALFPI;
-    if (windDir > HALFPI && windDir < HALFPI * 3)
+    if (windDirDeg > 270 || windDirDeg < 90)
         labelRot += PY;
     _weatherLabel.transform = CGAffineTransformMakeRotation(labelRot);
     [self.view addSubview:_windImage];
