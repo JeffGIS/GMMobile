@@ -2502,19 +2502,37 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                            green:0
                                             blue:1
                                            alpha:.5];
-    
-    UIImage *img = [SymbolDictionary imageOfArrow:_windImage.frame
-                                        lineWidth:2
-                                        lineColor:UIColor.whiteColor
-                                        fillColor:blue
-                                         withText:nil];
-    _windImage.image = img;
-    //wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+    CGFloat labelRot = windDir-HALFPI;
+    if (windDirDeg > 270 || windDirDeg < 90)
+        labelRot += PY;
+
+    if (_currentWeatherData.windSpeed < 3)
+    {
+        _windImage.frame = CGRectMake (point.x,point.y,width/2,width/2);
+        _windImage.layer.cornerRadius = _windImage.frame.size.width / 2;
+        _windImage.backgroundColor = blue;
+        labelRot = 0;
+    }
+    else
+    {
+        UIImage *img = [SymbolDictionary imageOfArrow:_windImage.frame
+                                            lineWidth:2
+                                            lineColor:UIColor.whiteColor
+                                            fillColor:blue
+                                             withText:nil];
+        _windImage.image = img;
+    }
     _windImage.center = point;
     _windImage.clipsToBounds = true;
     NSString * dayAndTime = [WeatherData forecastDayandTime:_currentWeatherData.timeStamp];
     NSString * windFrom = [WeatherData compassFromDeg:_currentWeatherData.windDir];
-    _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%@ %i mph\n%@",dayAndTime,_currentWeatherData.temp,windFrom,_currentWeatherData.windSpeed,_currentWeatherData.desc];
+    if (_currentWeatherData.windSpeed <= 0)
+    {
+        windFrom = @"";
+        _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%@ %i mph\n%@",dayAndTime,_currentWeatherData.temp,windFrom,_currentWeatherData.windSpeed,_currentWeatherData.desc];
+    }
+    else
+        _weatherLabel.text = [NSString stringWithFormat:@"%@\nTemp:%i deg\nWind:%@ %i mph\n%@",dayAndTime,_currentWeatherData.temp,windFrom,_currentWeatherData.windSpeed,_currentWeatherData.desc];
     _weatherLabel.numberOfLines = 4;
     _weatherLabel.font =[UIFont boldSystemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
@@ -2522,11 +2540,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _weatherLabel.textColor = UIColor.whiteColor;
     _weatherLabel.textAlignment = NSTextAlignmentCenter;
     _weatherLabel.center = point;
-    //wind.layer.cornerRadius = wind.frame.size.width / 2;
     _windImage.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
-    CGFloat labelRot = windDir-HALFPI;
-    if (windDirDeg > 270 || windDirDeg < 90)
-        labelRot += PY;
     _weatherLabel.transform = CGAffineTransformMakeRotation(labelRot);
     [self.view addSubview:_windImage];
     [self.view addSubview:_weatherLabel];
