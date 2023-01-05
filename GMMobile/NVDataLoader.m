@@ -5,6 +5,7 @@
 #import "PropertyData.h"
 #import "BoundaryData.h"
 #import "HuntingData.h"
+#import "DTMData.h"
 #import "ShapeFileDisplay.h"
 
 
@@ -155,6 +156,10 @@ Top:
             sel = @selector(loadHunting:);
             break;
             
+        case GetDatabaseSettingDTM:
+            sel = @selector(loadDTM:);
+            break;
+            
         case GetDatabaseSettingNWI:
             sel = @selector(loadNWIData:);
             break;
@@ -290,6 +295,16 @@ Top:
             
             if (hd.datasetVersion.integerValue > 6)
                 rtn = YES;
+        }
+            break;
+            
+        case GetDatabaseSettingDTM:
+        {
+            DTMData *dtm = [[DTMData alloc] init];
+            BOOL opened = [dtm open];
+            if (dtm.haveDTM)
+                rtn = YES;
+            [dtm close:opened];
         }
             break;
             

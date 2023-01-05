@@ -169,6 +169,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingCrimes:
             case GetDatabaseSettingMapleGrove:
             case GetDatabaseSettingHunting:
+            case GetDatabaseSettingDTM:
             case GetDatabaseSettingNWI:
             case GetDatabaseSettingForest:
             case GetDatabaseSettingNVMetro:
@@ -183,8 +184,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    toDirectory = UserDefaults.defaults.nonBackedUpFilePath;
                                    if (dataType == GetDatabaseSettingMapleGrove)
                                        toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
-                                   if (dataType == GetDatabaseSettingHunting)
-                                       toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
+                                    if (dataType == GetDatabaseSettingHunting)
+                                        toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
+                                    if (dataType == GetDatabaseSettingDTM)
+                                        toDirectory = [toDirectory stringByAppendingString:@"/DTM"];
                                     if (dataType == GetDatabaseSettingNWI)
                                         toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
                                     if (dataType == GetDatabaseSettingForest)
@@ -251,6 +254,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            }
                                                break;*/
                                            case GetDatabaseSettingHunting:
+                                           case GetDatabaseSettingDTM:
                                            case GetDatabaseSettingNWI:
                                            case GetDatabaseSettingForest:
                                            case GetDatabaseSettingMapleGrove:
@@ -321,6 +325,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        if (dataType != GetDatabaseSettingMapleGrove &&
                                            dataType != GetDatabaseSettingHunting &&
                                            dataType != GetDatabaseSettingNWI &&
+                                           dataType != GetDatabaseSettingDTM &&
                                            dataType != GetDatabaseSettingForest)
                                        {
                                        FILE *fid = fopen(file.UTF8String, "rb");
@@ -829,6 +834,30 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Hunting Files"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"NVMobile/Hunting"
+           toFile:fileName
+      toDirectory:outputDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+- (IBAction)loadDTM:(id)sender
+{
+    NSString *fileName = @"DTMFiles.gcf";
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/DTM", UserDefaults.defaults.nonBackedUpFilePath];
+    [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.dataType = GetDatabaseSettingDTM;
+    pull.useTestServer = FALSE;//USE_TEST_SERVER;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get DTM Files"];
     
     [pull getFile:fileName
     fromDirectory:@"NVMobile/Hunting"
