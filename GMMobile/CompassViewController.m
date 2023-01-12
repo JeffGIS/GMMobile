@@ -7,6 +7,7 @@
 //
 
 #import "CompassViewController.h"
+#import "DTMData.h"
 
 @interface CompassShapeLayer: CAShapeLayer
 @property UIColor *baseColor;
@@ -910,6 +911,10 @@ double HeadingFromAZ (double az)
 
 -(void) profileViewPicked:(CGPoint)atPoint
 {
+    DTMData * dtm = DTMData.new;
+    BOOL opened = [dtm open];
+    
+    [dtm close:opened];
     return;
 }
 -(void) update

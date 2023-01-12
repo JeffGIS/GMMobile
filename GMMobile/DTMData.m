@@ -63,8 +63,13 @@
                                                                                     error:nil].fileSize;
         if (fileSize > 0 && fileSizeIN1 > 0)
         {
-            _fidDTM = fopen (_pathDTM.UTF8String,"rb");
-            _fidDTM_IN1 = fopen (_pathDTM_IN1.UTF8String,"rb");
+//            _fidDTM = fopen (_pathDTM.UTF8String,"rb");
+//            _fidDTM_IN1 = fopen (_pathDTM_IN1.UTF8String,"rb");
+            char file[MAX_PATH];
+            strncpy (file,_pathDTM.UTF8String,MAX_PATH);
+            file[_pathDTM.length]= 0;
+            _hDTM = DTMOpen (file, DBL_MAX,0,&_surfType);
+
             _haveDTM = YES;
             rtn = YES;
             _isOpen = YES;
@@ -76,8 +81,9 @@
 {
     if (opened && _isOpen)
     {
-        fclose(_fidDTM);
-        fclose(_fidDTM_IN1);
+//        fclose(_fidDTM);
+//        fclose(_fidDTM_IN1);
+        DTMClose (&_hDTM);
         NSLog(@"DTM Database close");
         _isOpen = NO;
     }

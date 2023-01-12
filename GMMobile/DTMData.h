@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
 
+HANDLE DTMOpen (LPSTR FileNameIN, double NULLElv,short Mode,LPSHORT pSurfType);
+void DTMClose (LPHANDLE pHandle);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DTMData : NSObject
@@ -18,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property MNMXCORD DTMBounds;
 @property FILE *fidDTM;
 @property FILE *fidDTM_IN1;
+@property HANDLE hDTM;
+@property short surfType;
 @property BOOL haveDTM;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
