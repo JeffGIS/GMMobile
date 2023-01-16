@@ -20,10 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic) BOOL isOpen;
 @property MNMXCORD DTMBounds;
 @property FILE *fidDTM;
-@property FILE *fidDTM_IN1;
+@property FILE *fidDTM_BIN;
 @property HANDLE hDTM;
 @property short surfType;
-@property BOOL haveDTM;
+@property int version;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
 

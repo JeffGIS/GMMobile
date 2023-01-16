@@ -302,7 +302,7 @@ Top:
         {
             DTMData *dtm = [[DTMData alloc] init];
             BOOL opened = [dtm open];
-            if (dtm.haveDTM)
+            if (dtm.version >= 1)
                 rtn = YES;
             [dtm close:opened];
         }
