@@ -913,7 +913,9 @@ double HeadingFromAZ (double az)
 {
     DTMData * dtm = DTMData.new;
     BOOL opened = [dtm open];
+    LLPOINT llPoint;
     
+    double elv = [dtm getElevation:&llPoint];
     [dtm close:opened];
     return;
 }

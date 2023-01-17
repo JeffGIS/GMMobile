@@ -9,8 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
 
-HANDLE DTMOpen (LPSTR FileNameIN, double NULLElv,short Mode,LPSHORT pSurfType);
+
+
+HANDLE DTMOpen (LPSTR FileNameIN, double NULLElv,LPsqlite3nv database,FILE* fidBin,LPSHORT pSurfType);
 void DTMClose (LPHANDLE pHandle);
+double NGIELV (DPOINT Point,HANDLE hSurf,short DesiredUnits);
+double NGIELV_bci (DPOINT Point,HANDLE hSurf,short DesiredUnits);
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,10 +27,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property FILE *fidDTM;
 @property FILE *fidDTM_BIN;
 @property HANDLE hDTM;
+@property double NullElv;
 @property short surfType;
 @property int version;
 - (BOOL)open;
 - (void)close:(BOOL)opened;
+-(double)getElevation:(LLPOINT *)llpoint;
+
 
 @end
 

@@ -7,6 +7,7 @@
 //
 
 #import "DTMData.h"
+
 @interface DTMData ()
 
 @property (nonatomic, copy) NSString *documentsDirectory;
@@ -70,8 +71,9 @@
             char file[MAX_PATH];
             strncpy (file,_pathDTM.UTF8String,MAX_PATH);
             file[_pathDTM.length]= 0;
-            _hDTM = DTMOpen (file, DBL_MAX,0,&_surfType);
-
+            _NullElv = DBL_MAX;
+            _hDTM = DTMOpen (file, _NullElv,_database,_fidDTM_BIN,&_surfType);
+            
             _version = [self DTMVersion];
             rtn = YES;
             _isOpen = YES;
@@ -111,4 +113,16 @@
     return version;
 }
 
+-(double)getElevation:(LLPOINT *)llpoint
+{
+    double elv = _NullElv;
+    DPOINT dtmPoint;
+    
+    dtmPoint.x = 573180.1;
+    dtmPoint.y = 5278670.7;
+    
+    elv = NGIELV (dtmPoint,_hDTM,0);
+    return elv;
+    
+}
 @end
