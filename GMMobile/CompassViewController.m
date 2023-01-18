@@ -8,6 +8,8 @@
 
 #import "CompassViewController.h"
 #import "DTMData.h"
+//#import "NVCoordinateLibrary/proj_api.h"
+#include "CCodeLibrary/PROJ.H"
 
 @interface CompassShapeLayer: CAShapeLayer
 @property UIColor *baseColor;
@@ -73,7 +75,9 @@
     _atDistance = 15;
     _closeDistance = 100;
     _skipRot = 0;
-
+    FreePROJ(0);
+    projPJ p=pj_init_plus("");
+    InitProj4CoordConv(FALSE);
     [self configUI];
         
 }
@@ -1002,6 +1006,7 @@ double HeadingFromAZ (double az)
                         }
                         _infoLabel.textColor = UIColor.whiteColor;
                        _infoLabelOption = 2;
+                        [self displayProfile:_currentPoint to:waypoint.latlon];
                         
                     }
                 }
@@ -1011,7 +1016,13 @@ double HeadingFromAZ (double az)
     }
     
 }
-
+-(void) displayProfile:(LLPOINT)fromLL
+                    to:(LLPOINT)toLL
+{
+    DPOINT fromUTM, toUTM;
+    
+    return;
+}
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
