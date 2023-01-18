@@ -10,6 +10,7 @@
 #import "DTMData.h"
 //#import "NVCoordinateLibrary/proj_api.h"
 #include "CCodeLibrary/PROJ.H"
+#include "CVTCoord.h"
 
 @interface CompassShapeLayer: CAShapeLayer
 @property UIColor *baseColor;
@@ -56,6 +57,8 @@
 @property float currentWindDirection;
 @property NSString *currentWeatherDesc;
 @property int skipRot;
+@property CAShapeLayer *profileLayer;
+@property double heightExpansion;
 
 @end
 
@@ -75,9 +78,8 @@
     _atDistance = 15;
     _closeDistance = 100;
     _skipRot = 0;
-    FreePROJ(0);
-    projPJ p=pj_init_plus("");
-    InitProj4CoordConv(FALSE);
+    _heightExpansion = 4;
+
     [self configUI];
         
 }
@@ -104,7 +106,8 @@
     HuntingData *hd = HuntingData.new;
     
     _userWaypointArray = [hd getWaypoints];
-    
+    InitProj4CoordConv (FALSE);
+
 }
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -123,6 +126,8 @@
     [_locationManager stopUpdatingHeading];
     [_locationManager stopUpdatingLocation];
     _locationManager.delegate = _oldLocationManagerDelegate;
+    InitProj4CoordConv (TRUE);
+
 }
 
 BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
@@ -278,6 +283,9 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     if (routePointArray.count > 0)
         [optionList addObject:@"Start Route"];
     [optionList addObject:@"Get Weather Data"];
+    [optionList addObject:@"Set Profile Exageration to 1"];
+    [optionList addObject:@"Set Profile Exageration to 2"];
+    [optionList addObject:@"Set Profile Exageration to 4"];
     [_dScaView setUserInteractionEnabled:NO];
     [_backgroundView setUserInteractionEnabled:NO];
     [_profileView setUserInteractionEnabled:NO];
@@ -867,6 +875,12 @@ double HeadingFromAZ (double az)
         //NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
         ii = 1;
     }
+    else if ([text isEqualToString:@"Set Profile Exageration to 1"])
+        _heightExpansion = 1;
+    else if ([text isEqualToString:@"Set Profile Exageration to 2"])
+        _heightExpansion = 2;
+    else if ([text isEqualToString:@"Set Profile Exageration to 4"])
+        _heightExpansion = 4;
     [popoverTableView hide:YES];
     [_singleFingerTap setEnabled:YES];
 
@@ -964,7 +978,8 @@ double HeadingFromAZ (double az)
     _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
     _infoLabelOption = 0;
     CRAPI.sharedInstance.currentFocusWaypoint = -1;
-    
+    if (_profileLayer)
+        [_profileLayer removeFromSuperlayer];
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
         if (waypoint.displayOnCompass)
@@ -1020,7 +1035,63 @@ double HeadingFromAZ (double az)
                     to:(LLPOINT)toLL
 {
     DPOINT fromUTM, toUTM;
+    CGRect frame = _profileView.frame;
+
+    fromUTM.x = fromLL.lon;
+    fromUTM.y = fromLL.lat;
+    toUTM.x = toLL.lon;
+    toUTM.y = toLL.lat;
     
+    int nPixels = frame.size.width;
+    ConvertCoord(&fromUTM, LATLONPROJECTION, UTM15PROJECTION);
+    ConvertCoord(&toUTM, LATLONPROJECTION, UTM15PROJECTION);
+    double groundDist = ldistp(fromUTM, toUTM);
+    double distInc = groundDist / nPixels;
+    double xInc = (toUTM.x - fromUTM.x)/nPixels;
+    double yInc = (toUTM.y - fromUTM.y)/nPixels;
+    DPOINT pt = fromUTM;
+    
+    DTMData * dtm = DTMData.new;
+    BOOL opened = [dtm open];
+
+    LPDOUBLE pElev = malloc (nPixels * sizeof(double) + 4);
+    CGPoint * pPoint = malloc (nPixels * sizeof(CGPoint) + 4);
+    double minElev = DBL_MAX;
+    double maxElev = DBL_MIN;
+    
+    for (int i=0;i<nPixels;i++)
+    {
+        pElev[i] = [dtm getElevation:&pt];
+        minElev = MIN (minElev,pElev[i]);
+        maxElev = MAX (maxElev,pElev[i]);
+        pt.x += xInc;
+        pt.y += yInc;
+        pPoint[i].x = i;
+    }
+    double profileImageHeight = _profileView.frame.size.height - _infoLabel.frame.size.height;
+    double factor = _heightExpansion * nPixels / (groundDist);
+    double centerY = profileImageHeight/2 - (maxElev - minElev) / 2 * factor;
+    for (int i=0;i<nPixels;i++)
+    {
+        pPoint[i].y = profileImageHeight + centerY + (maxElev - pElev[i]) * factor;
+    }
+    UIBezierPath *profilePath = UIBezierPath.new;
+    [profilePath moveToPoint:pPoint[0]];
+    for (int i=0;i<nPixels;i++)
+    {
+        [profilePath addLineToPoint:pPoint[i]];
+    }
+    //[profilePath closePath];
+    _profileLayer = CAShapeLayer.layer;
+    _profileLayer.path = profilePath.CGPath;
+    _profileLayer.fillColor = UIColor.clearColor.CGColor;
+    _profileLayer.lineWidth = 3;
+    _profileLayer.strokeColor = UIColor.redColor.CGColor;
+    [_profileView.layer addSublayer:_profileLayer];
+    free (pElev);
+    [dtm close:opened];
+    
+
     return;
 }
 

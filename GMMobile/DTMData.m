@@ -86,9 +86,7 @@
     if (opened && _isOpen)
     {
 //        fclose(_fidDTM);
-        SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
 
-        fclose(_fidDTM_BIN);
         DTMClose (&_hDTM);
         NSLog(@"DTM Database close");
         _isOpen = NO;
@@ -113,15 +111,14 @@
     return version;
 }
 
--(double)getElevation:(LLPOINT *)llpoint
+-(double)getElevation:(DPOINT *)point
 {
     double elv = _NullElv;
-    DPOINT dtmPoint;
     
-    dtmPoint.x = 573180.1;
-    dtmPoint.y = 5278670.7;
+    //dtmPoint.x = 573180.1;
+    //dtmPoint.y = 5278670.7;
     
-    elv = NGIELV (dtmPoint,_hDTM,0);
+    elv = NGIELV (*point,_hDTM,0);
     return elv;
     
 }
