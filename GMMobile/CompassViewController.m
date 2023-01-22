@@ -57,11 +57,11 @@
 @property float currentWindDirection;
 @property NSString *currentWeatherDesc;
 @property int skipRot;
-@property CAShapeLayer *profileLayer;
 @property double heightExpansion;
 @property double minElev;
 @property double maxElev;
 @property double maxGrade;
+@property NSMutableArray *profileLayers;
 
 
 @end
@@ -984,8 +984,7 @@ double HeadingFromAZ (double az)
     _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
     _infoLabelOption = 0;
     CRAPI.sharedInstance.currentFocusWaypoint = -1;
-    if (_profileLayer)
-        [_profileLayer removeFromSuperlayer];
+    [self removeProfileLayers];
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
         if (waypoint.displayOnCompass)
@@ -1037,14 +1036,25 @@ double HeadingFromAZ (double az)
     }
     
 }
+-(void) removeProfileLayers
+{
+    for (CAShapeLayer *profileLayer in _profileLayers)
+    {
+        if (profileLayer)
+            [profileLayer removeFromSuperlayer];
+    }
+
+}
 -(void) displayProfile:(LLPOINT)fromLL
                     to:(LLPOINT)toLL
 {
     DPOINT fromUTM, toUTM;
     CGRect frame = _profileView.frame;
+    CAShapeLayer *profileLayer;
+    NSArray <UIColor*>* gradeColors = @[UIColor.blueColor,UIColor.greenColor,UIColor.orangeColor,UIColor.redColor];
 
-    if (_profileLayer)
-        [_profileLayer removeFromSuperlayer];
+    [self removeProfileLayers];
+    _profileLayers = NSMutableArray.new;
     fromUTM.x = fromLL.lon;
     fromUTM.y = fromLL.lat;
     toUTM.x = toLL.lon;
@@ -1092,19 +1102,47 @@ double HeadingFromAZ (double az)
     {
         pPoint[i].y = profileImageHeight + centerY + (_maxElev - pElev[i]) * factor;
     }
-    UIBezierPath *profilePath = UIBezierPath.new;
-    [profilePath moveToPoint:pPoint[0]];
-    for (int i=0;i<nPixels;i++)
+    int i = 0;
+    int nlines = 0;
+    int gradeLevel;
+    int lastLevel = -1;
+    int lineWidth = 5;
+    UIBezierPath *profilePath;
+    do
     {
-        [profilePath addLineToPoint:pPoint[i]];
-    }
+        int gradeLevel = GetGradeLevel (pGrade[i]);
+        if (gradeLevel != lastLevel)
+        {
+            if (lastLevel != -1)
+            {
+                [profilePath addLineToPoint:pPoint[i]];
+                profileLayer.path = profilePath.CGPath;
+                [_profileView.layer addSublayer:profileLayer];
+                [_profileLayers addObject:profileLayer];
+            }
+            profileLayer = CAShapeLayer.layer;
+            profilePath = UIBezierPath.new;
+            profileLayer.fillColor = UIColor.clearColor.CGColor;
+            profileLayer.lineWidth = lineWidth;
+            profileLayer.strokeColor = gradeColors[gradeLevel].CGColor;
+            [profilePath moveToPoint:pPoint[i]];
+            nlines = 0;
+        }
+        else
+        {
+            [profilePath addLineToPoint:pPoint[i]];
+            nlines++;
+        }
+        lastLevel = gradeLevel;
+        i++;
+    }while (i < nPixels);
     //[profilePath closePath];
-    _profileLayer = CAShapeLayer.layer;
-    _profileLayer.path = profilePath.CGPath;
-    _profileLayer.fillColor = UIColor.clearColor.CGColor;
-    _profileLayer.lineWidth = 3;
-    _profileLayer.strokeColor = UIColor.redColor.CGColor;
-    [_profileView.layer addSublayer:_profileLayer];
+    if (nlines >0)
+    {
+        profileLayer.path = profilePath.CGPath;
+        [_profileView.layer addSublayer:profileLayer];
+        [_profileLayers addObject:profileLayer];
+    }
     free (pElev);
     free (pGrade);
     [dtm close:opened];
@@ -1112,7 +1150,17 @@ double HeadingFromAZ (double az)
 
     return;
 }
-
+int GetGradeLevel (double grade)
+{
+    int rtn = 0;
+    if (grade > 0.1)
+        rtn = 1;
+    if (grade > 0.15)
+        rtn = 2;
+    if (grade > 0.2)
+        rtn = 3;
+    return rtn;
+}
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
