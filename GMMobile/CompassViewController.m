@@ -59,6 +59,10 @@
 @property int skipRot;
 @property CAShapeLayer *profileLayer;
 @property double heightExpansion;
+@property double minElev;
+@property double maxElev;
+@property double maxGrade;
+
 
 @end
 
@@ -218,6 +222,8 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     _infoLabel.textColor = UIColor.whiteColor;
     _infoLabel.font =[UIFont systemFontOfSize: 42];
     _infoLabel.textAlignment = NSTextAlignmentCenter;
+    _infoLabel.numberOfLines = 0;
+    _infoLabel.adjustsFontSizeToFitWidth = YES;
     [_profileView addSubview:_infoLabel];
     _dScaView.clipsToBounds = true;
     _dScaView.layer.cornerRadius = _dScaView.frame.size.width / 2;
@@ -1008,6 +1014,7 @@ double HeadingFromAZ (double az)
                     {
                         NSString *units = @"miles";
                         CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
+                        [self displayProfile:_currentPoint to:waypoint.latlon];
                         if (dist / METERS_PER_MILE < 0.1)
                         {
                             units = @"yards";
@@ -1017,11 +1024,10 @@ double HeadingFromAZ (double az)
                         else
                         {
                             dist = dist / METERS_PER_MILE;
-                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@",waypoint.name,dist,units];
+                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
                         }
                         _infoLabel.textColor = UIColor.whiteColor;
                        _infoLabelOption = 2;
-                        [self displayProfile:_currentPoint to:waypoint.latlon];
                         
                     }
                 }
@@ -1037,6 +1043,8 @@ double HeadingFromAZ (double az)
     DPOINT fromUTM, toUTM;
     CGRect frame = _profileView.frame;
 
+    if (_profileLayer)
+        [_profileLayer removeFromSuperlayer];
     fromUTM.x = fromLL.lon;
     fromUTM.y = fromLL.lat;
     toUTM.x = toLL.lon;
@@ -1046,7 +1054,7 @@ double HeadingFromAZ (double az)
     ConvertCoord(&fromUTM, LATLONPROJECTION, UTM15PROJECTION);
     ConvertCoord(&toUTM, LATLONPROJECTION, UTM15PROJECTION);
     double groundDist = ldistp(fromUTM, toUTM);
-    double distInc = groundDist / nPixels;
+    double feetPerPixel = groundDist / nPixels;
     double xInc = (toUTM.x - fromUTM.x)/nPixels;
     double yInc = (toUTM.y - fromUTM.y)/nPixels;
     DPOINT pt = fromUTM;
@@ -1055,25 +1063,34 @@ double HeadingFromAZ (double az)
     BOOL opened = [dtm open];
 
     LPDOUBLE pElev = malloc (nPixels * sizeof(double) + 4);
+    LPDOUBLE pGrade = malloc (nPixels * sizeof(double) + 4);
     CGPoint * pPoint = malloc (nPixels * sizeof(CGPoint) + 4);
-    double minElev = DBL_MAX;
-    double maxElev = DBL_MIN;
+    _minElev = DBL_MAX;
+    _maxElev = DBL_MIN;
+    _maxGrade = 0;
+    double grade;
     
     for (int i=0;i<nPixels;i++)
     {
         pElev[i] = [dtm getElevation:&pt];
-        minElev = MIN (minElev,pElev[i]);
-        maxElev = MAX (maxElev,pElev[i]);
+        _minElev = MIN (_minElev,pElev[i]);
+        _maxElev = MAX (_maxElev,pElev[i]);
         pt.x += xInc;
         pt.y += yInc;
         pPoint[i].x = i;
+        if (i)
+        {
+            grade = fabs((pElev[i]-pElev[i-1])/feetPerPixel);
+            pGrade[i-1] = grade;
+            _maxGrade = max (_maxGrade,pGrade[i-1]);
+        }
     }
     double profileImageHeight = _profileView.frame.size.height - _infoLabel.frame.size.height;
     double factor = _heightExpansion * nPixels / (groundDist);
-    double centerY = profileImageHeight/2 - (maxElev - minElev) / 2 * factor;
+    double centerY = profileImageHeight/2 - (_maxElev - _minElev) / 2 * factor;
     for (int i=0;i<nPixels;i++)
     {
-        pPoint[i].y = profileImageHeight + centerY + (maxElev - pElev[i]) * factor;
+        pPoint[i].y = profileImageHeight + centerY + (_maxElev - pElev[i]) * factor;
     }
     UIBezierPath *profilePath = UIBezierPath.new;
     [profilePath moveToPoint:pPoint[0]];
@@ -1089,6 +1106,7 @@ double HeadingFromAZ (double az)
     _profileLayer.strokeColor = UIColor.redColor.CGColor;
     [_profileView.layer addSublayer:_profileLayer];
     free (pElev);
+    free (pGrade);
     [dtm close:opened];
     
 
