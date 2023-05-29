@@ -140,6 +140,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     else if ([bundleID isEqualToString:@"com.gssi.newvisionmngame"])
         appID = HCConfigMinnesotaGame;
     appID = HCConfigHunting;
+    //appID = HCConfigMetroProp;
     if (appID < NUMHardCodedConfigs)
     {
         [UserDefaults.defaults saveNSInteger:(appID + 1) forKey:@"CurrentConfig"];

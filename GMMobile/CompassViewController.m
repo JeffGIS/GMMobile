@@ -30,6 +30,7 @@
 @property UIView *lineView;
 @property UIView *redTriangleView;
 @property UIView *profileView;
+@property UIImageView *stickManView;
 @property UILabel *infoLabel;
 @property CGFloat screenW, screenH, heightFactor, widthFactor, radius;
 @property (nonatomic) CLLocationManager *locationManager;
@@ -45,6 +46,7 @@
 @property CGFloat currentHeading;
 @property int infoLabelOption;
 @property int currentRoutePointNumber;
+@property int ignoreAtWaypoint;
 @property float atDistance;
 @property float closeDistance;
 @property int statusBarHeight;
@@ -62,6 +64,9 @@
 @property double maxElev;
 @property double maxGrade;
 @property NSMutableArray *profileLayers;
+@property int lastToDist;
+@property BOOL forward;
+
 
 
 @end
@@ -83,7 +88,8 @@
     _closeDistance = 100;
     _skipRot = 0;
     _heightExpansion = 4;
-
+    _lastToDist = 0;
+    _forward = TRUE;
     [self configUI];
         
 }
@@ -102,7 +108,7 @@
     [super viewWillAppear:animated];
     _maxWaypointDist = 5.0 * METERS_PER_MILE;
     _locationManager = [CRAPI.sharedInstance getLocationManager];
-    _locationManager.headingFilter = kCLHeadingFilterNone;
+    _locationManager.headingFilter = 1;
     _locationManager.headingOrientation = CLDeviceOrientationFaceUp;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _oldLocationManagerDelegate = _locationManager.delegate;
@@ -813,10 +819,17 @@ double HeadingFromAZ (double az)
 {
     HuntingData *hd = HuntingData.new;
     
+    _lastToDist = 0;
     switch (_infoLabelOption)
     {
         case 2: //make current pt focus
-            CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+            _ignoreAtWaypoint = -1;
+            _forward = TRUE;
+            _lastToDist = 0;
+            if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+                CRAPI.sharedInstance.currentSelectedWaypoint = -1;
+            else
+                CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
             break;
         case 1: //make next route point focus
         {
@@ -835,6 +848,11 @@ double HeadingFromAZ (double az)
                     _currentRoutePointNumber = 0;
                 }
                 _userWaypointArray = [hd getWaypoints];
+            }
+            else
+            {
+                _ignoreAtWaypoint = CRAPI.sharedInstance.currentSelectedWaypoint;
+                CRAPI.sharedInstance.currentSelectedWaypoint = -1;
             }
         }
             break;
@@ -987,7 +1005,7 @@ double HeadingFromAZ (double az)
     [self removeProfileLayers];
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
-        if (waypoint.displayOnCompass)
+        if (waypoint.displayOnCompass && waypoint.refno != _ignoreAtWaypoint)
         {
             if (![waypoint.type isEqual:@"RoutePoint"] || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
@@ -995,10 +1013,10 @@ double HeadingFromAZ (double az)
                 double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
                 waypoint.headingInDeg = RadiansToDegrees (wpaz);
                 double curAz = DegreesToRadians(theHeading);
-                if (dist < _atDistance && [waypoint.type isEqual:@"RoutePoint"])
+                if (dist < _atDistance)
                 {
                     _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f meters)",waypoint.name,dist];
-                    _infoLabel.textColor = UIColor.redColor;
+                    _infoLabel.textColor = UIColor.whiteColor;
                     if ([waypoint.type isEqual:@"RoutePoint"])
                         _currentRoutePointNumber = waypoint.refno;
                     else
@@ -1009,8 +1027,9 @@ double HeadingFromAZ (double az)
                 else
                 {
                     double daz = DeltaAZD(wpaz, curAz);
-                    if (fabs (daz) < 0.2)
+                    if ((CRAPI.sharedInstance.currentSelectedWaypoint <= 0 && fabs (daz) < 0.2) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
                     {
+                        _maxElev= _maxGrade = 0;
                         NSString *units = @"miles";
                         CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
                         [self displayProfile:_currentPoint to:waypoint.latlon];
@@ -1018,7 +1037,7 @@ double HeadingFromAZ (double az)
                         {
                             units = @"yards";
                             dist = dist / METERS_PER_YARD;
-                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.0f %@",waypoint.name,dist,units];
+                            _infoLabel.text = [NSString stringWithFormat:@"Near %@: %.0f %@",waypoint.name,dist,units];
                         }
                         else
                         {
@@ -1026,8 +1045,8 @@ double HeadingFromAZ (double az)
                             _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
                         }
                         _infoLabel.textColor = UIColor.whiteColor;
-                       _infoLabelOption = 2;
-                        
+                        _infoLabelOption = 2;
+                        break;
                     }
                 }
             }
@@ -1043,27 +1062,47 @@ double HeadingFromAZ (double az)
         if (profileLayer)
             [profileLayer removeFromSuperlayer];
     }
-
+    [_stickManView removeFromSuperview];
 }
--(void) displayProfile:(LLPOINT)fromLL
+-(void) displayProfile:(LLPOINT)atLL
                     to:(LLPOINT)toLL
 {
-    DPOINT fromUTM, toUTM;
+    static LLPOINT fromLL = {0};
+    static LLPOINT lastToLL = {0};
+    DPOINT fromUTM, toUTM, atUTM;
     CGRect frame = _profileView.frame;
     CAShapeLayer *profileLayer;
     NSArray <UIColor*>* gradeColors = @[UIColor.blueColor,UIColor.greenColor,UIColor.orangeColor,UIColor.redColor];
 
     [self removeProfileLayers];
     _profileLayers = NSMutableArray.new;
+    
+    if (fromLL.lat == 0 || ArcDistanceLL(toLL,lastToLL) > 1)
+    {
+        lastToLL = toLL;
+        fromLL = atLL;
+    }
     fromUTM.x = fromLL.lon;
     fromUTM.y = fromLL.lat;
     toUTM.x = toLL.lon;
     toUTM.y = toLL.lat;
-    
+    atUTM.x = atLL.lon;
+    atUTM.y = atLL.lat;
     int nPixels = frame.size.width;
     ConvertCoord(&fromUTM, LATLONPROJECTION, UTM15PROJECTION);
     ConvertCoord(&toUTM, LATLONPROJECTION, UTM15PROJECTION);
+    ConvertCoord(&atUTM, LATLONPROJECTION, UTM15PROJECTION);
+    
     double groundDist = ldistp(fromUTM, toUTM);
+    double atDist = ldistp(fromUTM, atUTM)/4;
+    int toDist = IDNINT(ldistp(atUTM, toUTM)/4);
+    if (_lastToDist && toDist > _lastToDist)
+        _forward = FALSE;
+    if (_lastToDist && toDist < _lastToDist)
+        _forward = TRUE;
+    if (_lastToDist != toDist)
+        _lastToDist = toDist;
+    double xPct = atDist/groundDist;
     double feetPerPixel = groundDist / nPixels;
     double xInc = (toUTM.x - fromUTM.x)/nPixels;
     double yInc = (toUTM.y - fromUTM.y)/nPixels;
@@ -1096,11 +1135,17 @@ double HeadingFromAZ (double az)
         }
     }
     double profileImageHeight = _profileView.frame.size.height - _infoLabel.frame.size.height;
+    double profileImageWidth = _profileView.frame.size.width;
+    double profileImageTop = _profileView.frame.origin.y + _infoLabel.frame.size.height;
+    double atLoc = profileImageWidth * xPct;
     double factor = _heightExpansion * nPixels / (groundDist);
     double centerY = profileImageHeight/2 - (_maxElev - _minElev) / 2 * factor;
+    double atY = profileImageWidth;
     for (int i=0;i<nPixels;i++)
     {
         pPoint[i].y = profileImageHeight + centerY + (_maxElev - pElev[i]) * factor;
+        if ((i < (nPixels - 1)) && pPoint[i].x <= atLoc && pPoint[i+1].x >= atLoc)
+            atY = pPoint[i].y;
     }
     int i = 0;
     int nlines = 0;
@@ -1147,7 +1192,24 @@ double HeadingFromAZ (double az)
     free (pGrade);
     [dtm close:opened];
     
-
+    if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+    {
+        UIImage * stickManImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"StickManT"                                                    ofType:@"png"]];
+        CGPoint point;
+        point.x = _profileView.frame.size.width/2;
+        point.y = _profileView.frame.size.height/2;
+        double stickManHeight = stickManImage.size.height/5;
+        double stickManWidth = stickManImage.size.width/5;
+        CGRect stickManRect = CGRectMake(atLoc,atY-stickManHeight,stickManWidth,stickManHeight);
+        _stickManView = [[UIImageView alloc] initWithFrame:stickManRect];
+        _stickManView.contentMode = UIViewContentModeScaleToFill;
+        _stickManView.backgroundColor = UIColor.clearColor;
+        if (!_forward)
+            _stickManView.transform = CGAffineTransformScale(CGAffineTransformIdentity,-1,1);
+        
+        _stickManView.image = stickManImage;
+        [_profileView addSubview:_stickManView];
+    }
     return;
 }
 int GetGradeLevel (double grade)

@@ -207,6 +207,7 @@
 		EB10EEFA1F93AF6B006A6938 /* CreateBatchCrimeMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
+		EB1CC5062A21B36D001ED02E /* StickManT.png in Resources */ = {isa = PBXBuildFile; fileRef = EB1CC5032A21B36D001ED02E /* StickManT.png */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */ = {isa = PBXBuildFile; fileRef = EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */; };
 		EB394F1928D4EC72004FC6C9 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB394F1628D4E13C004FC6C9 /* Charts.framework */; };
@@ -538,6 +539,7 @@
 		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShapeFileDisplay.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB1CC5032A21B36D001ED02E /* StickManT.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = StickManT.png; sourceTree = "<group>"; };
 		EB284171271DE3A400BC4DD7 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		EB2B3B6C202E226800495081 /* PropertyListFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PropertyListFields.h; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
@@ -722,6 +724,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EB1CC5032A21B36D001ED02E /* StickManT.png */,
 				EBAEBD662944F6500004D22D /* weather.png */,
 				EBAEBB3A294000540004D22D /* windArrow.png */,
 				69CE5BF31FF68AD7007D5D1F /* advertiseIcon.png */,
@@ -1439,6 +1442,7 @@
 				692EFA571D36B11D007B0D18 /* questionMarkHighlighted.png in Resources */,
 				69CB89E01DCD558700D408E9 /* backspace.png in Resources */,
 				BB8B969C1E8568CA00B6A9F7 /* Part2-2.png in Resources */,
+				EB1CC5062A21B36D001ED02E /* StickManT.png in Resources */,
 				BB8B969B1E8568CA00B6A9F7 /* Burglary.png in Resources */,
 				1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */,
 				69CE5BF41FF68AD7007D5D1F /* browseIcon.png in Resources */,

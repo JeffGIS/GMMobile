@@ -119,6 +119,8 @@
     //dtmPoint.y = 5278670.7;
     
     elv = NGIELV (*point,_hDTM,0);
+    if (isinf(elv) || isnan(elv))
+        elv = _NullElv;
     return elv;
     
 }
