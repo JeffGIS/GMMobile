@@ -1093,8 +1093,8 @@ double HeadingFromAZ (double az)
     ConvertCoord(&toUTM, LATLONPROJECTION, UTM15PROJECTION);
     ConvertCoord(&atUTM, LATLONPROJECTION, UTM15PROJECTION);
     
-    double groundDist = ldistp(fromUTM, toUTM);
-    double atDist = ldistp(fromUTM, atUTM)/4;
+    double groundDist = ldistp(fromUTM, atUTM) + ldistp (atUTM,toUTM);
+    double atDist = ldistp(fromUTM, atUTM);
     int toDist = IDNINT(ldistp(atUTM, toUTM)/4);
     if (_lastToDist && toDist > _lastToDist)
         _forward = FALSE;
@@ -1104,10 +1104,30 @@ double HeadingFromAZ (double az)
         _lastToDist = toDist;
     double xPct = atDist/groundDist;
     double feetPerPixel = groundDist / nPixels;
-    double xInc = (toUTM.x - fromUTM.x)/nPixels;
-    double yInc = (toUTM.y - fromUTM.y)/nPixels;
-    DPOINT pt = fromUTM;
-    
+    int nFromPixels = nPixels * (atDist / groundDist);
+    int nToPixels = nPixels * ((groundDist - atDist) / groundDist);
+    LPDPOINT pt = malloc ((nPixels+1) * sizeof (DPOINT) + 8);
+    int npt = 0;
+    pt[npt++] = fromUTM;
+    double xInc = (atUTM.x - fromUTM.x)/nFromPixels;
+    double yInc = (atUTM.y - fromUTM.y)/nFromPixels;
+    for (int i = 1; i < nFromPixels; i++)
+    {
+        pt[npt] = pt[npt-1];
+        pt[npt].x += xInc;
+        pt[npt++].y += yInc;
+    }
+
+    pt[npt++] = atUTM;
+    xInc = (toUTM.x - atUTM.x)/nToPixels;
+    yInc = (toUTM.y - atUTM.y)/nToPixels;
+    for (int i = 1; i < nToPixels; i++)
+    {
+        pt[npt] = pt[npt-1];
+        pt[npt].x += xInc;
+        pt[npt++].y += yInc;
+    }
+    nPixels = npt;
     DTMData * dtm = DTMData.new;
     BOOL opened = [dtm open];
 
@@ -1121,11 +1141,9 @@ double HeadingFromAZ (double az)
     
     for (int i=0;i<nPixels;i++)
     {
-        pElev[i] = [dtm getElevation:&pt];
+        pElev[i] = [dtm getElevation:&pt[i]];
         _minElev = MIN (_minElev,pElev[i]);
         _maxElev = MAX (_maxElev,pElev[i]);
-        pt.x += xInc;
-        pt.y += yInc;
         pPoint[i].x = i;
         if (i)
         {
@@ -1190,11 +1208,13 @@ double HeadingFromAZ (double az)
     }
     free (pElev);
     free (pGrade);
+    free (pt);
     [dtm close:opened];
     
     if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
     {
-        UIImage * stickManImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"StickManT"                                                    ofType:@"png"]];
+        UIImage * stickManImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"StickManT"
+                                                                                                 ofType:@"png"]];
         CGPoint point;
         point.x = _profileView.frame.size.width/2;
         point.y = _profileView.frame.size.height/2;
