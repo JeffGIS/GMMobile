@@ -44,6 +44,7 @@
 @property double maxWaypointDist;
 @property CLHeading*  nowHeading;
 @property CGFloat currentHeading;
+@property CGFloat lastResetHeading;
 @property int infoLabelOption;
 @property int currentRoutePointNumber;
 @property int ignoreAtWaypoint;
@@ -90,6 +91,7 @@
     _heightExpansion = 4;
     _lastToDist = 0;
     _forward = TRUE;
+    _lastResetHeading = 0;
     [self configUI];
         
 }
@@ -746,7 +748,7 @@ double HeadingFromAZ (double az)
         [_userWaypointLabels addObject:windLabel];
         _skipRot = 1;
     }
-
+    [self resetDirection:_lastResetHeading];
  
 }
 -(CGFloat) getSelectedWaypointHeading
@@ -971,7 +973,7 @@ double HeadingFromAZ (double az)
     CGFloat headi = -1.0 * M_PI * _nowHeading.magneticHeading / 180.0;
     //_infoLabel.text = @"\(Int(magneticHeading))";
     [self resetDirection:headi];
-
+    _lastResetHeading = headi;
 
     CLLocationDirection theHeading = _nowHeading.magneticHeading > 0 ? _nowHeading.magneticHeading : _nowHeading.trueHeading;
     theHeading = _nowHeading.trueHeading;
@@ -1053,7 +1055,7 @@ double HeadingFromAZ (double az)
         }
         
     }
-    
+
 }
 -(void) removeProfileLayers
 {
