@@ -1046,7 +1046,8 @@ double HeadingFromAZ (double az)
                         _maxElev= _maxGrade = 0;
                         NSString *units = @"miles";
                         CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
-                        [self displayProfile:_currentPoint
+                        if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+                            [self displayProfile:_currentPoint
                                           to:waypoint.latlon
                                  checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
                         if (dist / METERS_PER_MILE < 0.1)
@@ -1106,6 +1107,8 @@ double HeadingFromAZ (double az)
     {
         lastToLL = toLL;
         fromLL = atLL;
+        [self showAsRouteOnMap:fromLL
+                          toLL:toLL];
     }
     _fromUTM.x = fromLL.lon;
     _fromUTM.y = fromLL.lat;
@@ -1381,4 +1384,19 @@ int GetGradeLevel (double grade)
     return UIInterfaceOrientationMaskPortrait;
 }
 
+-(void) showAsRouteOnMap:(LLPOINT)fromLL
+                    toLL:(LLPOINT)toLL
+{
+    CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
+    CGPoint llp = {0};
+    llp.y = fromLL.lat;
+    llp.x = fromLL.lon;
+    NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+    [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+    llp.y = toLL.lat;
+    llp.x = toLL.lon;
+    routePoint = [NSNumber valueWithCGPoint:llp];
+    [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+    return;
+}
 @end
