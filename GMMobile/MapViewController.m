@@ -53,6 +53,7 @@
 #import "CCodeLibrary/RiteHome.h"
 #import "CCodeLibrary/NVEmailFileList.h"
 #import "HuntingDataDisplay.h"
+#import "CompassViewController.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -1877,6 +1878,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [optionList addObject:@"Mark Vehicle Location"];
                     [optionList addObject:@"________________________"];
                     [optionList addObject:@"Add Flushed Waypoint"];
+                    [optionList addObject:@"Test Waypoint"];
                     [optionList addObject:@"Add Retrieved Waypoint"];
                     [optionList addObject:@"Add Compass Waypoint"];
                     [optionList addObject:@"________________________"];
@@ -7419,6 +7421,11 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd addWaypoint:@"F1" type:@"FlushPoint" latlon:_llPickedPt description:@"" displayOnCompass:NO];
             [self vectorViewRefresh];
+        }
+        else if ([text isEqualToString:@"Test Waypoint"])
+        {
+            CompassViewController *cvc = CompassViewController.new;
+            [cvc checkIfOffRouteTest:_llPickedPt];
         }
         else if ([text isEqualToString:@"Add Retrieved Waypoint"])
         {

@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIImageView *compassImage;
 @property (strong, nonatomic) IBOutlet NSObject *topGuide;
 
+-(BOOL) checkIfOffRouteTest:(LLPOINT) currentPoint;
+
 @end
 
 NS_ASSUME_NONNULL_END
