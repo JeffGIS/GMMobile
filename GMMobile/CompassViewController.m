@@ -5,7 +5,6 @@
 //  Created by Jeff Smith on 10/21/22.
 //  Copyright © 2022 GSSi. All rights reserved.
 //
-
 #import "CompassViewController.h"
 #import "DTMData.h"
 //#import "NVCoordinateLibrary/proj_api.h"
@@ -73,6 +72,8 @@ double notifyDist = 20;
 @property DPOINT fromUTM, toUTM, atUTM;
 @property NSTimer * offCourseTimer;
 @property BOOL goLeft;
+@property double offDist;
+@property int leftOrRight;
 
 @end
 
@@ -134,6 +135,7 @@ double notifyDist = 20;
         [_locationManager startUpdatingLocation];
         [_locationManager startUpdatingHeading];
     }
+    _offDist = 0;
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -825,6 +827,7 @@ double HeadingFromAZ (double az)
 {
     HuntingData *hd = HuntingData.new;
     
+    [self offCourseNotification:0];
     _lastToDist = 0;
     switch (_infoLabelOption)
     {
@@ -959,13 +962,17 @@ double HeadingFromAZ (double az)
 
 -(void) profileViewPicked:(CGPoint)atPoint
 {
+    return;
     DTMData * dtm = DTMData.new;
     BOOL opened = [dtm open];
     LLPOINT llPoint;
+    static int opt = 0;
     
     double elv = [dtm getElevation:&llPoint];
     [dtm close:opened];
-    [self offCourseNotification:TRUE];
+    [self offCourseNotification:opt++];
+    if (opt > 2)
+        opt = 0;
     return;
 }
 -(void) update
@@ -1051,7 +1058,16 @@ double HeadingFromAZ (double az)
                         else
                         {
                             dist = dist / METERS_PER_MILE;
-                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
+                            int offDist = IDNINT(_offDist / METERS_PER_YARD);
+                            NSString *offsetText = @"";
+                            NSString *offDir = @"L";
+                            if (offDist > 4)
+                            {
+                                if (_leftOrRight == RIGHT)
+                                    offDir = @"R";
+                                offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
+                            }
+                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
                         }
                         _infoLabel.textColor = UIColor.whiteColor;
                         _infoLabelOption = 2;
@@ -1262,25 +1278,26 @@ int GetGradeLevel (double grade)
     
     if (opt == currentTimerOpt)
         return;
+    _goLeft = FALSE;
     currentTimerOpt = opt;
     if (_offCourseTimer)
         [_offCourseTimer invalidate];
     switch (opt)
     {
+        default:
         case 0:
             _offCourseTimer = nil;
             break;
-        case 1: //goLeft
-        case 2: //goRight
-            _goLeft = opt;
-            _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:YES];
+        case RIGHT: //go left
+            _goLeft = TRUE;
+        case LEFT: //go right
+            _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:YES];
     }
     return;
 
 }
 -(void) offCourseNotificationPlay:(NSTimer *) timer
 {
-    [self vibrate];
     if (_goLeft)
     {
         NSString *soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_low.caf"];
@@ -1290,10 +1307,13 @@ int GetGradeLevel (double grade)
         AudioServicesPlaySystemSound(soundID);
         [self performSelector:@selector(vibrate)
                    withObject:nil
-                   afterDelay:0.6];
+                   afterDelay:0.5];
         [self performSelector:@selector(vibrate)
                    withObject:nil
                    afterDelay:2];
+        [self performSelector:@selector(vibrate)
+                   withObject:nil
+                   afterDelay:3];
     }
     else
     {
@@ -1304,10 +1324,13 @@ int GetGradeLevel (double grade)
         AudioServicesPlaySystemSound(soundID);
         [self performSelector:@selector(vibrate)
                    withObject:nil
-                   afterDelay:2];
+                   afterDelay:0.5];
         [self performSelector:@selector(vibrate)
                    withObject:nil
-                   afterDelay:2.6];
+                   afterDelay:1.5];
+        [self performSelector:@selector(vibrate)
+                   withObject:nil
+                   afterDelay:3];
     }
 }
 -(void) vibrate
@@ -1335,18 +1358,22 @@ int GetGradeLevel (double grade)
     
     Line[0] = _fromUTM;
     Line[1] = _toUTM;
-    int leftOrRight;
-    if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&leftOrRight))
+    if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&_leftOrRight))
     {
-        double offDist = ldistpp (&currentPoint,&IntPoint);
-        if (offDist > notifyDist)
+        _offDist = ldistpp (&currentPoint,&IntPoint);
+        _offDist /= METERS_PER_YARD;
+        if (_offDist > notifyDist)
         {
-            [self offCourseNotification:leftOrRight];
+            [self offCourseNotification:_leftOrRight];
         }
         else
             [self offCourseNotification:0];
     }
-
+    else
+    {
+        _offDist = 0;
+        [self offCourseNotification:0];
+    }
     return offRoute;
 }
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
