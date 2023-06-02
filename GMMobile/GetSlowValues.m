@@ -386,7 +386,7 @@ displayCharacteristics:dc
         if (rtn)
             NSLog(@"Image written");
         UIImage *image = [UIImage imageWithContentsOfFile:file];
-        ii = 1;
+        iii = 1;
         /*[UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
         UIImageWriteToSavedPhotosAlbum(image,
                                        nil,
@@ -588,7 +588,7 @@ displayCharacteristics:dc
                                     counts:colorCounts
                                      count:0];
                 if (iClass < 10)
-                    ii = 1;
+                    iii = 1;
                 lastColor = *pColor;
                 count = 1;
             }

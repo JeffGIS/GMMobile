@@ -441,7 +441,7 @@
                               action:@selector(expandLegends:)
                     forControlEvents:UIControlEventTouchUpInside];
     top = self.view.safeAreaInsets.top;
-    ii = top;
+    iii = top;
 }
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
@@ -790,7 +790,7 @@
     if (!_tableView.hidden)
         [_tableView reloadData];
     int top = self.view.safeAreaInsets.top;
-    ii = top;
+    iii = top;
 
 }
 
@@ -3038,7 +3038,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     if (position.bearing == 0.0)
         [self hideCompass];
     else
-        ii = 1;
+        iii = 1;
     
     if ([self.view.subviews containsObject:_nvdv])
     {
@@ -6071,7 +6071,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                          toMaxY:maxYpt.y];
     }
     if (pBearing != 0)
-        ii = 1;
+        iii = 1;
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
                                                             bearing:pBearing
@@ -6267,7 +6267,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (_locationCount < 2 || !PointInView(target,_mapView))
         {
             if (_mapView.camera.bearing != 0)
-                ii = 1;
+                iii = 1;
             GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
                                                                        zoom:_mapView.camera.zoom
                                                                     bearing:_mapView.camera.bearing
@@ -6403,7 +6403,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (!_amAcceptingHeading)
         return;
     if (newHeading.trueHeading != 0)
-        ii = 1;
+        iii = 1;
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_mapView.camera.target
                                                                zoom:_mapView.camera.zoom
                                                             bearing:newHeading.trueHeading

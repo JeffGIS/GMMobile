@@ -165,7 +165,7 @@ void checkLLBounds (MNMXCORD * bounds)
 {
    static BOOL stop = FALSE;
    if (stop && bounds->ymn < 45 && bounds->ymx > 45)
-        ii=1;
+        iii=1;
    return;
 }
 - (BOOL) keepGoing

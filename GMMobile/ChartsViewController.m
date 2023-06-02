@@ -829,7 +829,7 @@
                      entry:(ChartDataEntry *)entry
                  highlight:(ChartHighlight *)highlight
 {
-    ii=1;
+    iii=1;
     if (![self.view.subviews containsObject:_alert])
     {
         int refno = [(NSNumber *)entry.data intValue];

@@ -61,7 +61,6 @@ double notifyDist = 20;
 @property int currentTemp;
 @property float currentWindDirection;
 @property NSString *currentWeatherDesc;
-@property int skipRot;
 @property double heightExpansion;
 @property double minElev;
 @property double maxElev;
@@ -92,7 +91,6 @@ double notifyDist = 20;
     _widthFactor = _screenW / 320.0;
     _atDistance = 15;
     _closeDistance = 100;
-    _skipRot = 0;
     _heightExpansion = 4;
     _lastToDist = 0;
     _forward = TRUE;
@@ -266,7 +264,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     
     _weatherLabel = UILabel.new;
     _weatherLabel.frame = CGRectMake(right-160,top,160,55);
-    _weatherLabel.backgroundColor = UIColor.clearColor;
+    _weatherLabel.backgroundColor = UIColor.blackColor;
     _weatherLabel.textColor = UIColor.whiteColor;
     _weatherLabel.font =[UIFont systemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
@@ -377,7 +375,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     int n = _backgroundView.subviews.count;
     for (UILabel *label in _backgroundView.subviews)
     {
-        if (i++ && i < n-_skipRot)
+        if (i++ && i < n-1)
             label.transform = CGAffineTransformMakeRotation( -heading);
     }
     //_backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
@@ -715,7 +713,7 @@ double HeadingFromAZ (double az)
     [_backgroundView addSubview:label];
     [_userWaypointLabels addObject:label];
 //add wind
-    if ( _currentWindSpeed > 0)
+    if (_currentWindSpeed > -1)
     {
         CGFloat windSpeed =  _currentWindSpeed;
         CGFloat factor = 1.8;
@@ -748,11 +746,17 @@ double HeadingFromAZ (double az)
         //wind.layer.cornerRadius = wind.frame.size.width / 2;
         wind.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
         windLabel.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+        if (_currentWindSpeed == 0)
+        {
+            [wind setHidden:YES];
+            [windLabel setHidden:YES];
+        }
         [_userWaypointLabels addObject:wind];
+        idebug = _backgroundView.subviews.count;
+        iii = _userWaypointLabels.count;
         [_backgroundView addSubview:wind];
         [_backgroundView addSubview:windLabel];
         [_userWaypointLabels addObject:windLabel];
-        _skipRot = 1;
     }
     [self resetDirection:_lastResetHeading];
  
@@ -906,7 +910,7 @@ double HeadingFromAZ (double az)
     {
         [self getWeatherData];
         //NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
-        ii = 1;
+        iii = 1;
     }
     else if ([text isEqualToString:@"Set Profile Exageration to 1"])
         _heightExpansion = 1;

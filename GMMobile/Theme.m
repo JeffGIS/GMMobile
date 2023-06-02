@@ -176,7 +176,7 @@
                     class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
                 }
                 if (intensity < 0 || intensity > 1)
-                    ii=1;
+                    iii=1;
                 [thm.classes addObject:class];
                 UIColor * clr = class.color.copy;
                 [colors addObject:clr];

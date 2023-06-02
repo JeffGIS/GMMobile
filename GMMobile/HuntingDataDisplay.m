@@ -5,7 +5,7 @@
 //  Created by Jeff Smith on 11/23/17.
 //  Copyright © 2017 GSSi. All rights reserved.
 //
-
+static int ii=0;
 #import "HuntingDataDisplay.h"
 #import "ShapeFileDisplay.h"
 
