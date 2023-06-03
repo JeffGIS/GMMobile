@@ -53,6 +53,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property int statusBarHeight;
 @property UIButton *optionsButton;
 @property UILabel *weatherLabel;
+@property UILabel *sunRiseSetLabel;
 @property UIButton *weatherButton;
 @property WeatherData * wd;
 @property int currentWindSpeed;
@@ -296,6 +297,18 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view  addSubview:_weatherLabel];
     [self.view  addSubview:_weatherButton];
 
+    _sunRiseSetLabel = UILabel.new;
+    _sunRiseSetLabel.frame = CGRectMake(left+60,top,120,55*2/3);
+    _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
+    _sunRiseSetLabel.textColor = UIColor.whiteColor;
+    _sunRiseSetLabel.font =[UIFont systemFontOfSize: 20];
+    _sunRiseSetLabel.adjustsFontSizeToFitWidth = YES;
+    _sunRiseSetLabel.textAlignment = NSTextAlignmentCenter;
+    _sunRiseSetLabel.numberOfLines = 2;
+    _sunRiseSetLabel.text = @"Sunrise:5:31\nSunset:7:33";
+    [self.view  addSubview:_sunRiseSetLabel];
+
+    
     [self.view addSubview:_dScaView];
     [self.view addSubview:_profileView];
     [self.view setUserInteractionEnabled:YES];
@@ -950,8 +963,12 @@ double HeadingFromAZ (double az)
     _currentWindSpeed = data.windSpeed;
     _currentWindDirection = data.windDir;
     _currentWeatherDesc = data.desc;
+    NSString * sunRise = [WeatherData forecastDayandTime:data.sunRise];
+    NSString * sunSet = [WeatherData forecastDayandTime:data.sunSet];
+
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
         _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];
+        _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@",textAfter(sunRise, @"Today "),textAfter(sunSet, @"Today ")];
    }];
 
     //3.35,"deg":213,"gust":3.12}
