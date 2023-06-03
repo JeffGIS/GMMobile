@@ -12,7 +12,6 @@
 #include "CVTCoord.h"
 
 DPOINT saveFromUTM, saveToUTM;
-double notifyDist = 20;
 
 @interface CompassShapeLayer: CAShapeLayer
 @property UIColor *baseColor;
@@ -50,7 +49,6 @@ double notifyDist = 20;
 @property int infoLabelOption;
 @property int currentRoutePointNumber;
 @property int ignoreAtWaypoint;
-@property float atDistance;
 @property float closeDistance;
 @property int statusBarHeight;
 @property UIButton *optionsButton;
@@ -73,6 +71,13 @@ double notifyDist = 20;
 @property BOOL goLeft;
 @property double offDist;
 @property int leftOrRight;
+@property int minTimerDelay,maxTimerDelay;
+@property CGFloat timerDelay;
+@property double notifyDist;
+@property int currentTimerDelay;
+@property int nearDist;
+@property int atDistance;
+
 
 @end
 
@@ -89,14 +94,20 @@ double notifyDist = 20;
     _screenW = UIScreen.mainScreen.bounds.size.width;
     _heightFactor = _screenH / 568.0;
     _widthFactor = _screenW / 320.0;
-    _atDistance = 15;
-    _closeDistance = 100;
     _heightExpansion = 4;
     _lastToDist = 0;
     _forward = TRUE;
     _lastResetHeading = 0;
     [self configUI];
     InitProj4CoordConv (FALSE);
+    _maxTimerDelay = 60;
+    _minTimerDelay = 10;
+    _timerDelay = _maxTimerDelay;
+    _currentTimerDelay = 0;
+    _notifyDist = 10;
+    _nearDist = 50;
+    _atDistance = 40;
+    _closeDistance = 100;
 
 }
 -(BOOL) shouldAutorotate
@@ -831,7 +842,8 @@ double HeadingFromAZ (double az)
 {
     HuntingData *hd = HuntingData.new;
     
-    [self offCourseNotification:0];
+    [self offCourseNotification:0
+                      withDelay:0];
     _lastToDist = 0;
     switch (_infoLabelOption)
     {
@@ -864,8 +876,13 @@ double HeadingFromAZ (double az)
             }
             else
             {
-                _ignoreAtWaypoint = CRAPI.sharedInstance.currentSelectedWaypoint;
+                _ignoreAtWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+                [hd setWaypointCompassStatus:_ignoreAtWaypoint
+                            displayOnCompass:NO];
                 CRAPI.sharedInstance.currentSelectedWaypoint = -1;
+                CRAPI.sharedInstance.currentFocusWaypoint = -1;
+                _userWaypointArray = [hd getWaypoints];
+                [self update];
             }
         }
             break;
@@ -974,7 +991,7 @@ double HeadingFromAZ (double az)
     
     double elv = [dtm getElevation:&llPoint];
     [dtm close:opened];
-    [self offCourseNotification:opt++];
+    //[self offCourseNotification:opt++];
     if (opt > 2)
         opt = 0;
     return;
@@ -1031,14 +1048,15 @@ double HeadingFromAZ (double az)
                 double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
                 waypoint.headingInDeg = RadiansToDegrees (wpaz);
                 double curAz = DegreesToRadians(theHeading);
-                if (dist < _atDistance)
+                if (dist / METERS_PER_YARD < _atDistance)
                 {
-                    _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f meters)",waypoint.name,dist];
+                    _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD];
                     _infoLabel.textColor = UIColor.whiteColor;
                     if ([waypoint.type isEqual:@"RoutePoint"])
                         _currentRoutePointNumber = waypoint.refno;
                     else
                         _currentRoutePointNumber = 0;
+                    CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
                     _infoLabelOption = 1;
                     break;
                 }
@@ -1054,7 +1072,7 @@ double HeadingFromAZ (double az)
                             [self displayProfile:_currentPoint
                                           to:waypoint.latlon
                                  checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
-                        if (dist / METERS_PER_MILE < 0.1)
+                        if (dist / METERS_PER_YARD < _nearDist)
                         {
                             units = @"yards";
                             dist = dist / METERS_PER_YARD;
@@ -1066,7 +1084,7 @@ double HeadingFromAZ (double az)
                             int offDist = IDNINT(_offDist / METERS_PER_YARD);
                             NSString *offsetText = @"";
                             NSString *offDir = @"L";
-                            if (offDist > 4)
+                            if (offDist > 0)
                             {
                                 if (_leftOrRight == RIGHT)
                                     offDir = @"R";
@@ -1074,7 +1092,11 @@ double HeadingFromAZ (double az)
                             }
                             _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
                         }
-                        _infoLabel.textColor = UIColor.whiteColor;
+                        if (_offCourseTimer)
+                            _infoLabel.textColor = UIColor.orangeColor;
+                        else
+                            _infoLabel.textColor = UIColor.whiteColor;
+
                         _infoLabelOption = 2;
                         break;
                     }
@@ -1124,7 +1146,13 @@ double HeadingFromAZ (double az)
     ConvertCoord(&_fromUTM, LATLONPROJECTION, UTM15PROJECTION);
     ConvertCoord(&_toUTM, LATLONPROJECTION, UTM15PROJECTION);
     ConvertCoord(&_atUTM, LATLONPROJECTION, UTM15PROJECTION);
-    if (checkOff && [self checkIfOffRoute:_atUTM])
+    double distToDest = ldistp(_atUTM, _toUTM)/ METERS_PER_YARD;
+    if (distToDest < _atDistance)
+    {
+        [self offCourseNotification:0
+                          withDelay:0];
+    }
+    else if (checkOff && [self checkIfOffRoute:_atUTM])
     {
         
     }
@@ -1280,13 +1308,16 @@ int GetGradeLevel (double grade)
     return rtn;
 }
 -(void) offCourseNotification:(int) opt
+                    withDelay:(CGFloat) delay
 {
     static int currentTimerOpt = 0;
+    int intDelay = max (IDNINT (delay/_minTimerDelay) * _minTimerDelay,_minTimerDelay);
     
-    if (opt == currentTimerOpt)
+    if (opt == currentTimerOpt && intDelay == _currentTimerDelay)
         return;
     _goLeft = FALSE;
     currentTimerOpt = opt;
+    _currentTimerDelay = intDelay;
     if (_offCourseTimer)
         [_offCourseTimer invalidate];
     switch (opt)
@@ -1298,7 +1329,10 @@ int GetGradeLevel (double grade)
         case RIGHT: //go left
             _goLeft = TRUE;
         case LEFT: //go right
-            _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:YES];
+            if (!_offCourseTimer)
+                _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:NO];
+            _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:_currentTimerDelay target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:YES];
+            break;
     }
     return;
 
@@ -1365,21 +1399,33 @@ int GetGradeLevel (double grade)
     
     Line[0] = _fromUTM;
     Line[1] = _toUTM;
-    if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&_leftOrRight))
+    if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
     {
         _offDist = ldistpp (&currentPoint,&IntPoint);
         _offDist /= METERS_PER_YARD;
-        if (_offDist > notifyDist)
+        if (_offDist > _notifyDist)
         {
-            [self offCourseNotification:_leftOrRight];
+            _timerDelay = max (_minTimerDelay,(_notifyDist/_offDist) * _maxTimerDelay);
+            [self offCourseNotification:_leftOrRight
+                              withDelay:_timerDelay];
         }
         else
-            [self offCourseNotification:0];
+        /*{
+            static double d = 5;
+            _timerDelay = max (_minTimerDelay,(_notifyDist/d) * _maxTimerDelay);
+            d += 2;
+            [self offCourseNotification:_leftOrRight
+                              withDelay:_timerDelay];
+
+        }*/
+            [self offCourseNotification:0
+                              withDelay:0];
     }
     else
     {
         _offDist = 0;
-        [self offCourseNotification:0];
+        [self offCourseNotification:0
+                          withDelay:0];
     }
     return offRoute;
 }

@@ -1692,13 +1692,17 @@
         [_mapView animateToCameraPosition:camera];
     }
 }
--(int) pickWaypointofType:(NSString*) type
+-(UserWaypoint*) pickWaypointOfType:(NSString*) type
                        at:(CGPoint)pickedPt
                withRadius:(float)pixels
 {
-    int rtn = 0;
+    UserWaypoint *rtn = nil;
     HuntingData *hd = HuntingData.new;
-    NSArray *wpArray = [hd getWaypointsOfType:type];
+    NSArray *wpArray;
+    if ([type isEqual:@"ALL"])
+        wpArray = [hd getWaypoints];
+    else
+        wpArray = [hd getWaypointsOfType:type];
     
     for (UserWaypoint *wp in wpArray)
     {
@@ -1708,7 +1712,7 @@
         CGPoint pt = [self pointForCoordinate:llpt];
         float dist = LDIST(pt.x,pt.y, pickedPt.x, pickedPt.y);
         if (dist <= pixels)
-            rtn = wp.refno;
+            rtn = wp;
     }
     return rtn;
 }
@@ -1867,10 +1871,25 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             else
             {
                 NSMutableArray *optionList = NSMutableArray.array;
-                _pickedRefno = [self pickWaypointofType:@"RoutePoint" at:pickPt withRadius:25];
-                if (_pickedRefno)
+                
+                
+                UserWaypoint *pickedWayPoint = [self pickWaypointOfType:@"ALL" at:pickPt withRadius:25];
+                if (pickedWayPoint)
                 {
-                    NSString *txt = [NSString stringWithFormat:@"Target this Route Waypoint"];
+                    _pickedRefno = pickedWayPoint.refno;
+                    NSString *txt = @"";
+                    if ([pickedWayPoint.type isEqual:@"RoutePoint"])
+                    {
+                        txt = [NSString stringWithFormat:@"Target this Route Waypoint"];
+                    }
+                    else if (pickedWayPoint.displayOnCompass)
+                    {
+                        txt = [NSString stringWithFormat:@"Remove Waypoint from Compass"];
+                    }
+                    else
+                    {
+                        txt = [NSString stringWithFormat:@"Add Waypoint to Compass"];
+                    }
                    [optionList addObject:txt];
                 }
                 else
@@ -7408,6 +7427,20 @@ didSelectPDFButtonWithText:(NSString *)text
                     [hd deleteWaypointWithRefno:wp.refno];
             }
             CRAPI.sharedInstance.currentSelectedWaypoint = _pickedRefno;
+            [self vectorViewRefresh];
+        }
+        else if ([text isEqualToString:@"Remove Waypoint from Compass"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd setWaypointCompassStatus:_pickedRefno
+                        displayOnCompass:NO];
+            [self vectorViewRefresh];
+        }
+        else if ([text isEqualToString:@"Add Waypoint to Compass"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd setWaypointCompassStatus:_pickedRefno
+                        displayOnCompass:YES];
             [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Add Compass Waypoint"])

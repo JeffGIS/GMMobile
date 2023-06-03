@@ -218,6 +218,19 @@
     return rtn;
 
 }
+-(int) setWaypointCompassStatus:(int)refno
+               displayOnCompass:(BOOL)display;
+{
+    BOOL opened = [self open];
+    NSString *cmd;
+    BOOL rtn;
+    
+    cmd = [NSString stringWithFormat:@"UPDATE USERDATA.UserWayPoints SET DisplayOnCompass = %i WHERE id = %i",display,refno];
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    [self close:opened];
+    return rtn;
+}
+
 -(void) saveTrackRoute:(NSArray*)trackRoutePoints
 {
     BOOL opened = [self open];
