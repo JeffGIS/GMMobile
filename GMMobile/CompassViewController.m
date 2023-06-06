@@ -31,6 +31,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property UIView *lineView;
 @property UIView *redTriangleView;
 @property UIView *profileView;
+@property UILabel *selectDateLabel;
 @property UIImageView *stickManView;
 @property UILabel *infoLabel;
 @property CGFloat screenW, screenH, heightFactor, widthFactor, radius;
@@ -78,6 +79,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property int currentTimerDelay;
 @property int nearDist;
 @property int atDistance;
+@property NSMutableArray * forecastDates;
+@property NSArray * currentForecast;
 
 
 @end
@@ -193,6 +196,11 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
             locationInView = [sender locationOfTouch:0 inView:_infoLabel];
             [self infoLabelPicked:locationInView];
         }
+        else if (PointInSuperView(location,_selectDateLabel,self.view))
+        {
+            NSLog (@"In selectdateLabel");
+            [self getForcastWeatherData];
+        }
         else if (PointInSuperView(location,_profileView,self.view))
         {
             NSLog (@"In profileView");
@@ -212,9 +220,12 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 }
 -(void)configUI
 {
+    CGRect frame;
+    CGRect selfViewFrame = self.view.frame;
     int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
     int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
+    int bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom;
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
     _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -238,8 +249,21 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
     _compassTriangleView.backgroundColor = UIColor.clearColor;
     _profileView = UIView.new;
-    _profileView.frame =CGRectMake(0, 380*_heightFactor, _screenW,130*_heightFactor);
+    frame = CGRectMake(0, IDNINT(380*_heightFactor), _screenW,IDNINT(130*_heightFactor)+UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom-24);
+    //frame.origin.y = bottom - frame.size.height;
+    _profileView.frame = frame;
     _profileView.backgroundColor = UIColor.whiteColor;
+    _selectDateLabel = UILabel.new;
+    frame = CGRectMake(0, _profileView.frame.origin.y - 68, _screenW,56);
+    _selectDateLabel.frame = frame;
+    _selectDateLabel.backgroundColor = UIColor.lightGrayColor;
+    _selectDateLabel.textColor = UIColor.blackColor;
+    _selectDateLabel.font =[UIFont systemFontOfSize: 32];
+    _selectDateLabel.textAlignment = NSTextAlignmentCenter;
+    _selectDateLabel.numberOfLines = 0;
+    _selectDateLabel.adjustsFontSizeToFitWidth = YES;
+    _selectDateLabel.text = @"Current Date and Time";
+
     _infoLabel = UILabel.new;
     _infoLabel.frame = CGRectMake (0,0,_profileView.frame.size.width,_profileView.frame.size.height/2);
     _infoLabel.backgroundColor = UIColor.blackColor;
@@ -298,19 +322,20 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view  addSubview:_weatherButton];
 
     _sunRiseSetLabel = UILabel.new;
-    _sunRiseSetLabel.frame = CGRectMake(left+60,top,120,55*2/3);
+    _sunRiseSetLabel.frame = CGRectMake(left+50,top,120,55);
     _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
     _sunRiseSetLabel.textColor = UIColor.whiteColor;
     _sunRiseSetLabel.font =[UIFont systemFontOfSize: 20];
     _sunRiseSetLabel.adjustsFontSizeToFitWidth = YES;
     _sunRiseSetLabel.textAlignment = NSTextAlignmentCenter;
-    _sunRiseSetLabel.numberOfLines = 2;
+    _sunRiseSetLabel.numberOfLines = 3;
     _sunRiseSetLabel.text = @"Sunrise:5:31\nSunset:7:33";
     [self.view  addSubview:_sunRiseSetLabel];
 
     
     [self.view addSubview:_dScaView];
     [self.view addSubview:_profileView];
+    [self.view addSubview:_selectDateLabel];
     [self.view setUserInteractionEnabled:YES];
     [self.view addGestureRecognizer:_singleFingerTap];
     
@@ -952,6 +977,35 @@ double HeadingFromAZ (double az)
     [_singleFingerTap setEnabled:YES];
 
 }
+- (void) getForcastWeatherData
+{
+    [_wd getWeatherforecast:_currentPoint
+                           forTime:0
+                          delegate:self];
+
+}
+- (void)weatherDataDidReturnforecast:(NSArray *)forecast
+{
+    _currentForecast = forecast;
+    _forecastDates = [WeatherData getDatesFromforecast:forecast];
+    [self performSelectorOnMainThread:@selector(displayforecast)
+                           withObject:nil
+                        waitUntilDone:NO];
+
+}
+-(void) displayforecast
+{
+    NVPopoverTableView *nvptv =
+    [NVPopoverTableView showPopoverTableViewInView:self.view
+                                          delegate:self
+                                             title:@"Select a Date and Time"
+                                         textArray:_forecastDates
+                                     includeCancel:YES];
+    nvptv.identifier = @"forecast";
+    nvptv.parseTextToButtons = NO;
+    
+}
+
 -(void) getWeatherData
 {
     [_wd getCurrentWeather:_currentPoint delegate:self];
@@ -968,7 +1022,7 @@ double HeadingFromAZ (double az)
 
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
         _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];
-        _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@",textAfter(sunRise, @"Today "),textAfter(sunSet, @"Today ")];
+        _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@\n%@",textAfter(sunRise, @"Today "),textAfter(sunSet, @"Today "),@"1 hr 36 min"];
    }];
 
     //3.35,"deg":213,"gust":3.12}
@@ -1089,6 +1143,10 @@ double HeadingFromAZ (double az)
                             [self displayProfile:_currentPoint
                                           to:waypoint.latlon
                                  checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
+                        else
+                            [self displayProfile:_currentPoint
+                                          to:waypoint.latlon
+                                 checkOffset:NO];
                         if (dist / METERS_PER_YARD < _nearDist)
                         {
                             units = @"yards";
