@@ -81,6 +81,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property int atDistance;
 @property NSMutableArray * forecastDates;
 @property NSArray * currentForecast;
+@property time_t displayTime;
 
 
 @end
@@ -112,6 +113,7 @@ DPOINT saveFromUTM, saveToUTM;
     _nearDist = 50;
     _atDistance = 40;
     _closeDistance = 100;
+    _displayTime = 0;
 
 }
 -(BOOL) shouldAutorotate
@@ -338,7 +340,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     [self.view addSubview:_selectDateLabel];
     [self.view setUserInteractionEnabled:YES];
     [self.view addGestureRecognizer:_singleFingerTap];
-    
+
     [self configScaleDial];
 }
 
@@ -729,8 +731,10 @@ double HeadingFromAZ (double az)
         }
     }
     //add sun
-    int iTime = NSDate.timeIntervalSinceReferenceDate;
+    time_t iTime = NSDate.date.timeIntervalSince1970;
     CGFloat sunAlt;
+    if (_displayTime != 0)
+        iTime = _displayTime;
     CGFloat sunAz = [self getAzOfSun:iTime
                          altitude:&sunAlt];
     UILabel* label = UILabel.new;
@@ -950,35 +954,75 @@ double HeadingFromAZ (double az)
 
     return;
 }
+
+- (void) setDateAndTimeLabel
+{
+    if (!_displayTime)
+    {
+        time_t itime = NSDate.date.timeIntervalSince1970;
+        NSString * date = textAfter ([WeatherData forecastDayandTime:itime],@"Today ");
+        _selectDateLabel.text = [NSString stringWithFormat:@"Current Time\n%@",date];
+    }
+
+}
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    HuntingData *hd = HuntingData.new;
-    if ([text isEqualToString:@"Start Route"])
+    if ([popoverTableView.identifier isEqual:@"forecast"])
     {
-        NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
-        UserWaypoint* waypoint = routePointArray[0];
-        CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
+        NSString *time = textAfter(text,@"|");
+        int currentTime = NSDate.date.timeIntervalSince1970;
+
+        if (time)
+        {
+            time_t itime = time.integerValue;
+            if (itime)
+            {
+                WeatherRecord* data  = [WeatherData getRecordFromForecast:_currentForecast atTime:itime];
+                NSString * date = [WeatherData forecastDayandTime:data.timeStamp];
+                _displayTime = itime;
+                _selectDateLabel.text = date;
+                [self weatherDataDidReturnData:data];
+            }
+            else
+            {
+                _displayTime = 0;
+                [self setDateAndTimeLabel];
+                [self getWeatherData];
+           }
+        }
     }
-    if ([text isEqualToString:@"Get Weather Data"])
+    else
     {
-        [self getWeatherData];
-        //NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
-        iii = 1;
+        HuntingData *hd = HuntingData.new;
+        if ([text isEqualToString:@"Start Route"])
+        {
+            NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+            UserWaypoint* waypoint = routePointArray[0];
+            CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
+        }
+        if ([text isEqualToString:@"Get Weather Data"])
+        {
+            [self getWeatherData];
+            //NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
+            iii = 1;
+        }
+        else if ([text isEqualToString:@"Set Profile Exageration to 1"])
+            _heightExpansion = 1;
+        else if ([text isEqualToString:@"Set Profile Exageration to 2"])
+            _heightExpansion = 2;
+        else if ([text isEqualToString:@"Set Profile Exageration to 4"])
+            _heightExpansion = 4;
     }
-    else if ([text isEqualToString:@"Set Profile Exageration to 1"])
-        _heightExpansion = 1;
-    else if ([text isEqualToString:@"Set Profile Exageration to 2"])
-        _heightExpansion = 2;
-    else if ([text isEqualToString:@"Set Profile Exageration to 4"])
-        _heightExpansion = 4;
     [popoverTableView hide:YES];
     [_singleFingerTap setEnabled:YES];
 
 }
 - (void) getForcastWeatherData
 {
+    [_singleFingerTap setEnabled:NO];
+
     [_wd getWeatherforecast:_currentPoint
                            forTime:0
                           delegate:self];
@@ -1009,7 +1053,6 @@ double HeadingFromAZ (double az)
 -(void) getWeatherData
 {
     [_wd getCurrentWeather:_currentPoint delegate:self];
-
 }
 - (void)weatherDataDidReturnData:(WeatherRecord*)data
 {
@@ -1017,16 +1060,83 @@ double HeadingFromAZ (double az)
     _currentWindSpeed = data.windSpeed;
     _currentWindDirection = data.windDir;
     _currentWeatherDesc = data.desc;
-    NSString * sunRise = [WeatherData forecastDayandTime:data.sunRise];
-    NSString * sunSet = [WeatherData forecastDayandTime:data.sunSet];
+    NSString * sunRise = @"";
+    NSString * sunSet = @"";
+    if (data.sunRise > 0)
+    {
+        sunRise = [WeatherData forecastDayandTime:data.sunRise];
+        sunSet = [WeatherData forecastDayandTime:data.sunSet];
+    }
 
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
         _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];
-        _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@\n%@",textAfter(sunRise, @"Today "),textAfter(sunSet, @"Today "),@"1 hr 36 min"];
+        if (sunRise.length > 0)
+        {
+            NSString * riseText = textAfter(sunRise, @"Today ");
+            NSString * setText = textAfter(sunSet, @"Today ");
+            NSString * sinceUntilText = [self getSinceUntilText:data.sunRise
+                                                        setText:data.sunSet];
+            _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@\n%@",riseText,setText,sinceUntilText];
+        }
    }];
 
     //3.35,"deg":213,"gust":3.12}
    return;
+}
+
+- (NSString*) getSinceUntilText:(time_t)riseTime
+                        setText:(time_t)setTime
+{
+    NSString * rtn = @"";
+    time_t now = NSDate.date.timeIntervalSince1970;
+    long riseDiff = now - riseTime;
+    long setDiff = setTime - now;
+    NSString * sinceUntil = @"since";
+    if (abs (setDiff) > abs (riseDiff))
+    {
+        if (riseDiff < 0)
+            sinceUntil = @"until";
+        riseDiff = abs (riseDiff) / 60;
+        int mins = riseDiff % 60;
+        int hours = riseDiff / 60;
+        if (hours)
+        {
+            NSString * hourText = @"hr";
+            if (hours > 1)
+                hourText = @"hrs";
+            if (mins)
+                rtn = [NSString stringWithFormat:@"%i %@ %i min %@",hours,hourText, mins,sinceUntil];
+            else
+                rtn = [NSString stringWithFormat:@"%i %@ %@",hours,hourText,sinceUntil];
+        }
+        else
+        {
+            rtn = [NSString stringWithFormat:@"%i minutes %@",mins,sinceUntil];
+        }
+    }
+    else
+    {
+        if (setDiff > 0)
+            sinceUntil = @"until";
+        setDiff = abs (setDiff) / 60;
+        int mins = setDiff % 60;
+        int hours = setDiff / 60;
+        if (hours)
+        {
+            NSString * hourText = @"hr";
+            if (hours > 1)
+                hourText = @"hrs";
+            if (mins)
+                rtn = [NSString stringWithFormat:@"%i %@ %i min %@",hours,hourText, mins,sinceUntil];
+            else
+                rtn = [NSString stringWithFormat:@"%i %@ %@",hours,hourText,sinceUntil];
+        }
+        else
+        {
+            rtn = [NSString stringWithFormat:@"%i minutes %@",mins,sinceUntil];
+        }
+    }
+    return rtn;
 }
 - (void)weatherDataDidReturnError:(NSString *) message
 {
@@ -1180,6 +1290,7 @@ double HeadingFromAZ (double az)
         }
         
     }
+    [self setDateAndTimeLabel];
 
 }
 -(void) removeProfileLayers
