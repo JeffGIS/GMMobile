@@ -137,7 +137,6 @@
 @property NSString * propYearAndQuarter;
 @property CGPoint mapToolbarCenter;
 @property LLPOINT llPickedPt;
-@property BOOL locationTrackingEnabled;
 @property BOOL amAcceptingHeading;
 @property int numCurrentRoutePoints;
 @property CAShapeLayer *routeLayer;
@@ -238,12 +237,12 @@
     if (![CRAPI.sharedInstance getLastBounds:&lastBounds
                                      andZoom:&zoom])
     {
-        _target = CLLocationCoordinate2DMake(44.97, -93.27);
+        self.target = CLLocationCoordinate2DMake(44.97, -93.27);
     }
     else
     {
         DPOINT midPt = DBoundsMid(&lastBounds);
-        _target = CLLocationCoordinate2DMake(midPt.y,midPt.x);
+        self.target = CLLocationCoordinate2DMake(midPt.y,midPt.x);
     }
     CGRect mapFrame = self.view.frame;
     mapFrame.origin.y = 48;
@@ -684,7 +683,7 @@
                                             insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
             }
             
-            [_mapView animateToCameraPosition:camera];
+            [self animateToCameraPosition:camera];
             _selectedPIDCoords = pidCoord;
             
             MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
@@ -794,6 +793,14 @@
 
 }
 
+- (void) setTarget:(CLLocationCoordinate2D)target
+{
+    _target = target;
+    LLPOINT pt;
+    pt.lat = target.latitude;
+    pt.lon = target.longitude;
+    [CRAPI.sharedInstance setCurrentLocation:pt];
+}
 - (void)setZoom:(float)zoom
 {
     CRAPI.sharedInstance.currentZoom = zoom;
@@ -1371,7 +1378,7 @@
     }
     [self mapToolbarDidFinishDrag:_mapToolbarCenter
                                     superView:nil];
-    if (_locationTrackingEnabled)
+    if (CRAPI.sharedInstance.locationTrackingEnabled)
     {
         [self startTrackingUserLocation];
         [_mapToolbar selectMyLocationButton:YES];
@@ -1658,11 +1665,11 @@
                                               (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
                                               (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:_inset]];
+        [self moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:_inset]];
     }
     
     else
-        [_mapView animateToCameraPosition:[GMSCameraPosition cameraWithTarget:_target zoom:12.0]];
+        [self animateToCameraPosition:[GMSCameraPosition cameraWithTarget:_target zoom:12.0]];
 
 }
 
@@ -1671,11 +1678,23 @@
     [self zoomToBounds:bounds];
 }
 
+- (void)moveCamera:(GMSCameraUpdate *)update
+{
+    [_mapView moveCamera:update];
+}
+- (void)animateToCameraPosition:(GMSCameraPosition *)cameraPosition
+{
+    [_mapView animateToCameraPosition:cameraPosition];
+}
+- (void)animateToLocation:(CLLocationCoordinate2D)location
+{
+    [_mapView animateToLocation:location];
+}
+
 - (void)animateWithCameraUpdate:(GMSCameraUpdate *)update
 {
     [_mapView animateWithCameraUpdate:update];
 }
-
 - (void)zoomToBounds:(MNMXCORD)bounds
 {
     if (BoundsWidth(&bounds) > 0)
@@ -1689,7 +1708,7 @@
         GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
                                                        insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
         
-        [_mapView animateToCameraPosition:camera];
+        [self animateToCameraPosition:camera];
     }
 }
 -(UserWaypoint*) pickWaypointOfType:(NSString*) type
@@ -2995,6 +3014,10 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     
     for (NVPhotoView *nvpvs in _insetPixArray)
         [nvpvs updatePosition];
+    LLPOINT pt;
+    pt.lat = position.target.latitude;
+    pt.lon = position.target.longitude;
+    [CRAPI.sharedInstance setCurrentLocation:pt];
 }
 
 - (void)updateMarkerPosition
@@ -6096,7 +6119,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCameraPosition:camera];
 }
 
 - (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xFrame
@@ -6210,7 +6233,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (CLLocationManager.locationServicesEnabled)
     {
         [_locationManager startUpdatingLocation];
-        _locationTrackingEnabled = YES;
+        CRAPI.sharedInstance.locationTrackingEnabled = YES;
         [self.view bringSubviewToFront:_myLocationMarker];
     }
 }
@@ -6222,7 +6245,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _myLocationMarker.hidden = YES;
     _locationCount = 0;
     if (setEnabled)
-        _locationTrackingEnabled = NO;
+        CRAPI.sharedInstance.locationTrackingEnabled = NO;
 }
 
 -(BOOL) Point:(CGPoint)target InView:(UIView*)view
@@ -6235,17 +6258,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
-    if (!_locationTrackingEnabled)
+    if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
     _currentLocation = [locations.firstObject coordinate];
     [self addPointToTrackRoute: _currentLocation];
+    LLPOINT llpt;
+    llpt.lat = _currentLocation.latitude;
+    llpt.lon = _currentLocation.longitude;
+    CRAPI.sharedInstance.currentLocation = llpt;
+
     _locationCount++;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
     {
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation zoom:20];
         GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
-        [_mapView moveCamera:update];
+        [self moveCamera:update];
     }
     else if (_firstTimeZoomToCentract)
     {
@@ -6293,7 +6321,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                viewingAngle:_mapView.camera.viewingAngle];
             
             GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
-            [_mapView moveCamera:update];
+            [self moveCamera:update];
             
             if (_mapToolbar.applyRotation && CLLocationManager.headingAvailable)
             {
@@ -6409,7 +6437,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         
         GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:bounds withPadding:40.0]];
+        [self moveCamera:[GMSCameraUpdate fitBounds:bounds withPadding:40.0]];
         [self updateMarkerPosition];
     }
     
@@ -6429,7 +6457,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                        viewingAngle:_mapView.camera.viewingAngle];
     
     GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
-    [_mapView moveCamera:update];
+    [self moveCamera:update];
     [_locationManager performSelector:@selector(stopUpdatingHeading) withObject:nil afterDelay:0.5];
 }
 
@@ -7044,7 +7072,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCameraPosition:camera];
 }
 
 - (void)mapToolbarDidFinishDrag:(CGPoint)locationInSuperview
@@ -7340,13 +7368,13 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             _amTrackingRoute = TRUE;
-            if (_locationTrackingEnabled)
+            if (CRAPI.sharedInstance.locationTrackingEnabled)
             {
                 _llPickedPt.lon = _currentLocation.longitude;
                 _llPickedPt.lat = _currentLocation.latitude;
             }
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:_llPickedPt description:@"" displayOnCompass:YES];
-            if (!_locationTrackingEnabled)
+            if (CRAPI.sharedInstance.locationTrackingEnabled)
             {
                 [self startTrackingUserLocation];
             }
@@ -8301,7 +8329,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 
 - (void)themeLegendDidShrink
 {
-    [_mapView moveCamera:[GMSCameraUpdate setCamera:_currentPosition]];
+    [self moveCamera:[GMSCameraUpdate setCamera:_currentPosition]];
 }
 
 - (void)themeLegendDidWantResetPositions

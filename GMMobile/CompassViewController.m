@@ -82,6 +82,9 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSMutableArray * forecastDates;
 @property NSArray * currentForecast;
 @property time_t displayTime;
+@property UIImageView *wind;
+@property UILabel *windLabel;
+@property UILabel *sunLabel;
 
 
 @end
@@ -147,17 +150,24 @@ DPOINT saveFromUTM, saveToUTM;
     //[self DrawCompass];
     //if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
     {
-        [_locationManager startUpdatingLocation];
+        if (CRAPI.sharedInstance.locationTrackingEnabled)
+            [_locationManager startUpdatingLocation];
         [_locationManager startUpdatingHeading];
     }
     _offDist = 0;
+    _currentPoint = CRAPI.sharedInstance.currentLocation;
+    [self addUserWaypoints:_currentPoint];
+    [self getWeatherData];
+
+    return;
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [_locationManager stopUpdatingHeading];
-    [_locationManager stopUpdatingLocation];
+    if (CRAPI.sharedInstance.locationTrackingEnabled)
+        [_locationManager stopUpdatingLocation];
     _locationManager.delegate = _oldLocationManagerDelegate;
     //InitProj4CoordConv (TRUE);
 
@@ -730,14 +740,25 @@ double HeadingFromAZ (double az)
             }
         }
     }
-    //add sun
+    [self addSun];
+    [self addWind];
+    [self resetDirection:_lastResetHeading];
+}
+
+- (void) addSun
+{
+    if (_sunLabel)
+    {
+        [_userWaypointLabels removeObject:_sunLabel];
+        [_sunLabel removeFromSuperview];
+    }
     time_t iTime = NSDate.date.timeIntervalSince1970;
     CGFloat sunAlt;
     if (_displayTime != 0)
         iTime = _displayTime;
     CGFloat sunAz = [self getAzOfSun:iTime
                          altitude:&sunAlt];
-    UILabel* label = UILabel.new;
+    _sunLabel = UILabel.new;
     CGFloat factor = 1.2;
     int degreesAboveHorizon = IDNINT (sunAlt);
     CGFloat pctYellow;
@@ -752,67 +773,72 @@ double HeadingFromAZ (double az)
         pctYellow = 0.9;
     UIColor *sunColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:pctYellow];
     CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andScale: 1.24];
-    label.textAlignment = NSTextAlignmentCenter;
+    _sunLabel.textAlignment = NSTextAlignmentCenter;
     int fontSize = 20;
-    label.text = [NSString stringWithFormat:@"%i",degreesAboveHorizon];
-    label.backgroundColor = sunColor;
-    label.textColor = UIColor.blackColor;
-    label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
-    label.frame = CGRectMake(point.x,point.y, factor*28*_widthFactor,factor*28*_widthFactor);
-    label.center = point;
-    label.clipsToBounds = true;
-    label.layer.cornerRadius = label.frame.size.width / 2;
+    _sunLabel.text = [NSString stringWithFormat:@"%i",degreesAboveHorizon];
+    _sunLabel.backgroundColor = sunColor;
+    _sunLabel.textColor = UIColor.blackColor;
+    _sunLabel.font = [UIFont boldSystemFontOfSize: fontSize * factor];
+    _sunLabel.frame = CGRectMake(point.x,point.y, factor*28*_widthFactor,factor*28*_widthFactor);
+    _sunLabel.center = point;
+    _sunLabel.clipsToBounds = true;
+    _sunLabel.layer.cornerRadius = _sunLabel.frame.size.width / 2;
     
-    [_backgroundView addSubview:label];
-    [_userWaypointLabels addObject:label];
-//add wind
-    if (_currentWindSpeed > -1)
+    [_backgroundView addSubview:_sunLabel];
+    [_userWaypointLabels addObject:_sunLabel];
+
+}
+- (void) addWind
+{
+    if (_wind)
     {
-        CGFloat windSpeed =  _currentWindSpeed;
-        CGFloat factor = 1.8;
-        CGFloat windDir = DegreesToRadians (_currentWindDirection);
-        windDir = LTWOPI (windDir - HALFPI);
-        CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.22];
-        UIImageView *wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
-        UILabel *windLabel = [[UILabel alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
-        wind.backgroundColor = UIColor.clearColor;
-        windLabel.backgroundColor = UIColor.clearColor;
-        UIColor *blue = [[UIColor alloc] initWithRed:0.0
-                                               green:0
-                                                blue:1
-                                               alpha:1];
-        
-        UIImage *img = [SymbolDictionary imageOfArrow:wind.frame
-                                            lineWidth:2
-                                            lineColor:UIColor.whiteColor
-                                            fillColor:blue
-                                             withText:nil];
-        wind.image = img;//[UIImage imageWithContentsOfFile:                      [NSBundle.mainBundle pathForResource:@"windArrow"                                                    ofType:@"png"]];
-        
-        //wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
-        wind.center = point;
-        wind.clipsToBounds = true;
-        windLabel.text = [NSString stringWithFormat:@"%i",_currentWindSpeed];
-        windLabel.textColor = UIColor.whiteColor;
-        windLabel.textAlignment = NSTextAlignmentCenter;
-        windLabel.center = point;
-        //wind.layer.cornerRadius = wind.frame.size.width / 2;
-        wind.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
-        windLabel.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
-        if (_currentWindSpeed == 0)
-        {
-            [wind setHidden:YES];
-            [windLabel setHidden:YES];
-        }
-        [_userWaypointLabels addObject:wind];
-        idebug = _backgroundView.subviews.count;
-        iii = _userWaypointLabels.count;
-        [_backgroundView addSubview:wind];
-        [_backgroundView addSubview:windLabel];
-        [_userWaypointLabels addObject:windLabel];
+        [_userWaypointLabels removeObject:_wind];
+        [_userWaypointLabels removeObject:_windLabel];
+        [_wind removeFromSuperview];
+        [_windLabel removeFromSuperview];
     }
-    [self resetDirection:_lastResetHeading];
- 
+    CGFloat windSpeed =  _currentWindSpeed;
+    CGFloat factor = 1.8;
+    CGFloat windDir = DegreesToRadians (_currentWindDirection);
+    windDir = LTWOPI (windDir - HALFPI);
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.22];
+    _wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
+    _windLabel = [[UILabel alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
+    _wind.backgroundColor = UIColor.clearColor;
+    _windLabel.backgroundColor = UIColor.clearColor;
+    UIColor *blue = [[UIColor alloc] initWithRed:0.0
+                                           green:0
+                                            blue:1
+                                           alpha:1];
+    
+    UIImage *img = [SymbolDictionary imageOfArrow:_wind.frame
+                                        lineWidth:2
+                                        lineColor:UIColor.whiteColor
+                                        fillColor:blue
+                                         withText:nil];
+    _wind.image = img;//[UIImage imageWithContentsOfFile:                      [NSBundle.mainBundle pathForResource:@"windArrow"                                                    ofType:@"png"]];
+    
+    //wind.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+    _wind.center = point;
+    _wind.clipsToBounds = true;
+    _windLabel.text = [NSString stringWithFormat:@"%i",_currentWindSpeed];
+    _windLabel.textColor = UIColor.whiteColor;
+    _windLabel.textAlignment = NSTextAlignmentCenter;
+    _windLabel.center = point;
+    //wind.layer.cornerRadius = wind.frame.size.width / 2;
+    _wind.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+    _windLabel.transform = CGAffineTransformMakeRotation( windDir-HALFPI);
+    if (_currentWindSpeed < 1)
+    {
+        [_wind setHidden:YES];
+        [_windLabel setHidden:YES];
+    }
+    [_userWaypointLabels addObject:_wind];
+    idebug = _backgroundView.subviews.count;
+    iii = _userWaypointLabels.count;
+    [_backgroundView addSubview:_wind];
+    [_backgroundView addSubview:_windLabel];
+    [_userWaypointLabels addObject:_windLabel];
 }
 -(CGFloat) getSelectedWaypointHeading
 {
@@ -1078,6 +1104,8 @@ double HeadingFromAZ (double az)
                                                         setText:data.sunSet];
             _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@\n%@",riseText,setText,sinceUntilText];
         }
+        [self addSun];
+        [self addWind];
    }];
 
     //3.35,"deg":213,"gust":3.12}
@@ -1315,10 +1343,10 @@ double HeadingFromAZ (double az)
     [self removeProfileLayers];
     _profileLayers = NSMutableArray.new;
     
-    if (fromLL.lat == 0 || ArcDistanceLL(toLL,lastToLL) > 1)
+    lastToLL = toLL;
+    fromLL = atLL;
+    if (checkOff && (fromLL.lat == 0 || ArcDistanceLL(toLL,lastToLL) > 1))
     {
-        lastToLL = toLL;
-        fromLL = atLL;
         [self showAsRouteOnMap:fromLL
                           toLL:toLL];
     }
