@@ -34,7 +34,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property UILabel *selectDateLabel;
 @property UIImageView *stickManView;
 @property UILabel *infoLabel;
-@property CGFloat screenW, screenH, heightFactor, widthFactor, radius;
+@property CGFloat screenW, screenH, heightFactor, widthFactor;
+@property (nonatomic) CGFloat radius;
 @property (nonatomic) CLLocationManager *locationManager;
 @property id oldLocationManagerDelegate;
 @property UILabel *directionLabel;
@@ -100,8 +101,8 @@ DPOINT saveFromUTM, saveToUTM;
     _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     _screenH = UIScreen.mainScreen.bounds.size.height;
     _screenW = UIScreen.mainScreen.bounds.size.width;
-    _heightFactor = _screenH / 568.0;
-    _widthFactor = _screenW / 320.0;
+    _heightFactor = _screenH / 926;
+    _widthFactor = _screenW / 428;
     _heightExpansion = 4;
     _lastToDist = 0;
     _forward = TRUE;
@@ -230,76 +231,59 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 {
     return UIStatusBarStyleLightContent;
 }
+CGRect getCGRect (NSString * rectName,CGRect rect)
+{
+    CGRect rtn = rect;
+//    return rtn;
+    NSLog (@"if ([rectName isEqual:@\"%@\"])\n\trtn = CGRectMake(%.1f, %.1f, %.1f, %.1f);", rectName,rect.origin.x,rect.origin.y,rect.size.width,rect.size.height);
+    if ([rectName isEqual:@"_dScaView.frame"])
+        rtn = CGRectMake (0.0, 138.9, 428.0, 428.0);
+    else if ([rectName isEqual:@"_levelView.frame"])
+        rtn = CGRectMake(0.0, 0.0, 107.0, 1.0);
+    else if ([rectName isEqual:@"_verticalView.frame"])
+        rtn = CGRectMake(0.0, 0.0, 1.0, 107.0);
+    else if ([rectName isEqual:@"_lineView.frame"])
+        rtn = CGRectMake(212.5, 46.3, 5.0, 65.0);
+    else if ([rectName isEqual:@"_profileView.frame"])
+        rtn = CGRectMake(0.0, 620.0, 428.0, 222.0);
+    else if ([rectName isEqual:@"_selectDateLabel.frame"])
+        rtn = CGRectMake(0.0, 552.0, 428.0, 56.0);
+    else if ([rectName isEqual:@"_infoLabel.frame"])
+        rtn = CGRectMake(0.0, 0.0, 428.0, 111.0);
+    else if ([rectName isEqual:@"_backgroundView.frame"])
+            rtn = CGRectMake(0.0, 0.0, 428.0, 428.0);
+    else if ([rectName isEqual:@"_optionsButton.frame"])
+        rtn = CGRectMake(0.0, 47.0, 40.0, 40.0);
+    else if ([rectName isEqual:@"_weatherLabel.frame"])
+        rtn = CGRectMake(268.0, 47.0, 160.0, 55.0);
+    else if ([rectName isEqual:@"_sunRiseSetLabel.frame"])
+        rtn = CGRectMake(50.0, 47.0, 120.0, 55.0);
+    else
+        NSLog (@"Missing rect template %@",rectName);
+
+    return rtn;
+}
 -(void)configUI
 {
-    CGRect frame;
-    CGRect selfViewFrame = self.view.frame;
     int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
     int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
     int bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom;
+    CGRect frame;
+    CGRect selfViewFrame = CGRectMake(left, top, right,bottom);
+    CGRect templateFrame = CGRectMake(0, 47, 428, 892);
+    //NSLog (@"%.1f, %.1f, %.1f, %.1f",selfViewFrame.origin.x,selfViewFrame.origin.y,selfViewFrame.size.width,selfViewFrame.size.height);
+    HANDLE hTranRect = STRANCGRect (templateFrame,selfViewFrame);
+
     self.view.backgroundColor = UIColor.blackColor;
     [self.view setMultipleTouchEnabled:YES];
     _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
                                             action:@selector(handleSingleTap:)];
-
-    _dScaView = UIView.new;
-    _dScaView.backgroundColor = UIColor.blackColor;
-    _dScaView.frame = CGRectMake(0,0.1*_screenH,_screenW,_screenW);
-    _levelView = UIView.new;
-    _levelView.frame = CGRectMake (0,0,_dScaView.frame.size.width / 2 - 80*_widthFactor, 1);
-    _levelView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
-    _levelView.backgroundColor = UIColor.whiteColor;
-    _verticalView = UIView.new;
-    _verticalView.frame = CGRectMake (0,0,1,_dScaView.frame.size.height / 2 - 80*_widthFactor);
-    _verticalView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
-    _verticalView.backgroundColor = UIColor.whiteColor;
-    _lineView = UIView.new;
-    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 0.05*_screenH,5,65);
-    _lineView.backgroundColor = UIColor.whiteColor;
-    _compassTriangleView = UIView.new;
-    _compassTriangleView.frame = CGRectMake(0,0,_screenW,_screenW);
-    _compassTriangleView.backgroundColor = UIColor.clearColor;
-    _profileView = UIView.new;
-    frame = CGRectMake(0, IDNINT(380*_heightFactor), _screenW,IDNINT(130*_heightFactor)+UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom-24);
-    //frame.origin.y = bottom - frame.size.height;
-    _profileView.frame = frame;
-    _profileView.backgroundColor = UIColor.whiteColor;
-    _selectDateLabel = UILabel.new;
-    frame = CGRectMake(0, _profileView.frame.origin.y - 68, _screenW,56);
-    _selectDateLabel.frame = frame;
-    _selectDateLabel.backgroundColor = UIColor.lightGrayColor;
-    _selectDateLabel.textColor = UIColor.blackColor;
-    _selectDateLabel.font =[UIFont systemFontOfSize: 32];
-    _selectDateLabel.textAlignment = NSTextAlignmentCenter;
-    _selectDateLabel.numberOfLines = 0;
-    _selectDateLabel.adjustsFontSizeToFitWidth = YES;
-    _selectDateLabel.text = @"Current Date and Time";
-
-    _infoLabel = UILabel.new;
-    _infoLabel.frame = CGRectMake (0,0,_profileView.frame.size.width,_profileView.frame.size.height/2);
-    _infoLabel.backgroundColor = UIColor.blackColor;
-    _infoLabel.textColor = UIColor.whiteColor;
-    _infoLabel.font =[UIFont systemFontOfSize: 42];
-    _infoLabel.textAlignment = NSTextAlignmentCenter;
-    _infoLabel.numberOfLines = 0;
-    _infoLabel.adjustsFontSizeToFitWidth = YES;
-    [_profileView addSubview:_infoLabel];
-    _dScaView.clipsToBounds = true;
-    _dScaView.layer.cornerRadius = _dScaView.frame.size.width / 2;
-    _backgroundView = UIView.new;
-    _backgroundView.frame = CGRectMake (0,0,_dScaView.frame.size.width,_dScaView.frame.size.height);
-    _backgroundView.backgroundColor = UIColor.blackColor;
-    [_dScaView addSubview:_backgroundView];
-    [_dScaView addSubview:_levelView];
-    [_dScaView addSubview:_verticalView];
-    [self.view insertSubview:_lineView atIndex:0];
-    [_dScaView addSubview:_compassTriangleView];
-
     _optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _optionsButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     _optionsButton.backgroundColor = UIColor.whiteColor;
     _optionsButton.frame = CGRectMake(left,top,40,40);
+    _optionsButton.frame = TranCGRect(getCGRect(@"_optionsButton.frame",_optionsButton.frame),hTranRect);
 
     [_optionsButton setImage:[UIImage imageWithContentsOfFile:
                       [NSBundle.mainBundle pathForResource:@"list"
@@ -312,6 +296,8 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     
     _weatherLabel = UILabel.new;
     _weatherLabel.frame = CGRectMake(right-160,top,160,55);
+    _weatherLabel.frame = TranCGRect(getCGRect(@"_weatherLabel.frame",_weatherLabel.frame),hTranRect);
+    frame = _weatherLabel.frame;
     _weatherLabel.backgroundColor = UIColor.blackColor;
     _weatherLabel.textColor = UIColor.whiteColor;
     _weatherLabel.font =[UIFont systemFontOfSize: 20];
@@ -335,6 +321,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 
     _sunRiseSetLabel = UILabel.new;
     _sunRiseSetLabel.frame = CGRectMake(left+50,top,120,55);
+    _sunRiseSetLabel.frame = TranCGRect (getCGRect(@"_sunRiseSetLabel.frame",_sunRiseSetLabel.frame),hTranRect);
     _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
     _sunRiseSetLabel.textColor = UIColor.whiteColor;
     _sunRiseSetLabel.font =[UIFont systemFontOfSize: 20];
@@ -344,14 +331,82 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     _sunRiseSetLabel.text = @"Sunrise:5:31\nSunset:7:33";
     [self.view  addSubview:_sunRiseSetLabel];
 
+
+    
+    _dScaView = UIView.new;
+    _dScaView.backgroundColor = UIColor.clearColor;
+    float w = min(_screenW,_screenH/2);
+    float h = min(_screenW,_screenH/2);
+    float lft = _screenW / 2 - w / 2;
+    _dScaView.frame = CGRectMake(lft,_sunRiseSetLabel.frame.origin.y+_sunRiseSetLabel.frame.size.height,w,h);
+//    _dScaView.frame = TranCGRect(getCGRect(@"_dScaView.frame",_dScaView.frame),hTranRect);
+    _dScaView.frame = CGRectMake(_dScaView.frame.origin.x,_dScaView.frame.origin.y,
+                                 min(_dScaView.frame.size.width,_dScaView.frame.size.height),min(_dScaView.frame.size.width,_dScaView.frame.size.height));
+    _lineView = UIView.new;
+    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 0.05*_screenH,5,65);
+    _lineView.frame = TranCGRect(getCGRect (@"_lineView.frame",_lineView.frame),hTranRect);
+    _lineView.backgroundColor = UIColor.whiteColor;
+    _compassTriangleView = UIView.new;
+    _compassTriangleView.frame = TranCGRect(CGRectMake(0,0,_screenW,_screenW),hTranRect);
+    _compassTriangleView.backgroundColor = UIColor.clearColor;
+    _profileView = UIView.new;
+    float selectDateLabelHeight = 68 * _heightFactor;
+    frame = CGRectMake(0, _dScaView.frame.origin.y+_dScaView.frame.size.height+selectDateLabelHeight, _screenW,IDNINT(130*_heightFactor)+UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom-24);
+    //frame.origin.y = bottom - frame.size.height;
+    _selectDateLabel = UILabel.new;
+    frame = CGRectMake(0, _dScaView.frame.origin.y + _dScaView.frame.size.height, _screenW,selectDateLabelHeight);
+    _selectDateLabel.frame = frame;
+    _selectDateLabel.backgroundColor = UIColor.lightGrayColor;
+    _selectDateLabel.textColor = UIColor.blackColor;
+    _selectDateLabel.font =[UIFont systemFontOfSize: 32];
+    _selectDateLabel.textAlignment = NSTextAlignmentCenter;
+    _selectDateLabel.numberOfLines = 0;
+    _selectDateLabel.adjustsFontSizeToFitWidth = YES;
+    _selectDateLabel.text = @"Current Date and Time";
+    frame.origin.y = _selectDateLabel.frame.origin.y + _selectDateLabel.frame.size.height;
+    frame.size.height = bottom - frame.origin.y;
+    _profileView.frame = frame;
+    _profileView.backgroundColor = UIColor.whiteColor;
+
+    _infoLabel = UILabel.new;
+    _infoLabel.frame = CGRectMake (0,_profileView.frame.origin.y,_profileView.frame.size.width,_profileView.frame.size.height/2);
+    _profileView.frame = CGRectMake (_profileView.frame.origin.x,_profileView.frame.origin.y + _profileView.frame.size.height/2,_profileView.frame.size.width,_profileView.frame.size.height/2);
+    _infoLabel.backgroundColor = UIColor.blackColor;
+    _infoLabel.textColor = UIColor.whiteColor;
+    _infoLabel.font =[UIFont systemFontOfSize: 42];
+    _infoLabel.textAlignment = NSTextAlignmentCenter;
+    _infoLabel.numberOfLines = 0;
+    _infoLabel.adjustsFontSizeToFitWidth = YES;
+    //_dScaView.clipsToBounds = true;
+    _dScaView.layer.cornerRadius = min(_dScaView.frame.size.width,_dScaView.frame.size.height) / 2;
+    _backgroundView = UIView.new;
+    _backgroundView.frame = CGRectMake (0,0,_dScaView.frame.size.width,_dScaView.frame.size.height);
+    _backgroundView.backgroundColor = UIColor.clearColor;
+    [_dScaView addSubview:_backgroundView];
+    [self.view insertSubview:_lineView atIndex:0];
+    [_dScaView addSubview:_compassTriangleView];
+
     
     [self.view addSubview:_dScaView];
+    [self.view addSubview:_infoLabel];
     [self.view addSubview:_profileView];
     [self.view addSubview:_selectDateLabel];
     [self.view setUserInteractionEnabled:YES];
     [self.view addGestureRecognizer:_singleFingerTap];
 
-    [self configScaleDial];
+    [self configScaleDial:hTranRect];
+    _levelView = UIView.new;
+    _levelView.frame = CGRectMake (0,0,_radius*0.75, 1);
+    _levelView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
+    _levelView.backgroundColor = UIColor.whiteColor;
+    _verticalView = UIView.new;
+    _verticalView.frame = CGRectMake (0,0,1,_levelView.frame.size.width);
+    _verticalView.center = CGPointMake(_dScaView.frame.size.width / 2,_dScaView.frame.size.height / 2);
+    _verticalView.backgroundColor = UIColor.whiteColor;
+    [_dScaView addSubview:_levelView];
+    [_dScaView addSubview:_verticalView];
+
+    CloseTRANS2 (&hTranRect);
 }
 
 -(void) optionsButtonTapped
@@ -427,6 +482,15 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     CGPoint rtn = CGPointMake (center.x + x,center.y + y);
     return rtn;
 }
+-(CGPoint) calculateTextPositonWithArcCenter: (CGPoint) center
+                                    andAngle:(CGFloat) angle
+                                    andDistance:(CGFloat) dist
+{
+    CGFloat x = dist * cosf((angle));
+    CGFloat y = dist * sinf((angle));
+    CGPoint rtn = CGPointMake (center.x + x,center.y + y);
+    return rtn;
+}
 
 //MARK: - Update multiple times
 -(void) resetDirection:(CGFloat) heading
@@ -441,8 +505,11 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     }
     //_backgroundView.subviews[1].transform =  CGAffineTransformIdentity;
 }
-
-- (void) configScaleDial
+-(void) setRadius:(CGFloat)radius
+{
+    _radius = radius;
+}
+- (void) configScaleDialold:(HANDLE)hTranRect
 {
     //return;
     CGFloat degree_360 = M_PI;
@@ -454,8 +521,11 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
     
     _po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
-    _radius = _dScaView.frame.size.width / 2 - 90*_widthFactor/2;
-    
+//    _radius = _dScaView.frame.size.width / 2 - 90*_widthFactor/2;
+    self.radius = min(_dScaView.frame.size.width,_dScaView.frame.size.height) / 2 - 100*_widthFactor/2;
+    int tickLineWidth1 = IDNINT(_radius * 0.13);
+    int tickLineWidth2 = IDNINT(_radius * 0.14);
+
     //create 2 degree ticks
     _tickShapes = NSMutableArray.new;
     for (int i=0;i< 180;i++)
@@ -473,13 +543,13 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
             {
                 shapeLayer.baseColor = UIColor.whiteColor;
                 shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
-                shapeLayer.lineWidth = 20*_widthFactor;
+                shapeLayer.lineWidth = tickLineWidth2;
             }
             else
             {
                 shapeLayer.baseColor = UIColor.lightGrayColor;
                 shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
-                shapeLayer.lineWidth = 20*_widthFactor;
+                shapeLayer.lineWidth = tickLineWidth1;
             }
             shapeLayer.currentColor = shapeLayer.baseColor;
             shapeLayer.path = bezPath.CGPath;
@@ -505,7 +575,6 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
             // UILabel
             UILabel* label = UILabel.new;
             label.frame = CGRectMake(point.x,point.y, 30*_widthFactor,30*_widthFactor*_widthFactor/2);
-            label.center = point;
             label.textColor = UIColor.whiteColor;
             label.font = [UIFont systemFontOfSize: 12];
             label.textAlignment = NSTextAlignmentCenter;
@@ -513,6 +582,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
             {
                 label.text = tickText;
                 label.backgroundColor = UIColor.blackColor;
+                label.frame = CGRectMake(point.x,point.y, tickLineWidth2*2,tickLineWidth2);
             }
             else
             {
@@ -522,6 +592,118 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
                 label.backgroundColor = UIColor.blackColor;
                 [self DrawRedTriangleView:label];
             }
+            label.center = point;
+            [_backgroundView addSubview:label];
+            
+            if (i % 45 == 0)
+            {
+                //create NESW labels
+                NSString * tickText = directionArray[i / 45];
+                
+                CGPoint point2  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1];
+                // UILabel
+                UILabel * label2 = UILabel.new;
+                label2.frame = CGRectMake (point2.x, point2.y,30*_widthFactor,30*_widthFactor);
+                label2.center = point2;
+                label2.text = tickText;
+                label2.textColor = UIColor.whiteColor;
+                label2.font = [UIFont boldSystemFontOfSize: 26];
+                label2.textAlignment = NSTextAlignmentCenter;
+                label2.backgroundColor = UIColor.clearColor;
+                
+                if ([tickText isEqual:@"N"])
+                {
+                    
+                }
+                [_backgroundView addSubview:label2];
+            }
+        }
+    }
+}
+
+- (void) configScaleDial:(HANDLE)hTranRect
+{
+    //return;
+    CGFloat degree_360 = M_PI;
+    
+    CGFloat degree_180  = degree_360 / 2;
+    
+    CGFloat angle = degree_360 / 90;
+    
+    NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
+    _po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
+    self.radius = min(_dScaView.frame.size.width,_dScaView.frame.size.height) / 2 - 100*_widthFactor/2;
+    CGRect radiusRect = CGRectMake(0, 0, _radius, _radius);
+    radiusRect = TranCGRect(radiusRect,hTranRect);
+    //_radius = min (radiusRect.size.width,radiusRect.size.height)/2;
+    int tickLineWidth1 = IDNINT(_radius * 0.13);
+    int tickLineWidth2 = IDNINT(_radius * 0.14);
+    //create 2 degree ticks
+    _tickShapes = NSMutableArray.new;
+    for (int i=0;i< 180;i++)
+    {
+        CGFloat startAngle  = -(degree_180 + degree_360 / 180 / 2) + angle * i;
+        CGFloat endAngle  = startAngle + angle / 2;
+        
+        UIBezierPath *bezPath = [UIBezierPath bezierPathWithArcCenter:_po radius:_radius startAngle:startAngle endAngle:endAngle clockwise:true];
+        
+        //if (i % 45 != 0)
+        {
+            CompassShapeLayer * shapeLayer = CompassShapeLayer.new;
+            
+            if (i % 15 == 0)
+            {
+                shapeLayer.baseColor = UIColor.whiteColor;
+                shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
+                shapeLayer.lineWidth = tickLineWidth2;
+            }
+            else
+            {
+                shapeLayer.baseColor = UIColor.lightGrayColor;
+                shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
+                shapeLayer.lineWidth = tickLineWidth1;
+            }
+            shapeLayer.currentColor = shapeLayer.baseColor;
+            shapeLayer.path = bezPath.CGPath;
+            shapeLayer.fillColor = UIColor.clearColor.CGColor;
+            shapeLayer.heading = i * 2 + 1;
+            [_backgroundView.layer addSublayer:shapeLayer];
+            [_tickShapes addObject:shapeLayer];
+        }
+    }
+    //create 30 degree labels
+    for (int i=0;i< 180;i++)
+    {
+        if (i % 15 == 0)
+        {
+            CGFloat startAngle  = -(degree_180 + degree_360 / 180 / 2) + angle * i;
+            CGFloat endAngle  = startAngle + angle / 2;
+            NSString *  tickText = [NSString stringWithFormat:@"%i",i * 2];
+            
+            CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
+            
+            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andDistance:_radius + tickLineWidth2 * 1.1];
+            //point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
+            // UILabel
+            UILabel* label = UILabel.new;
+            label.textColor = UIColor.whiteColor;
+            label.font = [UIFont systemFontOfSize: 12];
+            label.textAlignment = NSTextAlignmentCenter;
+            if (i)
+            {
+                label.frame = CGRectMake(point.x,point.y, tickLineWidth2*1.5,tickLineWidth2);
+                label.text = tickText;
+                label.backgroundColor = UIColor.blackColor;
+            }
+            else
+            {
+                point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andDistance:_radius + tickLineWidth2 * 1.25];
+                label.frame = CGRectMake(point.x,point.y, tickLineWidth2*1.8,1.5*tickLineWidth2);
+                label.backgroundColor = UIColor.blackColor;
+                [self DrawRedTriangleView:label];
+            }
+            label.center = point;
+
             [_backgroundView addSubview:label];
             
             if (i % 45 == 0)
@@ -1205,6 +1387,13 @@ double HeadingFromAZ (double az)
         opt = 0;
     return;
 }
+
+- (void) setInfoLabelText:(NSString*)text
+{
+    if (text.length > 100)
+        iii = 1;
+    _infoLabel.text = text;
+}
 -(void) update
 {
     UIDevice * device = UIDevice.currentDevice;
@@ -1243,7 +1432,7 @@ double HeadingFromAZ (double az)
     if (theHeading > 270 + 45)
         directionLabelText = @"N";
     
-    _infoLabel.text = [NSString stringWithFormat:@"%i %@",angle,directionLabelText];
+    [self setInfoLabelText:[NSString stringWithFormat:@"%i %@",angle,directionLabelText]];
     _infoLabelOption = 0;
     CRAPI.sharedInstance.currentFocusWaypoint = -1;
     [self removeProfileLayers];
@@ -1259,7 +1448,7 @@ double HeadingFromAZ (double az)
                 double curAz = DegreesToRadians(theHeading);
                 if (dist / METERS_PER_YARD < _atDistance)
                 {
-                    _infoLabel.text = [NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD];
+                    [self setInfoLabelText:[NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD]];
                     _infoLabel.textColor = UIColor.whiteColor;
                     if ([waypoint.type isEqual:@"RoutePoint"])
                         _currentRoutePointNumber = waypoint.refno;
@@ -1289,7 +1478,7 @@ double HeadingFromAZ (double az)
                         {
                             units = @"yards";
                             dist = dist / METERS_PER_YARD;
-                            _infoLabel.text = [NSString stringWithFormat:@"Near %@: %.0f %@",waypoint.name,dist,units];
+                            [self setInfoLabelText:[NSString stringWithFormat:@"Near %@: %.0f %@",waypoint.name,dist,units]];
                         }
                         else
                         {
@@ -1303,7 +1492,7 @@ double HeadingFromAZ (double az)
                                     offDir = @"R";
                                 offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
                             }
-                            _infoLabel.text = [NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
+                            [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
                         }
                         if (_offCourseTimer)
                             _infoLabel.textColor = UIColor.orangeColor;
@@ -1420,26 +1609,34 @@ double HeadingFromAZ (double az)
     for (int i=0;i<nPixels;i++)
     {
         pElev[i] = [dtm getElevation:&pt[i]];
-        _minElev = MIN (_minElev,pElev[i]);
-        _maxElev = MAX (_maxElev,pElev[i]);
-        pPoint[i].x = i;
-        if (i)
+        if (pElev[i] != dtm.NullElv)
         {
-            grade = fabs((pElev[i]-pElev[i-1])/feetPerPixel);
-            pGrade[i-1] = grade;
-            _maxGrade = max (_maxGrade,pGrade[i-1]);
+            _minElev = MIN (_minElev,pElev[i]);
+            _maxElev = MAX (_maxElev,pElev[i]);
+            pPoint[i].x = i;
+            if (i)
+            {
+                if (pElev[i-1] != dtm.NullElv)
+                {
+                    grade = min (1000,100.0 * fabs((pElev[i]-pElev[i-1])/feetPerPixel));
+                    pGrade[i-1] = grade;
+                    _maxGrade = max (_maxGrade,pGrade[i-1]);
+                }
+                else
+                    pGrade[i-1] = 1000;
+            }
         }
     }
-    double profileImageHeight = _profileView.frame.size.height - _infoLabel.frame.size.height;
+    double profileImageHeight = _profileView.frame.size.height;
     double profileImageWidth = _profileView.frame.size.width;
-    double profileImageTop = _profileView.frame.origin.y + _infoLabel.frame.size.height;
+    double profileImageTop = 0;//_profileView.frame.origin.y;
     double atLoc = profileImageWidth * xPct;
     double factor = _heightExpansion * nPixels / (groundDist);
     double centerY = profileImageHeight/2 - (_maxElev - _minElev) / 2 * factor;
     double atY = profileImageWidth;
     for (int i=0;i<nPixels;i++)
     {
-        pPoint[i].y = profileImageHeight + centerY + (_maxElev - pElev[i]) * factor;
+        pPoint[i].y = centerY + (_maxElev - pElev[i]) * factor;
         if ((i < (nPixels - 1)) && pPoint[i].x <= atLoc && pPoint[i+1].x >= atLoc)
             atY = pPoint[i].y;
     }
