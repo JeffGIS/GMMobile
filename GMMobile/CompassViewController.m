@@ -203,7 +203,7 @@ BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
         CGPoint location = [sender locationInView:sender.view];
         CGPoint locationInView;
         NSLog([NSString stringWithFormat:@"Tap at:%f %f",location.x,location.y]);
-        if (PointInSuperView(location,_infoLabel,_profileView))
+        if (PointInSuperView(location,_infoLabel,self.view))
         {
             NSLog (@"In infoLabel");
             locationInView = [sender locationOfTouch:0 inView:_infoLabel];
