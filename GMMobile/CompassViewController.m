@@ -86,6 +86,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property UIImageView *wind;
 @property UILabel *windLabel;
 @property UILabel *sunLabel;
+@property CGFloat tickLineWidth1, tickLineWidth2;
 
 
 @end
@@ -438,7 +439,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 -(void) weatherButtonTapped
 {
     [self getWeatherData];
-    [self configUI];
+//    [self configUI];
 }
 
 - (UIImage *)imageByDrawingCircleOnImage:(UIImage *)image
@@ -636,8 +637,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     CGRect radiusRect = CGRectMake(0, 0, _radius, _radius);
     radiusRect = TranCGRect(radiusRect,hTranRect);
     //_radius = min (radiusRect.size.width,radiusRect.size.height)/2;
-    int tickLineWidth1 = IDNINT(_radius * 0.13);
-    int tickLineWidth2 = IDNINT(_radius * 0.14);
+    _tickLineWidth1 = IDNINT(_radius * 0.13);
+    _tickLineWidth2 = IDNINT(_radius * 0.14);
     //create 2 degree ticks
     _tickShapes = NSMutableArray.new;
     for (int i=0;i< 180;i++)
@@ -655,13 +656,13 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
             {
                 shapeLayer.baseColor = UIColor.whiteColor;
                 shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
-                shapeLayer.lineWidth = tickLineWidth2;
+                shapeLayer.lineWidth = _tickLineWidth2;
             }
             else
             {
                 shapeLayer.baseColor = UIColor.lightGrayColor;
                 shapeLayer.strokeColor = shapeLayer.baseColor.CGColor;
-                shapeLayer.lineWidth = tickLineWidth1;
+                shapeLayer.lineWidth = _tickLineWidth1;
             }
             shapeLayer.currentColor = shapeLayer.baseColor;
             shapeLayer.path = bezPath.CGPath;
@@ -682,7 +683,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
             
             CGFloat textAngle = startAngle + (endAngle - startAngle) / 2;
             
-            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andDistance:_radius + tickLineWidth2 * 1.1];
+            CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andDistance:_radius + _tickLineWidth2 * 1.2];
             //point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: 1.0+.2*_widthFactor];
             // UILabel
             UILabel* label = UILabel.new;
@@ -691,14 +692,14 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
             label.textAlignment = NSTextAlignmentCenter;
             if (i)
             {
-                label.frame = CGRectMake(point.x,point.y, tickLineWidth2*1.5,tickLineWidth2);
+                label.frame = CGRectMake(point.x,point.y, _tickLineWidth2*1.5,_tickLineWidth2);
                 label.text = tickText;
                 label.backgroundColor = UIColor.blackColor;
             }
             else
             {
-                point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andDistance:_radius + tickLineWidth2 * 1.25];
-                label.frame = CGRectMake(point.x,point.y, tickLineWidth2*1.8,1.5*tickLineWidth2);
+                point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andDistance:_radius + _tickLineWidth2 * 1.35];
+                label.frame = CGRectMake(point.x,point.y, _tickLineWidth2*1.8,1.5*_tickLineWidth2);
                 label.backgroundColor = UIColor.blackColor;
                 [self DrawRedTriangleView:label];
             }
@@ -983,9 +984,11 @@ double HeadingFromAZ (double az)
     CGFloat factor = 1.8;
     CGFloat windDir = DegreesToRadians (_currentWindDirection);
     windDir = LTWOPI (windDir - HALFPI);
-    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andScale: 1.22];
-    _wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
-    _windLabel = [[UILabel alloc] initWithFrame:CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*20*_widthFactor)];
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andDistance:_radius + _tickLineWidth2*1.3];
+    CGRect frame = _dScaView.frame;
+    CGFloat windWidth = _po.x - _radius - _tickLineWidth2/2;
+    _wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, windWidth,windWidth)];
+    _windLabel = [[UILabel alloc] initWithFrame:_wind.frame];
     _wind.backgroundColor = UIColor.clearColor;
     _windLabel.backgroundColor = UIColor.clearColor;
     UIColor *blue = [[UIColor alloc] initWithRed:0.0
