@@ -87,6 +87,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property UILabel *windLabel;
 @property UILabel *sunLabel;
 @property CGFloat tickLineWidth1, tickLineWidth2;
+@property WeatherRecord* currentWeatherRecord;
 
 
 @end
@@ -97,13 +98,6 @@ DPOINT saveFromUTM, saveToUTM;
     [super viewDidLoad];
     _wd = WeatherData.new;
     _currentWindSpeed = -1;
-    CGRect r = self.view.frame;
-    r = UIScreen.mainScreen.bounds;
-    _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
-    _screenH = UIScreen.mainScreen.bounds.size.height;
-    _screenW = UIScreen.mainScreen.bounds.size.width;
-    _heightFactor = _screenH / 926;
-    _widthFactor = _screenW / 428;
     _heightExpansion = 4;
     _lastToDist = 0;
     _forward = TRUE;
@@ -128,7 +122,9 @@ DPOINT saveFromUTM, saveToUTM;
 
 -(void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    return;
+    [self destroyUI];
+    [self configUI];
+    [self updateWeather];
 }
 
 -(void) viewWillAppear:(BOOL)animated
@@ -266,6 +262,14 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 }
 -(void)configUI
 {
+    CGRect r = self.view.frame;
+    r = UIScreen.mainScreen.bounds;
+    _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    _screenH = UIScreen.mainScreen.bounds.size.height;
+    _screenW = UIScreen.mainScreen.bounds.size.width;
+    _heightFactor = _screenH / 926;
+    _widthFactor = _screenW / 428;
+
     int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
     int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
@@ -296,10 +300,9 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [self.view  addSubview:_optionsButton];
     
     _weatherLabel = UILabel.new;
-    _weatherLabel.frame = CGRectMake(right-160,top,160,55);
-    _weatherLabel.frame = TranCGRect(getCGRect(@"_weatherLabel.frame",_weatherLabel.frame),hTranRect);
+    _weatherLabel.frame = CGRectMake(right-160*_widthFactor,top,160*_widthFactor,55*_heightFactor);
     frame = _weatherLabel.frame;
-    _weatherLabel.backgroundColor = UIColor.blackColor;
+    _weatherLabel.backgroundColor = UIColor.greenColor;
     _weatherLabel.textColor = UIColor.whiteColor;
     _weatherLabel.font =[UIFont systemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
@@ -409,7 +412,27 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 
     CloseTRANS2 (&hTranRect);
 }
+ -(void) destroyUI
+{
+    [_optionsButton removeFromSuperview];
 
+    [_weatherLabel removeFromSuperview];
+    [_weatherButton removeFromSuperview];
+
+    [_sunRiseSetLabel removeFromSuperview];
+
+    [_backgroundView removeFromSuperview];
+    [_lineView removeFromSuperview];
+    [_compassTriangleView removeFromSuperview];
+
+    [_levelView removeFromSuperview];
+    [_verticalView removeFromSuperview];
+    [_dScaView removeFromSuperview];
+    [_infoLabel removeFromSuperview];
+    [_profileView removeFromSuperview];
+    [_selectDateLabel removeFromSuperview];
+
+}
 -(void) optionsButtonTapped
 {
     HuntingData *hd = HuntingData.new;
@@ -1267,6 +1290,15 @@ double HeadingFromAZ (double az)
 }
 - (void)weatherDataDidReturnData:(WeatherRecord*)data
 {
+    _currentWeatherRecord = data;
+    [self updateWeather];
+}
+
+- (void) updateWeather
+{
+    if (!_currentWeatherRecord)
+        return;
+    WeatherRecord* data = _currentWeatherRecord;
     _currentTemp = data.temp;
     _currentWindSpeed = data.windSpeed;
     _currentWindDirection = data.windDir;
@@ -1863,4 +1895,20 @@ int GetGradeLevel (double grade)
     [CRAPI.sharedInstance.currentRoute addObject:routePoint];
     return;
 }
+- (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+    return;
+}
+
+- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        if (orientation == UIDeviceOrientationLandscapeLeft || orientation == UIDeviceOrientationLandscapeRight)
+            return 0.0;
+    }
+    
+    return 20.0;
+}
+
 @end
