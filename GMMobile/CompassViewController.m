@@ -263,6 +263,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 -(void)configUI
 {
     CGRect r = self.view.frame;
+    CGRect frame;
+
     r = UIScreen.mainScreen.bounds;
     _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     _screenH = UIScreen.mainScreen.bounds.size.height;
@@ -274,7 +276,6 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
     int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
     int bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom;
-    CGRect frame;
     CGRect selfViewFrame = CGRectMake(left, top, right,bottom);
     CGRect templateFrame = CGRectMake(0, 47, 428, 892);
     //NSLog (@"%.1f, %.1f, %.1f, %.1f",selfViewFrame.origin.x,selfViewFrame.origin.y,selfViewFrame.size.width,selfViewFrame.size.height);
@@ -287,8 +288,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     _optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _optionsButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     _optionsButton.backgroundColor = UIColor.whiteColor;
-    _optionsButton.frame = CGRectMake(left,top,40,40);
-    _optionsButton.frame = TranCGRect(getCGRect(@"_optionsButton.frame",_optionsButton.frame),hTranRect);
+    _optionsButton.frame = CGRectMake(left,top,50*_heightFactor,50*_heightFactor);
 
     [_optionsButton setImage:[UIImage imageWithContentsOfFile:
                       [NSBundle.mainBundle pathForResource:@"list"
@@ -298,11 +298,23 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
                                action:@selector(optionsButtonTapped)
                      forControlEvents:UIControlEventTouchUpInside];
     [self.view  addSubview:_optionsButton];
-    
+
+    _sunRiseSetLabel = UILabel.new;
+    _sunRiseSetLabel.frame = CGRectMake(_optionsButton.frame.origin.x+_optionsButton.frame.size.width,top,160*_widthFactor,_optionsButton.frame.size.height);
+    _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
+    _sunRiseSetLabel.textColor = UIColor.whiteColor;
+    _sunRiseSetLabel.font =[UIFont systemFontOfSize: 20];
+    _sunRiseSetLabel.adjustsFontSizeToFitWidth = YES;
+    _sunRiseSetLabel.textAlignment = NSTextAlignmentCenter;
+    _sunRiseSetLabel.numberOfLines = 3;
+    _sunRiseSetLabel.text = @"Sunrise:5:31\nSunset:7:33";
+    [self.view  addSubview:_sunRiseSetLabel];
+
     _weatherLabel = UILabel.new;
-    _weatherLabel.frame = CGRectMake(right-160*_widthFactor,top,160*_widthFactor,55*_heightFactor);
-    frame = _weatherLabel.frame;
-    _weatherLabel.backgroundColor = UIColor.greenColor;
+    frame = _sunRiseSetLabel.frame;
+    frame.origin.x = right - frame.size.width - _optionsButton.frame.size.width/2;
+    _weatherLabel.frame = frame;
+    _weatherLabel.backgroundColor = UIColor.blackColor;
     _weatherLabel.textColor = UIColor.whiteColor;
     _weatherLabel.font =[UIFont systemFontOfSize: 20];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
@@ -323,18 +335,6 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [self.view  addSubview:_weatherLabel];
     [self.view  addSubview:_weatherButton];
 
-    _sunRiseSetLabel = UILabel.new;
-    _sunRiseSetLabel.frame = CGRectMake(left+50,top,120,55);
-    _sunRiseSetLabel.frame = TranCGRect (getCGRect(@"_sunRiseSetLabel.frame",_sunRiseSetLabel.frame),hTranRect);
-    _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
-    _sunRiseSetLabel.textColor = UIColor.whiteColor;
-    _sunRiseSetLabel.font =[UIFont systemFontOfSize: 20];
-    _sunRiseSetLabel.adjustsFontSizeToFitWidth = YES;
-    _sunRiseSetLabel.textAlignment = NSTextAlignmentCenter;
-    _sunRiseSetLabel.numberOfLines = 3;
-    _sunRiseSetLabel.text = @"Sunrise:5:31\nSunset:7:33";
-    [self.view  addSubview:_sunRiseSetLabel];
-
 
     
     _dScaView = UIView.new;
@@ -347,8 +347,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     _dScaView.frame = CGRectMake(_dScaView.frame.origin.x,_dScaView.frame.origin.y,
                                  min(_dScaView.frame.size.width,_dScaView.frame.size.height),min(_dScaView.frame.size.width,_dScaView.frame.size.height));
     _lineView = UIView.new;
-    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 1.5, 0.05*_screenH,5,65);
-    _lineView.frame = TranCGRect(getCGRect (@"_lineView.frame",_lineView.frame),hTranRect);
+    _lineView.frame = CGRectMake (self.view.frame.size.width / 2 - 2*_widthFactor, top,4*_widthFactor,_dScaView.frame.origin.y-top);
     _lineView.backgroundColor = UIColor.whiteColor;
     _compassTriangleView = UIView.new;
     _compassTriangleView.frame = TranCGRect(CGRectMake(0,0,_screenW,_screenW),hTranRect);
@@ -414,6 +413,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 }
  -(void) destroyUI
 {
+    [self.view removeGestureRecognizer:_singleFingerTap];
     [_optionsButton removeFromSuperview];
 
     [_weatherLabel removeFromSuperview];
@@ -449,6 +449,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [_profileView setUserInteractionEnabled:NO];
     [self.view setMultipleTouchEnabled:NO];
     [_singleFingerTap setEnabled:NO];
+
     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                       delegate:self
                                                                          title:@"Compass Options"
@@ -655,13 +656,14 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     CGFloat angle = degree_360 / 90;
     
     NSArray * directionArray = @[@"N", @"E", @"S", @"W"];
+
+    _tickLineWidth1 = min(_dScaView.frame.size.width,_dScaView.frame.size.height) * 0.05;
+    _tickLineWidth2 = min(_dScaView.frame.size.width,_dScaView.frame.size.height) * 0.06;
     _po = CGPointMake (_dScaView.frame.size.width / 2, _dScaView.frame.size.height / 2);
-    self.radius = min(_dScaView.frame.size.width,_dScaView.frame.size.height) / 2 - 100*_widthFactor/2;
+    self.radius = min(_dScaView.frame.size.width,_dScaView.frame.size.height) / 2 - _tickLineWidth2*2.5;
     CGRect radiusRect = CGRectMake(0, 0, _radius, _radius);
     radiusRect = TranCGRect(radiusRect,hTranRect);
     //_radius = min (radiusRect.size.width,radiusRect.size.height)/2;
-    _tickLineWidth1 = IDNINT(_radius * 0.13);
-    _tickLineWidth2 = IDNINT(_radius * 0.14);
     //create 2 degree ticks
     _tickShapes = NSMutableArray.new;
     for (int i=0;i< 180;i++)
@@ -978,14 +980,16 @@ double HeadingFromAZ (double az)
     else
         pctYellow = 0.9;
     UIColor *sunColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:pctYellow];
-    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andScale: 1.24];
+    //CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andScale: 1.24];
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: sunAz andDistance:_radius + _tickLineWidth2*1.45];
+
     _sunLabel.textAlignment = NSTextAlignmentCenter;
     int fontSize = 20;
     _sunLabel.text = [NSString stringWithFormat:@"%i",degreesAboveHorizon];
     _sunLabel.backgroundColor = sunColor;
     _sunLabel.textColor = UIColor.blackColor;
     _sunLabel.font = [UIFont boldSystemFontOfSize: fontSize * factor];
-    _sunLabel.frame = CGRectMake(point.x,point.y, factor*28*_widthFactor,factor*28*_widthFactor);
+    _sunLabel.frame = CGRectMake(point.x,point.y, _tickLineWidth2*2,_tickLineWidth2*2);
     _sunLabel.center = point;
     _sunLabel.clipsToBounds = true;
     _sunLabel.layer.cornerRadius = _sunLabel.frame.size.width / 2;
@@ -1007,9 +1011,9 @@ double HeadingFromAZ (double az)
     CGFloat factor = 1.8;
     CGFloat windDir = DegreesToRadians (_currentWindDirection);
     windDir = LTWOPI (windDir - HALFPI);
-    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andDistance:_radius + _tickLineWidth2*1.3];
+    CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: windDir andDistance:_radius + _tickLineWidth2*1.4];
     CGRect frame = _dScaView.frame;
-    CGFloat windWidth = _po.x - _radius - _tickLineWidth2/2;
+    CGFloat windWidth = _tickLineWidth2 * 2;
     _wind = [[UIImageView alloc] initWithFrame:CGRectMake(point.x,point.y, windWidth,windWidth)];
     _windLabel = [[UILabel alloc] initWithFrame:_wind.frame];
     _wind.backgroundColor = UIColor.clearColor;
@@ -1199,6 +1203,15 @@ double HeadingFromAZ (double az)
     }
 
 }
+
+-(void) popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+    [_singleFingerTap setEnabled:YES];
+
+}
+
+
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
@@ -1400,13 +1413,6 @@ double HeadingFromAZ (double az)
     rtn = DegreesToRadians (Az-90);
     return rtn;
 }
--(void) popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
-{
-    [popoverTableView hide:YES];
-    [_singleFingerTap setEnabled:YES];
-
-}
-
 -(void) profileViewPicked:(CGPoint)atPoint
 {
     return;
