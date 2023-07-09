@@ -1438,11 +1438,13 @@ double HeadingFromAZ (double az)
 -(void) update
 {
     UIDevice * device = UIDevice.currentDevice;
-    CGFloat magneticHeading = [self heading:_nowHeading.magneticHeading fromOrirntation: device.orientation];
+    //CGFloat magneticHeading = [self heading:_nowHeading.magneticHeading fromOrirntation: device.orientation];
     
-    CGFloat trueHeading = [self heading:_nowHeading.trueHeading fromOrirntation: device.orientation];
-    
-    CGFloat headi = -1.0 * M_PI * _nowHeading.magneticHeading / 180.0;
+    //CGFloat trueHeading = [self heading:_nowHeading.trueHeading fromOrirntation: device.orientation];
+    CGFloat head = _nowHeading.trueHeading;
+    if (head < 0)
+        head = _nowHeading.magneticHeading;
+    CGFloat headi = -1.0 * M_PI * head / 180.0;
     //_infoLabel.text = @"\(Int(magneticHeading))";
     [self resetDirection:headi];
     _lastResetHeading = headi;
