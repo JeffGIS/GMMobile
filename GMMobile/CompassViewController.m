@@ -1450,7 +1450,6 @@ double HeadingFromAZ (double az)
     _lastResetHeading = headi;
 
     CLLocationDirection theHeading = _nowHeading.magneticHeading > 0 ? _nowHeading.magneticHeading : _nowHeading.trueHeading;
-    theHeading = _nowHeading.trueHeading;
     _currentHeading = theHeading;
     [self createRedTicks];
 
