@@ -1650,7 +1650,11 @@ double HeadingFromAZ (double az)
     
     for (int i=0;i<nPixels;i++)
     {
+//        DPOINT ptx={492061,4937127};
+//        double e =[dtm getElevation:&ptx];
         pElev[i] = [dtm getElevation:&pt[i]];
+//        if (pElev[i]>1200)
+//            ptx = pt[i];
         if (pElev[i] != dtm.NullElv)
         {
             _minElev = MIN (_minElev,pElev[i]);
