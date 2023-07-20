@@ -32,7 +32,10 @@
         _backedUpDirectory = UserDefaults.defaults.localFilePath;
         _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/mndtm1.dts"];
         _pathDTM_BIN = [_documentsDirectory stringByAppendingString:@"/DTM/mndtm1.bin"];
-        
+        _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/43cjoC.dts"];
+        _pathDTM_BIN = [_documentsDirectory stringByAppendingString:@"/DTM/43cjoC.bin"];
+        _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/DTMIndex.dti"];
+
 
         NSLog(@"DTM Database init");
     }
@@ -46,7 +49,7 @@
     NSLog(@"DTM Database dealloc");
 }
 
-- (BOOL)open
+- (BOOL)open:(LPMNMXCORD) pBounds
 {
     BOOL rtn = FALSE;
     if (!_isOpen)
@@ -68,11 +71,11 @@
             _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_pathDTM.UTF8String, &_database), _database);
 
             _fidDTM_BIN = fopen (_pathDTM_BIN.UTF8String,"rb");
-            char file[MAX_PATH];
+            char file[MAX_PATH]={0};
             strncpy (file,_pathDTM.UTF8String,MAX_PATH);
             file[_pathDTM.length]= 0;
             _NullElv = DBL_MAX;
-            _hDTM = DTMOpen (file, _NullElv,_database,_fidDTM_BIN,&_surfType);
+            _hDTM = DTMOpen (file, _NullElv,_database,_fidDTM_BIN,&_surfType,pBounds);
             
             _version = [self DTMVersion];
             rtn = YES;
@@ -96,7 +99,7 @@
 - (int) DTMVersion
 {
     int version = 0;
-    NSString *query = [NSString stringWithFormat:@"SELECT Version FROM DTMINFO"];
+    NSString *query = [NSString stringWithFormat:@"SELECT VersionNum FROM VERSION"];
     
     sqlite3_stmt *statement = NULL;
     

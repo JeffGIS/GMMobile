@@ -1373,7 +1373,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     //NSMutableArray * classBounds = NSMutableArray.new;
     long long rtn = -1;
-    double value=0, lastValue=DBL_MIN;
+    double value=0, lastValue=-DBL_MAX;
     double d95percentValue=maxVal;
     int i95percentCount = 0.95 * numValues;
     [self commitTransaction];
@@ -1553,7 +1553,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
 
         CloseTRANS2P(&_pTranLLtoView);
         CloseTRANS2P(&_pTranViewtoLL);
-        double minValue=DBL_MAX, maxValue=DBL_MIN;
+        double minValue=DBL_MAX, maxValue=-DBL_MAX;
         double area;
         int nDecimals = 0;
         double factor = [NVMetroSettings.sharedInstance factorForField:field inTable:type numDecimals:&nDecimals];

@@ -1417,7 +1417,7 @@ double HeadingFromAZ (double az)
 {
     return;
     DTMData * dtm = DTMData.new;
-    BOOL opened = [dtm open];
+    BOOL opened = [dtm open:0];
     LLPOINT llPoint;
     static int opt = 0;
     
@@ -1505,15 +1505,16 @@ double HeadingFromAZ (double az)
                     double daz = DeltaAZD(wpaz, curAz);
                     if ((CRAPI.sharedInstance.currentSelectedWaypoint <= 0 && fabs (daz) < 0.2) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
                     {
+                        BOOL haveProfile = FALSE;
                         _maxElev= _maxGrade = 0;
                         NSString *units = @"miles";
                         CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
                         if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
-                            [self displayProfile:_currentPoint
+                            haveProfile = [self displayProfile:_currentPoint
                                           to:waypoint.latlon
                                  checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
                         else
-                            [self displayProfile:_currentPoint
+                            haveProfile = [self displayProfile:_currentPoint
                                           to:waypoint.latlon
                                  checkOffset:NO];
                         if (dist / METERS_PER_YARD < _nearDist)
@@ -1534,7 +1535,8 @@ double HeadingFromAZ (double az)
                                     offDir = @"R";
                                 offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
                             }
-                            [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
+                            if (haveProfile)
+                                [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
                         }
                         if (_offCourseTimer)
                             _infoLabel.textColor = UIColor.orangeColor;
@@ -1561,10 +1563,11 @@ double HeadingFromAZ (double az)
     }
     [_stickManView removeFromSuperview];
 }
--(void) displayProfile:(LLPOINT)atLL
+-(BOOL) displayProfile:(LLPOINT)atLL
                     to:(LLPOINT)toLL
            checkOffset:(BOOL) checkOff
 {
+    BOOL rtn = FALSE;
     static LLPOINT fromLL = {0};
     static LLPOINT lastToLL = {0};
     CGRect frame = _profileView.frame;
@@ -1638,13 +1641,15 @@ double HeadingFromAZ (double az)
     }
     nPixels = npt;
     DTMData * dtm = DTMData.new;
-    BOOL opened = [dtm open];
+    MNMXCORD bounds = PolyBounds(pt, npt);
+
+    BOOL opened = [dtm open:&bounds];
 
     LPDOUBLE pElev = malloc (nPixels * sizeof(double) + 4);
     LPDOUBLE pGrade = malloc (nPixels * sizeof(double) + 4);
     CGPoint * pPoint = malloc (nPixels * sizeof(CGPoint) + 4);
     _minElev = DBL_MAX;
-    _maxElev = DBL_MIN;
+    _maxElev = -DBL_MAX;
     _maxGrade = 0;
     double grade;
     
@@ -1657,6 +1662,7 @@ double HeadingFromAZ (double az)
 //            ptx = pt[i];
         if (pElev[i] != dtm.NullElv)
         {
+            rtn = TRUE;
             _minElev = MIN (_minElev,pElev[i]);
             _maxElev = MAX (_maxElev,pElev[i]);
             pPoint[i].x = i;
@@ -1673,85 +1679,89 @@ double HeadingFromAZ (double az)
             }
         }
     }
-    double profileImageHeight = _profileView.frame.size.height;
-    double profileImageWidth = _profileView.frame.size.width;
-    double profileImageTop = 0;//_profileView.frame.origin.y;
-    double atLoc = profileImageWidth * xPct;
-    double factor = _heightExpansion * nPixels / (groundDist);
-    double centerY = profileImageHeight/2 - (_maxElev - _minElev) / 2 * factor;
-    double atY = profileImageWidth;
-    for (int i=0;i<nPixels;i++)
+    if (rtn)
     {
-        pPoint[i].y = centerY + (_maxElev - pElev[i]) * factor;
-        if ((i < (nPixels - 1)) && pPoint[i].x <= atLoc && pPoint[i+1].x >= atLoc)
-            atY = pPoint[i].y;
-    }
-    int i = 0;
-    int nlines = 0;
-    int gradeLevel;
-    int lastLevel = -1;
-    int lineWidth = 5;
-    UIBezierPath *profilePath;
-    do
-    {
-        int gradeLevel = GetGradeLevel (pGrade[i]);
-        if (gradeLevel != lastLevel)
+        CGRect frame = _profileView.frame;
+        double profileImageHeight = _profileView.frame.size.height;
+        double profileImageWidth = _profileView.frame.size.width;
+        double profileImageTop = 0;//_profileView.frame.origin.y;
+        double atLoc = profileImageWidth * xPct;
+        double factor = _heightExpansion * nPixels / (groundDist);
+        double centerY = profileImageHeight/2 - (_maxElev - _minElev) / 2 * factor;
+        double atY = profileImageWidth;
+        for (int i=0;i<nPixels;i++)
         {
-            if (lastLevel != -1)
+            pPoint[i].y = centerY + (_maxElev - pElev[i]) * factor;
+            if ((i < (nPixels - 1)) && pPoint[i].x <= atLoc && pPoint[i+1].x >= atLoc)
+                atY = pPoint[i].y;
+        }
+        int i = 0;
+        int nlines = 0;
+        int gradeLevel;
+        int lastLevel = -1;
+        int lineWidth = 5;
+        UIBezierPath *profilePath;
+        do
+        {
+            int gradeLevel = GetGradeLevel (pGrade[i]);
+            if (gradeLevel != lastLevel)
+            {
+                if (lastLevel != -1)
+                {
+                    [profilePath addLineToPoint:pPoint[i]];
+                    profileLayer.path = profilePath.CGPath;
+                    [_profileView.layer addSublayer:profileLayer];
+                    [_profileLayers addObject:profileLayer];
+                }
+                profileLayer = CAShapeLayer.layer;
+                profilePath = UIBezierPath.new;
+                profileLayer.fillColor = UIColor.clearColor.CGColor;
+                profileLayer.lineWidth = lineWidth;
+                profileLayer.strokeColor = gradeColors[gradeLevel].CGColor;
+                [profilePath moveToPoint:pPoint[i]];
+                nlines = 0;
+            }
+            else
             {
                 [profilePath addLineToPoint:pPoint[i]];
-                profileLayer.path = profilePath.CGPath;
-                [_profileView.layer addSublayer:profileLayer];
-                [_profileLayers addObject:profileLayer];
+                nlines++;
             }
-            profileLayer = CAShapeLayer.layer;
-            profilePath = UIBezierPath.new;
-            profileLayer.fillColor = UIColor.clearColor.CGColor;
-            profileLayer.lineWidth = lineWidth;
-            profileLayer.strokeColor = gradeColors[gradeLevel].CGColor;
-            [profilePath moveToPoint:pPoint[i]];
-            nlines = 0;
-        }
-        else
+            lastLevel = gradeLevel;
+            i++;
+        }while (i < nPixels);
+        //[profilePath closePath];
+        if (nlines >0)
         {
-            [profilePath addLineToPoint:pPoint[i]];
-            nlines++;
+            profileLayer.path = profilePath.CGPath;
+            [_profileView.layer addSublayer:profileLayer];
+            [_profileLayers addObject:profileLayer];
         }
-        lastLevel = gradeLevel;
-        i++;
-    }while (i < nPixels);
-    //[profilePath closePath];
-    if (nlines >0)
-    {
-        profileLayer.path = profilePath.CGPath;
-        [_profileView.layer addSublayer:profileLayer];
-        [_profileLayers addObject:profileLayer];
+        if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+        {
+            UIImage * stickManImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"StickManT"
+                                                                                                     ofType:@"png"]];
+            CGPoint point;
+            point.x = _profileView.frame.size.width/2;
+            point.y = _profileView.frame.size.height/2;
+            double stickManHeight = stickManImage.size.height/5;
+            double stickManWidth = stickManImage.size.width/5;
+            CGRect stickManRect = CGRectMake(atLoc,atY-stickManHeight,stickManWidth,stickManHeight);
+            _stickManView = [[UIImageView alloc] initWithFrame:stickManRect];
+            _stickManView.contentMode = UIViewContentModeScaleToFill;
+            _stickManView.backgroundColor = UIColor.clearColor;
+            if (!_forward)
+                _stickManView.transform = CGAffineTransformScale(CGAffineTransformIdentity,-1,1);
+            
+            _stickManView.image = stickManImage;
+            [_profileView addSubview:_stickManView];
+        }
     }
     free (pElev);
     free (pGrade);
     free (pt);
     [dtm close:opened];
     
-    if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
-    {
-        UIImage * stickManImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"StickManT"
-                                                                                                 ofType:@"png"]];
-        CGPoint point;
-        point.x = _profileView.frame.size.width/2;
-        point.y = _profileView.frame.size.height/2;
-        double stickManHeight = stickManImage.size.height/5;
-        double stickManWidth = stickManImage.size.width/5;
-        CGRect stickManRect = CGRectMake(atLoc,atY-stickManHeight,stickManWidth,stickManHeight);
-        _stickManView = [[UIImageView alloc] initWithFrame:stickManRect];
-        _stickManView.contentMode = UIViewContentModeScaleToFill;
-        _stickManView.backgroundColor = UIColor.clearColor;
-        if (!_forward)
-            _stickManView.transform = CGAffineTransformScale(CGAffineTransformIdentity,-1,1);
-        
-        _stickManView.image = stickManImage;
-        [_profileView addSubview:_stickManView];
-    }
-    return;
+    return rtn;
 }
 int GetGradeLevel (double grade)
 {

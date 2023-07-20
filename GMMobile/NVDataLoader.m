@@ -301,7 +301,7 @@ Top:
         case GetDatabaseSettingDTM:
         {
             DTMData *dtm = [[DTMData alloc] init];
-            BOOL opened = [dtm open];
+            BOOL opened = [dtm open:0];
             if (dtm.version >= 1)
                 rtn = YES;
             [dtm close:opened];

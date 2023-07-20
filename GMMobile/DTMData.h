@@ -11,7 +11,7 @@
 
 
 
-HANDLE DTMOpen (LPSTR FileNameIN, double NULLElv,LPsqlite3nv database,FILE* fidBin,LPSHORT pSurfType);
+HANDLE DTMOpen (LPSTR FileNameIN, double NULLElv,LPsqlite3nv database,FILE* fidBin,LPSHORT pSurfType,LPMNMXCORD pWindowBounds);
 void DTMClose (LPHANDLE pHandle);
 double NGIELV (DPOINT Point,HANDLE hSurf,short DesiredUnits);
 double NGIELV_bci (DPOINT Point,HANDLE hSurf,short DesiredUnits);
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property double NullElv;
 @property short surfType;
 @property int version;
-- (BOOL)open;
+- (BOOL)open:(LPMNMXCORD) pBounds;
 - (void)close:(BOOL)opened;
 -(double)getElevation:(LLPOINT *)llpoint;
 

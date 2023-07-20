@@ -404,7 +404,7 @@ top:
 {
     BOOL rtn = NO;
     
-    CGFloat y, minY = DBL_MAX, maxY = DBL_MIN;
+    CGFloat y, minY = DBL_MAX, maxY = -DBL_MAX;
     
     for (int area = 0; area < _numProfileAreas; area++)
     {
