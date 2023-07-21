@@ -803,13 +803,13 @@ $RETURN(1);
     
     if (numOutputPoints)
     {
-        FILE *fid = fopen(toPath.UTF8String, "wb");
+        FILE *fid = fopenGSSi(toPath.UTF8String, "wb");
         
         if (fid)
         {
             fwrite(&numOutputPoints, sizeof(int), 1, fid);
             fwrite(outputArray, (numOutputPoints * sizeof(DPOINT)), 1, fid);
-            fclose(fid);
+            fcloseGSSi(fid);
             rtn = YES;
         }
         

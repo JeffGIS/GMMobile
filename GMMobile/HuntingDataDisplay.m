@@ -614,7 +614,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         if (CRAPI.sharedInstance.evaluateEdges)
         {
             savePointsFile = [NSString stringWithFormat:@"%@savedPoints.bin", NSTemporaryDirectory()];
-            savePointsFID = fopen (savePointsFile.UTF8String,"w+b");
+            savePointsFID = fopenGSSi (savePointsFile.UTF8String,"w+b");
         }
         
     }
@@ -914,7 +914,7 @@ NextPass:
         flen = ftell (savePointsFID);
         fseek(savePointsFID, 0, SEEK_SET);
         [self evaluateEdges:savePointsFID];
-        fclose (savePointsFID);
+        fcloseGSSi (savePointsFID);
         DeleteFile(savePointsFile);
     }
     return nLoaded;

@@ -2587,16 +2587,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_weatherLabel];
 }
 
-LLPOINT CGPointToLLPoint (CGPoint inPt)
-{
-    LLPOINT rtn = {inPt.x,inPt.y};
-    return rtn;
-}
-CGPoint LLPointToCGPoint (LLPOINT inPt)
-{
-    CGPoint rtn = {inPt.lon,inPt.lat};
-    return rtn;
-}
 -(void) addPointToTrackRoute:(CLLocationCoordinate2D) location
 {
     if (_amTrackingRoute)
@@ -4724,7 +4714,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if (path.count)
         {
             const char *filePath = [NSString stringWithFormat:@"%@/pipetrace_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
-            FILE *tracePolyFile = fopen(filePath, "wb");
+            FILE *tracePolyFile = fopenGSSi(filePath, "wb");
             
             if (!tracePolyFile)
             {
@@ -4741,7 +4731,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             {
                 fwrite(&numPoints, sizeof(int), 1, tracePolyFile);
                 fwrite(llpoints, sizeof(DPOINT), numPoints, tracePolyFile);
-                fclose(tracePolyFile);
+                fcloseGSSi(tracePolyFile);
                 [self perform3DFlyAround];
             }
         }
@@ -4759,7 +4749,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeCrime forKey:@"FlyOverType"];
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
             int symbol = _infoWindow.marker.symbol;
-            FILE *pidPolyFile = fopen(filePath, "wb");
+            FILE *pidPolyFile = fopenGSSi(filePath, "wb");
             
             if (!pidPolyFile)
             {
@@ -4776,7 +4766,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             {
                 fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
                 fwrite(&symbol, sizeof(int), 1, pidPolyFile);
-                fclose(pidPolyFile);
+                fcloseGSSi(pidPolyFile);
                 [self perform3DFlyAround];
             }
         }
@@ -4815,7 +4805,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              polyPartLen:&polyPartLen];
             }
             
-            FILE *pidPolyFile = fopen(filePath, "wb");
+            FILE *pidPolyFile = fopenGSSi(filePath, "wb");
             
             if (!pidPolyFile)
             {
@@ -4835,7 +4825,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 fwrite(&numLoops, sizeof(int), 1, pidPolyFile);
                 fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
                 fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
-                fclose(pidPolyFile);
+                fcloseGSSi(pidPolyFile);
                 [self perform3DFlyAround];
             }
             

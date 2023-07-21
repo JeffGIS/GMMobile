@@ -146,7 +146,7 @@
     const char *filepath = [NSBundle.mainBundle pathForResource:@"hotspottest"
                                                          ofType:@"bin"].UTF8String;
     
-    FILE *fid = fopen(filepath, "rb");
+    FILE *fid = fopenGSSi(filepath, "rb");
     
     if (fid)
     {
@@ -156,7 +156,7 @@
         _len = (width * height);
         BYTE *pgrid = malloc(_len * sizeof(BYTE) + 4);
         fread(pgrid, sizeof(BYTE), _len, fid);
-        fclose(fid);
+        fcloseGSSi(fid);
         
         _vecGrid = malloc(_len * sizeof(vec3) + 4);
         

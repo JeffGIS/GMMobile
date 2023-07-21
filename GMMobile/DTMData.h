@@ -10,7 +10,6 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 
 
-
 HANDLE DTMOpen (LPSTR FileNameIN, double NULLElv,LPsqlite3nv database,FILE* fidBin,LPSHORT pSurfType,LPMNMXCORD pWindowBounds);
 void DTMClose (LPHANDLE pHandle);
 double NGIELV (DPOINT Point,HANDLE hSurf,short DesiredUnits);

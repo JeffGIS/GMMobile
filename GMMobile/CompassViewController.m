@@ -264,7 +264,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 {
     CGRect r = self.view.frame;
     CGRect frame;
-
+    UITabBarController *tabBarController = [UITabBarController new];
+    CGFloat tabBarHeight = tabBarController.tabBar.frame.size.height;
     r = UIScreen.mainScreen.bounds;
     _statusBarHeight = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     _screenH = UIScreen.mainScreen.bounds.size.height;
@@ -275,7 +276,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
     int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
     int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
-    int bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom;
+    int bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom - tabBarHeight;
     CGRect selfViewFrame = CGRectMake(left, top, right,bottom);
     CGRect templateFrame = CGRectMake(0, 47, 428, 892);
     //NSLog (@"%.1f, %.1f, %.1f, %.1f",selfViewFrame.origin.x,selfViewFrame.origin.y,selfViewFrame.size.width,selfViewFrame.size.height);
@@ -369,12 +370,15 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     frame.origin.y = _selectDateLabel.frame.origin.y + _selectDateLabel.frame.size.height;
     frame.size.height = bottom - frame.origin.y;
     _profileView.frame = frame;
-    _profileView.backgroundColor = UIColor.whiteColor;
+    _profileView.backgroundColor = [UIColor colorWithRed:235/255.0
+                                                   green:245/255.0
+                                                    blue:235/255.0
+                                                   alpha:1];
 
     _infoLabel = UILabel.new;
     _infoLabel.frame = CGRectMake (0,_profileView.frame.origin.y,_profileView.frame.size.width,_profileView.frame.size.height/2);
     _profileView.frame = CGRectMake (_profileView.frame.origin.x,_profileView.frame.origin.y + _profileView.frame.size.height/2,_profileView.frame.size.width,_profileView.frame.size.height/2);
-    _infoLabel.backgroundColor = UIColor.blackColor;
+    _infoLabel.backgroundColor = UIColor.clearColor;
     _infoLabel.textColor = UIColor.whiteColor;
     _infoLabel.font =[UIFont systemFontOfSize: 42];
     _infoLabel.textAlignment = NSTextAlignmentCenter;
@@ -1437,6 +1441,10 @@ double HeadingFromAZ (double az)
 }
 -(void) update
 {
+    static BOOL inUpdate = FALSE;
+    if (inUpdate)
+        return;
+    inUpdate = TRUE;
     UIDevice * device = UIDevice.currentDevice;
     //CGFloat magneticHeading = [self heading:_nowHeading.magneticHeading fromOrirntation: device.orientation];
     
@@ -1552,7 +1560,8 @@ double HeadingFromAZ (double az)
         
     }
     [self setDateAndTimeLabel];
-
+    inUpdate = FALSE;
+    return;
 }
 -(void) removeProfileLayers
 {
@@ -1563,6 +1572,56 @@ double HeadingFromAZ (double az)
     }
     [_stickManView removeFromSuperview];
 }
+
+-(double) calcGrade:(double *)pElev
+                 at:(int) at
+          numPoints:(int) np
+            nullElv:(double) nullElv
+         ftPerPixel:(double) feetPerPixel
+{
+    double grade = 1000;
+    int span = 5;
+    double minElev = pElev[at];
+    double maxElev = pElev[at];
+    int mini = at;
+    int maxi = at;
+    int numi = 1;
+    int n = at;
+    int j = span;
+    int nPix = 1;
+    while (n && j--)
+    {
+        n--;
+        if (pElev[n] == nullElv)
+            n = 0;
+        else
+        {
+            minElev = min (minElev,pElev[n]);
+            maxElev = max (maxElev,pElev[n]);
+            nPix++;
+        }
+    }
+    n = at;
+    j = span;
+    while (n && j--)
+    {
+        if (n < np)
+        {
+            if (pElev[n] == nullElv)
+                n = 0;
+            else
+            {
+                minElev = min (minElev,pElev[n]);
+                maxElev = max (maxElev,pElev[n]);
+                nPix++;
+            }
+        }
+        else
+            n = 0;
+    }
+    grade = min (1000,100.0 * fabs((maxElev - minElev)/(feetPerPixel * nPix)));
+    return grade;
+}
 -(BOOL) displayProfile:(LLPOINT)atLL
                     to:(LLPOINT)toLL
            checkOffset:(BOOL) checkOff
@@ -1572,7 +1631,7 @@ double HeadingFromAZ (double az)
     static LLPOINT lastToLL = {0};
     CGRect frame = _profileView.frame;
     CAShapeLayer *profileLayer;
-    NSArray <UIColor*>* gradeColors = @[UIColor.blueColor,UIColor.greenColor,UIColor.orangeColor,UIColor.redColor];
+    NSArray <UIColor*>* gradeColors = @[UIColor.blueColor,UIColor.greenColor,UIColor.orangeColor,UIColor.cyanColor,UIColor.redColor,UIColor.blackColor];
 
     [self removeProfileLayers];
     _profileLayers = NSMutableArray.new;
@@ -1670,7 +1729,11 @@ double HeadingFromAZ (double az)
             {
                 if (pElev[i-1] != dtm.NullElv)
                 {
-                    grade = min (1000,100.0 * fabs((pElev[i]-pElev[i-1])/feetPerPixel));
+                    grade = [self calcGrade:pElev
+                                         at:i
+                                  numPoints:nPixels
+                                    nullElv:dtm.NullElv
+                                 ftPerPixel:feetPerPixel];
                     pGrade[i-1] = grade;
                     _maxGrade = max (_maxGrade,pGrade[i-1]);
                 }
@@ -1679,19 +1742,21 @@ double HeadingFromAZ (double az)
             }
         }
     }
+    [dtm close:opened];
+
     if (rtn)
     {
         CGRect frame = _profileView.frame;
+        double elevDiff = _maxElev - _minElev;
         double profileImageHeight = _profileView.frame.size.height;
         double profileImageWidth = _profileView.frame.size.width;
-        double profileImageTop = 0;//_profileView.frame.origin.y;
+        double profileImageBottom = profileImageHeight;
         double atLoc = profileImageWidth * xPct;
-        double factor = _heightExpansion * nPixels / (groundDist);
-        double centerY = profileImageHeight/2 - (_maxElev - _minElev) / 2 * factor;
+        double factory = 10 * _heightExpansion * elevDiff / groundDist;
         double atY = profileImageWidth;
         for (int i=0;i<nPixels;i++)
         {
-            pPoint[i].y = centerY + (_maxElev - pElev[i]) * factor;
+            pPoint[i].y = profileImageBottom - (pElev[i]-_minElev) * factory;
             if ((i < (nPixels - 1)) && pPoint[i].x <= atLoc && pPoint[i+1].x >= atLoc)
                 atY = pPoint[i].y;
         }
@@ -1703,12 +1768,14 @@ double HeadingFromAZ (double az)
         UIBezierPath *profilePath;
         do
         {
+            CGPoint pnt = pPoint[i];
             int gradeLevel = GetGradeLevel (pGrade[i]);
             if (gradeLevel != lastLevel)
             {
                 if (lastLevel != -1)
                 {
-                    [profilePath addLineToPoint:pPoint[i]];
+                    //pnt.y =70;
+                    [profilePath addLineToPoint:pnt];
                     profileLayer.path = profilePath.CGPath;
                     [_profileView.layer addSublayer:profileLayer];
                     [_profileLayers addObject:profileLayer];
@@ -1718,12 +1785,14 @@ double HeadingFromAZ (double az)
                 profileLayer.fillColor = UIColor.clearColor.CGColor;
                 profileLayer.lineWidth = lineWidth;
                 profileLayer.strokeColor = gradeColors[gradeLevel].CGColor;
-                [profilePath moveToPoint:pPoint[i]];
+                //[sepnt.y = 10;
+                [profilePath moveToPoint:pnt];
                 nlines = 0;
             }
             else
             {
-                [profilePath addLineToPoint:pPoint[i]];
+                //pnt.y = 50;
+                [profilePath addLineToPoint:pnt];
                 nlines++;
             }
             lastLevel = gradeLevel;
@@ -1759,19 +1828,24 @@ double HeadingFromAZ (double az)
     free (pElev);
     free (pGrade);
     free (pt);
-    [dtm close:opened];
     
     return rtn;
 }
 int GetGradeLevel (double grade)
 {
     int rtn = 0;
-    if (grade > 0.1)
+    if (grade < 5)
+        rtn = 0;
+    else if (grade < 10)
         rtn = 1;
-    if (grade > 0.15)
+    else if (grade < 15)
         rtn = 2;
-    if (grade > 0.2)
+    else if (grade < 20)
         rtn = 3;
+    else if (grade < 30)
+        rtn = 4;
+    else
+        rtn = 5;
     return rtn;
 }
 -(void) offCourseNotification:(int) opt

@@ -14,7 +14,6 @@
 @property (nonatomic, copy) NSString *backedUpDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *pathDTM;
-@property (nonatomic, copy) NSString *pathDTM_BIN;
 @property NSInteger fileSize;
 @property NSInteger fileSizeDTM;
 @property NSInteger fileSizeDTM_BIN;
@@ -31,9 +30,7 @@
         _documentsDirectory = UserDefaults.defaults.nonBackedUpFilePath;
         _backedUpDirectory = UserDefaults.defaults.localFilePath;
         _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/mndtm1.dts"];
-        _pathDTM_BIN = [_documentsDirectory stringByAppendingString:@"/DTM/mndtm1.bin"];
         _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/43cjoC.dts"];
-        _pathDTM_BIN = [_documentsDirectory stringByAppendingString:@"/DTM/43cjoC.bin"];
         _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/DTMIndex.dti"];
 
 
@@ -63,14 +60,10 @@
         
         int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathDTM
                                                                                  error:nil].fileSize;
-        int fileSizeBIN = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathDTM_BIN
-                                                                                    error:nil].fileSize;
-        if (fileSize > 0 && fileSizeBIN > 0)
+        if (fileSize > 0)
         {
-//            _fidDTM = fopen (_pathDTM.UTF8String,"rb");
             _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_pathDTM.UTF8String, &_database), _database);
 
-            _fidDTM_BIN = fopen (_pathDTM_BIN.UTF8String,"rb");
             char file[MAX_PATH]={0};
             strncpy (file,_pathDTM.UTF8String,MAX_PATH);
             file[_pathDTM.length]= 0;
@@ -88,7 +81,6 @@
 {
     if (opened && _isOpen)
     {
-//        fclose(_fidDTM);
 
         DTMClose (&_hDTM);
         NSLog(@"DTM Database close");

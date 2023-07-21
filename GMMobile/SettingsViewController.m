@@ -328,7 +328,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            dataType != GetDatabaseSettingDTM &&
                                            dataType != GetDatabaseSettingForest)
                                        {
-                                       FILE *fid = fopen(file.UTF8String, "rb");
+                                       FILE *fid = fopenGSSi(file.UTF8String, "rb");
                                        if (fid)
                                        {
                                            LPSTR str = malloc(INPUTBUFSIZE);
@@ -518,7 +518,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                else
                                                    [pd close:opened];
                                                
-                                               fclose(fid);
+                                               fcloseGSSi(fid);
                                                free(str);
                                            }
                                                dispatch_async(dispatch_get_main_queue(),
@@ -1084,7 +1084,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
   
     dispatch_async(overallQueue,
                    ^{
-                       FILE *fid = fopen(fileList.UTF8String, "rb");
+                       FILE *fid = fopenGSSi(fileList.UTF8String, "rb");
                        char line[34];
                        char *ploc;
                        int  numRequests = 0;
@@ -1129,7 +1129,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                           });
                       }
                        
-                       fclose(fid);
+                       fcloseGSSi(fid);
                        [popover hide];
                    });
     

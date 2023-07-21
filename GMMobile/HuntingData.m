@@ -142,15 +142,15 @@
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS NWIDATA",_pathNWI];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _NWIVersion = [self getNWIVersion];
-            _fidNWIBin = fopen (_pathNWIBin.UTF8String,"rb");
+            _fidNWIBin = fopenGSSi (_pathNWIBin.UTF8String,"rb");
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS FORESTDATA",_pathFOREST];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _ForestVersion = [self getForestVersion];
-            _fidForestBin = fopen (_pathFORESTBin.UTF8String,"rb");
+            _fidForestBin = fopenGSSi (_pathFORESTBin.UTF8String,"rb");
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS FEESURFDATA",_pathFEESURF];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _FEESURFVersion = [self getFEESURFVersion];
-            _fidFEESURFBin = fopen (_pathFEESURFBin.UTF8String,"rb");
+            _fidFEESURFBin = fopenGSSi (_pathFEESURFBin.UTF8String,"rb");
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS USERDATA",_usersHuntingData];
             rtn = [self executeCmd:(LPSTR)attachCmd.UTF8String];
        }
@@ -160,6 +160,9 @@
 
 -(BOOL) createUsersData
 {
+    static alreadyRan = FALSE;
+    if (alreadyRan)
+        return TRUE;
     BOOL rtn = TRUE;
     _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_usersHuntingData.UTF8String, &_database), _database);
     NSString *cmd = @"CREATE TABLE IF NOT EXISTS UserWayPoints (id INTEGER PRIMARY KEY AUTOINCREMENT,Name CHAR(32), Type CHAR(32), LAT DOUBLE,LON DOUBLE, TimeCreated INT, Description CHAR(256), DisplayOnCompass INT)";
@@ -168,6 +171,8 @@
     rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
     _isOpen = FALSE;
+    if (rtn)
+        alreadyRan = TRUE;
     return rtn;
 }
 
@@ -573,9 +578,9 @@
     if (opened && _isOpen)
     {
         SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
-        fclose(_fidNWIBin);
-        fclose(_fidForestBin);
-        fclose(_fidFEESURFBin);
+        fcloseGSSi(_fidNWIBin);
+        fcloseGSSi(_fidForestBin);
+        fcloseGSSi(_fidFEESURFBin);
         NSLog(@"Hunting Database close");
         _isOpen = NO;
     }

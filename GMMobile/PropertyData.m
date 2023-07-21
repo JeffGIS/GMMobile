@@ -2203,7 +2203,7 @@ Exit:
     
     if (offset)
     {
-        FILE *fid = fopen (_multiValueFile.UTF8String,"rb");
+        FILE *fid = fopenGSSi (_multiValueFile.UTF8String,"rb");
         BOOL homestead = NO, taxexempt = NO;
         //int ii = sizeof(YEARLYVALUES);
         int compressedSize = 0;
@@ -2220,7 +2220,7 @@ Exit:
         BigReadF(fid, &compressedSize, 4);
         pCompressed = malloc(compressedSize+2);
         BigReadF(fid, pCompressed, compressedSize);
-        fclose(fid);
+        fcloseGSSi(fid);
         decompressedSize = DecompressBinaryRecordUnsafe((LPBYTE)pInts, pCompressed, compressedSize);
         
         for (int ival = 0;ival<8;ival++)
