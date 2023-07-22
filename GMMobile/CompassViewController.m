@@ -88,6 +88,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property UILabel *sunLabel;
 @property CGFloat tickLineWidth1, tickLineWidth2;
 @property WeatherRecord* currentWeatherRecord;
+@property NSTimer * minuteTimer;
+@property BOOL firstMinute;
 
 
 @end
@@ -156,7 +158,7 @@ DPOINT saveFromUTM, saveToUTM;
     _currentPoint = CRAPI.sharedInstance.currentLocation;
     [self addUserWaypoints:_currentPoint];
     [self getWeatherData];
-
+    [self startMinuteTimer:TRUE];
     return;
 }
 
@@ -170,9 +172,37 @@ DPOINT saveFromUTM, saveToUTM;
         [_locationManager stopUpdatingLocation];
     _locationManager.delegate = _oldLocationManagerDelegate;
     //InitProj4CoordConv (TRUE);
+    if (_minuteTimer)
+        [_minuteTimer invalidate];
 
 }
 
+-(void) startMinuteTimer:(BOOL) firstTime
+{
+    CGFloat seconds = 60;
+    _firstMinute = firstTime;
+    if (firstTime)
+    {
+        time_t itime = NSDate.date.timeIntervalSince1970;
+        seconds = 60 - (itime % 60);
+    }
+    _minuteTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
+                                                      target:self
+                                                  selector:@selector(updateMinute:)
+                                                    userInfo:nil
+                                                     repeats:YES];
+
+}
+- (void) updateMinute:(NSTimer*)timer
+{
+    if (_firstMinute)
+    {
+        [_minuteTimer invalidate];
+        [self startMinuteTimer:FALSE];
+    }
+    [self setDateAndTimeLabel];
+    [self updateWeather];
+}
 BOOL PointInSuperView (CGPoint pt,UIView* view,UIView* superView)
 {
     BOOL rtn = FALSE;
@@ -1205,7 +1235,9 @@ double HeadingFromAZ (double az)
     {
         time_t itime = NSDate.date.timeIntervalSince1970;
         NSString * date = textAfter ([WeatherData forecastDayandTime:itime],@"Today ");
-        _selectDateLabel.text = [NSString stringWithFormat:@"Current Time\n%@",date];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _selectDateLabel.text = [NSString stringWithFormat:@"Current Time\n%@",date];
+        });
     }
 
 }
