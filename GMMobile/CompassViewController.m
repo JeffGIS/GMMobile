@@ -100,7 +100,7 @@ DPOINT saveFromUTM, saveToUTM;
     [super viewDidLoad];
     _wd = WeatherData.new;
     _currentWindSpeed = -1;
-    _heightExpansion = 4;
+    _heightExpansion = 5;
     _lastToDist = 0;
     _forward = TRUE;
     _lastResetHeading = 0;
@@ -479,7 +479,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [optionList addObject:@"Get Weather Data"];
     [optionList addObject:@"Set Profile Exageration to 1"];
     [optionList addObject:@"Set Profile Exageration to 2"];
-    [optionList addObject:@"Set Profile Exageration to 4"];
+    [optionList addObject:@"Set Profile Exageration to 5"];
+    [optionList addObject:@"Set Profile Exageration to 10"];
     [_dScaView setUserInteractionEnabled:NO];
     [_backgroundView setUserInteractionEnabled:NO];
     [_profileView setUserInteractionEnabled:NO];
@@ -1297,8 +1298,10 @@ double HeadingFromAZ (double az)
             _heightExpansion = 1;
         else if ([text isEqualToString:@"Set Profile Exageration to 2"])
             _heightExpansion = 2;
-        else if ([text isEqualToString:@"Set Profile Exageration to 4"])
-            _heightExpansion = 4;
+        else if ([text isEqualToString:@"Set Profile Exageration to 5"])
+            _heightExpansion = 5;
+        else if ([text isEqualToString:@"Set Profile Exageration to 10"])
+            _heightExpansion = 10;
     }
     [popoverTableView hide:YES];
     [_singleFingerTap setEnabled:YES];
@@ -1708,7 +1711,8 @@ double HeadingFromAZ (double az)
     if (_lastToDist != toDist)
         _lastToDist = toDist;
     double xPct = atDist/groundDist;
-    double feetPerPixel = groundDist / nPixels;
+    double feetPerHorizontalPixel = groundDist / nPixels;
+    double pixelsPerHorizontalFoot = nPixels / groundDist;
     int nFromPixels = nPixels * (atDist / groundDist);
     int nToPixels = nPixels * ((groundDist - atDist) / groundDist);
     LPDPOINT pt = malloc ((nPixels+1) * sizeof (DPOINT) + 8);
@@ -1767,7 +1771,7 @@ double HeadingFromAZ (double az)
                                          at:i
                                   numPoints:nPixels
                                     nullElv:dtm.NullElv
-                                 ftPerPixel:feetPerPixel];
+                                 ftPerPixel:feetPerHorizontalPixel];
                     pGrade[i-1] = grade;
                     _maxGrade = max (_maxGrade,pGrade[i-1]);
                 }
@@ -1786,11 +1790,15 @@ double HeadingFromAZ (double az)
         double profileImageWidth = _profileView.frame.size.width;
         double profileImageBottom = profileImageHeight;
         double atLoc = profileImageWidth * xPct;
-        double factory = 10 * _heightExpansion * elevDiff / groundDist;
+        double pixelsPerVerticalFoot = 0;
         double atY = profileImageWidth;
+        if (elevDiff > 0)
+            pixelsPerVerticalFoot = profileImageHeight / elevDiff;
+        if (_heightExpansion * pixelsPerHorizontalFoot < pixelsPerVerticalFoot)
+            pixelsPerVerticalFoot = _heightExpansion * pixelsPerHorizontalFoot;
         for (int i=0;i<nPixels;i++)
         {
-            pPoint[i].y = profileImageBottom - (pElev[i]-_minElev) * factory;
+            pPoint[i].y = profileImageBottom - (pElev[i]-_minElev) * pixelsPerVerticalFoot;
             if ((i < (nPixels - 1)) && pPoint[i].x <= atLoc && pPoint[i+1].x >= atLoc)
                 atY = pPoint[i].y;
         }
