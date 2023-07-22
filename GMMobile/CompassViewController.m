@@ -163,6 +163,8 @@ DPOINT saveFromUTM, saveToUTM;
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [self removeUserWaypoints];
+    [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
     if (CRAPI.sharedInstance.locationTrackingEnabled)
         [_locationManager stopUpdatingLocation];
