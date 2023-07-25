@@ -9,6 +9,7 @@
 #import "DTMData.h"
 //#import "NVCoordinateLibrary/proj_api.h"
 #include "CCodeLibrary/PROJ.H"
+#include "CCodeLibrary/shr.h"
 #include "CVTCoord.h"
 
 DPOINT saveFromUTM, saveToUTM;
@@ -43,6 +44,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSMutableArray * tickShapes;
 @property CGPoint po;
 @property LLPOINT currentPoint;
+@property LLPOINT fromPoint;
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
 @property CLHeading*  nowHeading;
@@ -90,7 +92,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property WeatherRecord* currentWeatherRecord;
 @property NSTimer * minuteTimer;
 @property BOOL firstMinute;
-
+@property NVPopoverTableView *nvptv;
+@property BOOL startRoute;
 
 @end
 
@@ -124,6 +127,11 @@ DPOINT saveFromUTM, saveToUTM;
 
 -(void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    if (_nvptv)
+    {
+        if (_nvptv.isVisible)
+        return;
+    }
     [self destroyUI];
     [self configUI];
     [self updateWeather];
@@ -487,12 +495,12 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [self.view setMultipleTouchEnabled:NO];
     [_singleFingerTap setEnabled:NO];
 
-    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+    _nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                       delegate:self
                                                                          title:@"Compass Options"
                                                                      textArray:optionList
                                                                  includeCancel:YES];
-    nvptv.allowsSubtitle = NO;
+    _nvptv.allowsSubtitle = NO;
      
 
 }
@@ -975,7 +983,7 @@ double HeadingFromAZ (double az)
                     factor = 1.2;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
                 }
-                label.frame = CGRectMake(point.x,point.y, factor*30*_widthFactor,factor*30*_widthFactor);
+                label.frame = CGRectMake(point.x,point.y, _tickLineWidth2*2,_tickLineWidth2*2);
                 label.center = point;
                 label.clipsToBounds = true;
                 label.layer.cornerRadius = label.frame.size.width / 2;
@@ -1171,7 +1179,11 @@ double HeadingFromAZ (double az)
             if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
                 CRAPI.sharedInstance.currentSelectedWaypoint = -1;
             else
+            {
                 CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+                _fromPoint = _currentPoint;
+                _startRoute = TRUE;
+            }
             break;
         case 1: //make next route point focus
         {
@@ -1215,12 +1227,12 @@ double HeadingFromAZ (double az)
             [_profileView setUserInteractionEnabled:NO];
             [self.view setMultipleTouchEnabled:NO];
             [_singleFingerTap setEnabled:NO];
-            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+            _nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                               delegate:self
                                                                                  title:@"Compass Point Options"
                                                                              textArray:optionList
                                                                          includeCancel:YES];
-            nvptv.allowsSubtitle = NO;
+            _nvptv.allowsSubtitle = NO;
              
             
         }
@@ -1327,14 +1339,14 @@ double HeadingFromAZ (double az)
 }
 -(void) displayforecast
 {
-    NVPopoverTableView *nvptv =
+    _nvptv =
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
                                              title:@"Select a Date and Time"
                                          textArray:_forecastDates
                                      includeCancel:YES];
-    nvptv.identifier = @"forecast";
-    nvptv.parseTextToButtons = NO;
+    _nvptv.identifier = @"forecast";
+    _nvptv.parseTextToButtons = NO;
     
 }
 
@@ -1559,9 +1571,12 @@ double HeadingFromAZ (double az)
                                           to:waypoint.latlon
                                  checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
                         else
+                        {
+                            _fromPoint = _currentPoint;
                             haveProfile = [self displayProfile:_currentPoint
-                                          to:waypoint.latlon
-                                 checkOffset:NO];
+                                                            to:waypoint.latlon
+                                                   checkOffset:NO];
+                        }
                         if (dist / METERS_PER_YARD < _nearDist)
                         {
                             units = @"yards";
@@ -1651,6 +1666,7 @@ double HeadingFromAZ (double az)
                 minElev = min (minElev,pElev[n]);
                 maxElev = max (maxElev,pElev[n]);
                 nPix++;
+                n++;
             }
         }
         else
@@ -1664,7 +1680,7 @@ double HeadingFromAZ (double az)
            checkOffset:(BOOL) checkOff
 {
     BOOL rtn = FALSE;
-    static LLPOINT fromLL = {0};
+    LLPOINT fromLL = {0};
     static LLPOINT lastToLL = {0};
     CGRect frame = _profileView.frame;
     CAShapeLayer *profileLayer;
@@ -1673,13 +1689,14 @@ double HeadingFromAZ (double az)
     [self removeProfileLayers];
     _profileLayers = NSMutableArray.new;
     
-    lastToLL = toLL;
-    fromLL = atLL;
-    if (checkOff && (fromLL.lat == 0 || ArcDistanceLL(toLL,lastToLL) > 1))
+    fromLL = _fromPoint;
+    if (checkOff && (_startRoute || fromLL.lat == 0 || ArcDistanceLL(toLL,lastToLL) > 1))
     {
         [self showAsRouteOnMap:fromLL
                           toLL:toLL];
+        _startRoute = FALSE;
     }
+    lastToLL = toLL;
     _fromUTM.x = fromLL.lon;
     _fromUTM.y = fromLL.lat;
     _toUTM.x = toLL.lon;
@@ -1763,25 +1780,30 @@ double HeadingFromAZ (double az)
             _minElev = MIN (_minElev,pElev[i]);
             _maxElev = MAX (_maxElev,pElev[i]);
             pPoint[i].x = i;
-            if (i)
-            {
-                if (pElev[i-1] != dtm.NullElv)
-                {
-                    grade = [self calcGrade:pElev
-                                         at:i
-                                  numPoints:nPixels
-                                    nullElv:dtm.NullElv
-                                 ftPerPixel:feetPerHorizontalPixel];
-                    pGrade[i-1] = grade;
-                    _maxGrade = max (_maxGrade,pGrade[i-1]);
-                }
-                else
-                    pGrade[i-1] = 1000;
-            }
         }
     }
     [dtm close:opened];
 
+    SmoothProfile (pPoint,nPixels,2);
+    for (int i=0;i<nPixels;i++)
+    {
+        if (i)
+        {
+            if (pElev[i-1] != dtm.NullElv)
+            {
+                grade = [self calcGrade:pElev
+                                     at:i
+                              numPoints:nPixels
+                                nullElv:dtm.NullElv
+                             ftPerPixel:feetPerHorizontalPixel];
+                pGrade[i-1] = grade;
+                _maxGrade = max (_maxGrade,pGrade[i-1]);
+            }
+            else
+                pGrade[i-1] = 1000;
+        }
+
+    }
     if (rtn)
     {
         CGRect frame = _profileView.frame;
