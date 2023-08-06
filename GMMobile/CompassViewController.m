@@ -140,6 +140,7 @@ DPOINT saveFromUTM, saveToUTM;
 -(void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    CRAPI.sharedInstance.routeBearing = nil;
     _maxWaypointDist = 5.0 * METERS_PER_MILE;
     _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.headingFilter = 1;
@@ -155,6 +156,7 @@ DPOINT saveFromUTM, saveToUTM;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    CRAPI.sharedInstance.firstTimeZoomToCentract = NO;
     //[self DrawCompass];
     //if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
     {
@@ -2046,12 +2048,20 @@ int GetGradeLevel (double grade)
     CGPoint llp = {0};
     llp.y = fromLL.lat;
     llp.x = fromLL.lon;
+    DPOINT pt1 = CGPointToDPOINT (llp);
     NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
     [CRAPI.sharedInstance.currentRoute addObject:routePoint];
     llp.y = toLL.lat;
     llp.x = toLL.lon;
+    DPOINT pt2 = CGPointToDPOINT (llp);
     routePoint = [NSNumber valueWithCGPoint:llp];
     [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+    double az = getazd (pt1,pt2);
+    double azLL = getazLL (fromLL,toLL);
+    double bearing = LTWOPI (HALFPI - az)*DEGRAD;
+    double bearingLL = LTWOPI (HALFPI - azLL)*DEGRAD;
+    CRAPI.sharedInstance.routeBearing = [NSNumber numberWithDouble:bearingLL];
+
     return;
 }
 - (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection

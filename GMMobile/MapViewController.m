@@ -80,7 +80,7 @@
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearWhenDeselected, legendsAreOffMap, showsPanorama, usePlatView;
-@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists,firstTimeZoomToCentract;
+@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedSanMain, *selectedPlat, *routeMode;
 @property int selectedPlatRefno, nVectorViews;
 @property CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
@@ -229,7 +229,7 @@
     [PipeTrace removeTrace];
     
     _firstTimeAppear = _firstTimeMap = YES;
-    _firstTimeZoomToCentract = YES;
+    CRAPI.sharedInstance.firstTimeZoomToCentract = YES;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = _headingCount = 0;
     MNMXCORD lastBounds;
@@ -708,7 +708,6 @@
                     marker.snippet = CRAPI.sharedInstance.currentPropOwner;
                     break;
             }
-            
             marker.title = _selectedPID;
             marker.type = MarkerInfoWindowTypePID;
             [_markerArray addObject:marker];
@@ -726,7 +725,6 @@
     
     [self setZoom:_mapView.camera.zoom];
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    
     if (_fromSpreadsheet)
     {
         if (!CRAPI.sharedInstance.justZoom)
@@ -790,6 +788,13 @@
         [_tableView reloadData];
     int top = self.view.safeAreaInsets.top;
     iii = top;
+    if (CRAPI.sharedInstance.routeBearing)
+    {
+        double bearing = CRAPI.sharedInstance.routeBearing.doubleValue;
+        [_mapView animateToBearing:bearing];
+        [self displayScalebar];
+    }
+
 
 }
 
@@ -826,6 +831,9 @@
 - (void)setCompassPosition
 {
     CGFloat halfSize = ((_compassSize / 2.0) + 4.0);
+    int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    _compass.center = CGPointMake(_mapToolbar.center.x, top + halfSize);
+    return;
     CGFloat xCenterLeft = (CGRectGetMinX(_mapToolbar.frame) - halfSize);
     CGFloat xCenterRight = (CGRectGetMaxX(_mapToolbar.frame) + halfSize);
     CGFloat yCenterTop = (CGRectGetMinY(_mapToolbar.frame) - halfSize);
@@ -1353,12 +1361,7 @@
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
     
-    _firstTimeZoomToCentract = YES;
-    if (_firstTimeAppear && _firstTimeZoomToCentract)
-    {
-        //[self startTrackingUserLocation];
-    }
-    else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries || _fromSpreadsheet || _firstTimeAppear || _keepZoomExtents)
+    if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries || _fromSpreadsheet || _firstTimeAppear || _keepZoomExtents)
     {
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
@@ -2316,8 +2319,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     float lineWidth = 5;
     CGRect tbframe = _mapToolbar.frame;
     CGPoint pt1, pt2, pt3, pt4, pt5, pt6;
-    if (!_compass.isHidden)
-        tbframe = _compass.frame;
+//    if (!_compass.isHidden)
+//        tbframe = _compass.frame;
     _scaleLayer = CAShapeLayer.layer;
     _scaleLayer2 = CAShapeLayer.layer;
     CAShapeLayer *layer = _scaleLayer;
@@ -2992,11 +2995,11 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 {
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
-    
-    if (position.bearing != 0.0)
+    double bearing = position.bearing;
+    if (bearing != 0.0)
     {
         [self showCompass];
-        _compass.transform = CGAffineTransformMakeRotation(-position.bearing * M_PI / 180);
+        _compass.transform = CGAffineTransformMakeRotation(-bearing * M_PI / 180);
     }
     
     [self updateMarkerPosition];
@@ -6265,7 +6268,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
         [self moveCamera:update];
     }
-    else if (_firstTimeZoomToCentract)
+    else if (CRAPI.sharedInstance.firstTimeZoomToCentract)
     {
         LLPOINT llpickPt;
         llpickPt.lat = _currentLocation.latitude;
@@ -6273,7 +6276,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         PickedItem *pi = nil;
         if (ConfigurationControl.sharedInstance.currentApp != HCConfigHunting)
             pi = [BoundaryData.new pickBoundaryArea:llpickPt type:@"BLOCK"];
-        _firstTimeZoomToCentract = NO;
+        CRAPI.sharedInstance.firstTimeZoomToCentract = NO;
 
         if (pi)
         {
@@ -6303,13 +6306,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
         if (_locationCount < 2 || !PointInView(target,_mapView))
         {
-            if (_mapView.camera.bearing != 0)
-                iii = 1;
+            double bearing = _mapView.camera.bearing;
+            if (CRAPI.sharedInstance.routeBearing)
+                bearing = CRAPI.sharedInstance.routeBearing.doubleValue;
             GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
                                                                        zoom:_mapView.camera.zoom
-                                                                    bearing:_mapView.camera.bearing
+                                                                    bearing:bearing
                                                                viewingAngle:_mapView.camera.viewingAngle];
-            
             GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
             [self moveCamera:update];
             
@@ -8005,19 +8008,22 @@ didSelectPDFButtonWithText:(NSString *)text
 
 - (void)compassTapped:(UIButton *)button
 {
+    CRAPI.sharedInstance.routeBearing = nil;
     [_mapView animateToBearing:0.0];
+
     [self hideCompass];
+    [self displayScalebar];
 }
 
 - (void)hideCompass
 {
     if (!_compass.hidden)
     {
+        _compass.hidden = YES;
         [UIView animateWithDuration:0.25
                          animations:^{
                              _compass.alpha = 0.0;
                          } completion:^(BOOL finished) {
-                             _compass.hidden = YES;
                          }];
     }
 }
@@ -8027,7 +8033,6 @@ didSelectPDFButtonWithText:(NSString *)text
     if (_compass.hidden && _mapView.camera.bearing != 0.0)
     {
         _compass.hidden = NO;
-        
         [UIView animateWithDuration:0.25
                          animations:^{
                              _compass.alpha = 1.0;

@@ -843,7 +843,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 - (IBAction)loadDTM:(id)sender
 {
-    NSString *fileName = @"DTMFiles_1ft.gcf";
+    //NSString *fileName = @"DTMFiles_1ft.gcf";
+    NSString *fileName = @"test.gcf";
     NSString *outputDirectory = [NSString stringWithFormat:@"%@/DTM", UserDefaults.defaults.nonBackedUpFilePath];
     [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
                             withIntermediateDirectories:YES
