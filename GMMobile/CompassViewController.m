@@ -927,11 +927,35 @@ double HeadingFromAZ (double az)
     az = HeadingFromAZ(AZMLatLon (p2,p1));
     _userWaypointLabels = NSMutableArray.new;
     int userWaypointIndex = _backgroundView.subviews.count;
+    _closeDistance = 1;
     for (UserWaypoint* waypoint in _userWaypointArray)
+    {
+        waypoint.currentDistance = ArcDistanceLL(waypoint.latlon, currentPoint);
+        if (waypoint.currentDistance < _maxWaypointDist)
+        {
+            _closeDistance = max (_closeDistance,waypoint.currentDistance);
+        }
+    }
+    NSArray *sorted = [_userWaypointArray sortedArrayUsingComparator:^(id obj1, id obj2){
+        if ([obj1 isKindOfClass:[UserWaypoint class]] && [obj2 isKindOfClass:[UserWaypoint class]]) {
+            UserWaypoint *s1 = obj1;
+            UserWaypoint *s2 = obj2;
+
+            if (s1.currentDistance > s2.currentDistance) {
+                return (NSComparisonResult)NSOrderedAscending;
+            } else if (s1.currentDistance < s2.currentDistance) {
+                return (NSComparisonResult)NSOrderedDescending;
+            }
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+
+    int wpNum = 1;
+    for (UserWaypoint* waypoint in sorted)
     {
         if (waypoint.displayOnCompass)
         {
-            double dist = ArcDistanceLL(waypoint.latlon, currentPoint);
+            double dist = waypoint.currentDistance;
             if ((dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"]) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double az = AZMLatLon (currentPoint,waypoint.latlon);
@@ -940,7 +964,7 @@ double HeadingFromAZ (double az)
                 double az2d = RadiansToDegrees (az2);
                 double maxScale = 1.0-.2*_widthFactor;
                 double scale = maxScale;
-                NSString *  tickText = waypoint.name;
+                NSString *  tickText = [NSString stringWithFormat:@"%i",wpNum++];
                 
                 CGFloat textAngle = az;
                 
@@ -985,7 +1009,7 @@ double HeadingFromAZ (double az)
                     factor = 1.2;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
                 }
-                label.frame = CGRectMake(point.x,point.y, _tickLineWidth2*2,_tickLineWidth2*2);
+                label.frame = CGRectMake(point.x,point.y, _tickLineWidth2,_tickLineWidth2);
                 label.center = point;
                 label.clipsToBounds = true;
                 label.layer.cornerRadius = label.frame.size.width / 2;
@@ -1179,13 +1203,18 @@ double HeadingFromAZ (double az)
             _forward = TRUE;
             _lastToDist = 0;
             if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+            {
                 CRAPI.sharedInstance.currentSelectedWaypoint = -1;
+                [self removeAsRouteOnMap];
+            }
             else
             {
-                CRAPI.sharedInstance.currentSelectedWaypoint = CRAPI.sharedInstance.currentFocusWaypoint;
+                int focWP = CRAPI.sharedInstance.currentFocusWaypoint;
+                CRAPI.sharedInstance.currentSelectedWaypoint = focWP;
                 _fromPoint = _currentPoint;
                 _startRoute = TRUE;
             }
+            [self addUserWaypoints:_currentPoint];
             break;
         case 1: //make next route point focus
         {
@@ -1914,6 +1943,7 @@ int GetGradeLevel (double grade)
         rtn = 5;
     return rtn;
 }
+
 -(void) offCourseNotification:(int) opt
                     withDelay:(CGFloat) delay
 {
@@ -2063,6 +2093,12 @@ int GetGradeLevel (double grade)
     CRAPI.sharedInstance.routeBearing = [NSNumber numberWithDouble:bearingLL];
 
     return;
+}
+
+- (void) removeAsRouteOnMap
+{
+    CRAPI.sharedInstance.currentRoute = nil;
+    CRAPI.sharedInstance.routeBearing = nil;
 }
 - (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {

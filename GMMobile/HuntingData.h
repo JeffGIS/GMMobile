@@ -24,6 +24,7 @@
 @property int time;
 @property int displayOnCompass;
 @property CGFloat headingInDeg;
+@property CGFloat currentDistance;
 @end
 
 @interface TrackRoutePoint : NSObject
