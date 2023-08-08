@@ -1330,6 +1330,12 @@ double HeadingFromAZ (double az)
             NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
             UserWaypoint* waypoint = routePointArray[0];
             CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
+            _fromPoint = _currentPoint;
+            _startRoute = YES;
+            [self displayProfile:_currentPoint
+                                            to:waypoint.latlon
+                                   checkOffset:YES];
+
         }
         if ([text isEqualToString:@"Get Weather Data"])
         {
