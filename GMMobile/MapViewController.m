@@ -54,6 +54,7 @@
 #import "CCodeLibrary/NVEmailFileList.h"
 #import "HuntingDataDisplay.h"
 #import "CompassViewController.h"
+#import "CCodeLibrary/NVTextViewAlert.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -70,7 +71,7 @@
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate, WeatherDataDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate, WeatherDataDelegate,NVTextViewAlertDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -7399,8 +7400,19 @@ didSelectPDFButtonWithText:(NSString *)text
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             [self displayTrackRoute];
             [self vectorViewRefresh];
-
+            
         }
+        else if ([text isEqualToString:@"Save Route"])
+        {
+            
+            
+            [NVTextViewAlert showTextViewAlertinView:self.view
+                                            delegate:self
+                                               title:@"Enter Route Name"
+                                                text:@"Name"];
+        }
+        
+        
         else if ([text isEqualToString:@"Start Route"])
         {
             CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
@@ -7408,13 +7420,13 @@ didSelectPDFButtonWithText:(NSString *)text
             _numCurrentRoutePoints++;
             NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
             [CRAPI.sharedInstance.currentRoute addObject:routePoint];
-
+            
             HuntingData *hd = HuntingData.new;
             [hd deleteWaypointsOfType:@"RoutePoint"];
             [hd addWaypoint:@"1" type:@"RoutePoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
             _numCurrentRoutePoints = 1;
             [self vectorViewRefresh];
-
+            
         }
         else if ([text isEqualToString:@"Clear Route"])
         {
@@ -7423,14 +7435,14 @@ didSelectPDFButtonWithText:(NSString *)text
             [hd deleteWaypointsOfType:@"RoutePoint"];
             CRAPI.sharedInstance.currentSelectedWaypoint = -1;
             [self vectorViewRefresh];
-
+            
         }
         else if ([text isEqualToString:@"Delete all Compass Waypoints"])
         {
             HuntingData *hd = HuntingData.new;
             [hd deleteWaypointsOfType:@"CompassPoint"];
             [self vectorViewRefresh];
-
+            
         }
         else if ([text isEqualToString:@"Delete All Waypoints"])
         {
@@ -7582,6 +7594,21 @@ didSelectPDFButtonWithText:(NSString *)text
     [popoverTableView hide:YES];
     [self displayScalebar];
 }
+- (void)textViewAlertDidCancel:(NVTextViewAlert *)textViewAlert
+{
+    [textViewAlert hideTextViewAlert:YES];
+}
+
+- (void)textViewAlert:(NVTextViewAlert *)textViewAlert
+didReturnText:(NSString *)text
+{
+    if (text)
+    {
+    }
+    
+    [textViewAlert hideTextViewAlert:YES];
+}
+
 
 - (void)returnFromYTPlayer:(UIButton *)button
 {

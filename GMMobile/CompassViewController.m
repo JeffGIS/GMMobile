@@ -977,14 +977,16 @@ double HeadingFromAZ (double az)
                 // UILabel
                 UILabel* label = UILabel.new;
                 CGFloat factor = 1;
-                CGFloat fontSize = 12;
+                CGFloat fontSize = 10;
                 label.text = tickText;
                 label.font = [UIFont systemFontOfSize: fontSize];
                 label.textAlignment = NSTextAlignmentCenter;
+                label.adjustsFontSizeToFitWidth = YES;
                 if ([waypoint.type isEqual:@"Vehicle"])
                 {
-                    factor = 1.2;
-                    fontSize = 24;
+                    factor = 1.8;
+                    fontSize = 10;
+                    label.text = @"V";
                     label.backgroundColor = UIColor.greenColor;
                     label.textColor = UIColor.blackColor;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
@@ -992,7 +994,7 @@ double HeadingFromAZ (double az)
                 else if ([waypoint.type isEqual:@"CompassPoint"])
                 {
                     factor = 1.2;
-                    fontSize = 12;
+                    fontSize = 10;
                     label.backgroundColor = UIColor.blueColor;
                     label.textColor = UIColor.whiteColor;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
