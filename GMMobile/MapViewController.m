@@ -301,14 +301,15 @@
                                 title:@"Exit Move/Add Mode"];
     
     _saveDigitizerButton.alpha = 0.0;
-    
+/*
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                                    action:@selector(mapViewLongPressed:)];
     longPressGesture.numberOfTouchesRequired = 1;
     longPressGesture.numberOfTapsRequired = 0;
+    longPressGesture.minimumPressDuration = 1;
     longPressGesture.delegate = self;
     [_mapView addGestureRecognizer:longPressGesture];
-    
+*/
     GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
         NSString *url = [NSString stringWithFormat:@"http://%@/MPLSADA/%lu/%lu/%lu.jp2",[CRAPI.sharedInstance getNVCRISServer],
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
@@ -1740,8 +1741,33 @@
     return rtn;
 }
 - (void)mapView:(GMSMapView *)mapView
-didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
+didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
+    CGPoint pickPt = [self pointForCoordinate:coordinate];
+    LLPOINT llpickPt = {0};
+    llpickPt.lat = coordinate.latitude;
+    llpickPt.lon = coordinate.longitude;
+    _llPickedPt = llpickPt;
+    HuntingData *hd = HuntingData.new;
+    if (_numCurrentRoutePoints)
+    {
+        CGPoint llp = {0};
+        llp.y = coordinate.latitude;
+        llp.x = coordinate.longitude;
+        _numCurrentRoutePoints++;
+        NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+        [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+        NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
+        [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(llp) description:@"" displayOnCompass:YES];
+        _numCurrentRoutePoints = 0;
+        [self displayCurrentRoute];
+        [self vectorViewRefresh];
+    }
+
+}
+- (void)mapView:(GMSMapView *)mapView
+    didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
+    {
     CGPoint pickPt = [self pointForCoordinate:coordinate];
     LLPOINT llpickPt = {0};
     llpickPt.lat = coordinate.latitude;
@@ -2461,7 +2487,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (CRAPI.sharedInstance.currentRoute.count > 1)
     {
         _routeLayer = CAShapeLayer.layer;
-        _routeLayer.strokeColor = UIColor.redColor.CGColor;
+        if (_numCurrentRoutePoints > 0)
+            _routeLayer.strokeColor = UIColor.yellowColor.CGColor;
+        else
+            _routeLayer.strokeColor = UIColor.redColor.CGColor;
         _routeLayer.fillColor = nil;
         _routeLayer.lineWidth = 5;
         UIBezierPath *path = UIBezierPath.bezierPath;
