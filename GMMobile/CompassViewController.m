@@ -1339,7 +1339,7 @@ double HeadingFromAZ (double az)
                                    checkOffset:YES];
 
         }
-        if ([text isEqualToString:@"Get Weather Data"])
+        else if ([text isEqualToString:@"Get Weather Data"])
         {
             [self getWeatherData];
             //NSString * weather = [CRAPI.sharedInstance getWeatherDataAtLatlon:_currentPoint];
