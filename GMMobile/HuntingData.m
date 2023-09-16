@@ -252,6 +252,51 @@
 
 }
 
+-(int) getSavedTrack:(int)timeSaved
+{
+    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+    NSMutableArray *array = NSMutableArray.new;
+    int nPointsInRoute = 0;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT TimeCreated,LAT,LON FROM USERDATA.TrackRoutes WHERE TimeSaved = %i",timeSaved];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        TrackRoutePoint *routePoint = TrackRoutePoint.new;
+        LLPOINT llpt;
+
+        routePoint.time = sqlite3_column_int(statement, i++);
+        llpt.lat = sqlite3_column_double(statement, i++);
+        llpt.lon = sqlite3_column_double(statement, i++);
+        routePoint.latlon = llpt;
+        [array addObject:routePoint];
+        nPointsInRoute++;
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    [self close:opened];
+    CRAPI.sharedInstance.currentTrackRoute = array;
+    return nPointsInRoute;
+}
+
+-(MNMXCORD) getTrackBounds:(NSArray*) track
+{
+    MNMXCORD bounds;
+    DBoundsInit (&bounds);
+    for (TrackRoutePoint * trp in track)
+    {
+        DPOINT pt;
+        pt.x = trp.latlon.lon;
+        pt.y = trp.latlon.lat;
+        AddDPointToBounds(&bounds, &pt);
+    }
+    return bounds;
+}
 -(NSArray *) getTrackRoutes
 {
     NSMutableArray *array = NSMutableArray.new;

@@ -2517,7 +2517,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (!_displayTrackingRoute)
         return;
     int n = CRAPI.sharedInstance.currentTrackRoute.count;
-    if (CRAPI.sharedInstance.currentTrackRoute.count > 1)
+    if (n > 1)
     {
         _trackLayer = CAShapeLayer.layer;
         _trackLayer.strokeColor = UIColor.greenColor.CGColor;
@@ -3626,6 +3626,8 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
+    if (_hideScaleBar)
+        return;
     if (CRAPI.sharedInstance.becameActive &&
         !CRAPI.sharedInstance.inDataUpdate &&
         ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"] &&
@@ -7382,6 +7384,19 @@ didSelectPDFButtonWithText:(NSString *)text
                                    withObject:nil
                                 waitUntilDone:NO];
 
+        }
+    }
+    else if ([popoverTableView.title isEqual:@"Saved Track Routes"])
+    {
+        HuntingData *hd = HuntingData.new;
+        NSString *tmp = textAfter (text,@"Route:");
+        int routeNumber = tmp.intValue;
+        if ([hd getSavedTrack:routeNumber])
+        {
+            _displayTrackingRoute = TRUE;
+            MNMXCORD trackBounds = [hd getTrackBounds:CRAPI.sharedInstance.currentTrackRoute];
+            [self zoomToActualBounds:trackBounds
+                              adjust:0];
         }
     }
     else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
