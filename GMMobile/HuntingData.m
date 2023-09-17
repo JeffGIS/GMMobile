@@ -301,7 +301,7 @@
 {
     NSMutableArray *array = NSMutableArray.new;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT TimeSaved FROM USERDATA.TrackRoutes"];
+    NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT TimeSaved FROM USERDATA.TrackRoutes ORDER BY TimeSaved DESC"];
     
     sqlite3_stmt *statement = NULL;
     
@@ -347,18 +347,18 @@
         if (!firstTime)
         {
             firstTime = timeCreated;
-            lastPoint = pt;
-        }
+         }
         else
         {
             double dist = ArcDistanceLL(lastPoint, pt);
             totDist += dist;
         }
+        lastPoint = pt;
         totPoints++;
     }
     SQLOKpd(SQLiteFinalize(statement), _database, 7);
     double totMiles = totDist / METERS_PER_MILE;
-    int minutes = timeCreated - firstTime;
+    int minutes = (timeCreated - firstTime)/60;
     info = [NSString stringWithFormat:@"%i Minutes (%.2f Miles)\n%i Points",minutes,totMiles,totPoints];
     [self close:opened];
  

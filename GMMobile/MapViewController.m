@@ -2416,11 +2416,15 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
         pt.y-=height/2;
         _scaleLabel.center = pt;
-        _scaleLabel.textColor = UIColor.redColor;
-        _scaleLabel.shadowColor = UIColor.whiteColor;
-        _scaleLabel.shadowOffset = CGSizeMake(3,0);
+        _scaleLabel.textColor = UIColor.yellowColor;
+        //_scaleLabel.shadowColor = UIColor.whiteColor;
+        //_scaleLabel.shadowOffset = CGSizeMake(3,0);
         _scaleLabel.font = [UIFont systemFontOfSize: height -4];
         _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
+        if (*_scaleLabel.text.UTF8String == '0')
+        {
+            _scaleLabel.text = [NSString stringWithFormat:@"%.2f miles",dist];
+        }
         _scaleLabel.textAlignment = NSTextAlignmentCenter;
     }
     else
@@ -2961,6 +2965,7 @@ wasTappedAtPoint:(DPOINT)point
        willMove:(BOOL)gesture
 {
     [self clearCurrentRoute];
+    [self clearCurrentTrackRoute];
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
     
