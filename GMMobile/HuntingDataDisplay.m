@@ -1523,7 +1523,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             dc.penColor = [UIColor greenColor];
             fillColor = UIColor.greenColor.CGColor;
-            dc.width = 8;
+            dc.width = 5;
             symbol = Star2Sym;
         }
         if ([waypoint.type isEqual:@"CompassPoint"])

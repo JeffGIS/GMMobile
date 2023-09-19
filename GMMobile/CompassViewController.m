@@ -862,7 +862,13 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     {
         _currentPoint.lat = loc.coordinate.latitude;
         _currentPoint.lon = loc.coordinate.longitude;
-        [CRAPI.sharedInstance addPointToTrackRoute: loc.coordinate];
+        if ([CRAPI.sharedInstance addPointToTrackRoute: loc.coordinate] == 2)
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            CRAPI.sharedInstance.amTrackingRoute = FALSE;
+        }
 
         if (first)
             [self getWeatherData];

@@ -6265,9 +6265,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
     _currentLocation = [locations.firstObject coordinate];
-    if ([CRAPI.sharedInstance addPointToTrackRoute: _currentLocation])
+    int st = [CRAPI.sharedInstance addPointToTrackRoute: _currentLocation];
+    if (st > 0)
+    {
         [self displayTrackRoute];
-
+        if (st == 2)
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            CRAPI.sharedInstance.amTrackingRoute = FALSE;
+        }       
+    }
+    
     LLPOINT llpt;
     llpt.lat = _currentLocation.latitude;
     llpt.lon = _currentLocation.longitude;
@@ -7393,6 +7403,7 @@ didSelectPDFButtonWithText:(NSString *)text
                 _llPickedPt.lat = _currentLocation.latitude;
             }
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:_llPickedPt description:@"" displayOnCompass:YES];
+            CRAPI.sharedInstance.currentVehicleLocation = _llPickedPt;
             if (CRAPI.sharedInstance.locationTrackingEnabled)
             {
                 [self startTrackingUserLocation];
