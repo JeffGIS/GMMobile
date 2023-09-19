@@ -144,7 +144,6 @@
 @property CAShapeLayer *trackLayer;
 @property CAShapeLayer *scaleLayer, *scaleLayer2;
 @property CAShapeLayer *weatherLayer;
-@property BOOL amTrackingRoute;
 @property BOOL displayTrackingRoute;
 @property UILabel *scaleLabel;
 @property int  pickedRefno;
@@ -2624,31 +2623,6 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_weatherLabel];
 }
 
--(void) addPointToTrackRoute:(CLLocationCoordinate2D) location
-{
-    if (_amTrackingRoute)
-    {
-        TrackRoutePoint *routePoint = TrackRoutePoint.new;
-        routePoint.time = NSDate.timeIntervalSinceReferenceDate;
-        LLPOINT llpt;
-        llpt.lat = location.latitude;
-        llpt.lon = location.longitude;
-        routePoint.latlon = llpt;
-
-        BOOL addIt = TRUE;
-        int npt = CRAPI.sharedInstance.currentTrackRoute.count;
-        if (npt)
-        {
-            TrackRoutePoint *lastPoint = CRAPI.sharedInstance.currentTrackRoute[npt-1];
-            double dist = ArcDistanceLL(routePoint.latlon,lastPoint.latlon);
-            if (dist < 1)
-                addIt = FALSE;
-        }
-        if (addIt)
-            [CRAPI.sharedInstance.currentTrackRoute addObject:routePoint];
-        [self displayTrackRoute];
-    }
-}
 -(void) clearCurrentRoute
 {
     [_routeLayer removeFromSuperlayer];
@@ -6291,7 +6265,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
     _currentLocation = [locations.firstObject coordinate];
-    [self addPointToTrackRoute: _currentLocation];
+    if ([CRAPI.sharedInstance addPointToTrackRoute: _currentLocation])
+        [self displayTrackRoute];
+
     LLPOINT llpt;
     llpt.lat = _currentLocation.latitude;
     llpt.lon = _currentLocation.longitude;
@@ -7410,7 +7386,7 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             HuntingData *hd = HuntingData.new;
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            _amTrackingRoute = TRUE;
+            CRAPI.sharedInstance.amTrackingRoute = TRUE;
             if (CRAPI.sharedInstance.locationTrackingEnabled)
             {
                 _llPickedPt.lon = _currentLocation.longitude;
@@ -7426,7 +7402,7 @@ didSelectPDFButtonWithText:(NSString *)text
         }
         else if ([text isEqualToString:@"Stop Tracking Location"])
         {
-            _amTrackingRoute = FALSE;
+            CRAPI.sharedInstance.amTrackingRoute = FALSE;
         }
         else if ([text isEqualToString:@"Show Tracking Route"])
         {
@@ -7442,7 +7418,7 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            _amTrackingRoute = FALSE;
+            CRAPI.sharedInstance.amTrackingRoute = FALSE;
         }
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {

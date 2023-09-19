@@ -862,6 +862,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     {
         _currentPoint.lat = loc.coordinate.latitude;
         _currentPoint.lon = loc.coordinate.longitude;
+        [CRAPI.sharedInstance addPointToTrackRoute: loc.coordinate];
+
         if (first)
             [self getWeatherData];
         first = false;

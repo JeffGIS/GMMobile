@@ -27,12 +27,6 @@
 @property CGFloat currentDistance;
 @end
 
-@interface TrackRoutePoint : NSObject
-@property (nonatomic) INT64 refno;
-@property (nonatomic) LLPOINT latlon;
-@property int time;
-@end
-
 @interface HuntingData : NSObject
 @property int processingID;
 @property sqlite3nv *database;
