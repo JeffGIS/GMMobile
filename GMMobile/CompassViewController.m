@@ -94,6 +94,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property BOOL firstMinute;
 @property NVPopoverTableView *nvptv;
 @property BOOL startRoute;
+@property BOOL needToInitiateRoute;
+@property LLPOINT firstRoutePoint;
 
 @end
 
@@ -873,7 +875,11 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
         if (first)
             [self getWeatherData];
         first = false;
-
+        if (_needToInitiateRoute)
+        {
+            _fromPoint = _currentPoint;
+            [self initiateRoute];
+        }
     }
     [self removeUserWaypoints];
     [self addUserWaypoints:_currentPoint];
@@ -1340,12 +1346,18 @@ double HeadingFromAZ (double az)
             NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
             UserWaypoint* waypoint = routePointArray[0];
             CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
-            _fromPoint = _currentPoint;
-            _startRoute = YES;
-            [self displayProfile:_currentPoint
-                                            to:waypoint.latlon
-                                   checkOffset:YES];
-
+            _firstRoutePoint = waypoint.latlon;
+            if (!CRAPI.sharedInstance.locationTrackingEnabled)
+            {
+                [_locationManager startUpdatingLocation];
+                CRAPI.sharedInstance.locationTrackingEnabled = TRUE;
+                _needToInitiateRoute = TRUE;
+            }
+            else
+            {
+                _fromPoint = _currentPoint;
+                [self initiateRoute];
+            }
         }
         else if ([text isEqualToString:@"Get Weather Data"])
         {
@@ -1365,6 +1377,16 @@ double HeadingFromAZ (double az)
     [popoverTableView hide:YES];
     [_singleFingerTap setEnabled:YES];
 
+}
+-(void) initiateRoute
+{
+    _needToInitiateRoute = FALSE;
+    _startRoute = YES;
+    [self displayProfile:_fromPoint
+                      to:_firstRoutePoint
+             checkOffset:YES];
+    [self removeUserWaypoints];
+    [self addUserWaypoints:_currentPoint];
 }
 - (void) getForcastWeatherData
 {
@@ -1643,7 +1665,7 @@ double HeadingFromAZ (double az)
                                 offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
                             }
                             if (haveProfile)
-                                [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.2f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
+                                [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.0f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
                         }
                         if (_offCourseTimer)
                             _infoLabel.textColor = UIColor.orangeColor;
