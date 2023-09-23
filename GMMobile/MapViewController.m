@@ -153,6 +153,7 @@
 @property UIImageView* windImage;
 @property UILabel * weatherLabel;
 @property NSArray * currentForecast;
+@property int needToSetVehicleLocation;
 @end
 
 @implementation MapViewController
@@ -6265,6 +6266,24 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
     _currentLocation = [locations.firstObject coordinate];
+    LLPOINT llpt;
+    llpt.lat = _currentLocation.latitude;
+    llpt.lon = _currentLocation.longitude;
+    CRAPI.sharedInstance.currentLocation = llpt;
+    
+    if (_needToSetVehicleLocation)
+    {
+        if (_needToSetVehicleLocation-- == 1)
+        {
+            HuntingData *hd = HuntingData.new;
+            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            CRAPI.sharedInstance.amTrackingRoute = TRUE;
+            [hd addWaypoint:@"V" type:@"Vehicle" latlon:llpt description:@"" displayOnCompass:YES];
+            [_mapToolbar selectMyLocationButton:YES];
+            CRAPI.sharedInstance.currentVehicleLocation = llpt;
+            [self vectorViewRefresh];
+        }
+    }
     int st = [CRAPI.sharedInstance addPointToTrackRoute: _currentLocation];
     if (st > 0)
     {
@@ -6278,11 +6297,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }       
     }
     
-    LLPOINT llpt;
-    llpt.lat = _currentLocation.latitude;
-    llpt.lon = _currentLocation.longitude;
-    CRAPI.sharedInstance.currentLocation = llpt;
-
     _locationCount++;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
@@ -7394,22 +7408,8 @@ didSelectPDFButtonWithText:(NSString *)text
     {
         if ([text isEqualToString:@"Mark Vehicle Location"])
         {
-            HuntingData *hd = HuntingData.new;
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amTrackingRoute = TRUE;
-            if (CRAPI.sharedInstance.locationTrackingEnabled)
-            {
-                _llPickedPt.lon = _currentLocation.longitude;
-                _llPickedPt.lat = _currentLocation.latitude;
-            }
-            [hd addWaypoint:@"V" type:@"Vehicle" latlon:_llPickedPt description:@"" displayOnCompass:YES];
-            CRAPI.sharedInstance.currentVehicleLocation = _llPickedPt;
-            if (CRAPI.sharedInstance.locationTrackingEnabled)
-            {
-                [self startTrackingUserLocation];
-            }
-            [_mapToolbar selectMyLocationButton:YES];
-            [self vectorViewRefresh];
+            _needToSetVehicleLocation = 3;
+            [self startTrackingUserLocation];
         }
         else if ([text isEqualToString:@"Stop Tracking Location"])
         {
