@@ -96,6 +96,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property BOOL startRoute;
 @property BOOL needToInitiateRoute;
 @property LLPOINT firstRoutePoint;
+@property BOOL inRouteMode;
 
 @end
 
@@ -116,8 +117,8 @@ DPOINT saveFromUTM, saveToUTM;
     _timerDelay = _maxTimerDelay;
     _currentTimerDelay = 0;
     _notifyDist = 10;
-    _nearDist = 50;
-    _atDistance = 40;
+    _nearDist = 20;
+    _atDistance = 10;
     _closeDistance = 100;
     _displayTime = 0;
 
@@ -487,7 +488,12 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     NSMutableArray *optionList = NSMutableArray.array;
     NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
     if (routePointArray.count > 0)
-        [optionList addObject:@"Start Route"];
+    {
+        if (_inRouteMode)
+            [optionList addObject:@"Exit Route"];
+        else
+            [optionList addObject:@"Start Route"];
+    }
     [optionList addObject:@"Get Weather Data"];
     [optionList addObject:@"Set Profile Exageration to 1"];
     [optionList addObject:@"Set Profile Exageration to 2"];
@@ -970,7 +976,7 @@ double HeadingFromAZ (double az)
         if (waypoint.displayOnCompass)
         {
             double dist = waypoint.currentDistance;
-            if ((dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"]) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"] && !_inRouteMode) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double az = AZMLatLon (currentPoint,waypoint.latlon);
                 double azd = RadiansToDegrees (az);
@@ -981,7 +987,11 @@ double HeadingFromAZ (double az)
                 NSString *  tickText = [NSString stringWithFormat:@"%i",wpNum++];
                 
                 CGFloat textAngle = az;
-                
+                if (_inRouteMode)
+                {
+                    if ([waypoint.type isEqual:@"RoutePoint"])
+                        _closeDistance = ArcDistanceLL(waypoint.latlon, _fromPoint);
+                }
                 if (dist < _closeDistance)
                 {
                     scale = maxScale * (dist/_closeDistance);
@@ -1236,6 +1246,8 @@ double HeadingFromAZ (double az)
         {
             if (_currentRoutePointNumber > 0)
             {
+                UserWaypoint *wp = [hd getWaypointWithRefno:_currentRoutePointNumber];
+                _fromPoint = wp.latlon;
                 [hd deleteWaypointWithRefno:_currentRoutePointNumber];
                 NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
                 if (routePointArray.count > 0)
@@ -1341,7 +1353,11 @@ double HeadingFromAZ (double az)
     else
     {
         HuntingData *hd = HuntingData.new;
-        if ([text isEqualToString:@"Start Route"])
+        if ([text isEqualToString:@"Exit Route"])
+        {
+            _inRouteMode = FALSE;
+        }
+        else if ([text isEqualToString:@"Start Route"])
         {
             NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
             UserWaypoint* waypoint = routePointArray[0];
@@ -1382,6 +1398,7 @@ double HeadingFromAZ (double az)
 {
     _needToInitiateRoute = FALSE;
     _startRoute = YES;
+    _inRouteMode = YES;
     [self displayProfile:_fromPoint
                       to:_firstRoutePoint
              checkOffset:YES];
@@ -1614,7 +1631,7 @@ double HeadingFromAZ (double az)
                 double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
                 waypoint.headingInDeg = RadiansToDegrees (wpaz);
                 double curAz = DegreesToRadians(theHeading);
-                if (dist / METERS_PER_YARD < _atDistance)
+                if (dist / METERS_PER_YARD < _atDistance && ![waypoint.type isEqual:@"Vehicle"] )
                 {
                     [self setInfoLabelText:[NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD]];
                     _infoLabel.textColor = UIColor.whiteColor;
@@ -1646,7 +1663,7 @@ double HeadingFromAZ (double az)
                                                             to:waypoint.latlon
                                                    checkOffset:NO];
                         }
-                        if (dist / METERS_PER_YARD < _nearDist)
+                        if (dist / METERS_PER_YARD < _nearDist && ![waypoint.type isEqual:@"Vehicle"] )
                         {
                             units = @"yards";
                             dist = dist / METERS_PER_YARD;
@@ -1654,7 +1671,6 @@ double HeadingFromAZ (double az)
                         }
                         else
                         {
-                            dist = dist / METERS_PER_MILE;
                             int offDist = IDNINT(_offDist / METERS_PER_YARD);
                             NSString *offsetText = @"";
                             NSString *offDir = @"L";
@@ -1665,7 +1681,19 @@ double HeadingFromAZ (double az)
                                 offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
                             }
                             if (haveProfile)
-                                [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.0f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
+                            {
+                                if (dist < METERS_PER_MILE/10)
+                                {
+                                    units = @"yards";
+                                    dist = dist / METERS_PER_YARD;
+                                    [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.0f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.0f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
+                                }
+                                else
+                                {
+                                    dist = dist / METERS_PER_MILE;
+                                    [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.0f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
+                                }
+                            }
                         }
                         if (_offCourseTimer)
                             _infoLabel.textColor = UIColor.orangeColor;

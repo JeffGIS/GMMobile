@@ -796,8 +796,19 @@
         [_mapView animateToBearing:bearing];
         [self displayScalebar];
     }
-
-
+    {
+        HuntingData *hd = HuntingData.new;
+        CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
+        NSArray * rt = [hd getWaypointsOfType:@"RoutePoint"];
+        CGPoint llp;
+        for (UserWaypoint * wp in rt)
+        {
+            llp.y = wp.latlon.lat;
+            llp.x = wp.latlon.lon;
+            NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+            [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+        }
+    }
 }
 
 - (void) setTarget:(CLLocationCoordinate2D)target
@@ -6278,6 +6289,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             HuntingData *hd = HuntingData.new;
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             CRAPI.sharedInstance.amTrackingRoute = TRUE;
+            [hd deleteWaypointsOfType:@"Vehicle"];
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:llpt description:@"" displayOnCompass:YES];
             [_mapToolbar selectMyLocationButton:YES];
             CRAPI.sharedInstance.currentVehicleLocation = llpt;

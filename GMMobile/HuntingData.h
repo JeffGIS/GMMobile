@@ -65,6 +65,7 @@
 -(void) saveTrackRoute:(NSArray*)trackRoutePoints;
 -(int) getSavedTrack:(int)timeSaved;
 
+-(UserWaypoint *) getWaypointWithRefno:(int)refno;
 -(int) deleteWaypointWithRefno:(int)refno;
 -(int) setWaypointCompassStatus:(int)refno
                displayOnCompass:(BOOL)display;

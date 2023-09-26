@@ -425,6 +425,45 @@
     [self close:opened];
     return array;
 }
+-(UserWaypoint *) getWaypointWithRefno:(int)refno
+{
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM USERDATA.UserWayPoints WHERE id = %i",refno];
+    UserWaypoint * rtn = UserWaypoint.new;
+    sqlite3_stmt *statement = NULL;
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        int refno = sqlite3_column_int(statement, i++);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR type = (LPSTR)sqlite3_column_text(statement, i++);
+        double lat = sqlite3_column_double(statement, i++);
+        double lon = sqlite3_column_double(statement, i++);
+        int itime = sqlite3_column_int(statement, i++);
+        LPSTR desc = (LPSTR)sqlite3_column_text(statement, i++);
+        int displayOnCompass = sqlite3_column_int(statement, i++);
+        LLPOINT latlon;
+        latlon.lat = lat;
+        latlon.lon = lon;
+        UserWaypoint * wp = UserWaypoint.new;
+        wp.refno = refno;
+        wp.name = [NSString stringWithUTF8String:name];
+        wp.name = [wp.name stringByReplacingOccurrencesOfString:@".id" withString:[NSString stringWithFormat:@"%i",refno]];
+        wp.type = [NSString stringWithUTF8String:type];
+        wp.desc = [NSString stringWithUTF8String:desc];
+        wp.time = itime;
+        wp.displayOnCompass = displayOnCompass;
+        wp.latlon = latlon;
+        rtn = wp;
+    }
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    [self close:opened];
+    return rtn;
+}
+
 -(NSArray *)getWaypointsOfType:(NSString *)wantType
 {
     NSMutableArray *array = NSMutableArray.new;
