@@ -59,6 +59,8 @@
   displayOnCompass:(BOOL)displayOnCompass;
 -(NSArray *)getWaypoints;
 -(NSArray *)getWaypointsOfType:(NSString *)wantType;
+-(NSArray *)getWaypointsOfType:(NSString *)wantType
+          withRefnoGreaterThan:(int) refno;
 -(int) deleteAllWaypoints;
 -(int) deleteWaypointsOfType:(NSString*)type;
 -(int) deleteWaypointsWithName:(NSString*)name;

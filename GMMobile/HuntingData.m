@@ -46,11 +46,6 @@
 @synthesize displayOnCompass;
 @end
 
-@implementation TrackRoutePoint
-@synthesize refno;
-@synthesize latlon;
-@synthesize time;
-@end
 
 @implementation HuntingData
 - (id)init
@@ -504,6 +499,48 @@
     [self close:opened];
     return array;
 }
+-(NSArray *)getWaypointsOfType:(NSString *)wantType
+             withRefnoGreaterThan:(int) refno
+{
+    NSMutableArray *array = NSMutableArray.new;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM USERDATA.UserWayPoints WHERE type = '%@' AND id > %i ORDER BY id",wantType,refno];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        int refno = sqlite3_column_int(statement, i++);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR type = (LPSTR)sqlite3_column_text(statement, i++);
+        double lat = sqlite3_column_double(statement, i++);
+        double lon = sqlite3_column_double(statement, i++);
+        int itime = sqlite3_column_int(statement, i++);
+        LPSTR desc = (LPSTR)sqlite3_column_text(statement, i++);
+        int displayOnCompass = sqlite3_column_int(statement, i++);
+        LLPOINT latlon;
+        latlon.lat = lat;
+        latlon.lon = lon;
+        UserWaypoint * wp = UserWaypoint.new;
+        wp.refno = refno;
+        wp.name = [NSString stringWithUTF8String:name];
+        wp.name = [wp.name stringByReplacingOccurrencesOfString:@".id" withString:[NSString stringWithFormat:@"%i",refno]];
+        wp.type = [NSString stringWithUTF8String:type];
+        wp.desc = [NSString stringWithUTF8String:desc];
+        wp.time = itime;
+        wp.displayOnCompass = displayOnCompass;
+        wp.latlon = latlon;
+        [array addObject:wp];
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    [self close:opened];
+    return array;
+}
+
 - (BOOL)executeCmd:(LPCSTR)cmd
 {
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);

@@ -990,7 +990,10 @@ double HeadingFromAZ (double az)
                 if (_inRouteMode)
                 {
                     if ([waypoint.type isEqual:@"RoutePoint"])
+                    {
                         _closeDistance = ArcDistanceLL(waypoint.latlon, _fromPoint);
+                        tickText = waypoint.name;
+                    }
                 }
                 if (dist < _closeDistance)
                 {
@@ -1248,8 +1251,8 @@ double HeadingFromAZ (double az)
             {
                 UserWaypoint *wp = [hd getWaypointWithRefno:_currentRoutePointNumber];
                 _fromPoint = wp.latlon;
-                [hd deleteWaypointWithRefno:_currentRoutePointNumber];
-                NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+                NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"
+                                                             withRefnoGreaterThan:_currentRoutePointNumber];
                 if (routePointArray.count > 0)
                 {
                     CRAPI.sharedInstance.currentSelectedWaypoint = routePointArray[0].refno;

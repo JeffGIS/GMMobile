@@ -140,7 +140,6 @@
 @property LLPOINT llPickedPt;
 @property BOOL amAcceptingHeading;
 @property int numCurrentRoutePoints;
-@property CAShapeLayer *routeLayer;
 @property CAShapeLayer *trackLayer;
 @property CAShapeLayer *scaleLayer, *scaleLayer2;
 @property CAShapeLayer *weatherLayer;
@@ -154,6 +153,7 @@
 @property UILabel * weatherLabel;
 @property NSArray * currentForecast;
 @property int needToSetVehicleLocation;
+@property NSMutableArray * routeSubLayers;
 @end
 
 @implementation MapViewController
@@ -796,21 +796,8 @@
         [_mapView animateToBearing:bearing];
         [self displayScalebar];
     }
-    {
-        HuntingData *hd = HuntingData.new;
-        CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
-        NSArray * rt = [hd getWaypointsOfType:@"RoutePoint"];
-        CGPoint llp;
-        for (UserWaypoint * wp in rt)
-        {
-            llp.y = wp.latlon.lat;
-            llp.x = wp.latlon.lon;
-            NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
-            [CRAPI.sharedInstance.currentRoute addObject:routePoint];
-        }
-    }
+    [self createCurrentRouteFromRoutePoints];
 }
-
 - (void) setTarget:(CLLocationCoordinate2D)target
 {
     _target = target;
@@ -2494,6 +2481,28 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view.layer addSublayer:_scaleLayer2];
     [self.view addSubview:_scaleLabel];
 }
+
+-(void) createCurrentRouteFromRoutePoints
+{
+    HuntingData *hd = HuntingData.new;
+    CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
+    NSArray * rt = [hd getWaypointsOfType:@"RoutePoint"];
+    
+    for (UserWaypoint * wp in rt)
+    {
+        RoutePoint *routePoint = RoutePoint.new;
+        routePoint.refno = wp.refno;
+        routePoint.latlon = wp.latlon;
+        [CRAPI.sharedInstance.currentRoute addObject:routePoint];
+    }
+}
+-(void) clearCurrentRoute
+{
+    for (CAShapeLayer *routeLayer in _routeSubLayers)
+        [routeLayer removeFromSuperlayer];
+    _routeSubLayers = NSMutableArray.new;
+}
+
 -(void) displayCurrentRoute
 {
     [self clearCurrentRoute];
@@ -2501,29 +2510,29 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     int n = CRAPI.sharedInstance.currentRoute.count;
     if (CRAPI.sharedInstance.currentRoute.count > 1)
     {
-        _routeLayer = CAShapeLayer.layer;
+        CAShapeLayer *routeLayer = CAShapeLayer.layer;
         if (_numCurrentRoutePoints > 0)
-            _routeLayer.strokeColor = UIColor.yellowColor.CGColor;
+            routeLayer.strokeColor = UIColor.yellowColor.CGColor;
         else
-            _routeLayer.strokeColor = UIColor.redColor.CGColor;
-        _routeLayer.fillColor = nil;
-        _routeLayer.lineWidth = 5;
+            routeLayer.strokeColor = UIColor.redColor.CGColor;
+        routeLayer.fillColor = nil;
+        routeLayer.lineWidth = 5;
         UIBezierPath *path = UIBezierPath.bezierPath;
         NSNumber *npt = CRAPI.sharedInstance.currentRoute[0];
         int ipt = 0;
-        for (NSNumber *npt in CRAPI.sharedInstance.currentRoute)
+        for (RoutePoint *npt in CRAPI.sharedInstance.currentRoute)
         {
-            CGPoint pt = npt.CGPointValue;
-            CLLocationCoordinate2D llpt={pt.y,pt.x};
-            NSString *name = [NSString stringWithFormat:@"R%i",ipt+1];
-            pt = [_mapView.projection pointForCoordinate:llpt];
+            CLLocationCoordinate2D llpt={npt.latlon.lat,npt.latlon.lon};
+            //NSString *name = [NSString stringWithFormat:@"R%i",ipt+1];
+            CGPoint pt = [_mapView.projection pointForCoordinate:llpt];
             if (!ipt++)
                 [path moveToPoint:pt];
             else
                 [path addLineToPoint:pt];
         }
-        _routeLayer.path = path.CGPath;
-        [_mapView.layer addSublayer:_routeLayer];
+        routeLayer.path = path.CGPath;
+        [_mapView.layer addSublayer:routeLayer];
+        [_routeSubLayers addObject:routeLayer];
     }
 }
 -(void) displayTrackRoute
@@ -2635,10 +2644,6 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_weatherLabel];
 }
 
--(void) clearCurrentRoute
-{
-    [_routeLayer removeFromSuperlayer];
-}
 -(void) clearCurrentTrackRoute
 {
     [_trackLayer removeFromSuperlayer];
