@@ -2514,25 +2514,78 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         if (_numCurrentRoutePoints > 0)
             routeLayer.strokeColor = UIColor.yellowColor.CGColor;
         else
+        {
             routeLayer.strokeColor = UIColor.redColor.CGColor;
+        }
         routeLayer.fillColor = nil;
         routeLayer.lineWidth = 5;
         UIBezierPath *path = UIBezierPath.bezierPath;
-        NSNumber *npt = CRAPI.sharedInstance.currentRoute[0];
+        RoutePoint *rpt = CRAPI.sharedInstance.currentRoute[0];
         int ipt = 0;
-        for (RoutePoint *npt in CRAPI.sharedInstance.currentRoute)
+        CGPoint pt;
+        if (CRAPI.sharedInstance.inRouteMode)
         {
-            CLLocationCoordinate2D llpt={npt.latlon.lat,npt.latlon.lon};
-            //NSString *name = [NSString stringWithFormat:@"R%i",ipt+1];
-            CGPoint pt = [_mapView.projection pointForCoordinate:llpt];
+            if (rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            {
+                routeLayer.strokeColor = UIColor.greenColor.CGColor;
+                CLLocationCoordinate2D llpt={_currentLocation.latitude,_currentLocation.longitude};
+                pt = [_mapView.projection pointForCoordinate:llpt];
+                [path moveToPoint:pt];
+                llpt.latitude = rpt.latlon.lat;
+                llpt.longitude = rpt.latlon.lon;
+                pt = [_mapView.projection pointForCoordinate:llpt];
+                [path addLineToPoint:pt];
+                routeLayer.path = path.CGPath;
+                [_mapView.layer addSublayer:routeLayer];
+                [_routeSubLayers addObject:routeLayer];
+                routeLayer = CAShapeLayer.layer;
+                path = UIBezierPath.bezierPath;
+                routeLayer.strokeColor = UIColor.redColor.CGColor;
+                routeLayer.fillColor = nil;
+                routeLayer.lineWidth = 5;
+
+            }
+        }
+        for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
+        {
+            CLLocationCoordinate2D llpt={rpt.latlon.lat,rpt.latlon.lon};
+            if (CRAPI.sharedInstance.inRouteMode && ipt && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            {
+                routeLayer.path = path.CGPath;
+                [_mapView.layer addSublayer:routeLayer];
+                [_routeSubLayers addObject:routeLayer];
+                routeLayer = CAShapeLayer.layer;
+                routeLayer.fillColor = nil;
+                path = UIBezierPath.bezierPath;
+                routeLayer.strokeColor = UIColor.greenColor.CGColor;
+                _trackLayer.lineWidth = 5;
+                [path moveToPoint:pt];
+                pt = [_mapView.projection pointForCoordinate:llpt];
+                [path addLineToPoint:pt];
+                routeLayer.path = path.CGPath;
+                [_mapView.layer addSublayer:routeLayer];
+                [_routeSubLayers addObject:routeLayer];
+                routeLayer = CAShapeLayer.layer;
+                path = UIBezierPath.bezierPath;
+                routeLayer.fillColor = nil;
+                _trackLayer.lineWidth = 5;
+                routeLayer.strokeColor = UIColor.redColor.CGColor;
+                ipt = 0;
+            }
+            else
+                pt = [_mapView.projection pointForCoordinate:llpt];
+
             if (!ipt++)
                 [path moveToPoint:pt];
             else
                 [path addLineToPoint:pt];
         }
-        routeLayer.path = path.CGPath;
-        [_mapView.layer addSublayer:routeLayer];
-        [_routeSubLayers addObject:routeLayer];
+        if (ipt)
+        {
+            routeLayer.path = path.CGPath;
+            [_mapView.layer addSublayer:routeLayer];
+            [_routeSubLayers addObject:routeLayer];
+        }
     }
 }
 -(void) displayTrackRoute

@@ -96,7 +96,6 @@ DPOINT saveFromUTM, saveToUTM;
 @property BOOL startRoute;
 @property BOOL needToInitiateRoute;
 @property LLPOINT firstRoutePoint;
-@property BOOL inRouteMode;
 
 @end
 
@@ -489,7 +488,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
     if (routePointArray.count > 0)
     {
-        if (_inRouteMode)
+        if (CRAPI.sharedInstance.inRouteMode)
             [optionList addObject:@"Exit Route"];
         else
             [optionList addObject:@"Start Route"];
@@ -976,7 +975,7 @@ double HeadingFromAZ (double az)
         if (waypoint.displayOnCompass)
         {
             double dist = waypoint.currentDistance;
-            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"] && !_inRouteMode) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"] && !CRAPI.sharedInstance.inRouteMode) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double az = AZMLatLon (currentPoint,waypoint.latlon);
                 double azd = RadiansToDegrees (az);
@@ -987,7 +986,7 @@ double HeadingFromAZ (double az)
                 NSString *  tickText = [NSString stringWithFormat:@"%i",wpNum++];
                 
                 CGFloat textAngle = az;
-                if (_inRouteMode)
+                if (CRAPI.sharedInstance.inRouteMode)
                 {
                     if ([waypoint.type isEqual:@"RoutePoint"])
                     {
@@ -1231,7 +1230,8 @@ double HeadingFromAZ (double az)
             _ignoreAtWaypoint = -1;
             _forward = TRUE;
             _lastToDist = 0;
-            if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+            if (CRAPI.sharedInstance.currentSelectedWaypoint > 0 &&
+                CRAPI.sharedInstance.currentSelectedWaypoint != CRAPI.sharedInstance.currentFocusWaypoint)
             {
                 CRAPI.sharedInstance.currentSelectedWaypoint = -1;
                 [self removeAsRouteOnMap];
@@ -1243,6 +1243,7 @@ double HeadingFromAZ (double az)
                 _fromPoint = _currentPoint;
                 _startRoute = TRUE;
             }
+            [self removeUserWaypoints];
             [self addUserWaypoints:_currentPoint];
             break;
         case 1: //make next route point focus
@@ -1358,7 +1359,7 @@ double HeadingFromAZ (double az)
         HuntingData *hd = HuntingData.new;
         if ([text isEqualToString:@"Exit Route"])
         {
-            _inRouteMode = FALSE;
+            CRAPI.sharedInstance.inRouteMode = FALSE;
         }
         else if ([text isEqualToString:@"Start Route"])
         {
@@ -1401,7 +1402,7 @@ double HeadingFromAZ (double az)
 {
     _needToInitiateRoute = FALSE;
     _startRoute = YES;
-    _inRouteMode = YES;
+    CRAPI.sharedInstance.inRouteMode = YES;
     [self displayProfile:_fromPoint
                       to:_firstRoutePoint
              checkOffset:YES];
