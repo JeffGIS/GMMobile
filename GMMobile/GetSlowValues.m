@@ -379,7 +379,7 @@ displayCharacteristics:dc
         CGContextRelease(context);
     if (_colorConversionContext)
         CGContextRelease(_colorConversionContext);
-    if (baseLayer == MBL_StreetCenterlines || baseLayer == MBL_Roads)
+    if (baseLayer == MBL_LandUse || baseLayer == MBL_StreetCenterlines || baseLayer == MBL_Roads)
     {
         NSString * file = CRAPI.sharedInstance.extractFile;
         BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);

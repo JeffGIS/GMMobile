@@ -1749,14 +1749,13 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     HuntingData *hd = HuntingData.new;
     if (_numCurrentRoutePoints)
     {
-        CGPoint llp = {0};
-        llp.y = coordinate.latitude;
-        llp.x = coordinate.longitude;
+        LLPOINT llp = {coordinate.longitude,coordinate.latitude};
         _numCurrentRoutePoints++;
-        NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+        RoutePoint *routePoint = RoutePoint.new;
+        routePoint.latlon = llp;
         [CRAPI.sharedInstance.currentRoute addObject:routePoint];
         NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
-        [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(llp) description:@"" displayOnCompass:YES];
+        [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
         _numCurrentRoutePoints = 0;
         [self displayCurrentRoute];
         [self vectorViewRefresh];
@@ -1905,14 +1904,13 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             HuntingData *hd = HuntingData.new;
             if (_numCurrentRoutePoints)
             {
-                CGPoint llp = {0};
-                llp.y = coordinate.latitude;
-                llp.x = coordinate.longitude;
+                LLPOINT llp = {coordinate.longitude,coordinate.latitude};
                 _numCurrentRoutePoints++;
-                NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+                RoutePoint *routePoint = RoutePoint.new;
+                routePoint.latlon = llp;
                 [CRAPI.sharedInstance.currentRoute addObject:routePoint];
                 NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
-                [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(llp) description:@"" displayOnCompass:YES];
+                [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
                 [self displayCurrentRoute];
             }
             else
@@ -2722,16 +2720,15 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             CGPoint gesturePoint  = [gesture locationOfTouch:0 inView:self.view];
             int numTouches = gesture.numberOfTouches;
             CLLocationCoordinate2D gestureLocation = [_mapView.projection coordinateForPoint:gesturePoint];
-            CGPoint llp = {0};
-            llp.y = gestureLocation.latitude;
-            llp.x = gestureLocation.longitude;
+            LLPOINT llp = {gestureLocation.longitude,gestureLocation.latitude};
             
             if (_numCurrentRoutePoints++)
             {
-                NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+                RoutePoint *routePoint = RoutePoint.new;
+                routePoint.latlon = llp;
                 [CRAPI.sharedInstance.currentRoute addObject:routePoint];
                 NSString * name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
-                [hd addWaypoint:name type:@"RoutePoint" latlon:CGPointToLLPoint(llp) description:@"" displayOnCompass:YES];
+                [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
                 [self displayCurrentRoute];
                 [self vectorViewRefresh];
             }
@@ -7522,9 +7519,9 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Start Route"])
         {
             CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
-            CGPoint llp = LLPointToCGPoint(_llPickedPt);
             _numCurrentRoutePoints++;
-            NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
+            RoutePoint *routePoint = RoutePoint.new;
+            routePoint.latlon = _llPickedPt;
             [CRAPI.sharedInstance.currentRoute addObject:routePoint];
             
             HuntingData *hd = HuntingData.new;
