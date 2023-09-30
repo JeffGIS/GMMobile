@@ -246,6 +246,7 @@
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
 		EBAEBB3D294000540004D22D /* windArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAEBB3A294000540004D22D /* windArrow.png */; };
 		EBAEBD692944F6500004D22D /* weather.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAEBD662944F6500004D22D /* weather.png */; };
+		EBC025172AC714D800F873B0 /* ProximityMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = EBC025162AC714D800F873B0 /* ProximityMapping.m */; };
 		EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -603,6 +604,8 @@
 		EBADB96B1BFB70E7006FB31B /* Themes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Themes.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBAEBB3A294000540004D22D /* windArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = windArrow.png; sourceTree = "<group>"; };
 		EBAEBD662944F6500004D22D /* weather.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = weather.png; sourceTree = "<group>"; };
+		EBC025162AC714D800F873B0 /* ProximityMapping.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProximityMapping.m; sourceTree = "<group>"; };
+		EBC0251A2AC715B700F873B0 /* ProximityMapping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProximityMapping.h; sourceTree = "<group>"; };
 		EBC7B136202CDB43007EE94F /* RiteHomeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RiteHomeLogo.png; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
@@ -950,6 +953,8 @@
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
 				EBD02DE42978480A0083396D /* CVTCoord.h */,
 				EBD02DE52978480A0083396D /* CVTCoord.c */,
+				EBC025162AC714D800F873B0 /* ProximityMapping.m */,
+				EBC0251A2AC715B700F873B0 /* ProximityMapping.h */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1528,6 +1533,7 @@
 				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,
 				699D81B8202D89F800E1A5C2 /* NVPanoramaVC.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
+				EBC025172AC714D800F873B0 /* ProximityMapping.m in Sources */,
 				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,
 				EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */,
 				EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */,

@@ -55,6 +55,7 @@
 #import "HuntingDataDisplay.h"
 #import "CompassViewController.h"
 #import "CCodeLibrary/NVTextViewAlert.h"
+#import "ProximityMapping.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -1953,7 +1954,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                     }
                     else
                         [optionList addObject:@"Start Route"];
-                    
+                    [optionList addObject:@"Proximity Mapping"];
                     if (CRAPI.sharedInstance.currentTrackRoute.count)
                     {
                         [optionList addObject:@"________________________"];
@@ -7516,6 +7517,11 @@ didSelectPDFButtonWithText:(NSString *)text
         }
         
         
+        else if ([text isEqualToString:@"Proximity Mapping"])
+        {
+            ProximityMapping * pm = ProximityMapping.new;
+            [pm CreateSurface];
+        }
         else if ([text isEqualToString:@"Start Route"])
         {
             CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
