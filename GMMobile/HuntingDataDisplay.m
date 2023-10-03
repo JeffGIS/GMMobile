@@ -1214,8 +1214,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
        withColor:(CGColorRef)color
         andWidth:(CGFloat)width
 {
+//    static int Width = 20;
+//    width = Width;
+    CGContextSetLineCap(context, kCGLineCapRound);
+    CGContextSetLineJoin(context, kCGLineJoinRound);
     CGContextSetLineWidth(context, width*3);
-    
     if (nLoops > 1)
     {
         int ip = 0;

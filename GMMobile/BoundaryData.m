@@ -508,6 +508,9 @@
         [types addObject:@"Cities and Towns"];
         [types addObject:@"Deer Permit Areas"];
         [types addObject:@"State Parks"];
+        [types addObject:@"Wildlife Management Areas"];
+        [types addObject:@"Hunter Walking Trails"];
+        [types addObject:@"Walk-in Areas"];
     }
     else
     {
