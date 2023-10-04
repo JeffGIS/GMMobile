@@ -342,6 +342,7 @@ void checkLLBounds (MNMXCORD * bounds)
                                LLBounds:&_latlonBounds
                              viewBounds:&_viewBounds];
                             
+                            if (!CRAPI.sharedInstance.currentApp == HCConfigHunting)
                             [bd displayText:_context
                                        from:TFOSelectBoundary
                                    areaType:CRAPI.sharedInstance.selectBoundaryFromMapType

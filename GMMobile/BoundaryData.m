@@ -345,9 +345,8 @@
     CloseTRANS2P(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
-    
     query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,id FROM %@ WHERE id=%i",table,
-                 refno];
+                     refno];
 
     
     SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
@@ -643,6 +642,11 @@
     {
         table = @"DEERZONEAREAS";
     }
+    else
+    {
+        if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+            table = areaType;
+    }
 
     return table;
 }
@@ -723,6 +727,11 @@
     else if ([type isEqualToString:@"Deer Permit Areas"])
     {
         query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM DEERZONEAREAS_index WHERE ID=%lli",
+                 refno];
+    }
+    else if ([type isEqualToString:@"Counties"])
+    {
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM COUNTIES_index WHERE ID=%lli",
                  refno];
     }
     else
@@ -2258,10 +2267,26 @@ NextPass:
     NSString * keyval;
     int numLoops;
     NSString * key = areaType;
-    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
-    
-    BOOL opened = [self open];
-    
+//    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    NSString * table = [self getTableNameFromType:areaType];
+
+    BOOL opened;
+    sqlite3nv *database;
+    HuntingData *hd;
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        hd = HuntingData.new;
+        opened = [hd open];
+        database = hd.database;
+        key = @"TITLE";
+    }
+    else
+    {
+        opened = [self open];
+        database = _database;
+    }
+
+
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
     
@@ -2279,6 +2304,11 @@ NextPass:
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
+    else if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
     else
     {
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
@@ -2287,7 +2317,7 @@ NextPass:
     }
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -2357,8 +2387,13 @@ NextPass:
         free (llpoints);
     }
     
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
-    [self close:opened];
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        [hd close:opened];
+    }
+    else
+        [self close:opened];
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
@@ -2387,17 +2422,34 @@ NextPass:
     int numLoops = 0;
     int refno = 0;
     NSString *key = areaType;
-    NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    //NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    NSString * table = [self getTableNameFromType:areaType];
     CGFloat screenScale = [[UIScreen mainScreen] scale];
 
     CGFloat fontSize = 32.0 * screenScale;
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
     char totalFieldValue[MAX_NVM_TEXT_FIELDS][32];
     char countText[32];
-    BOOL opened = [self open];
     BOOL isParcel = FALSE;
     int  fieldLoc = 0;
-    
+
+    BOOL opened;
+    sqlite3nv *database;
+    HuntingData *hd;
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        hd = HuntingData.new;
+        opened = [hd open];
+        database = hd.database;
+        key = @"TITLE";
+    }
+    else
+    {
+        opened = [self open];
+        database = _database;
+    }
+
+
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
     
@@ -2462,7 +2514,7 @@ NextPass:
 
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
     _currentRec = 0;
     CRAPI.sharedInstance.lastAreaText = NSMutableArray.new;
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
@@ -2757,7 +2809,13 @@ NextPass:
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
-    [self close:opened];
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        [hd close:opened];
+    }
+    else
+        [self close:opened];
+    
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
 
@@ -2822,8 +2880,24 @@ NextPass:
     int numLoops;
     MNMXCORD llBounds={0};
     NSString * key = areaType;
-    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
-    BOOL opened = [self open];
+    NSString *table = [self getTableNameFromType:key];
+
+    BOOL opened;
+    sqlite3nv *database;
+    HuntingData *hd;
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        hd = HuntingData.new;
+        opened = [hd open];
+        database = hd.database;
+        key = @"TITLE";
+    }
+    else
+    {
+        opened = [self open];
+        database = _database;
+    }
+
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
@@ -2850,10 +2924,10 @@ NextPass:
         if ([areaType isEqualToString:@"TRACT"]) itemType = CensusTractBoundary;
         if ([areaType isEqualToString:@"BLOCKGROUP"]) itemType = CensusBlockGroupBoundary;
         
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@, %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",areaType,table,table,table,table,table,
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@, %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,table,
                  point.lon,point.lon,point.lat,point.lat];
     }
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(database, query.UTF8String, -1, &statement, 0), database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -2901,6 +2975,12 @@ NextPass:
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        [hd close:opened];
+    }
+    else
+        [self close:opened];
     [self close:opened];
     if (nPicked == 1)
     {
