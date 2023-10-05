@@ -3088,6 +3088,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     pt.lat = position.target.latitude;
     pt.lon = position.target.longitude;
     [CRAPI.sharedInstance setCurrentLocation:pt];
+    [self setZoom:mapView.camera.zoom];
 }
 
 - (void)updateMarkerPosition
@@ -8501,7 +8502,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
                             type:(NSString *)type
                            refno:(int)refno
 {
-    CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+    //CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
     if (bounds && ![bounds isEqualToString:@""])
     {
         CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;

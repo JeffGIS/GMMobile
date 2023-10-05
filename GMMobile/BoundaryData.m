@@ -324,8 +324,8 @@
     sqlite3nv *database;
     NSString * table = [self getTableNameFromType:type];
     HuntingData *hd;
-
     BOOL opened;
+    BOOL isLines = StringEndsWith(table.UTF8String, "_LINE");
     if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
     {
         hd = HuntingData.new;
@@ -387,36 +387,49 @@
             }
             LPDPOINT existingPoints = llpoints;
             int numExistingPoints = numPoints;
-            if (CRAPI.sharedInstance.maskBoundsForBounds && mask)
+            if (isLines)
             {
-                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
-                
-                CreateMask(&llpoints, &numPoints,pvbounds,FALSE);
-                [self fillUseCode:context
-                          nPoints:numPoints
-                           points:llpoints
-                        withColor:maskColor.CGColor
-                        lineColor:nil
-                        lineWidth:0];
-                
+                UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:1 blue:0.25 alpha:1];
+                [self drawRoad:context
+                       nPoints:numPoints
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:boundaryColor.CGColor
+                      andWidth:5];
             }
-            if (CRAPI.sharedInstance.showPolylineForBounds)
+            else
             {
-                UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.80];
-                if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame)
-                    boundaryColor = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1];
-                [self drawBoundary:context
-                           nPoints:numExistingPoints
-                            nLoops:numLoops
-                           partLen:polyPartLen
-                            points:existingPoints
-                         withColor:boundaryColor.CGColor];
+                if (CRAPI.sharedInstance.maskBoundsForBounds && mask)
+                {
+                    UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
+                    
+                    CreateMask(&llpoints, &numPoints,pvbounds,FALSE);
+                    [self fillUseCode:context
+                              nPoints:numPoints
+                               points:llpoints
+                            withColor:maskColor.CGColor
+                            lineColor:nil
+                            lineWidth:0];
+                    
+                }
+                if (CRAPI.sharedInstance.showPolylineForBounds)
+                {
+                    UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.80];
+                    if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame)
+                        boundaryColor = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1];
+                    [self drawBoundary:context
+                               nPoints:numExistingPoints
+                                nLoops:numLoops
+                               partLen:polyPartLen
+                                points:existingPoints
+                             withColor:boundaryColor.CGColor];
+                }
             }
-            
             free(llpoints);
         }
     }
- 
+    
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), database);
     if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
         [hd close:opened];
@@ -551,17 +564,24 @@
     if ([type isEqual:@"Counties"])
     {
             query = [NSString stringWithFormat:@"SELECT id,County FROM Counties"];
+    }   
+    else if ([type isEqual:@"Wildlife Management Areas"])
+    {
+            query = [NSString stringWithFormat:@"SELECT ID,WMA FROM WMA"];
     }
-    
-    if ([type isEqual:@"Cities and Towns"])
+    else if ([type isEqual:@"Cities and Towns"])
     {
             query = [NSString stringWithFormat:@"SELECT UNIQUEID,FEATURE_NAME FROM CITYTOWNDATA WHERE CTU_CLASS = 'CITY'"];
     }
-    if ([type isEqual:@"Deer Permit Areas"])
+    else if ([type isEqual:@"Deer Permit Areas"])
     {
             query = [NSString stringWithFormat:@"SELECT ID,TITLE FROM DEERZONEAREAS"];
     }
-    
+    else if ([type isEqual:@"Hunter Walking Trails"])
+    {
+            query = [NSString stringWithFormat:@"SELECT ID,NAME FROM HUNTER_WALKING_TRAILS_LINE"];
+    }
+
     SQLOK(__FILE__,__LINE__,SQLitePrepare(hd.database, query.UTF8String, -1, &statement, 0), hd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -641,6 +661,14 @@
     else if ([areaType isEqualToString:@"Deer Permit Areas"])
     {
         table = @"DEERZONEAREAS";
+    }
+    else if ([areaType isEqualToString:@"Wildlife Management Areas"])
+    {
+        table = @"WMA";
+    }
+    else if ([areaType isEqualToString:@"Hunter Walking Trails"])
+    {
+        table = @"HUNTER_WALKING_TRAILS_LINE";
     }
     else
     {
@@ -727,6 +755,11 @@
     else if ([type isEqualToString:@"Deer Permit Areas"])
     {
         query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM DEERZONEAREAS_index WHERE ID=%lli",
+                 refno];
+    }
+    else if ([type isEqualToString:@"Wildlife Management Areas"])
+    {
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM WMA_index WHERE ID=%lli",
                  refno];
     }
     else if ([type isEqualToString:@"Counties"])
@@ -1070,8 +1103,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 ip++;
             }
             
-            if (loop)
-                ip++;
+            //if (loop)
+            //    ip++;
             
             if (!CGContextIsPathEmpty(context))
             {
@@ -2269,6 +2302,7 @@ NextPass:
     NSString * key = areaType;
 //    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     NSString * table = [self getTableNameFromType:areaType];
+    BOOL isLines = StringEndsWith(table.UTF8String, "_LINE");
 
     BOOL opened;
     sqlite3nv *database;
@@ -2278,7 +2312,12 @@ NextPass:
         hd = HuntingData.new;
         opened = [hd open];
         database = hd.database;
-        key = @"TITLE";
+        if ([table isEqual:@"WMA"])
+            key = @"WMA";
+        else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
+            key = @"NAME";
+        else
+            key = @"TITLE";
     }
     else
     {
@@ -2369,21 +2408,35 @@ NextPass:
                                         forString:keyval].CGColor;
         }
         nLoaded++;
-        [self fillUseCode:context
-                  nPoints:numPoints
-                   points:llpoints
-                withColor:color
-                lineColor:nil
-                lineWidth:0];
-        
-        [self drawUseCode:context
-                  nPoints:numPoints
-                   nLoops:numLoops
-                  partLen:polyPartLen
-                   points:llpoints
-                withColor:UIColor.blackColor.CGColor
-                 andWidth:3];
-        
+        if (isLines)
+        {
+            UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:1 blue:0.25 alpha:1];
+            [self drawRoad:context
+                   nPoints:numPoints
+                    nLoops:numLoops
+                   partLen:polyPartLen
+                    points:llpoints
+                 withColor:boundaryColor.CGColor
+                  andWidth:5];
+        }
+        else
+        {
+            
+            [self fillUseCode:context
+                      nPoints:numPoints
+                       points:llpoints
+                    withColor:color
+                    lineColor:nil
+                    lineWidth:0];
+            
+            [self drawUseCode:context
+                      nPoints:numPoints
+                       nLoops:numLoops
+                      partLen:polyPartLen
+                       points:llpoints
+                    withColor:UIColor.blackColor.CGColor
+                     andWidth:3];
+        }
         free (llpoints);
     }
     
@@ -2441,7 +2494,12 @@ NextPass:
         hd = HuntingData.new;
         opened = [hd open];
         database = hd.database;
-        key = @"TITLE";
+        if ([table isEqual:@"WMA"])
+            key = @"WMA";
+        else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
+            key = @"NAME";
+        else
+            key = @"TITLE";
     }
     else
     {
@@ -2890,7 +2948,12 @@ NextPass:
         hd = HuntingData.new;
         opened = [hd open];
         database = hd.database;
-        key = @"TITLE";
+        if ([table isEqual:@"WMA"])
+            key = @"WMA";
+        else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
+            key = @"NAME";
+        else
+            key = @"TITLE";
     }
     else
     {
