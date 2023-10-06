@@ -520,9 +520,10 @@
         [types addObject:@"Counties"];
         [types addObject:@"Cities and Towns"];
         [types addObject:@"Deer Permit Areas"];
-        [types addObject:@"State Parks"];
+        [types addObject:@"Grouse Management Areas"];
         [types addObject:@"Wildlife Management Areas"];
         [types addObject:@"Hunter Walking Trails"];
+        [types addObject:@"Snowmobile Trails"];
         [types addObject:@"Walk-in Areas"];
     }
     else
@@ -582,11 +583,19 @@
     {
             query = [NSString stringWithFormat:@"SELECT ID,NAME FROM HUNTER_WALKING_TRAILS_LINE"];
     }
+    else if ([type isEqual:@"Snowmobile Trails"])
+    {
+            query = [NSString stringWithFormat:@"SELECT ID,OWNER FROM SNOWMOBILE_TRAILS_LINE"];
+    }
     else if ([type isEqual:@"Walk-in Areas"])
     {
             query = [NSString stringWithFormat:@"SELECT ID,WALKINAREA FROM WALKINAREA"];
     }
-    
+    else if ([type isEqual:@"Grouse Management Areas"])
+    {
+            query = [NSString stringWithFormat:@"SELECT ID,TITLE FROM GROUSEMANAREAS"];
+    }
+
     SQLOK(__FILE__,__LINE__,SQLitePrepare(hd.database, query.UTF8String, -1, &statement, 0), hd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -675,9 +684,17 @@
     {
         table = @"HUNTER_WALKING_TRAILS_LINE";
     }
+    else if ([areaType isEqualToString:@"Snowmobile Trails"])
+    {
+        table = @"SNOWMOBILE_TRAILS_LINE";
+    }
     else if ([areaType isEqualToString:@"Walk-in Areas"])
     {
         table = @"WALKINAREA";
+    }
+    else if ([areaType isEqualToString:@"Grouse Management Areas"])
+    {
+        table = @"GROUSEMANAREAS";
     }
     else
     {
@@ -2331,6 +2348,8 @@ NextPass:
         }
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
             key = @"NAME";
+        else if ([table isEqual:@"SNOWMOBILE_TRAILS_LINE"])
+            key = @"OWNER";
         else if ([table isEqual:@"WALKINAREA"])
         {
             key = table;
@@ -2340,6 +2359,8 @@ NextPass:
         }
         else if ([table isEqual:@"Counties"])
             key = @"County";
+        else if ([table isEqual:@"Grouse Management Areas"])
+            key = @"TITLE";
         else
             key = @"TITLE";
     }
@@ -2524,8 +2545,12 @@ NextPass:
             key = @"WMA";
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
             key = @"NAME";
+        else if ([table isEqual:@"SNOWMOBILE_TRAILS_LINE"])
+            key = @"OWNER";
         else if ([table isEqual:@"WALKINAREA"])
             key = table;
+        else if ([table isEqual:@"Grouse Management Areas"])
+            key = @"TITLE";
         else
             key = @"TITLE";
     }
@@ -2980,6 +3005,8 @@ NextPass:
             key = @"WMA";
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
             key = @"NAME";
+        else if ([table isEqual:@"SNOWMOBILE_TRAILS_LINE"])
+            key = @"OWNER";
         else if ([table isEqual:@"Counties"])
             key = @"County";
         else if ([table isEqual:@"z"])
