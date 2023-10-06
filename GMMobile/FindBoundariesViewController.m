@@ -639,7 +639,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             boundsName = baData.name;
             refno = baData.refno;
         }
-        
+        CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
         [_delegate findBoundsViewController:self
                             didSelectBounds:boundsName
                                        type:_selectedType
@@ -701,7 +701,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *type = [_topTableView cellForRowAtIndexPath:_topTableView.indexPathForSelectedRow].textLabel.text;
     CRAPI.sharedInstance.selectBoundaryFromMapType = type;
-    
+    CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
+
     if (_delegate)
     {
         [_delegate findBoundsViewController:self

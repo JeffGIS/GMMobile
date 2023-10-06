@@ -8502,7 +8502,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
                             type:(NSString *)type
                            refno:(int)refno
 {
-    //CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
     if (bounds && ![bounds isEqualToString:@""])
     {
         CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;

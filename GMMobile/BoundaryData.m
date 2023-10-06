@@ -516,6 +516,7 @@
     }
     else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
     {
+        [types addObject:@"States"];
         [types addObject:@"Counties"];
         [types addObject:@"Cities and Towns"];
         [types addObject:@"Deer Permit Areas"];
@@ -581,7 +582,11 @@
     {
             query = [NSString stringWithFormat:@"SELECT ID,NAME FROM HUNTER_WALKING_TRAILS_LINE"];
     }
-
+    else if ([type isEqual:@"Walk-in Areas"])
+    {
+            query = [NSString stringWithFormat:@"SELECT ID,WALKINAREA FROM WALKINAREA"];
+    }
+    
     SQLOK(__FILE__,__LINE__,SQLitePrepare(hd.database, query.UTF8String, -1, &statement, 0), hd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -669,6 +674,10 @@
     else if ([areaType isEqualToString:@"Hunter Walking Trails"])
     {
         table = @"HUNTER_WALKING_TRAILS_LINE";
+    }
+    else if ([areaType isEqualToString:@"Walk-in Areas"])
+    {
+        table = @"WALKINAREA";
     }
     else
     {
@@ -2299,11 +2308,13 @@ NextPass:
     LPSTR pkeyval;
     NSString * keyval;
     int numLoops;
+    CGColorRef borderColor = UIColor.blackColor.CGColor;
+    int borderWidth = 3;
     NSString * key = areaType;
 //    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     NSString * table = [self getTableNameFromType:areaType];
     BOOL isLines = StringEndsWith(table.UTF8String, "_LINE");
-
+    CGColorRef fillColor = nil;
     BOOL opened;
     sqlite3nv *database;
     HuntingData *hd;
@@ -2313,9 +2324,22 @@ NextPass:
         opened = [hd open];
         database = hd.database;
         if ([table isEqual:@"WMA"])
+        {
             key = @"WMA";
+            borderColor = UIColor.yellowColor.CGColor;
+            borderWidth = 8;
+        }
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
             key = @"NAME";
+        else if ([table isEqual:@"WALKINAREA"])
+        {
+            key = table;
+            borderColor = UIColor.greenColor.CGColor;
+            borderWidth = 8;
+            fillColor = UIColor.brownColor.CGColor;
+        }
+        else if ([table isEqual:@"Counties"])
+            key = @"County";
         else
             key = @"TITLE";
     }
@@ -2331,7 +2355,12 @@ NextPass:
     
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
-    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
+    else if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Cities And Townships"] ||
@@ -2341,11 +2370,6 @@ NextPass:
     {
         table = @"BOUNDARYAREA";
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
-                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-    }
-    else if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
-    {
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
@@ -2402,11 +2426,13 @@ NextPass:
         if (pias)
             color = [pias colorForArea:keyval];
         
-        else
+        else if (!fillColor)
         {
             color = [NVColor randomColorFromArray:NVColor.pastelColors
                                         forString:keyval].CGColor;
         }
+        else
+            color = fillColor;
         nLoaded++;
         if (isLines)
         {
@@ -2434,8 +2460,8 @@ NextPass:
                        nLoops:numLoops
                       partLen:polyPartLen
                        points:llpoints
-                    withColor:UIColor.blackColor.CGColor
-                     andWidth:3];
+                    withColor:borderColor
+                     andWidth:borderWidth];
         }
         free (llpoints);
     }
@@ -2498,6 +2524,8 @@ NextPass:
             key = @"WMA";
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
             key = @"NAME";
+        else if ([table isEqual:@"WALKINAREA"])
+            key = table;
         else
             key = @"TITLE";
     }
@@ -2952,6 +2980,10 @@ NextPass:
             key = @"WMA";
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
             key = @"NAME";
+        else if ([table isEqual:@"Counties"])
+            key = @"County";
+        else if ([table isEqual:@"z"])
+            key = table;
         else
             key = @"TITLE";
     }
@@ -2962,13 +2994,14 @@ NextPass:
     }
 
     
-    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
-        [areaType isEqualToString:@"Minneapolis Wards"] ||
-        [areaType isEqualToString:@"Minneapolis Sectors"] ||
-        [areaType isEqualToString:@"Cities And Townships"] ||
-        [areaType isEqualToString:@"Counties"] ||
-        [areaType isEqualToString:@"Seven County Metro Area"] ||
-        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+    if (CRAPI.sharedInstance.currentApp != HCConfigHunting &&
+        ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+         [areaType isEqualToString:@"Minneapolis Wards"] ||
+         [areaType isEqualToString:@"Minneapolis Sectors"] ||
+         [areaType isEqualToString:@"Cities And Townships"] ||
+         [areaType isEqualToString:@"Counties"] ||
+         [areaType isEqualToString:@"Seven County Metro Area"] ||
+         [areaType isEqualToString:@"Minneapolis Neighborhoods"]))
     {
         itemType = BoundaryArea;
         table = @"BOUNDARYAREA";
@@ -2978,10 +3011,10 @@ NextPass:
     else if ([areaType isEqualToString:@"PARCEL"])
     {
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id, NUMLINKEDPARCELS FROM PARCELPOLY,PROPINFO,PARCELPOLY_index WHERE PROPINFO.PIN = PARCELPOLY.PID AND PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                           point.lon,point.lon,point.lat,point.lat];
-
+                 point.lon,point.lon,point.lat,point.lat];
+        
     }
-
+    
     else
     {
         if ([areaType isEqualToString:@"TRACT"]) itemType = CensusTractBoundary;
@@ -3004,7 +3037,7 @@ NextPass:
         keyval = [NSString stringWithUTF8String:pkeyval];
         refno = sqlite3_column_int(statement,7);
         InitDBounds(&llBounds);
-
+        
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -3025,7 +3058,7 @@ NextPass:
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             AddPointToDBounds(&llBounds, &llpoints[i]);
-       }
+        }
         DPOINT dp;
         dp = LLPointToDPoint (point);
         if (POINT_IN_AREAD(dp, numPoints, llpoints, 1, 0, 0, 0))
