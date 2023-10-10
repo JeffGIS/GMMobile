@@ -145,7 +145,7 @@
 @property CAShapeLayer *scaleLayer, *scaleLayer2;
 @property CAShapeLayer *weatherLayer;
 @property BOOL displayTrackingRoute;
-@property UILabel *scaleLabel;
+@property UILabel *scaleLabel,*scaleLabel2;
 @property int  pickedRefno;
 @property BOOL hideScaleBar;
 @property NSMutableArray * forecastDates;
@@ -1918,7 +1918,6 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 NSMutableArray *optionList = NSMutableArray.array;
                 
-                
                 UserWaypoint *pickedWayPoint = [self pickWaypointOfType:@"ALL" at:pickPt withRadius:25];
                 if (pickedWayPoint)
                 {
@@ -2330,6 +2329,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         [_scaleLayer2 removeFromSuperlayer];
     if (_scaleLabel)
         [_scaleLabel removeFromSuperview];
+    if (_scaleLabel2)
+        [_scaleLabel2 removeFromSuperview];
 
 }
 -(void) displayScalebar
@@ -2413,16 +2414,32 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
         pt.y-=height/2;
         _scaleLabel.center = pt;
-        _scaleLabel.textColor = UIColor.yellowColor;
+        _scaleLabel.textColor = UIColor.blackColor;
         //_scaleLabel.shadowColor = UIColor.whiteColor;
         //_scaleLabel.shadowOffset = CGSizeMake(3,0);
-        _scaleLabel.font = [UIFont systemFontOfSize: height -4];
+        _scaleLabel.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightBlack];
         _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
         if (*_scaleLabel.text.UTF8String == '0')
         {
             _scaleLabel.text = [NSString stringWithFormat:@"%.2f miles",dist];
         }
         _scaleLabel.textAlignment = NSTextAlignmentCenter;
+        _scaleLabel2 = UILabel.new;
+        _scaleLabel2.backgroundColor = UIColor.clearColor;
+        _scaleLabel2.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
+     
+        _scaleLabel2.center = pt;
+        _scaleLabel2.textColor = UIColor.yellowColor;
+        //_scaleLabel.shadowColor = UIColor.whiteColor;
+        //_scaleLabel.shadowOffset = CGSizeMake(3,0);
+        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightUltraLight];
+        _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
+        if (*_scaleLabel2.text.UTF8String == '0')
+        {
+            _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
+        }
+        _scaleLabel2.textAlignment = NSTextAlignmentCenter;
+
     }
     else
     {
@@ -2479,6 +2496,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view.layer addSublayer:_scaleLayer];
     [self.view.layer addSublayer:_scaleLayer2];
     [self.view addSubview:_scaleLabel];
+    [self.view addSubview:_scaleLabel2];
 }
 
 -(void) createCurrentRouteFromRoutePoints
@@ -7370,6 +7388,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _hideScaleBar = NO;
     [self displayScalebar];
     [self displayWeatherData];
+    [self vectorViewRefresh];
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
@@ -8513,5 +8532,15 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     }
     self.tabBarController.selectedIndex = 0;
     [findBounds dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(BOOL) saveConfiguration:(NSString*)name
+{
+    HuntingData *hd = HuntingData.new;
+    
+    [hd saveConfiguration:name
+                     type:_mapView.mapType
+                   target:CRAPI.sharedInstance.currentLocation
+                     zoom:CRAPI.sharedInstance.currentZoom];
 }
 @end

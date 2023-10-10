@@ -166,18 +166,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
             
-            if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
-                                             visibleAtZoom:_zoom
-                                                   andPass:_passID])
-            {
-                nDisplayed = [self displayUsingBinFile:context
-                                              areaType:@"NWI"
-                                                 color:0
-                                          pointInAreas:pia
-                                             llCorners:latlonCornerPoints
-                                              LLBounds:platlonBounds
-                                            viewBounds:pvbounds];
-            }
             if ([ConfigurationControl.sharedInstance layer:HCLayerForest
                                              visibleAtZoom:_zoom
                                                    andPass:_passID])
@@ -197,6 +185,19 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 nDisplayed = [self displayUsingBinFile:context
                                               areaType:@"FEESURF"
                                                  color:0
+                                          pointInAreas:pia
+                                             llCorners:latlonCornerPoints
+                                              LLBounds:platlonBounds
+                                            viewBounds:pvbounds];
+            }
+            if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
+                                             visibleAtZoom:_zoom
+                                                   andPass:_passID])
+            {
+                UIColor *clr = [UIColor colorWithRed:0.2 green:0.2 blue:1 alpha:0.5];
+                nDisplayed = [self displayUsingBinFile:context
+                                              areaType:@"NWI"
+                                                 color:clr.CGColor
                                           pointInAreas:pia
                                              llCorners:latlonCornerPoints
                                               LLBounds:platlonBounds
@@ -379,8 +380,8 @@ NextPass:
         nLoaded++;
         int numPointsOrig = numPoints;
         BOOL doThinning = FALSE;
-        if (_zoom < 1)
-            doThinning = TRUE;
+//        if (_zoom < 12)
+//            doThinning = TRUE;
         if (doThinning)
         {
             LPDPOINT llpointsThinned = ThinPoints (llpoints,&numPoints,&numLoops,polyPartLen,&polyPartLenThinned,pvbounds);
@@ -429,7 +430,8 @@ NextPass:
                        partLen:polyPartLen
                         points:llpoints
                      withColor:UIColor.blackColor.CGColor
-                      andWidth:1];
+                      andWidth:1
+                    loopBounds:0];
                 if (keyval.length)
                 {
                     UIColor *textColor = UIColor.blackColor;
@@ -603,6 +605,7 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
         binFile = hd.fidNWIBin;
         query = [NSString stringWithFormat:@"SELECT RECNUM,OBJECTID,FIRSTX,FIRSTY,NumPoints,NumPoly,rectype,compressionType,hasCurves,offset,recordLen, spcc_desc FROM %@,%@_index WHERE %@.RECNUM=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,table,
                  platlonBounds->xmn*hd.NWIFactor, platlonBounds->xmx*hd.NWIFactor, platlonBounds->ymn*hd.NWIFactor, platlonBounds->ymx*hd.NWIFactor];
+        iii = 1;
     }
     else if ([areaType isEqualToString:@"FOREST"] )
     {
@@ -643,9 +646,10 @@ NextPass:
         BasePt.x = sqlite3_column_int(statement,i++);
         BasePt.y = sqlite3_column_int(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
-        if (numPoints > 500000)
-            continue;
         numLoops = sqlite3_column_int(statement,i++);
+        static int skipBigArea = 500000;
+        if (numPoints > skipBigArea)
+            continue;
         //numLoops = 1;
         int rectype = sqlite3_column_int(statement,i++);
         int compressionType = sqlite3_column_int(statement,i++);
@@ -690,6 +694,14 @@ NextPass:
                     else
                         forestCode = 1;
                 }
+                if (standType == 96)
+                {
+                    forestCode = 10;
+                }
+                if (standType == 97)
+                {
+                    forestCode = 11;
+                }
             }
                 break;
             case typeFEESURF:
@@ -713,7 +725,12 @@ NextPass:
         LPINT polyPartLen = malloc (numLoops * sizeof(int) + 4);
         LPINT polyPartLenThinned = 0;
         MNMXCORD bounds1;
-        LPMNMXCORD polyBounds = malloc (numLoops * sizeof(MNMXCORD) + 4);
+        LPBYTE polyBoundsInit = malloc ((numLoops+1) * sizeof(MNMXCORD) + 4);
+        int pbOffset = (int)polyBoundsInit % sizeof (MNMXCORD);
+        if (pbOffset)
+            iii = 1;
+        LPBYTE polyBoundsOffset = polyBoundsInit + (sizeof(MNMXCORD)-pbOffset);
+        LPMNMXCORD polyBounds = (LPMNMXCORD)polyBoundsOffset;
         if (numLoops > 1)
         {
             BigReadF(binFile, polyPartLen, numLoops*sizeof(int));
@@ -722,7 +739,7 @@ NextPass:
             for (int iPoly=0;iPoly<numLoops;iPoly++)
             {
                 DPOINT minPoint, maxPoint;
-                
+                MNMXCORD b = polyBounds[iPoly];
                 minPoint.x = polyBounds[iPoly].xmn * hd.NWIFactor;
                 maxPoint.x = polyBounds[iPoly].xmx * hd.NWIFactor;
                 minPoint.y = polyBounds[iPoly].ymn * hd.NWIFactor;
@@ -764,19 +781,26 @@ NextPass:
                 default:
                     color = NVColor.lightGrayColor.CGColor;
                     break;
-                case 1:
+                case 2:
                     color = NVColor.lightPinkColor.CGColor;
                     break;
-                case 2:
+                case 1:
                     color = NVColor.mistyRoseColor.CGColor;
                     break;
                 case 3:
                     color = NVColor.redColor.CGColor;
-            }
+                    break;
+                case 10:
+                    color = NVColor.blueColor.CGColor;
+                    break;
+                case 11:
+                    color = NVColor.mediumBlueColor.CGColor;
+                    break;
+           }
         }
         else if (pias)
             color = [pias colorForArea:keyval];
-        
+/*
         else switch (hasCurves)
         {
             case 0:
@@ -789,6 +813,7 @@ NextPass:
                 color = NVColor.redColor.CGColor;
                 break;
         }
+ */
         //if (!hasCurves)
         {
             nLoaded++;
@@ -866,7 +891,7 @@ NextPass:
                      lineColor:blackColor
                      lineWidth:0];
                 
-                if (_zoom >= textZoom)
+                if (_zoom >= 1)//textZoom)
                 {
                     [self drawArea:context
                            nPoints:numPoints
@@ -874,7 +899,8 @@ NextPass:
                            partLen:polyPartLen
                             points:llpoints
                          withColor:UIColor.blackColor.CGColor
-                          andWidth:1.5];
+                          andWidth:1.5
+                    loopBounds:polyBounds];
                     
                     if (text.length)
                     {
@@ -900,7 +926,7 @@ NextPass:
         
         free (llpoints);
         free (polyPartLen);
-        free (polyBounds);
+        free (polyBoundsInit);
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
@@ -1027,6 +1053,8 @@ LPDPOINT RemoveOutOfBoundsPolys  (LPDPOINT llPoints,LPINT pNumPoints,LPINT pNumL
             memmove (&thinnedPoints[numNewPoints],&llPoints[iPoint],(polyPartLen[iLoop]+inc)*sizeof(DPOINT));
             numNewPoints += polyPartLen[iLoop] + inc;
         }
+        else
+            iii=1;
         inc = 1;
         iPoint += polyPartLen[iLoop];
         if (iLoop)
@@ -1438,7 +1466,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
           points:(LPDPOINT)pPoints
        withColor:(CGColorRef)color
         andWidth:(CGFloat)width
+      loopBounds:(LPMNMXCORD) polyBounds
 {
+    if (!polyBounds)
+        return;
     CGContextSetLineWidth(context, width*4);
     
     if (nLoops > 1)
@@ -1448,16 +1479,23 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
         for (int loop = 0; loop < nLoops; loop++)
         {
+            MNMXCORD bounds;
+            MNMXCORD loopBounds = polyBounds[loop];
+            DBoundsInit(&bounds);
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
+            AddDPointToMinMax(&pPoints[ip], &bounds);
             ip++;
             ii = pPartLen[loop];
             int iEndLoop = pPartLen[loop];
             for (int i = 1; i < iEndLoop; i++)
             {
                 CGContextAddLineToPoint(context, pPoints[ip].x, pPoints[ip].y);
+                AddDPointToMinMax(&pPoints[ip], &bounds);
+
                 ip++;
             }
-            
+            double sizeBounds = (bounds.xmx - bounds.xmn)*(bounds.ymx-bounds.ymn);
+            double sizeBounds2 = (loopBounds.xmx - loopBounds.xmn)*(loopBounds.ymx-loopBounds.ymn);
             if (loop)
                 ip++;
             

@@ -74,6 +74,14 @@
 -(NSArray *) getTrackRoutes;
 -(NSString *)getTrackInfo:(int)savedTime;
 -(MNMXCORD) getTrackBounds:(NSArray*) track;
+-(BOOL)saveConfiguration:(NSString*)name
+                    type:(int)mapType
+                  target:(LLPOINT)location
+                    zoom:(double)zoom;
+-(BOOL)getConfiguration:(NSString*)name
+                    type:(int*)mapType
+                  target:(LLPOINT*)location
+                    zoom:(double*)zoom;
 
 @end
 

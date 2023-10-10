@@ -714,5 +714,21 @@
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
     //error:nil];
 }
+-(BOOL)saveConfiguration:(NSString*)name
+                    type:(int)mapType
+                  target:(LLPOINT)location
+                    zoom:(double)zoom
+{
+    BOOL rtn = FALSE;
+    return rtn;
+}
+-(BOOL)getConfiguration:(NSString*)name
+                    type:(int*)mapType
+                  target:(LLPOINT*)location
+                    zoom:(double*)zoom
+{
+    BOOL rtn = FALSE;
+    return rtn;
+}
 
 @end

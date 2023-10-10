@@ -302,7 +302,7 @@ Top:
         {
             DTMData *dtm = [[DTMData alloc] init];
             BOOL opened = [dtm open:0];
-            if (dtm.version >= 5)
+            if (dtm.version >= 9)
                 rtn = YES;
             [dtm close:opened];
         }
@@ -312,7 +312,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.NWIVersion.integerValue >= 8)
+            if (hd.NWIVersion.integerValue >= 10)
                 rtn = YES;
         }
             break;

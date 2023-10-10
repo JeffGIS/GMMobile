@@ -2327,6 +2327,7 @@ NextPass:
     int numLoops;
     CGColorRef borderColor = UIColor.blackColor.CGColor;
     int borderWidth = 3;
+    int numPass = 1;
     NSString * key = areaType;
 //    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     NSString * table = [self getTableNameFromType:areaType];
@@ -2347,9 +2348,19 @@ NextPass:
             borderWidth = 8;
         }
         else if ([table isEqual:@"HUNTER_WALKING_TRAILS_LINE"])
+        {
+            borderColor = UIColor.yellowColor.CGColor;
+            borderWidth = 5;
+            numPass = 2;
             key = @"NAME";
+        }
         else if ([table isEqual:@"SNOWMOBILE_TRAILS_LINE"])
+        {
             key = @"OWNER";
+            borderColor = UIColor.greenColor.CGColor;
+            borderWidth = 5;
+            numPass = 2;
+        }
         else if ([table isEqual:@"WALKINAREA"])
         {
             key = table;
@@ -2458,13 +2469,23 @@ NextPass:
         if (isLines)
         {
             UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:1 blue:0.25 alpha:1];
+            if (numPass == 2)
+            {
+                [self drawRoad:context
+                       nPoints:numPoints
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:UIColor.blackColor.CGColor
+                      andWidth:borderWidth+2];
+            }
             [self drawRoad:context
                    nPoints:numPoints
                     nLoops:numLoops
                    partLen:polyPartLen
                     points:llpoints
-                 withColor:boundaryColor.CGColor
-                  andWidth:5];
+                 withColor:borderColor
+                  andWidth:borderWidth];
         }
         else
         {
