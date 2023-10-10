@@ -722,7 +722,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NVTextViewAlert *nvtva = [NVTextViewAlert showTextViewAlertinView:self.view
                                                                  delegate:self
                                                                     title:@"Enter Email Addresses Separated by Commas"
-                                                                     text:recipientsString];
+                                                                     text:recipientsString
+                                                                   idText:@""];
 #pragma unused(nvtva)
     }
     

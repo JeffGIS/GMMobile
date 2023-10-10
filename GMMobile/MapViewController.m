@@ -155,6 +155,7 @@
 @property NSArray * currentForecast;
 @property int needToSetVehicleLocation;
 @property NSMutableArray * routeSubLayers;
+@property int mapTypeFromConfig;
 @end
 
 @implementation MapViewController
@@ -1953,6 +1954,11 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                     }
                     else
                         [optionList addObject:@"Start Route"];
+                    [optionList addObject:@"________________________"];
+                    [optionList addObject:@"Save Configuration"];
+                    [optionList addObject:@"List Configurations"];
+                    [optionList addObject:@"________________________"];
+
                     [optionList addObject:@"Proximity Mapping"];
                     if (CRAPI.sharedInstance.currentTrackRoute.count)
                     {
@@ -3747,6 +3753,13 @@ haveVV:
 }
 - (void)setMapType
 {
+    if (_mapTypeFromConfig)
+    {
+        _mapView.mapType = _mapTypeFromConfig;
+        ConfigurationControl.sharedInstance.mapType = _mapTypeFromConfig;
+
+        return;
+    }
     if (![ConfigurationControl.sharedInstance haveUserAerials] &&
         ![ConfigurationControl.sharedInstance useMapTypeControl])
     {
@@ -6858,6 +6871,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidToggleMapType
 {
+    _mapTypeFromConfig = 0;
     GMSMapViewType mapType = ConfigurationControl.sharedInstance.mapType;
     switch (mapType)
     {
@@ -7466,6 +7480,31 @@ didSelectPDFButtonWithText:(NSString *)text
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
+    if ([popoverTableView.identifier isEqual:@"Select Config"])
+    {
+        HuntingData *hd = HuntingData.new;
+        int mapType;
+        LLPOINT latlon;
+        double zoom;
+        if ([hd getConfiguration:text type:&mapType target:&latlon zoom:&zoom])
+        {
+            _mapTypeFromConfig = mapType;
+            [self setMapType];
+            _mapView.settings.compassButton = NO;
+            _mapView.settings.rotateGestures = YES;
+            _mapView.settings.tiltGestures = NO;
+            _target.latitude = latlon.lat;
+            _target.longitude = latlon.lon;
+            _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:zoom];
+            GMSCameraUpdate *update = [GMSCameraUpdate setCamera:_mapView.camera];
+            [self moveCamera:update];
+            [popoverTableView hide:YES];
+            _hideScaleBar = NO;
+
+            [self vectorViewRefresh];
+        }
+        return;
+    }
     if ([popoverTableView.identifier isEqual:@"forecast"])
     {
         NSString *time = textAfter(text,@"|");
@@ -7531,12 +7570,39 @@ didSelectPDFButtonWithText:(NSString *)text
             
             
             [NVTextViewAlert showTextViewAlertinView:self.view
-                                            delegate:self
-                                               title:@"Enter Route Name"
-                                                text:@"Name"];
+                                                        delegate:self
+                                                           title:@"Enter Route Name"
+                                                            text:@"Name"
+                                                            idText:text];
         }
-        
-        
+        else if ([text isEqualToString:@"Save Configuration"])
+        {
+            
+            
+            [NVTextViewAlert showTextViewAlertinView:self.view
+                                            delegate:self
+                                               title:@"Enter Configuration Name"
+                                                text:@"Name"
+                                              idText:text];
+        }
+
+        else if ([text isEqualToString:@"List Configurations"])
+        {
+            [popoverTableView hide:YES];
+            [self removeScaleBar];
+            _hideScaleBar = YES;
+            [self clearCurrentWeatherData];
+            HuntingData *hd = HuntingData.new;
+            NSArray *list = [hd getConfiguratonList];
+            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                              delegate:self
+                                                                                 title:@"Saved Configurations"
+                                                                             textArray:list
+                                                                         includeCancel:YES];
+            nvptv.allowsSubtitle = NO;
+            nvptv.identifier = @"Select Config";
+            return;
+        }
         else if ([text isEqualToString:@"Proximity Mapping"])
         {
             ProximityMapping * pm = ProximityMapping.new;
@@ -7733,6 +7799,14 @@ didReturnText:(NSString *)text
 {
     if (text)
     {
+        if ([textViewAlert.idText isEqual:@"Save Configuration"])
+        {
+            [self saveConfiguration:text];
+        }
+        else if ([textViewAlert.idText isEqual:@"List Configurations"])
+        {
+            [self saveConfiguration:text];
+        }
     }
     
     [textViewAlert hideTextViewAlert:YES];

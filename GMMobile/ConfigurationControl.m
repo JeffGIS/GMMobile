@@ -712,7 +712,10 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     
     return list;
 }
-
+-(void) setMapType:(int)mapType
+{
+    _mapType = mapType;
+}
 - (NSArray *)getLayers
 {
     NSMutableArray *layers = NSMutableArray.new;

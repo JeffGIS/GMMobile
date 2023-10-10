@@ -82,6 +82,7 @@
                     type:(int*)mapType
                   target:(LLPOINT*)location
                     zoom:(double*)zoom;
+-(NSArray*) getConfiguratonList;
 
 @end
 

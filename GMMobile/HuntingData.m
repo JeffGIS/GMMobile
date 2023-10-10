@@ -162,8 +162,13 @@
     _isOpen = !SQLOK(__FILE__,__LINE__,SQLite_Open(_usersHuntingData.UTF8String, &_database), _database);
     NSString *cmd = @"CREATE TABLE IF NOT EXISTS UserWayPoints (id INTEGER PRIMARY KEY AUTOINCREMENT,Name CHAR(32), Type CHAR(32), LAT DOUBLE,LON DOUBLE, TimeCreated INT, Description CHAR(256), DisplayOnCompass INT)";
     rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
     cmd = @"CREATE TABLE IF NOT EXISTS TrackRoutes (id INTEGER PRIMARY KEY AUTOINCREMENT,TimeSaved INT, TimeCreated INT, LAT double, LON double)";
     rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    cmd = @"CREATE TABLE IF NOT EXISTS Configs (id INTEGER PRIMARY KEY AUTOINCREMENT,Name CHAR(128), TimeSaved INT, MapType INT, LAT double, LON double, Zoom double)";
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
     SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
     _isOpen = FALSE;
     if (rtn)
@@ -716,10 +721,16 @@
 }
 -(BOOL)saveConfiguration:(NSString*)name
                     type:(int)mapType
-                  target:(LLPOINT)location
+                  target:(LLPOINT)latlon
                     zoom:(double)zoom
 {
     BOOL rtn = FALSE;
+    BOOL opened = [self open];
+    int saveTime = NSDate.timeIntervalSinceReferenceDate;
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO USERDATA.Configs (Name,TimeSaved,MapType,LAT,LON,Zoom) VALUES('%@',%i,%i,%f,%f,%f)",name,saveTime,mapType,latlon.lat,latlon.lon,zoom];
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    [self close:opened];
     return rtn;
 }
 -(BOOL)getConfiguration:(NSString*)name
@@ -728,7 +739,61 @@
                     zoom:(double*)zoom
 {
     BOOL rtn = FALSE;
-    return rtn;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM USERDATA.Configs WHERE Name = '%@'",name];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        LLPOINT llpt;
+        int mtype;
+        double zm;
+        int id = sqlite3_column_int(statement, i++);
+        LPSTR cname = sqlite3_column_text(statement, i++);
+        int timeCreated = sqlite3_column_int(statement, i++);
+        mtype = sqlite3_column_int(statement, i++);
+        llpt.lat = sqlite3_column_double(statement, i++);
+        llpt.lon = sqlite3_column_double(statement, i++);
+        zm = sqlite3_column_double(statement, i++);
+        *location = llpt;
+        *mapType = mtype;
+        *zoom = zm;
+        rtn = TRUE;
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    [self close:opened];
+    
+   return rtn;
 }
+-(NSArray*) getConfiguratonList
+{
+    NSMutableArray *list = NSMutableArray.new;
+
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT Name TimeSaved FROM USERDATA.Configs ORDER BY Name ASC"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        LPSTR cname = sqlite3_column_text(statement, i++);
+        NSString * name = [NSString stringWithFormat:@"%s",cname];
+        [list addObject:name];
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+
+    [self close:opened];
+
+    return list;
+}
+
 
 @end

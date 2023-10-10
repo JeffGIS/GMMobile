@@ -84,7 +84,7 @@ NUMHardCodedLayers};
 @property int MapitBoundaryOpt;
 @property int MapitBoundaryRefno;
 @property NSString * MapitBoundaryType;
-@property int mapType;
+@property (nonatomic) int mapType;
 @property int MapitTargetParcelRefno;
 @property LLPOINT MapitTargetCenterPoint;
 @property CGFloat MapitCirularBoundaryRadiusInMiles;
