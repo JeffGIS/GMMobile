@@ -694,6 +694,17 @@ NextPass:
                     else
                         forestCode = 1;
                 }
+                if (standType > 50 && standType < 70)
+                {
+                    if (TRUEAGE>6 && TRUEAGE<15)
+                        forestCode = 23;
+                    else if (TRUEAGE>4 && TRUEAGE<7)
+                        forestCode = 22;
+                    else if (TRUEAGE>14 && TRUEAGE<19)
+                        forestCode = 22;
+                    else
+                        forestCode = 21;
+                }
                 if (standType == 96)
                 {
                     forestCode = 10;
@@ -789,6 +800,15 @@ NextPass:
                     break;
                 case 3:
                     color = NVColor.redColor.CGColor;
+                    break;
+                case 22:
+                    color = NVColor.greenColor.CGColor;
+                    break;
+                case 21:
+                    color = NVColor.limeColor.CGColor;
+                    break;
+                case 23:
+                    color = NVColor.darkGreenColor.CGColor;
                     break;
                 case 10:
                     color = NVColor.blueColor.CGColor;
