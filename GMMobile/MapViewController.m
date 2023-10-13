@@ -2566,7 +2566,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 routeLayer.strokeColor = UIColor.redColor.CGColor;
                 routeLayer.fillColor = nil;
                 routeLayer.lineWidth = 5;
-
+                [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
             }
         }
         for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
@@ -2607,6 +2607,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             routeLayer.path = path.CGPath;
             [_mapView.layer addSublayer:routeLayer];
+            [self.view bringSubviewToFront:_myLocationMarker];
             [_routeSubLayers addObject:routeLayer];
         }
     }
@@ -3700,6 +3701,8 @@ haveVV:
 {
     if (_hideScaleBar)
         return;
+    [self clearCurrentRoute];
+
     if (CRAPI.sharedInstance.becameActive &&
         !CRAPI.sharedInstance.inDataUpdate &&
         ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"] &&
@@ -3970,7 +3973,9 @@ haveVV:
                        
                        if (_grayscaleMode)
                            [self createGrayscale];
-                       [self displayCurrentRoute];
+                        [self performSelector:@selector(displayCurrentRoute) withObject:nil afterDelay:0.2];
+
+                       //[self displayCurrentRoute];
                        [self displayTrackRoute];
                        [self displayScalebar];
                        [self displayWeatherData];

@@ -1432,6 +1432,45 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
+    //display Route
+    int n = CRAPI.sharedInstance.currentRoute.count;
+    int width = 5;
+    CGColorRef color = UIColor.greenColor.CGColor;
+    if (n > 1)
+    {
+        int ipt = 0;
+        LPDPOINT llpoints = malloc(n * sizeof(DPOINT) + 4);
+        
+        for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
+        {
+            if (CRAPI.sharedInstance.inRouteMode && ipt && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            {
+                //routeLayer.strokeColor = UIColor.greenColor.CGColor;
+                //_trackLayer.lineWidth = 5;
+                //routeLayer.strokeColor = UIColor.redColor.CGColor;
+                //ipt = 0;
+            }
+            llpoints[ipt] = LLPointToDPoint (rpt.latlon);
+            llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+            ipt++;
+        }
+        
+        [self drawRoad:context
+               nPoints:n
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.blackColor.CGColor
+              andWidth:width+2];
+        [self drawRoad:context
+               nPoints:n
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:color
+              andWidth:width];
+        free (llpoints);
+    }
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
     [hd close:opened];
