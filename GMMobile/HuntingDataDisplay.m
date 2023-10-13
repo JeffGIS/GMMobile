@@ -1435,7 +1435,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     //display Route
     int n = CRAPI.sharedInstance.currentRoute.count;
     int width = 5;
-    CGColorRef color = UIColor.greenColor.CGColor;
+    CGColorRef color = UIColor.redColor.CGColor;
     if (n > 1)
     {
         int ipt = 0;

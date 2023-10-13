@@ -142,10 +142,10 @@
 @property BOOL amAcceptingHeading;
 @property int numCurrentRoutePoints;
 @property CAShapeLayer *trackLayer;
-@property CAShapeLayer *scaleLayer, *scaleLayer2;
+@property CAShapeLayer *scaleLayer;
 @property CAShapeLayer *weatherLayer;
 @property BOOL displayTrackingRoute;
-@property UILabel *scaleLabel,*scaleLabel2;
+@property UILabel *scaleLabel1, *scaleLabel2;
 @property int  pickedRefno;
 @property BOOL hideScaleBar;
 @property NSMutableArray * forecastDates;
@@ -156,6 +156,7 @@
 @property int needToSetVehicleLocation;
 @property NSMutableArray * routeSubLayers;
 @property int mapTypeFromConfig;
+@property int top,left,right,bottom,midx,midy;
 @end
 
 @implementation MapViewController
@@ -470,6 +471,15 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    UITabBarController *tabBarController = [UITabBarController new];
+    CGFloat tabBarHeight = tabBarController.tabBar.frame.size.height;
+
+    _top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    _left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
+    _right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
+    _bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom - tabBarHeight;
+    _midx = (_right - _left)/2;
+    _midy = (_bottom - _top)/2;
     CGRect r = _mapView.frame;
     r = self.view.frame;
     if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
@@ -2331,10 +2341,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     if (_scaleLayer)
         [_scaleLayer removeFromSuperlayer];
-    if (_scaleLayer2)
-        [_scaleLayer2 removeFromSuperlayer];
-    if (_scaleLabel)
-        [_scaleLabel removeFromSuperview];
+    if (_scaleLabel1)
+        [_scaleLabel1 removeFromSuperview];
     if (_scaleLabel2)
         [_scaleLabel2 removeFromSuperview];
 
@@ -2344,7 +2352,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     CGRect mvf = _mapView.frame;
     CGRect sf = self.view.frame;
     [self removeScaleBar];
-    _scaleLabel = _scaleLayer = nil;
+    _scaleLabel1 = _scaleLayer = nil;
      if (_hideScaleBar)
         return;
     float lineWidth = 5;
@@ -2353,52 +2361,41 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 //    if (!_compass.isHidden)
 //        tbframe = _compass.frame;
     _scaleLayer = CAShapeLayer.layer;
-    _scaleLayer2 = CAShapeLayer.layer;
     CAShapeLayer *layer = _scaleLayer;
-    _scaleLayer.strokeColor = UIColor.redColor.CGColor;
-    _scaleLayer.fillColor = UIColor.redColor.CGColor;
+    _scaleLayer.strokeColor = UIColor.blackColor.CGColor;
+    _scaleLayer.fillColor = UIColor.blackColor.CGColor;
     _scaleLayer.lineWidth = lineWidth;
     if (tbframe.size.width > tbframe.size.height)
     {
+        int width = 200, height=20;
+
+        _scaleLabel1 = UILabel.new;
+        _scaleLabel1.backgroundColor = UIColor.whiteColor;
+        _scaleLabel1.frame = CGRectMake(_left,_top, _right-_left,height);
+
         {
             UIBezierPath *path = UIBezierPath.bezierPath;
-            pt1.x = _mapView.frame.origin.x;
-            pt1.y = tbframe.origin.y - (lineWidth*2);
+            int lw = lineWidth - 4;
+            pt1.x = 2;
+            pt1.y = height / 2;
             [path moveToPoint:pt1];
-            pt2.x = _mapView.frame.origin.x + _mapView.frame.size.width;
+            pt2.x = _scaleLabel1.frame.origin.x + _scaleLabel1.frame.size.width-2;
             pt2.y = pt1.y;
             [path addLineToPoint:pt2];
             [path moveToPoint:pt1];
-            pt3.x = pt1.x + lineWidth*2;
-            pt3.y = pt1.y - lineWidth*2;
+            pt3.x = pt1.x + lw*2;
+            pt3.y = pt1.y - lw*2;
             [path addLineToPoint:pt3];
-            pt4.x = pt1.x + lineWidth*2;
-            pt4.y = pt1.y + lineWidth*2;
+            pt4.x = pt1.x + lw*2;
+            pt4.y = pt1.y + lw*2;
             [path addLineToPoint:pt4];
             [path addLineToPoint:pt1];
             [path moveToPoint:pt2];
-            pt5.x = pt2.x - lineWidth*2;
-            pt5.y = pt2.y - lineWidth*2;
+            pt5.x = pt2.x - lw*2;
+            pt5.y = pt2.y - lw*2;
             [path addLineToPoint:pt5];
-            pt6.x = pt2.x - lineWidth*2;
-            pt6.y = pt2.y + lineWidth*2;
-            [path addLineToPoint:pt6];
-            [path addLineToPoint:pt2];
-            layer.path = path.CGPath;
-            _scaleLayer2.strokeColor = UIColor.whiteColor.CGColor;
-            _scaleLayer2.fillColor = UIColor.whiteColor.CGColor;
-            path = UIBezierPath.bezierPath;
-            lineWidth = 2;
-            _scaleLayer2.lineWidth = lineWidth;
-            layer = _scaleLayer2;
-            [path moveToPoint:pt1];
-            [path addLineToPoint:pt2];
-            [path moveToPoint:pt1];
-            [path addLineToPoint:pt3];
-            [path addLineToPoint:pt4];
-            [path addLineToPoint:pt1];
-            [path moveToPoint:pt2];
-            [path addLineToPoint:pt5];
+            pt6.x = pt2.x - lw*2;
+            pt6.y = pt2.y + lw*2;
             [path addLineToPoint:pt6];
             [path addLineToPoint:pt2];
             layer.path = path.CGPath;
@@ -2413,32 +2410,20 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         double dist = ArcDistanceLL(ptll1, ptll2);
         dist /= METERS_PER_MILE;
         CGPoint pt = pt1;
-        int width = 250, height=30;
         pt.x += pt2.x/2;
-        _scaleLabel = UILabel.new;
-        _scaleLabel.backgroundColor = UIColor.clearColor;
-        _scaleLabel.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
-        pt.y-=height/2;
-        _scaleLabel.center = pt;
-        _scaleLabel.textColor = UIColor.blackColor;
-        //_scaleLabel.shadowColor = UIColor.whiteColor;
-        //_scaleLabel.shadowOffset = CGSizeMake(3,0);
-        _scaleLabel.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightBlack];
-        _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
-        if (*_scaleLabel.text.UTF8String == '0')
-        {
-            _scaleLabel.text = [NSString stringWithFormat:@"%.2f miles",dist];
-        }
-        _scaleLabel.textAlignment = NSTextAlignmentCenter;
         _scaleLabel2 = UILabel.new;
-        _scaleLabel2.backgroundColor = UIColor.clearColor;
-        _scaleLabel2.frame = CGRectMake(pt.x-width,pt.y-height*2, width,height);
-     
-        _scaleLabel2.center = pt;
-        _scaleLabel2.textColor = UIColor.yellowColor;
+        _scaleLabel2.backgroundColor = UIColor.whiteColor;
+        CGRect frame = _scaleLabel1.frame;
+        frame.origin.x = _midx - width/2;
+        frame.size.width = width;
+        _scaleLabel2.frame = frame;
+        CGRectMake(pt.x-width/2,pt.y-height*2, width,height);
+        pt.y-=height/2;
+//        _scaleLabel2.center = pt;
+        _scaleLabel2.textColor = UIColor.blackColor;
         //_scaleLabel.shadowColor = UIColor.whiteColor;
         //_scaleLabel.shadowOffset = CGSizeMake(3,0);
-        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightUltraLight];
+        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightRegular];
         _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
         if (*_scaleLabel2.text.UTF8String == '0')
         {
@@ -2485,23 +2470,22 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         CGPoint pt = pt1;
         int width = 250, height=30;
         pt.y = (pt1.y + pt2.y) /2 - mvf.origin.y / 2;
-        _scaleLabel = UILabel.new;
-        _scaleLabel.backgroundColor = UIColor.clearColor;
-        _scaleLabel.frame = CGRectMake(pt.x+height,pt.y-width*2, width,height);
+        _scaleLabel1 = UILabel.new;
+        _scaleLabel1.backgroundColor = UIColor.clearColor;
+        _scaleLabel1.frame = CGRectMake(pt.x+height,pt.y-width*2, width,height);
         pt.x+=height/2;
-        _scaleLabel.center = pt;
-        _scaleLabel.textColor = UIColor.redColor;
-        _scaleLabel.shadowColor = UIColor.whiteColor;
-        _scaleLabel.font = [UIFont systemFontOfSize: height -4];
-        _scaleLabel.text = [NSString stringWithFormat:@"%.1f miles",dist];
-        _scaleLabel.textAlignment = NSTextAlignmentCenter;
-        _scaleLabel.transform = CGAffineTransformMakeRotation(HALFPI*3);
+        _scaleLabel1.center = pt;
+        _scaleLabel1.textColor = UIColor.redColor;
+        _scaleLabel1.shadowColor = UIColor.whiteColor;
+        _scaleLabel1.font = [UIFont systemFontOfSize: height -4];
+        _scaleLabel1.text = [NSString stringWithFormat:@"%.1f miles",dist];
+        _scaleLabel1.textAlignment = NSTextAlignmentCenter;
+        _scaleLabel1.transform = CGAffineTransformMakeRotation(HALFPI*3);
 
     }
 
-    [self.view.layer addSublayer:_scaleLayer];
-    [self.view.layer addSublayer:_scaleLayer2];
-    [self.view addSubview:_scaleLabel];
+    [_scaleLabel1.layer addSublayer:_scaleLayer];
+    [self.view addSubview:_scaleLabel1];
     [self.view addSubview:_scaleLabel2];
 }
 
