@@ -1684,20 +1684,25 @@ double HeadingFromAZ (double az)
                                     offDir = @"R";
                                 offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
                             }
+                            NSString * infoLabelText = @"";
+                            if (dist < METERS_PER_MILE/10)
+                            {
+                                units = @"yards";
+                                dist = dist / METERS_PER_YARD;
+                                infoLabelText = [NSString stringWithFormat:@"%@: %.0f %@",waypoint.name,dist,units,offsetText];
+                            }
+                            else
+                            {
+                                dist = dist / METERS_PER_MILE;
+                                infoLabelText = [NSString stringWithFormat:@"%@: %.2f %@%",waypoint.name,dist,units,offsetText];
+                            }
                             if (haveProfile)
                             {
-                                if (dist < METERS_PER_MILE/10)
-                                {
-                                    units = @"yards";
-                                    dist = dist / METERS_PER_YARD;
-                                    [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.0f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.0f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
-                                }
-                                else
-                                {
-                                    dist = dist / METERS_PER_MILE;
-                                    [self setInfoLabelText:[NSString stringWithFormat:@"%@: %.2f %@%@\nMin Elev:%i MaxElev:%i\nMax Grade:%.0f",waypoint.name,dist,units,offsetText,IDNINT(_minElev),IDNINT(_maxElev),_maxGrade]];
-                                }
+                                NSString * ilt = [NSString stringWithFormat:@"\n%Min Elev:%i MaxElev:%i\nMax Grade:%.0f",IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
+                                
+                                infoLabelText = [infoLabelText stringByAppendingString:ilt];
                             }
+                            [self setInfoLabelText:infoLabelText];
                         }
                         if (_offCourseTimer)
                             _infoLabel.textColor = UIColor.orangeColor;

@@ -7567,7 +7567,10 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Save Configuration"])
         {
             
-            
+            [self removeScaleBar];
+            _hideScaleBar = YES;
+            [self clearCurrentWeatherData];
+
             [NVTextViewAlert showTextViewAlertinView:self.view
                                             delegate:self
                                                title:@"Enter Configuration Name"
@@ -7799,6 +7802,8 @@ didReturnText:(NSString *)text
     }
     
     [textViewAlert hideTextViewAlert:YES];
+    [self vectorViewRefresh];
+
 }
 
 
