@@ -1440,24 +1440,46 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (n > 1)
     {
         int ipt = 0;
+        BOOL firstPoint = TRUE;
         LPDPOINT llpoints = malloc(n * sizeof(DPOINT) + 4);
         
         for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
         {
-            if (CRAPI.sharedInstance.inRouteMode && ipt && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if (CRAPI.sharedInstance.inRouteMode && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
-                //routeLayer.strokeColor = UIColor.greenColor.CGColor;
-                //_trackLayer.lineWidth = 5;
-                //routeLayer.strokeColor = UIColor.redColor.CGColor;
-                //ipt = 0;
+                if (firstPoint)
+                {
+                    llpoints[ipt] = LLPointToDPoint (CRAPI.sharedInstance.currentLocation);
+                    llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+                    ipt++;
+                }
+                llpoints[ipt] = LLPointToDPoint (rpt.latlon);
+                llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+                ipt++;
+                [self drawRoad:context
+                       nPoints:ipt
+                        nLoops:1
+                       partLen:0
+                        points:llpoints
+                     withColor:UIColor.blackColor.CGColor
+                      andWidth:width+4];
+                [self drawRoad:context
+                       nPoints:ipt
+                        nLoops:1
+                       partLen:0
+                        points:llpoints
+                     withColor:UIColor.greenColor.CGColor
+                      andWidth:width+2];
+                ipt = 0;
             }
+            firstPoint = FALSE;
             llpoints[ipt] = LLPointToDPoint (rpt.latlon);
             llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
             ipt++;
         }
         
         [self drawRoad:context
-               nPoints:n
+               nPoints:ipt
                 nLoops:1
                partLen:0
                 points:llpoints
@@ -1632,7 +1654,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             dc.penColor = [UIColor whiteColor];
             fillColor = UIColor.blueColor.CGColor;
             dc.width = 5;
-            symbol = TriangleSym;
+            symbol = CircleSym;
         }
         if ([waypoint.type isEqual:@"FlushPoint"])
         {
