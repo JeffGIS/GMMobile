@@ -1449,13 +1449,20 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             {
                 if (firstPoint)
                 {
-                    llpoints[ipt] = LLPointToDPoint (CRAPI.sharedInstance.currentLocation);
+                    llpoints[ipt] = LLPointToDPoint (CRAPI.sharedInstance.currentGPSLocation);
                     llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
                     ipt++;
                 }
                 llpoints[ipt] = LLPointToDPoint (rpt.latlon);
                 llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
                 ipt++;
+                [self drawRoad:context
+                       nPoints:ipt
+                        nLoops:1
+                       partLen:0
+                        points:llpoints
+                     withColor:UIColor.yellowColor.CGColor
+                      andWidth:width+6];
                 [self drawRoad:context
                        nPoints:ipt
                         nLoops:1
@@ -1478,6 +1485,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             ipt++;
         }
         
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.yellowColor.CGColor
+              andWidth:width+4];
         [self drawRoad:context
                nPoints:ipt
                 nLoops:1

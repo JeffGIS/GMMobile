@@ -167,7 +167,7 @@ DPOINT saveFromUTM, saveToUTM;
         [_locationManager startUpdatingHeading];
     }
     _offDist = 0;
-    _currentPoint = CRAPI.sharedInstance.currentLocation;
+    _currentPoint = CRAPI.sharedInstance.currentGPSLocation;
     [self addUserWaypoints:_currentPoint];
     [self getWeatherData];
     [self startMinuteTimer:TRUE];
@@ -869,6 +869,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     {
         _currentPoint.lat = loc.coordinate.latitude;
         _currentPoint.lon = loc.coordinate.longitude;
+        [CRAPI.sharedInstance setGPSLocation:_currentPoint from:2];
         if ([CRAPI.sharedInstance addPointToTrackRoute: loc.coordinate] == 2)
         {
             HuntingData *hd = HuntingData.new;

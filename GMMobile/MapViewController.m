@@ -818,7 +818,7 @@
     LLPOINT pt;
     pt.lat = target.latitude;
     pt.lon = target.longitude;
-    [CRAPI.sharedInstance setCurrentLocation:pt];
+    CRAPI.sharedInstance.currentCameraLocation = pt;
 }
 - (void)setZoom:(float)zoom
 {
@@ -3103,7 +3103,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     LLPOINT pt;
     pt.lat = position.target.latitude;
     pt.lon = position.target.longitude;
-    [CRAPI.sharedInstance setCurrentLocation:pt];
+    CRAPI.sharedInstance.currentCameraLocation = pt;
     [self setZoom:mapView.camera.zoom];
 }
 
@@ -6364,8 +6364,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     LLPOINT llpt;
     llpt.lat = _currentLocation.latitude;
     llpt.lon = _currentLocation.longitude;
-    CRAPI.sharedInstance.currentLocation = llpt;
-    
+    CRAPI.sharedInstance.currentGPSLocation = llpt;
+
     if (_needToSetVehicleLocation)
     {
         if (_needToSetVehicleLocation-- == 1)
@@ -8619,7 +8619,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     
     [hd saveConfiguration:name
                      type:_mapView.mapType
-                   target:CRAPI.sharedInstance.currentLocation
+                   target:CRAPI.sharedInstance.currentCameraLocation
                      zoom:CRAPI.sharedInstance.currentZoom];
 }
 @end
