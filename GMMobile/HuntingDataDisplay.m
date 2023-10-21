@@ -1649,6 +1649,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             dc.width = 5;
             symbol = Star2Sym;
         }
+        if ([waypoint.type isEqual:@"RoutePoint"])
+        {
+            dc.penColor = [UIColor blackColor];
+            fillColor = UIColor.orangeColor.CGColor;
+            dc.width = 4;
+            symbol = CircleSym;
+        }
         if ([waypoint.type isEqual:@"CompassPoint"])
         {
             dc.penColor = [UIColor whiteColor];
