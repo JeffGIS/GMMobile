@@ -7629,6 +7629,7 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd deleteWaypointsOfType:@"CompassPoint"];
             [self vectorViewRefresh];
+            [hd setIntSetting:@"NextCompassPointID" intValue:1];
             
         }
         else if ([text isEqualToString:@"Delete All Waypoints"])
@@ -7666,7 +7667,9 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Add Compass Waypoint"])
         {
             HuntingData *hd = HuntingData.new;
-            [hd addWaypoint:@"C.id" type:@"CompassPoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
+            int cpid = [hd getIntSetting:@"NextCompassPointID"];
+            [hd addWaypoint:[NSString stringWithFormat:@"%i",cpid] type:@"CompassPoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
+            [hd setIntSetting:@"NextCompassPointID" intValue:cpid+1];
             [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Add Flushed Waypoint"])

@@ -83,6 +83,9 @@
                   target:(LLPOINT*)location
                     zoom:(double*)zoom;
 -(NSArray*) getConfiguratonList;
+-(int)getIntSetting:(NSString *)settingName;
+-(BOOL)setIntSetting:(NSString *)settingName
+            intValue:(int) ival;
 
 @end
 

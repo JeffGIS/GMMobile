@@ -1828,7 +1828,7 @@ return _version;
                withinBounds:&curbounds
                    fontSize:fontSize
                 minFontSize:minFontSize
-                  textColor:textColor
+                  textColor:textColor.CGColor
                 shadowColor:nil
                processingID:_processingID];
     if (polyPartLen)

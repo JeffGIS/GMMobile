@@ -169,6 +169,9 @@
     cmd = @"CREATE TABLE IF NOT EXISTS Configs (id INTEGER PRIMARY KEY AUTOINCREMENT,Name CHAR(128), TimeSaved INT, MapType INT, LAT double, LON double, Zoom double)";
     rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
+    cmd = @"CREATE TABLE IF NOT EXISTS Settings (SettingName CHAR(128) PRIMARY KEY, IntValue1 INT, IntValue2 INT, DValue1 double, DValue2 double, CharValue CHAR(4096))";
+    rtn = !SQLOK(__FILE__,__LINE__, SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
     SQLOK(__FILE__,__LINE__,SQLite_Close(&_database),_database);
     _isOpen = FALSE;
     if (rtn)
@@ -795,5 +798,33 @@
     return list;
 }
 
+-(int)getIntSetting:(NSString *)settingName
+{
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT IntValue1 FROM USERDATA.Settings WHERE SettingName = '%@'",settingName];
+    NSString *queryx = [NSString stringWithFormat:@"SELECT * FROM USERDATA.Settings"];
+    int rtn = -1;
+    sqlite3_stmt *statement = NULL;
+    int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        rtn = sqlite3_column_int(statement, i++);
+    }
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
+    [self close:opened];
+ 
+    return rtn;
+}
+-(BOOL)setIntSetting:(NSString *)settingName
+            intValue:(int) ival
+{
+    BOOL opened = [self open];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO USERDATA.Settings VALUES('%@',%i,0,0,0,'')",settingName,ival];
+    BOOL rtn = [self executeCmd:cmd.UTF8String];
+    [self close:opened];
+ 
+    return rtn;
+}
 
 @end

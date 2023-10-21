@@ -688,7 +688,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                                                      withinBounds:pvbounds
                                                                          fontSize:fontSize
                                                                       minFontSize:minFontSize
-                                                                        textColor:textColor
+                                                                        textColor:textColor.CGColor
                                                                       shadowColor:nil
                                                                      processingID:_processingID];
                                             }

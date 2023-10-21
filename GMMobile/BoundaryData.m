@@ -2095,7 +2095,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                                        withinBounds:pvbounds
                                            fontSize:fontSize
                                         minFontSize:minFontSize
-                                          textColor:textColor
+                                          textColor:textColor.CGColor
                                         shadowColor:nil
                                        processingID:_processingID];
                         }
@@ -2904,7 +2904,7 @@ NextPass:
                            withinBounds:pvbounds
                                fontSize:fontSize
                             minFontSize:minFontSize
-                              textColor:textColor
+                              textColor:textColor.CGColor
                             shadowColor:nil
                            processingID:_processingID];
                 if (!st && from == TFONVMetroDisplay && nTextFields>1)

@@ -963,7 +963,7 @@ static float wallPtSize=0;
                withinBounds:0
                    fontSize:fontSize
                 minFontSize:minFontSize
-                  textColor:[UIColor blackColor]
+                  textColor:[UIColor blackColor].CGColor
                 shadowColor:nil
                 processingID:0];
     free (pPoints);

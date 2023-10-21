@@ -435,6 +435,7 @@ NextPass:
                 if (keyval.length)
                 {
                     UIColor *textColor = UIColor.blackColor;
+                    UIColor *shadowColor = UIColor.yellowColor;
                     CGFloat minFontSize = fontSize / 3;
                     [NVTextDrawing drawText:keyval
                                   inContext:context
@@ -445,8 +446,8 @@ NextPass:
                                withinBounds:pvbounds
                                    fontSize:fontSize
                                 minFontSize:minFontSize
-                                  textColor:textColor
-                                shadowColor:UIColor.yellowColor
+                                  textColor:textColor.CGColor
+                                shadowColor:shadowColor.CGColor
                                processingID:_processingID];
                     
                 }
@@ -935,7 +936,7 @@ NextPass:
                                    withinBounds:pvbounds
                                        fontSize:fontSize
                                     minFontSize:minFontSize
-                                      textColor:textColor
+                                      textColor:textColor.CGColor
                                     shadowColor:nil
                                    processingID:_processingID];
                     }
@@ -1628,7 +1629,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         if ([waypoint.type isEqual:@"CompassPoint"])
         {
-            dc.penColor = [UIColor blueColor];
+            dc.penColor = [UIColor whiteColor];
             fillColor = UIColor.blueColor.CGColor;
             dc.width = 5;
             symbol = TriangleSym;
@@ -1659,7 +1660,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                         fillColor:fillColor
                                         lineColor:whiteColor
                                         lineWidth:1*UIScreen.mainScreen.scale
-                                          andText:waypoint.name];
+                                          andText:waypoint.name
+                                        textColor:dc.penColor.CGColor];
             nDisplayed++;
         }
     }
