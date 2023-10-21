@@ -157,6 +157,8 @@
 @property NSMutableArray * routeSubLayers;
 @property int mapTypeFromConfig;
 @property int top,left,right,bottom,midx,midy;
+@property BOOL scaleBarAtTop;
+@property int scaleLayerHeight;
 @end
 
 @implementation MapViewController
@@ -844,6 +846,10 @@
 {
     CGFloat halfSize = ((_compassSize / 2.0) + 4.0);
     int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    if (_scaleBarAtTop)
+    {
+        top += _scaleLayerHeight;
+    }
     _compass.center = CGPointMake(_mapToolbar.center.x, top + halfSize);
     return;
     CGFloat xCenterLeft = (CGRectGetMinX(_mapToolbar.frame) - halfSize);
@@ -2365,14 +2371,15 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     _scaleLayer.strokeColor = UIColor.blackColor.CGColor;
     _scaleLayer.fillColor = UIColor.blackColor.CGColor;
     _scaleLayer.lineWidth = lineWidth;
+    _scaleBarAtTop = FALSE;
     if (tbframe.size.width > tbframe.size.height)
     {
         int width = 200, height=20;
-
+        _scaleBarAtTop = TRUE;
         _scaleLabel1 = UILabel.new;
         _scaleLabel1.backgroundColor = UIColor.whiteColor;
         _scaleLabel1.frame = CGRectMake(_left,_top, _right-_left,height);
-
+        _scaleLayerHeight = height;
         {
             UIBezierPath *path = UIBezierPath.bezierPath;
             int lw = lineWidth - 4;
@@ -8257,6 +8264,7 @@ didReturnText:(NSString *)text
 
 - (void)showCompass
 {
+    [self updateCompassPosition:NO];
     if (_compass.hidden && _mapView.camera.bearing != 0.0)
     {
         _compass.hidden = NO;
