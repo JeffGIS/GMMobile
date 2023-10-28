@@ -1987,6 +1987,11 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                         [optionList addObject:@"Save Tracking Route"];
                         [optionList addObject:@"Clear Tracking Route"];
                     }
+                    else
+                    {
+                        [optionList addObject:@"________________________"];
+                        [optionList addObject:@"Start Tracking Route"];
+                    }
                     [optionList addObject:@"________________________"];
                     [optionList addObject:@"Delete all Compass Waypoints"];
                     [optionList addObject:@"Delete All Waypoints"];
@@ -7546,6 +7551,11 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Hide Tracking Route"])
         {
             _displayTrackingRoute = FALSE;
+        }
+        else if ([text isEqualToString:@"Start Tracking Route"])
+        {
+            CRAPI.sharedInstance.amTrackingRoute = TRUE;
+            [_mapToolbar selectMyLocationButton:YES];
         }
         else if ([text isEqualToString:@"Save Tracking Route"])
         {

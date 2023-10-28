@@ -71,7 +71,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSMutableArray *profileLayers;
 @property int lastToDist;
 @property BOOL forward;
-@property DPOINT fromUTM, toUTM, atUTM;
+@property DPOINT fromUTM, toUTM, atUTM, nextUTM;
 @property NSTimer * offCourseTimer;
 @property BOOL goLeft;
 @property double offDist;
@@ -95,7 +95,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property NVPopoverTableView *nvptv;
 @property BOOL startRoute;
 @property BOOL needToInitiateRoute;
-@property LLPOINT firstRoutePoint;
+@property LLPOINT firstRoutePoint, nextRoutePoint;
 
 @end
 
@@ -105,7 +105,7 @@ DPOINT saveFromUTM, saveToUTM;
     [super viewDidLoad];
     _wd = WeatherData.new;
     _currentWindSpeed = -1;
-    _heightExpansion = 5;
+    _heightExpansion = 2;
     _lastToDist = 0;
     _forward = TRUE;
     _lastResetHeading = 0;
@@ -1366,8 +1366,10 @@ double HeadingFromAZ (double az)
         {
             NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
             UserWaypoint* waypoint = routePointArray[0];
+            UserWaypoint* nextwaypoint = routePointArray[1];
             CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
             _firstRoutePoint = waypoint.latlon;
+            _nextRoutePoint = nextwaypoint.latlon;
             if (!CRAPI.sharedInstance.locationTrackingEnabled)
             {
                 [_locationManager startUpdatingLocation];
@@ -1406,6 +1408,7 @@ double HeadingFromAZ (double az)
     CRAPI.sharedInstance.inRouteMode = YES;
     [self displayProfile:_fromPoint
                       to:_firstRoutePoint
+                    next:_nextRoutePoint
              checkOffset:YES];
     [self removeUserWaypoints];
     [self addUserWaypoints:_currentPoint];
@@ -1660,12 +1663,14 @@ double HeadingFromAZ (double az)
                         if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
                             haveProfile = [self displayProfile:_currentPoint
                                           to:waypoint.latlon
+                                        next:_nextRoutePoint
                                  checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
                         else
                         {
                             _fromPoint = _currentPoint;
                             haveProfile = [self displayProfile:_currentPoint
                                                             to:waypoint.latlon
+                                                          next:_nextRoutePoint
                                                    checkOffset:NO];
                         }
                         if (dist / METERS_PER_YARD < _nearDist && ![waypoint.type isEqual:@"Vehicle"] )
@@ -1784,6 +1789,7 @@ double HeadingFromAZ (double az)
 }
 -(BOOL) displayProfile:(LLPOINT)atLL
                     to:(LLPOINT)toLL
+                  next:(LLPOINT)nextLL
            checkOffset:(BOOL) checkOff
 {
     BOOL rtn = FALSE;
@@ -2107,14 +2113,28 @@ int GetGradeLevel (double grade)
     BOOL offRoute = FALSE;
     DPOINT Line[2];
     DPOINT IntPoint;
+    double offDistNext = -1;
     saveFromUTM = _fromUTM;
     saveToUTM = _toUTM;
-    
+
+    if (_nextUTM.x)
+    {
+        Line[0] = _toUTM;
+        Line[1] = _nextUTM;
+        if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&_leftOrRight))
+        {
+            offDistNext = ldistpp (&currentPoint,&IntPoint);
+        }
+    }
     Line[0] = _fromUTM;
     Line[1] = _toUTM;
     if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
     {
         _offDist = ldistpp (&currentPoint,&IntPoint);
+        if (_offDist > offDistNext) //switch to next point in route
+        {
+            
+        }
         _offDist /= METERS_PER_YARD;
         if (_offDist > _notifyDist)
         {
@@ -2123,14 +2143,6 @@ int GetGradeLevel (double grade)
                               withDelay:_timerDelay];
         }
         else
-        /*{
-            static double d = 5;
-            _timerDelay = max (_minTimerDelay,(_notifyDist/d) * _maxTimerDelay);
-            d += 2;
-            [self offCourseNotification:_leftOrRight
-                              withDelay:_timerDelay];
-
-        }*/
             [self offCourseNotification:0
                               withDelay:0];
     }
