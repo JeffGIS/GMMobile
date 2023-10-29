@@ -2369,11 +2369,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     float lineWidth = 5;
     CGRect tbframe = _mapToolbar.frame;
     CGPoint pt1, pt2, pt3, pt4, pt5, pt6;
-//    if (!_compass.isHidden)
-//        tbframe = _compass.frame;
     _scaleLayer = CAShapeLayer.layer;
     CAShapeLayer *layer = _scaleLayer;
     _scaleLayer.strokeColor = UIColor.blackColor.CGColor;
+    _scaleLayer.lineJoin = kCALineJoinMiter;
     _scaleLayer.fillColor = UIColor.blackColor.CGColor;
     _scaleLayer.lineWidth = lineWidth;
     _scaleBarAtTop = FALSE;
@@ -2388,28 +2387,30 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             UIBezierPath *path = UIBezierPath.bezierPath;
             int lw = lineWidth - 4;
-            pt1.x = 2;
+            pt1.x = lineWidth;
             pt1.y = height / 2;
             [path moveToPoint:pt1];
             pt2.x = _scaleLabel1.frame.origin.x + _scaleLabel1.frame.size.width-2;
             pt2.y = pt1.y;
             [path addLineToPoint:pt2];
             [path moveToPoint:pt1];
-            pt3.x = pt1.x + lw*2;
-            pt3.y = pt1.y - lw*2;
+            pt3.x = pt1.x + height/2;
+            pt3.y = pt1.y - height/2 + lw*5;
             [path addLineToPoint:pt3];
-            pt4.x = pt1.x + lw*2;
-            pt4.y = pt1.y + lw*2;
+            pt4.x = pt3.x;
+            pt4.y = pt1.y + height/2 - lw*5;
             [path addLineToPoint:pt4];
             [path addLineToPoint:pt1];
+            [path addLineToPoint:pt3];
             [path moveToPoint:pt2];
-            pt5.x = pt2.x - lw*2;
-            pt5.y = pt2.y - lw*2;
+            pt5.x = pt2.x - height/2;
+            pt5.y = pt2.y - height/2 + lw*5;
             [path addLineToPoint:pt5];
-            pt6.x = pt2.x - lw*2;
-            pt6.y = pt2.y + lw*2;
+            pt6.x = pt5.x;
+            pt6.y = pt2.y + height/2 - lw*5;
             [path addLineToPoint:pt6];
             [path addLineToPoint:pt2];
+            [path addLineToPoint:pt5];
             layer.path = path.CGPath;
         }
         CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
@@ -2431,45 +2432,53 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel2.frame = frame;
         CGRectMake(pt.x-width/2,pt.y-height*2, width,height);
         pt.y-=height/2;
-//        _scaleLabel2.center = pt;
         _scaleLabel2.textColor = UIColor.blackColor;
-        //_scaleLabel.shadowColor = UIColor.whiteColor;
-        //_scaleLabel.shadowOffset = CGSizeMake(3,0);
-        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightRegular];
+        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightBold];
         _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
         if (*_scaleLabel2.text.UTF8String == '0')
         {
             _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
         }
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
-
     }
     else
     {
-        UIBezierPath *path = UIBezierPath.bezierPath;
-        pt1.y = _mapView.frame.origin.y;
-        pt1.x = tbframe.origin.x + tbframe.size.width + (lineWidth*2);
-        [path moveToPoint:pt1];
-        pt2.y = _mapView.frame.size.height + _mapView.frame.origin.y;
-        pt2.x = pt1.x;
-        [path addLineToPoint:pt2];
-        [path moveToPoint:pt1];
-        pt3.y = pt1.y + lineWidth*2;
-        pt3.x = pt1.x - lineWidth*2;
-        [path addLineToPoint:pt3];
-        pt3.y = pt1.y + lineWidth*2;
-        pt3.x = pt1.x + lineWidth*2;
-        [path addLineToPoint:pt3];
-        [path addLineToPoint:pt1];
-        [path moveToPoint:pt2];
-        pt3.y = pt2.y - lineWidth*2;
-        pt3.x = pt2.x - lineWidth*2;
-        [path addLineToPoint:pt3];
-        pt3.y = pt2.y - lineWidth*2;
-        pt3.x = pt2.x + lineWidth*2;
-        [path addLineToPoint:pt3];
-        [path addLineToPoint:pt2];
-        _scaleLayer.path = path.CGPath;
+        int width = 20, height=200;
+        _scaleBarAtTop = TRUE;
+        _scaleLabel1 = UILabel.new;
+        _scaleLabel1.backgroundColor = UIColor.whiteColor;
+        _scaleLabel1.frame = CGRectMake(_right-width,_top, width,_bottom);
+        _scaleLayerHeight = height;
+        {
+            UIBezierPath *path = UIBezierPath.bezierPath;
+            int lw = lineWidth - 2;
+            pt1.x = width/2;
+            pt1.y = lw*2;
+            [path moveToPoint:pt1];
+            pt2.x = pt1.x;
+            pt2.y = _scaleLabel1.frame.size.height -lw*2;
+            [path addLineToPoint:pt2];
+            [path moveToPoint:pt1];
+            pt3.x = pt1.x + width/2 - lw*2;
+            pt3.y = pt1.y + width/2;
+            [path addLineToPoint:pt3];
+            pt4.x = pt1.x - width/2 + lw*2;
+            pt4.y = pt3.y;
+            [path addLineToPoint:pt4];
+            [path addLineToPoint:pt1];
+            [path addLineToPoint:pt3];
+            [path moveToPoint:pt2];
+            pt2.y = _scaleLabel1.frame.size.height -lw*2;
+            pt5.x = pt2.x - width/2 +lw*2;
+            pt5.y = pt2.y - width/2;
+            [path addLineToPoint:pt5];
+            pt6.x = pt2.x + width/2 - lw*2;
+            pt6.y = pt5.y;
+            [path addLineToPoint:pt6];
+            [path addLineToPoint:pt2];
+            [path addLineToPoint:pt5];
+            layer.path = path.CGPath;
+        }
         CLLocationCoordinate2D ptcl1 = [self coordinateForPoint:pt1];
         CLLocationCoordinate2D ptcl2 = [self coordinateForPoint:pt2];
         LLPOINT ptll1, ptll2;
@@ -2480,20 +2489,24 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         double dist = ArcDistanceLL(ptll1, ptll2);
         dist /= METERS_PER_MILE;
         CGPoint pt = pt1;
-        int width = 250, height=30;
-        pt.y = (pt1.y + pt2.y) /2 - mvf.origin.y / 2;
-        _scaleLabel1 = UILabel.new;
-        _scaleLabel1.backgroundColor = UIColor.clearColor;
-        _scaleLabel1.frame = CGRectMake(pt.x+height,pt.y-width*2, width,height);
-        pt.x+=height/2;
-        _scaleLabel1.center = pt;
-        _scaleLabel1.textColor = UIColor.redColor;
-        _scaleLabel1.shadowColor = UIColor.whiteColor;
-        _scaleLabel1.font = [UIFont systemFontOfSize: height -4];
-        _scaleLabel1.text = [NSString stringWithFormat:@"%.1f miles",dist];
-        _scaleLabel1.textAlignment = NSTextAlignmentCenter;
-        _scaleLabel1.transform = CGAffineTransformMakeRotation(HALFPI*3);
-
+        pt.x += pt2.x/2;
+        _scaleLabel2 = UILabel.new;
+        _scaleLabel2.backgroundColor = UIColor.whiteColor;
+        CGRect frame = CGRectMake(_midx-width/2, _midy, height,width);
+        _scaleLabel2.frame = frame;
+        _scaleLabel2.textColor = UIColor.blackColor;
+        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:width-3 weight:UIFontWeightBold];
+        _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
+        _scaleLabel2.transform = CGAffineTransformMakeRotation(HALFPI);
+        frame = _scaleLabel1.frame;
+        pt.x = frame.origin.x + frame.size.width/2;
+        pt.y = frame.origin.y + frame.size.height/2;
+        _scaleLabel2.center = pt;
+        if (*_scaleLabel2.text.UTF8String == '0')
+        {
+            _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
+        }
+        _scaleLabel2.textAlignment = NSTextAlignmentCenter;
     }
 
     [_scaleLabel1.layer addSublayer:_scaleLayer];
@@ -7251,7 +7264,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         _mapToolbar.previousOrientation = _mapToolbar.orientation;
         _mapToolbar.orientation = MapToolbarOrientationMinimized;
-        
+        _hideScaleBar = TRUE;
+        [self displayScalebar];
         [UIView animateWithDuration:duration animations:^{
             _mapToolbar.frame = CGRectMake(margin, (windowHeight - _compassSize - margin), _compassSize, _compassSize);
             _mapToolbar.layer.cornerRadius = 10.0;
@@ -7325,12 +7339,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [_mapToolbar bringToFrontOfView];
     
-    if (_mapToolbar.orientation != MapToolbarOrientationMinimized)
-        [self updateCompassPosition:YES];
     
     if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
         [self.view bringSubviewToFront:_legendScrollView];
     [self displayScalebar];
+    if (_mapToolbar.orientation != MapToolbarOrientationMinimized)
+        [self updateCompassPosition:YES];
 }
 
 - (void)mapToolbarDidWantExpand
@@ -7347,6 +7361,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [self restoreMapToolbarPosition];
     [self updateCompassPosition:YES];
+    _hideScaleBar = FALSE;
     [self displayScalebar];
 }
 
