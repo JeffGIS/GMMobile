@@ -7557,6 +7557,7 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Stop Tracking Location"])
         {
             CRAPI.sharedInstance.amTrackingRoute = FALSE;
+            [_mapToolbar selectMyLocationButton:NO];
         }
         else if ([text isEqualToString:@"Show Tracking Route"])
         {
@@ -7570,7 +7571,9 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Start Tracking Route"])
         {
             CRAPI.sharedInstance.amTrackingRoute = TRUE;
+            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             [_mapToolbar selectMyLocationButton:YES];
+            [self startTrackingUserLocation];
         }
         else if ([text isEqualToString:@"Save Tracking Route"])
         {
