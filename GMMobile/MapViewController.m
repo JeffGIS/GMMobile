@@ -166,6 +166,37 @@
     VectorView *vectorViews[MAX_VECTORVIEWS];
 }
 
+- (void) createMapView
+{
+    CGRect mapFrame = self.view.frame;
+    int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    mapFrame.origin.y = top;
+    mapFrame.size.height -= top;
+    _mapView = [[GMSMapView alloc] initWithFrame:mapFrame];
+    CGRect mFrame = _mapView.frame;
+    //_mapView = GMSMapView.new;
+    _mapView.autoresizingMask = UIViewAutoresizingNone;
+    _mapView.translatesAutoresizingMaskIntoConstraints = NO;
+    _mapView.delegate = self;
+    _mapView.mapType = kGMSTypeNormal;
+    [self setMapType];
+    _mapView.settings.compassButton = NO;
+    _mapView.settings.rotateGestures = YES;
+    _mapView.settings.tiltGestures = NO;
+    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:12];
+    [self.view addSubview:_mapView];
+    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:top bottom:0.0];
+    
+    _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
+    
+    _targetView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redTarget"
+                                                                                       ofType:@"png"]];
+    
+    _targetView.hidden = YES;
+    [_mapView addSubview:_targetView];
+    mFrame = _mapView.frame;
+
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -250,30 +281,6 @@
         DPOINT midPt = DBoundsMid(&lastBounds);
         self.target = CLLocationCoordinate2DMake(midPt.y,midPt.x);
     }
-    CGRect mapFrame = self.view.frame;
-    mapFrame.origin.y = 48;
-    int top = self.view.safeAreaInsets.top;
-    _mapView = [[GMSMapView alloc] initWithFrame:mapFrame];
-    //_mapView = GMSMapView.new;
-    _mapView.translatesAutoresizingMaskIntoConstraints = NO;
-    _mapView.delegate = self;
-    _mapView.mapType = kGMSTypeNormal;
-    [self setMapType];
-    _mapView.settings.compassButton = NO;
-    _mapView.settings.rotateGestures = YES;
-    _mapView.settings.tiltGestures = NO;
-    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:zoom];
-    [self.view addSubview:_mapView];
-    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:top bottom:0.0];
-    
-    _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
-    
-    _targetView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redTarget"
-                                                                                       ofType:@"png"]];
-    
-    _targetView.hidden = YES;
-    [_mapView addSubview:_targetView];
-    
     _blackCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackCrosshairs"
                                                                                       ofType:@"png"]];
     
@@ -446,7 +453,8 @@
     [_legendMinimizeButton addTarget:self
                               action:@selector(expandLegends:)
                     forControlEvents:UIControlEventTouchUpInside];
-    top = self.view.safeAreaInsets.top;
+    CGRect mFrame = _mapView.frame;
+    int top = self.view.safeAreaInsets.top;
     iii = top;
 }
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -469,21 +477,33 @@
 {
     [self clearVectorView];
 }
+-(void) computeTopBottom
+{
+    UITabBarController *tabBarController = [UITabBarController new];
+    CGFloat tabBarHeight = tabBarController.tabBar.frame.size.height;
+    tabBarController = self.view.parentViewController.tabBarController;
+    tabBarHeight = tabBarController.tabBar.frame.size.height;
+    int ii = UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom;
+    ii = self.view.parentViewController.additionalSafeAreaInsets.bottom;
+    CGRect frameSelf = self.view.frame;
+    CGRect frameMap = _mapView.frame;
+    CGRect frame = frameSelf;
+    _top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    iii = UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom;
+    _left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
+    _right = frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
+    _bottom = frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom - tabBarHeight;
+    _midx = (_right - _left)/2;
+    _midy = _top + (_bottom - _top)/2;
+    CGRect r = _mapView.frame;
+    r = self.view.frame;
 
+}
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    UITabBarController *tabBarController = [UITabBarController new];
-    CGFloat tabBarHeight = tabBarController.tabBar.frame.size.height;
-
-    _top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
-    _left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
-    _right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
-    _bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom - tabBarHeight;
-    _midx = (_right - _left)/2;
-    _midy = (_bottom - _top)/2;
-    CGRect r = _mapView.frame;
-    r = self.view.frame;
+    [self createMapView];
+    [self computeTopBottom];
     if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
     {
 
@@ -2447,7 +2467,9 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleBarAtTop = TRUE;
         _scaleLabel1 = UILabel.new;
         _scaleLabel1.backgroundColor = UIColor.whiteColor;
-        _scaleLabel1.frame = CGRectMake(_right-width,_top, width,_bottom);
+        CGRect frame1 = self.view.frame;
+        CGRect frame2 = _mapView.frame;
+        _scaleLabel1.frame = CGRectMake(_right-width,_top, width,frame2.size.height);
         _scaleLayerHeight = height;
         {
             UIBezierPath *path = UIBezierPath.bezierPath;
@@ -3205,6 +3227,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    [self computeTopBottom];
     [self updateMarkerPosition];
     [self showMarkersAndInfoWindows:NO];
     
