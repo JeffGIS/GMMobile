@@ -2188,6 +2188,14 @@ int GetGradeLevel (double grade)
     CRAPI.sharedInstance.currentRoute = nil;
     CRAPI.sharedInstance.routeBearing = nil;
 }
+
+-(BOOL) computeNextRoutePoint:(LLPOINT) llpt
+{
+    BOOL rtn = FALSE;
+    
+    return rtn;
+}
+
 - (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
     return;

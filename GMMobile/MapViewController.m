@@ -7577,11 +7577,6 @@ didSelectPDFButtonWithText:(NSString *)text
             _needToSetVehicleLocation = 3;
             [self startTrackingUserLocation];
         }
-        else if ([text isEqualToString:@"Stop Tracking Location"])
-        {
-            CRAPI.sharedInstance.amTrackingRoute = FALSE;
-            [_mapToolbar selectMyLocationButton:NO];
-        }
         else if ([text isEqualToString:@"Show Tracking Route"])
         {
             _displayTrackingRoute = TRUE;
@@ -7598,7 +7593,8 @@ didSelectPDFButtonWithText:(NSString *)text
             [_mapToolbar selectMyLocationButton:YES];
             [self startTrackingUserLocation];
         }
-        else if ([text isEqualToString:@"Save Tracking Route"])
+        else if ([text isEqualToString:@"Stop Tracking Location"] ||
+                 [text isEqualToString:@"Save Tracking Route"])
         {
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
@@ -7613,9 +7609,7 @@ didSelectPDFButtonWithText:(NSString *)text
             
         }
         else if ([text isEqualToString:@"Save Route"])
-        {
-            
-            
+        {            
             [NVTextViewAlert showTextViewAlertinView:self.view
                                                         delegate:self
                                                            title:@"Enter Route Name"
