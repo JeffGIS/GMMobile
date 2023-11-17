@@ -96,6 +96,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property BOOL startRoute;
 @property BOOL needToInitiateRoute;
 @property LLPOINT firstRoutePoint, nextRoutePoint;
+@property SystemSoundID lowSoundID, highSoundID;
+
 
 @end
 
@@ -142,6 +144,14 @@ DPOINT saveFromUTM, saveToUTM;
 -(void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    NSString *soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_high.caf"];
+    NSURL *url = [NSURL URLWithString:soundFile];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &_highSoundID);
+    soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_low.caf"];
+    url = [NSURL URLWithString:soundFile];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &_lowSoundID);
+    
     CRAPI.sharedInstance.routeBearing = nil;
     _maxWaypointDist = 5.0 * METERS_PER_MILE;
     _locationManager = [CRAPI.sharedInstance getLocationManager];
@@ -177,6 +187,8 @@ DPOINT saveFromUTM, saveToUTM;
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    AudioServicesDisposeSystemSoundID(_lowSoundID);
+    AudioServicesDisposeSystemSoundID(_highSoundID);
     [self removeUserWaypoints];
     [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
@@ -865,8 +877,10 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
     static bool first = true;
+
     for (CLLocation * loc in locations)
     {
+        //AudioServicesPlaySystemSound(_highSoundID);
         _currentPoint.lat = loc.coordinate.latitude;
         _currentPoint.lon = loc.coordinate.longitude;
         [CRAPI.sharedInstance setGPSLocation:_currentPoint from:2];
@@ -1011,7 +1025,7 @@ double HeadingFromAZ (double az)
                 label.adjustsFontSizeToFitWidth = YES;
                 if ([waypoint.type isEqual:@"Vehicle"])
                 {
-                    factor = 1.8;
+                    factor = 1.6;
                     fontSize = 10;
                     label.text = @"V";
                     label.backgroundColor = UIColor.greenColor;
@@ -1020,7 +1034,7 @@ double HeadingFromAZ (double az)
                 }
                 else if ([waypoint.type isEqual:@"CompassPoint"])
                 {
-                    factor = 1.2;
+                    factor = 1.5;
                     fontSize = 10;
                     label.backgroundColor = UIColor.blueColor;
                     label.textColor = UIColor.whiteColor;
@@ -1035,10 +1049,10 @@ double HeadingFromAZ (double az)
                 {
                     label.backgroundColor = UIColor.redColor;
                     label.textColor = UIColor.whiteColor;
-                    factor = 1.2;
+                    factor = 1.6;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
                 }
-                label.frame = CGRectMake(point.x,point.y, _tickLineWidth2,_tickLineWidth2);
+                label.frame = CGRectMake(point.x,point.y, factor*_tickLineWidth2,factor*_tickLineWidth2);
                 label.center = point;
                 label.clipsToBounds = true;
                 label.layer.cornerRadius = label.frame.size.width / 2;
@@ -2060,11 +2074,7 @@ int GetGradeLevel (double grade)
 {
     if (_goLeft)
     {
-        NSString *soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_low.caf"];
-        SystemSoundID soundID;
-        NSURL *url = [NSURL URLWithString:soundFile];
-        AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &soundID);
-        AudioServicesPlaySystemSound(soundID);
+        AudioServicesPlaySystemSound(_lowSoundID);
         [self performSelector:@selector(vibrate)
                    withObject:nil
                    afterDelay:0.5];
@@ -2077,11 +2087,8 @@ int GetGradeLevel (double grade)
     }
     else
     {
-        NSString *soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_high.caf"];
-        SystemSoundID soundID;
-        NSURL *url = [NSURL URLWithString:soundFile];
-        AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &soundID);
-        AudioServicesPlaySystemSound(soundID);
+
+        AudioServicesPlaySystemSound(_highSoundID);
         [self performSelector:@selector(vibrate)
                    withObject:nil
                    afterDelay:0.5];

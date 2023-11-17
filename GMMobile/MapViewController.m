@@ -9,6 +9,7 @@
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "Destinations.h"
 #import "CCodeLibrary/IntersectionsDatabase.h"
+#import "CCodeLibrary/TrackLocationManager.h"
 #import "NVPageController.h"
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
@@ -345,6 +346,7 @@
     _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    _locationManager.pausesLocationUpdatesAutomatically = NO;
     
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
         [_locationManager requestWhenInUseAuthorization];
@@ -456,6 +458,8 @@
     CGRect mFrame = _mapView.frame;
     int top = self.view.safeAreaInsets.top;
     iii = top;
+    [self createMapView];
+
 }
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
@@ -502,7 +506,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self createMapView];
     [self computeTopBottom];
     if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
     {
@@ -1996,7 +1999,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [optionList addObject:@"________________________"];
 
                     [optionList addObject:@"Proximity Mapping"];
-                    if (CRAPI.sharedInstance.currentTrackRoute.count)
+                    if (CRAPI.sharedInstance.amTrackingRoute)
                     {
                         [optionList addObject:@"________________________"];
                         [optionList addObject:@"Stop Tracking Location"];
@@ -6371,7 +6374,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)startTrackingUserLocation
 {
-    if (CLLocationManager.locationServicesEnabled)
     {
         [_locationManager startUpdatingLocation];
         CRAPI.sharedInstance.locationTrackingEnabled = YES;
@@ -6395,13 +6397,35 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     return rtn;
 }
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager
+{
+    UINT status = manager.authorizationStatus;
+    iii = 0;
+    if (manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways)
+        iii = 1;
+    if (manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse)
+        iii = 2;
+    return;
+}
+
+-(void)locationFromTrack:(TrackLocationManager *)manager
+      didUpdateLocations:(NSArray *)locations
+ {
+     [self didUpdateLocations:locations];
+ }
 
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
+    [self didUpdateLocations:locations];
+}
+- (void) didUpdateLocations:(NSArray *)locations
+{
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
-    _currentLocation = [locations.firstObject coordinate];
+    if (locations.count > 1)
+        iii = 1;
+    _currentLocation = [locations.lastObject coordinate];
     LLPOINT llpt;
     llpt.lat = _currentLocation.latitude;
     llpt.lon = _currentLocation.longitude;
@@ -7609,7 +7633,7 @@ didSelectPDFButtonWithText:(NSString *)text
             
         }
         else if ([text isEqualToString:@"Save Route"])
-        {            
+        {
             [NVTextViewAlert showTextViewAlertinView:self.view
                                                         delegate:self
                                                            title:@"Enter Route Name"
