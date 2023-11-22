@@ -14,6 +14,12 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
     NVMarkerStyleOptionsOnly,
 };
 
+typedef NS_ENUM(NSInteger, SingleTapModes)
+{
+    STMAddToRoute,
+    STMNone,
+};
+
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property MKMapRect cityInnerBounds;
 @property BOOL fromSpreadsheet, fromLegends;

@@ -160,6 +160,14 @@
 @property int top,left,right,bottom,midx,midy;
 @property BOOL scaleBarAtTop;
 @property int scaleLayerHeight;
+@property UIButton *optionsButton;
+@property int screenH;
+@property int screenW;
+@property CGFloat heightFactor;
+@property CGFloat widthFactor;
+@property NSString * scaleBarPromptText;
+@property SingleTapModes singleTapMode;
+
 @end
 
 @implementation MapViewController
@@ -456,8 +464,31 @@
                               action:@selector(expandLegends:)
                     forControlEvents:UIControlEventTouchUpInside];
     CGRect mFrame = _mapView.frame;
-    int top = self.view.safeAreaInsets.top;
-    iii = top;
+    _screenH = UIScreen.mainScreen.bounds.size.height;
+    _screenW = UIScreen.mainScreen.bounds.size.width;
+    _heightFactor = _screenH / 926;
+    _widthFactor = _screenW / 428;
+
+    int top = UIApplication.sharedApplication.windows[0].safeAreaInsets.top;
+    int left = UIApplication.sharedApplication.windows[0].safeAreaInsets.left;
+    int right = self.view.frame.size.width - UIApplication.sharedApplication.windows[0].safeAreaInsets.right;
+    int bottom = self.view.frame.size.height - UIApplication.sharedApplication.windows[0].safeAreaInsets.bottom - _tabBarHeight;
+/*
+    _optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _optionsButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _optionsButton.backgroundColor = UIColor.whiteColor;
+    _optionsButton.frame = CGRectMake(left,top,50*_heightFactor,50*_heightFactor);
+
+    [_optionsButton setImage:[UIImage imageWithContentsOfFile:
+                      [NSBundle.mainBundle pathForResource:@"list"
+                                                    ofType:@"png"]]
+                forState:UIControlStateNormal];
+    [_optionsButton addTarget:self
+                               action:@selector(optionsButtonTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+    [self.view  addSubview:_optionsButton];*/
+    _scaleBarPromptText = nil;
+    _singleTapMode = STMNone;
     [self createMapView];
 
 }
@@ -1943,7 +1974,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         case HCConfigHunting:
         {
             HuntingData *hd = HuntingData.new;
-            if (_numCurrentRoutePoints)
+         
+            if (_singleTapMode == STMAddToRoute)
             {
                 LLPOINT llp = {coordinate.longitude,coordinate.latitude};
                 _numCurrentRoutePoints++;
@@ -1952,6 +1984,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [CRAPI.sharedInstance.currentRoute addObject:routePoint];
                 NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
                 [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
+                _scaleBarPromptText = @"Short tap next route point or select Options";
+
                 [self displayCurrentRoute];
             }
             else
@@ -1977,51 +2011,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                     }
                    [optionList addObject:txt];
                 }
-                else
-                {
-                    [optionList addObject:@"Mark Vehicle Location"];
-                    [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Add Flushed Waypoint"];
-                    [optionList addObject:@"Test Waypoint"];
-                    [optionList addObject:@"Add Retrieved Waypoint"];
-                    [optionList addObject:@"Add Compass Waypoint"];
-                    [optionList addObject:@"________________________"];
-                    if (CRAPI.sharedInstance.currentRoute.count)
-                    {
-                        [optionList addObject:@"Save Route"];
-                        [optionList addObject:@"Clear Route"];
-                    }
-                    else
-                        [optionList addObject:@"Start Route"];
-                    [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Save Configuration"];
-                    [optionList addObject:@"List Configurations"];
-                    [optionList addObject:@"________________________"];
-
-                    [optionList addObject:@"Proximity Mapping"];
-                    if (CRAPI.sharedInstance.amTrackingRoute)
-                    {
-                        [optionList addObject:@"________________________"];
-                        [optionList addObject:@"Stop Tracking Location"];
-                        if (_displayTrackingRoute)
-                            [optionList addObject:@"Hide Tracking Route"];
-                        else
-                            [optionList addObject:@"Show Tracking Route"];
-                        [optionList addObject:@"Save Tracking Route"];
-                        [optionList addObject:@"Clear Tracking Route"];
-                    }
-                    else
-                    {
-                        [optionList addObject:@"________________________"];
-                        [optionList addObject:@"Start Tracking Route"];
-                    }
-                    [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Delete all Compass Waypoints"];
-                    [optionList addObject:@"Delete All Waypoints"];
-                    [optionList addObject:@"________________________"];
-                    [optionList addObject:@"Display Saved Track Routes"];
-                    
-                }
+                
+                
                 _hideScaleBar = TRUE;
                 NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                                   delegate:self
@@ -2164,6 +2155,65 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     
     [self vectorViewRefresh];
+}
+
+- (void) displayOptionList
+{
+    NSMutableArray *optionList = NSMutableArray.array;
+    HuntingData *hd = HuntingData.new;
+
+    [optionList addObject:@"Mark Vehicle Location"];
+    [optionList addObject:@"________________________"];
+    [optionList addObject:@"Add Flushed Waypoint"];
+    [optionList addObject:@"Test Waypoint"];
+    [optionList addObject:@"Add Retrieved Waypoint"];
+    [optionList addObject:@"Add Compass Waypoint"];
+    [optionList addObject:@"________________________"];
+    if (CRAPI.sharedInstance.currentRoute.count)
+    {
+        [optionList addObject:@"Save Route"];
+        [optionList addObject:@"Clear Route"];
+    }
+    else
+        [optionList addObject:@"Start Route"];
+    [optionList addObject:@"________________________"];
+    [optionList addObject:@"Save Configuration"];
+    [optionList addObject:@"List Configurations"];
+    [optionList addObject:@"________________________"];
+
+    [optionList addObject:@"Proximity Mapping"];
+    if (CRAPI.sharedInstance.amTrackingRoute)
+    {
+        [optionList addObject:@"________________________"];
+        [optionList addObject:@"Stop Tracking Location"];
+        if (_displayTrackingRoute)
+            [optionList addObject:@"Hide Tracking Route"];
+        else
+            [optionList addObject:@"Show Tracking Route"];
+        [optionList addObject:@"Save Tracking Route"];
+        [optionList addObject:@"Clear Tracking Route"];
+    }
+    else
+    {
+        [optionList addObject:@"________________________"];
+        [optionList addObject:@"Start Tracking Route"];
+    }
+    [optionList addObject:@"________________________"];
+    
+    NSArray *vehiclePoints = [hd getWaypointsOfType:@"Vehicle"];
+    if (vehiclePoints.count > 0)
+        [optionList addObject:@"Delete Vehicle Waypoint"];
+    [optionList addObject:@"Delete all Compass Waypoints"];
+    [optionList addObject:@"Delete All Waypoints"];
+    [optionList addObject:@"________________________"];
+    [optionList addObject:@"Display Saved Track Routes"];
+    _hideScaleBar = TRUE;
+    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                      delegate:self
+                                                                         title:@"Options"
+                                                                     textArray:optionList
+                                                                 includeCancel:YES];
+    nvptv.allowsSubtitle = NO;
 }
 
 - (void)markerButtonWasTapped:(MarkerButton *)marker
@@ -2450,17 +2500,27 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel2 = UILabel.new;
         _scaleLabel2.backgroundColor = UIColor.whiteColor;
         CGRect frame = _scaleLabel1.frame;
-        frame.origin.x = _midx - width/2;
-        frame.size.width = width;
-        _scaleLabel2.frame = frame;
-        CGRectMake(pt.x-width/2,pt.y-height*2, width,height);
-        pt.y-=height/2;
         _scaleLabel2.textColor = UIColor.blackColor;
         _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightBold];
-        _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
-        if (*_scaleLabel2.text.UTF8String == '0')
+        if (!_scaleBarPromptText)
         {
-            _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
+            frame.origin.x = _midx - width/2;
+            frame.size.width = width;
+            _scaleLabel2.frame = frame;
+            CGRectMake(pt.x-width/2,pt.y-height*2, width,height);
+            pt.y-=height/2;
+            _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
+            if (*_scaleLabel2.text.UTF8String == '0')
+            {
+                _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
+            }
+        }
+        else
+        {
+            _scaleLabel2.frame = frame;
+            _scaleLabel2.text = _scaleBarPromptText;
+            _scaleLabel2.adjustsFontSizeToFitWidth = YES;
+            _scaleLabel2.minimumScaleFactor = 0.15;
         }
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
     }
@@ -2517,21 +2577,32 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         pt.x += pt2.x/2;
         _scaleLabel2 = UILabel.new;
         _scaleLabel2.backgroundColor = UIColor.whiteColor;
-        CGRect frame = CGRectMake(_midx-width/2, _midy, height,width);
-        _scaleLabel2.frame = frame;
         _scaleLabel2.textColor = UIColor.blackColor;
         _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:width-3 weight:UIFontWeightBold];
-        _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
-        _scaleLabel2.transform = CGAffineTransformMakeRotation(HALFPI);
-        frame = _scaleLabel1.frame;
-        pt.x = frame.origin.x + frame.size.width/2;
-        pt.y = frame.origin.y + frame.size.height/2;
-        _scaleLabel2.center = pt;
-        if (*_scaleLabel2.text.UTF8String == '0')
-        {
-            _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
-        }
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
+        _scaleLabel2.transform = CGAffineTransformMakeRotation(HALFPI);
+        if (!_scaleBarPromptText)
+        {
+            CGRect frame = _scaleLabel1.frame;
+            frame.size.height = height;
+            _scaleLabel2.frame = frame;
+            _scaleLabel2.text = [NSString stringWithFormat:@"%.1f miles",dist];
+            frame = _scaleLabel1.frame;
+            pt.x = frame.origin.x + frame.size.width/2;
+            pt.y = frame.origin.y + frame.size.height/2;
+            _scaleLabel2.center = pt;
+            if (*_scaleLabel2.text.UTF8String == '0')
+            {
+                _scaleLabel2.text = [NSString stringWithFormat:@"%.2f miles",dist];
+            }
+        }
+        else
+        {
+            _scaleLabel2.frame = _scaleLabel1.frame;
+            _scaleLabel2.text = _scaleBarPromptText;
+            _scaleLabel2.adjustsFontSizeToFitWidth = YES;
+            _scaleLabel2.minimumScaleFactor = 0.15;
+        }
     }
 
     [_scaleLabel1.layer addSublayer:_scaleLayer];
@@ -6879,6 +6950,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [_mapToolbar hide];
     [self showDigitizer:NO];
 }
+- (void)mapToolbarDidSelectOptions
+{
+    _options = @[];
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigHunting:
+            [self displayOptionList];
+            
+            break;
+    }
+}
 
 - (void)mapToolbarDidSelectLegends
 {
@@ -7679,15 +7761,11 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Start Route"])
         {
             CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
-            _numCurrentRoutePoints++;
-            RoutePoint *routePoint = RoutePoint.new;
-            routePoint.latlon = _llPickedPt;
-            [CRAPI.sharedInstance.currentRoute addObject:routePoint];
-            
             HuntingData *hd = HuntingData.new;
             [hd deleteWaypointsOfType:@"RoutePoint"];
-            [hd addWaypoint:@"1" type:@"RoutePoint" latlon:_llPickedPt description:@"" displayOnCompass:YES];
-            _numCurrentRoutePoints = 1;
+            _numCurrentRoutePoints = 0;
+            _singleTapMode = STMAddToRoute;
+            _scaleBarPromptText = @"Short tap at route start point";
             [self vectorViewRefresh];
             
         }
@@ -7697,8 +7775,16 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd deleteWaypointsOfType:@"RoutePoint"];
             CRAPI.sharedInstance.currentSelectedWaypoint = -1;
+            _scaleBarPromptText = nil;
+            _singleTapMode = STMNone;
             [self vectorViewRefresh];
             
+        }
+        else if ([text isEqualToString:@"Delete Vehicle Waypoint"])
+        {
+            HuntingData *hd = HuntingData.new;
+            [hd deleteWaypointsOfType:@"Vehicle"];
+            [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Delete all Compass Waypoints"])
         {
@@ -7877,6 +7963,10 @@ didReturnText:(NSString *)text
         else if ([textViewAlert.idText isEqual:@"List Configurations"])
         {
             [self saveConfiguration:text];
+        }
+        else if ([textViewAlert.idText isEqual:@"Save Route"])
+        {
+            _scaleBarPromptText = nil;
         }
     }
     

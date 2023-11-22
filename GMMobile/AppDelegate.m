@@ -18,6 +18,7 @@
 @property (nonatomic) NSTimer *locationTimer;
 @property (nonatomic) GeoMasterServer *GMServer;
 @property (nonatomic) CLLocation *currentLocation;
+@property int numMemoryWarnings;
 @property BOOL skipMethodCall;
 
 @end
@@ -357,6 +358,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
+    _numMemoryWarnings++;
+    if (_numMemoryWarnings > 1)
+        iii = 1;
     [UIDevice reportMemoryWarning];
 }
 
