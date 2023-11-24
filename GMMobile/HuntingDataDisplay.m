@@ -165,7 +165,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                              llCorners:latlonCornerPoints
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
-            
+        }
             if ([ConfigurationControl.sharedInstance layer:HCLayerForest
                                              visibleAtZoom:_zoom
                                                    andPass:_passID])
@@ -228,7 +228,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                           themes:themes
                                      pointInArea:pia];
         }
-    }
+    
     nDisplayed = [self displayWaypoints:context
                               llCorners:latlonCornerPoints
                                LLBounds:platlonBounds
