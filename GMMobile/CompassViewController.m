@@ -44,6 +44,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSMutableArray * tickShapes;
 @property CGPoint po;
 @property LLPOINT currentPoint;
+@property LLPOINT routeStartPoint;
 @property LLPOINT fromPoint;
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
@@ -878,8 +879,9 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
 {
     static bool first = true;
 
-    for (CLLocation * loc in locations)
+    if (locations.count > 0)
     {
+        CLLocation * loc = locations.lastObject;
         //AudioServicesPlaySystemSound(_highSoundID);
         _currentPoint.lat = loc.coordinate.latitude;
         _currentPoint.lon = loc.coordinate.longitude;
@@ -900,6 +902,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
             _fromPoint = _currentPoint;
             [self initiateRoute];
         }
+        if (CRAPI.sharedInstance.inRouteMode)
+            [self computeNextRoutePoint];
     }
     [self removeUserWaypoints];
     [self addUserWaypoints:_currentPoint];
@@ -1377,6 +1381,7 @@ double HeadingFromAZ (double az)
             CRAPI.sharedInstance.inRouteMode = FALSE;
             if (_offCourseTimer)
                 [_offCourseTimer invalidate];
+            _offDist = 0;
 
         }
         else if ([text isEqualToString:@"Start Route"])
@@ -1422,6 +1427,7 @@ double HeadingFromAZ (double az)
 {
     _needToInitiateRoute = FALSE;
     _startRoute = YES;
+    _routeStartPoint = _currentPoint;
     CRAPI.sharedInstance.inRouteMode = YES;
     [self displayProfile:_fromPoint
                       to:_firstRoutePoint
@@ -2126,41 +2132,44 @@ int GetGradeLevel (double grade)
     double offDistNext = -1;
     saveFromUTM = _fromUTM;
     saveToUTM = _toUTM;
-
-    if (_nextUTM.x)
+    
+    if (CRAPI.sharedInstance.inRouteMode)
     {
-        Line[0] = _toUTM;
-        Line[1] = _nextUTM;
-        if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&_leftOrRight))
+        if (_nextUTM.x)
         {
-            offDistNext = ldistpp (&currentPoint,&IntPoint);
+            Line[0] = _toUTM;
+            Line[1] = _nextUTM;
+            if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&_leftOrRight))
+            {
+                offDistNext = ldistpp (&currentPoint,&IntPoint);
+            }
         }
-    }
-    Line[0] = _fromUTM;
-    Line[1] = _toUTM;
-    if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
-    {
-        _offDist = ldistpp (&currentPoint,&IntPoint);
-        if (_offDist > offDistNext) //switch to next point in route
+        Line[0] = _fromUTM;
+        Line[1] = _toUTM;
+        if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
         {
-            
-        }
-        _offDist /= METERS_PER_YARD;
-        if (_offDist > _notifyDist)
-        {
-            _timerDelay = max (_minTimerDelay,(_notifyDist/_offDist) * _maxTimerDelay);
-            [self offCourseNotification:_leftOrRight
-                              withDelay:_timerDelay];
+            _offDist = ldistpp (&currentPoint,&IntPoint);
+            if (_offDist > offDistNext) //switch to next point in route
+            {
+                
+            }
+            _offDist /= METERS_PER_YARD;
+            if (_offDist > _notifyDist)
+            {
+                _timerDelay = max (_minTimerDelay,(_notifyDist/_offDist) * _maxTimerDelay);
+                [self offCourseNotification:_leftOrRight
+                                  withDelay:_timerDelay];
+            }
+            else
+                [self offCourseNotification:0
+                                  withDelay:0];
         }
         else
+        {
+            _offDist = 0;
             [self offCourseNotification:0
                               withDelay:0];
-    }
-    else
-    {
-        _offDist = 0;
-        [self offCourseNotification:0
-                          withDelay:0];
+        }
     }
     return offRoute;
 }
@@ -2199,10 +2208,42 @@ int GetGradeLevel (double grade)
     CRAPI.sharedInstance.routeBearing = nil;
 }
 
--(BOOL) computeNextRoutePoint:(LLPOINT) llpt
+-(BOOL) computeNextRoutePoint
 {
     BOOL rtn = FALSE;
+    HuntingData *hd = HuntingData.new;
+    DPOINT Line[2];
+    DPOINT IntPoint;
+    DPOINT CurrentPoint;
+    CurrentPoint.x = _currentPoint.lon;
+    CurrentPoint.y = _currentPoint.lat;
+    ConvertCoord(&CurrentPoint, LATLONPROJECTION, UTM15PROJECTION);
+    Line[0] = LLPointToDPoint (_routeStartPoint);
+    ConvertCoord(&Line[0], LATLONPROJECTION, UTM15PROJECTION);
+
+    CRAPI.sharedInstance.currentSelectedWaypoint = -1;
+    _currentRoutePointNumber = 0;
+    double minDist = DBL_MAX;
     
+    NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
+    for (UserWaypoint *wp in routePointArray)
+    {
+        Line[1] = LLPointToDPoint (wp.latlon);
+        ConvertCoord(&Line[1], LATLONPROJECTION, UTM15PROJECTION);
+        if (GetPerpendicularIntersect (&CurrentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
+        {
+            double offDist = ldistpp (&CurrentPoint,&IntPoint);
+            if (offDist < minDist)
+            {
+                minDist = offDist;
+                CRAPI.sharedInstance.currentSelectedWaypoint = wp.refno;
+                _currentRoutePointNumber = wp.refno;
+                rtn = TRUE;
+            }
+        }
+        Line[0] = Line[1];
+    }
+
     return rtn;
 }
 
