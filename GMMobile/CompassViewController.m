@@ -1375,6 +1375,9 @@ double HeadingFromAZ (double az)
         if ([text isEqualToString:@"Exit Route"])
         {
             CRAPI.sharedInstance.inRouteMode = FALSE;
+            if (_offCourseTimer)
+                [_offCourseTimer invalidate];
+
         }
         else if ([text isEqualToString:@"Start Route"])
         {

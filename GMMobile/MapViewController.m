@@ -2501,7 +2501,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel2.backgroundColor = UIColor.whiteColor;
         CGRect frame = _scaleLabel1.frame;
         _scaleLabel2.textColor = UIColor.blackColor;
-        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height-3 weight:UIFontWeightBold];
+        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:height weight:UIFontWeightBold];
         if (!_scaleBarPromptText)
         {
             frame.origin.x = _midx - width/2;
@@ -2519,10 +2519,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             _scaleLabel2.frame = frame;
             _scaleLabel2.text = _scaleBarPromptText;
-            _scaleLabel2.adjustsFontSizeToFitWidth = YES;
-            _scaleLabel2.minimumScaleFactor = 0.15;
         }
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
+        _scaleLabel2.adjustsFontSizeToFitWidth = YES;
+        _scaleLabel2.minimumScaleFactor = 0.15;
     }
     else
     {
@@ -2578,7 +2578,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel2 = UILabel.new;
         _scaleLabel2.backgroundColor = UIColor.whiteColor;
         _scaleLabel2.textColor = UIColor.blackColor;
-        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:width-3 weight:UIFontWeightBold];
+        _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:width weight:UIFontWeightBold];
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
         _scaleLabel2.transform = CGAffineTransformMakeRotation(HALFPI);
         if (!_scaleBarPromptText)
@@ -2600,10 +2600,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             _scaleLabel2.frame = _scaleLabel1.frame;
             _scaleLabel2.text = _scaleBarPromptText;
-            _scaleLabel2.adjustsFontSizeToFitWidth = YES;
-            _scaleLabel2.minimumScaleFactor = 0.15;
         }
     }
+    _scaleLabel2.adjustsFontSizeToFitWidth = YES;
+    _scaleLabel2.minimumScaleFactor = 0.15;
 
     [_scaleLabel1.layer addSublayer:_scaleLayer];
     [self.view addSubview:_scaleLabel1];
