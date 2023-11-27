@@ -2009,9 +2009,14 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                     {
                         txt = [NSString stringWithFormat:@"Add Waypoint to Compass"];
                     }
-                   [optionList addObject:txt];
+                    [optionList addObject:txt];
+                    [optionList addObject:@"________________________"];
                 }
-                
+                [optionList addObject:@"Add Flushed Waypoint"];
+                [optionList addObject:@"Test Waypoint"];
+                [optionList addObject:@"Add Retrieved Waypoint"];
+                [optionList addObject:@"Add Compass Waypoint"];
+
                 
                 _hideScaleBar = TRUE;
                 NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
@@ -2164,11 +2169,6 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 
     [optionList addObject:@"Mark Vehicle Location"];
     [optionList addObject:@"________________________"];
-    [optionList addObject:@"Add Flushed Waypoint"];
-    [optionList addObject:@"Test Waypoint"];
-    [optionList addObject:@"Add Retrieved Waypoint"];
-    [optionList addObject:@"Add Compass Waypoint"];
-    [optionList addObject:@"________________________"];
     if (CRAPI.sharedInstance.currentRoute.count)
     {
         [optionList addObject:@"Save Route"];
@@ -2204,9 +2204,12 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (vehiclePoints.count > 0)
         [optionList addObject:@"Delete Vehicle Waypoint"];
     [optionList addObject:@"Delete all Compass Waypoints"];
-    [optionList addObject:@"Delete All Waypoints"];
+    [optionList addObject: @"Delete All Waypoints"];
     [optionList addObject:@"________________________"];
     [optionList addObject:@"Display Saved Track Routes"];
+    if (CRAPI.sharedInstance.currentTrackRoute.count > 1 && _displayTrackingRoute)
+        [optionList addObject:@"Simulate Route"];
+
     _hideScaleBar = TRUE;
     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                       delegate:self
@@ -7710,9 +7713,9 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            _displayTrackingRoute = FALSE;
             [self displayTrackRoute];
             [self vectorViewRefresh];
-            
         }
         else if ([text isEqualToString:@"Save Route"])
         {
@@ -7851,6 +7854,10 @@ didSelectPDFButtonWithText:(NSString *)text
             [hd addWaypoint:@"R1" type:@"RetrievePoint" latlon:_llPickedPt description:@"" displayOnCompass:NO];
             [self vectorViewRefresh];
         }
+        else if ([text isEqualToString:@"Simulate Route"])
+        {
+            
+        }
         else if ([text isEqualToString:@"Display Saved Track Routes"])
         {
             [popoverTableView hide:YES];
@@ -7967,6 +7974,8 @@ didReturnText:(NSString *)text
         else if ([textViewAlert.idText isEqual:@"Save Route"])
         {
             _scaleBarPromptText = nil;
+            _singleTapMode = STMNone;
+            CRAPI.sharedInstance.inRouteMode=NO;
         }
     }
     
