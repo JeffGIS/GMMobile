@@ -37,7 +37,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property UILabel *infoLabel;
 @property CGFloat screenW, screenH, heightFactor, widthFactor;
 @property (nonatomic) CGFloat radius;
-@property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) TrackLocationManager *locationManager;
 @property id oldLocationManagerDelegate;
 @property UILabel *directionLabel;
 @property NSMutableArray * userWaypointLabels;
@@ -875,7 +875,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     }
     return realHeading;
 }
--(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+-(void)locationManager:(TrackLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
     static bool first = true;
 
@@ -908,7 +908,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [self removeUserWaypoints];
     [self addUserWaypoints:_currentPoint];
 }
-- (void)locationManager:(CLLocationManager *)manager
+- (void)locationManager:(TrackLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
     
@@ -922,18 +922,18 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     }
 }
 
--(Bool) locationManagerShouldDisplayHeadingCalibration:(CLLocationManager*)manager
+-(Bool) locationManagerShouldDisplayHeadingCalibration:(TrackLocationManager*)manager
 {
     return true;
 }
 
--(void) locationManager:(CLLocationManager*) manager
+-(void) locationManager:(TrackLocationManager*) manager
        didFailWithError:(NSError*) error
 {
     NSLog(@"Location manager error");
 }
 
--(void) locationManager:(CLLocationManager*)manager
+-(void) locationManager:(TrackLocationManager*)manager
  didChangeAuthorization:(CLAuthorizationStatus)status
 {
     NSLog(@"Location manager changed autorization");

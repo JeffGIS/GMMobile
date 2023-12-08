@@ -6482,17 +6482,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     return;
 }
 
--(void)locationFromTrack:(TrackLocationManager *)manager
+-(void)locationManager:(TrackLocationManager *)manager
       didUpdateLocations:(NSArray *)locations
  {
      [self didUpdateLocations:locations];
  }
 
-- (void)locationManager:(CLLocationManager *)manager
+/*- (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
     [self didUpdateLocations:locations];
-}
+}*/
 - (void) didUpdateLocations:(NSArray *)locations
 {
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
