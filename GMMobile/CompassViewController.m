@@ -10,7 +10,6 @@
 //#import "NVCoordinateLibrary/proj_api.h"
 #include "CCodeLibrary/PROJ.H"
 #include "CCodeLibrary/shr.h"
-#include "CVTCoord.h"
 
 DPOINT saveFromUTM, saveToUTM;
 
@@ -72,17 +71,6 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSMutableArray *profileLayers;
 @property int lastToDist;
 @property BOOL forward;
-@property DPOINT fromUTM, toUTM, atUTM, nextUTM;
-@property NSTimer * offCourseTimer;
-@property BOOL goLeft;
-@property double offDist;
-@property int leftOrRight;
-@property int minTimerDelay,maxTimerDelay;
-@property CGFloat timerDelay;
-@property double notifyDist;
-@property int currentTimerDelay;
-@property int nearDist;
-@property int atDistance;
 @property NSMutableArray * forecastDates;
 @property NSArray * currentForecast;
 @property time_t displayTime;
@@ -106,6 +94,7 @@ DPOINT saveFromUTM, saveToUTM;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     _wd = WeatherData.new;
     _currentWindSpeed = -1;
     _heightExpansion = 2;
@@ -113,15 +102,6 @@ DPOINT saveFromUTM, saveToUTM;
     _forward = TRUE;
     _lastResetHeading = 0;
     [self configUI];
-    InitProj4CoordConv (FALSE);
-    _maxTimerDelay = 60;
-    _minTimerDelay = 10;
-    _timerDelay = _maxTimerDelay;
-    _currentTimerDelay = 0;
-    _notifyDist = 10;
-    _nearDist = 20;
-    _atDistance = 10;
-    _closeDistance = 100;
     _displayTime = 0;
 
 }
@@ -177,7 +157,7 @@ DPOINT saveFromUTM, saveToUTM;
             [_locationManager startUpdatingLocation];
         [_locationManager startUpdatingHeading];
     }
-    _offDist = 0;
+    _locationManager.offDist = 0;
     _currentPoint = CRAPI.sharedInstance.currentGPSLocation;
     [self addUserWaypoints:_currentPoint];
     [self getWeatherData];
@@ -876,6 +856,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     return realHeading;
 }
 -(void)locationManager:(TrackLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+
 {
     static bool first = true;
 
@@ -1240,7 +1221,7 @@ double HeadingFromAZ (double az)
 {
     HuntingData *hd = HuntingData.new;
     
-    [self offCourseNotification:0
+    [_locationManager offCourseNotification:0
                       withDelay:0];
     _lastToDist = 0;
     switch (_infoLabelOption)
@@ -1378,10 +1359,8 @@ double HeadingFromAZ (double az)
         HuntingData *hd = HuntingData.new;
         if ([text isEqualToString:@"Exit Route"])
         {
-            CRAPI.sharedInstance.inRouteMode = FALSE;
-            if (_offCourseTimer)
-                [_offCourseTimer invalidate];
-            _offDist = 0;
+            [_locationManager exitRouteMode];
+            _locationManager.offDist = 0;
 
         }
         else if ([text isEqualToString:@"Start Route"])
@@ -1662,7 +1641,7 @@ double HeadingFromAZ (double az)
                 double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
                 waypoint.headingInDeg = RadiansToDegrees (wpaz);
                 double curAz = DegreesToRadians(theHeading);
-                if (dist / METERS_PER_YARD < _atDistance && ![waypoint.type isEqual:@"Vehicle"] )
+                if (dist / METERS_PER_YARD < _locationManager.atDistance && ![waypoint.type isEqual:@"Vehicle"] )
                 {
                     [self setInfoLabelText:[NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD]];
                     _infoLabel.textColor = UIColor.whiteColor;
@@ -1696,7 +1675,7 @@ double HeadingFromAZ (double az)
                                                           next:_nextRoutePoint
                                                    checkOffset:NO];
                         }
-                        if (dist / METERS_PER_YARD < _nearDist && ![waypoint.type isEqual:@"Vehicle"] )
+                        if (dist / METERS_PER_YARD < _locationManager.nearDist && ![waypoint.type isEqual:@"Vehicle"] )
                         {
                             units = @"yards";
                             dist = dist / METERS_PER_YARD;
@@ -1704,12 +1683,12 @@ double HeadingFromAZ (double az)
                         }
                         else
                         {
-                            int offDist = IDNINT(_offDist / METERS_PER_YARD);
+                            int offDist = IDNINT(_locationManager.offDist / METERS_PER_YARD);
                             NSString *offsetText = @"";
                             NSString *offDir = @"L";
                             if (offDist > 0)
                             {
-                                if (_leftOrRight == RIGHT)
+                                if (_locationManager.leftOrRight == RIGHT)
                                     offDir = @"R";
                                 offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
                             }
@@ -1733,7 +1712,7 @@ double HeadingFromAZ (double az)
                             }
                             [self setInfoLabelText:infoLabelText];
                         }
-                        if (_offCourseTimer)
+                        if (_locationManager.offCourseTimer)
                             _infoLabel.textColor = UIColor.orangeColor;
                         else
                             _infoLabel.textColor = UIColor.whiteColor;
@@ -1833,30 +1812,20 @@ double HeadingFromAZ (double az)
         _startRoute = FALSE;
     }
     lastToLL = toLL;
-    _fromUTM.x = fromLL.lon;
-    _fromUTM.y = fromLL.lat;
-    _toUTM.x = toLL.lon;
-    _toUTM.y = toLL.lat;
-    _atUTM.x = atLL.lon;
-    _atUTM.y = atLL.lat;
+    DPOINT fromUTM = LLPointToDPoint (fromLL);
+    DPOINT toUTM = LLPointToDPoint (toLL);
+    DPOINT atUTM = LLPointToDPoint (atLL);
     int nPixels = frame.size.width;
-    ConvertCoord(&_fromUTM, LATLONPROJECTION, UTM15PROJECTION);
-    ConvertCoord(&_toUTM, LATLONPROJECTION, UTM15PROJECTION);
-    ConvertCoord(&_atUTM, LATLONPROJECTION, UTM15PROJECTION);
-    double distToDest = ldistp(_atUTM, _toUTM)/ METERS_PER_YARD;
-    if (distToDest < _atDistance)
-    {
-        [self offCourseNotification:0
-                          withDelay:0];
-    }
-    else if (checkOff && [self checkIfOffRoute:_atUTM])
-    {
-        
-    }
+    ConvertCoord(&fromUTM, LATLONPROJECTION, UTM15PROJECTION);
+    ConvertCoord(&toUTM, LATLONPROJECTION, UTM15PROJECTION);
+    ConvertCoord(&atUTM, LATLONPROJECTION, UTM15PROJECTION);
+    _locationManager.fromUTM = fromUTM;
+    _locationManager.toUTM = toUTM;
+    _locationManager.atUTM = atUTM;
 
-    double groundDist = ldistp(_fromUTM, _atUTM) + ldistp (_atUTM,_toUTM);
-    double atDist = ldistp(_fromUTM, _atUTM);
-    int toDist = IDNINT(ldistp(_atUTM, _toUTM)/4);
+    double groundDist = ldistp(_locationManager.fromUTM, _locationManager.atUTM) + ldistp (_locationManager.atUTM,_locationManager.toUTM);
+    double atDist = ldistp(_locationManager.fromUTM, _locationManager.atUTM);
+    int toDist = IDNINT(ldistp(_locationManager.atUTM,_locationManager.toUTM)/4);
     if (_lastToDist && toDist > _lastToDist)
         _forward = FALSE;
     if (_lastToDist && toDist < _lastToDist)
@@ -1870,9 +1839,9 @@ double HeadingFromAZ (double az)
     int nToPixels = nPixels * ((groundDist - atDist) / groundDist);
     LPDPOINT pt = malloc ((nPixels+1) * sizeof (DPOINT) + 8);
     int npt = 0;
-    pt[npt++] = _fromUTM;
-    double xInc = (_atUTM.x - _fromUTM.x)/nFromPixels;
-    double yInc = (_atUTM.y - _fromUTM.y)/nFromPixels;
+    pt[npt++] = _locationManager.fromUTM;
+    double xInc = (_locationManager.atUTM.x - _locationManager.fromUTM.x)/nFromPixels;
+    double yInc = (_locationManager.atUTM.y - _locationManager.fromUTM.y)/nFromPixels;
     for (int i = 1; i < nFromPixels; i++)
     {
         pt[npt] = pt[npt-1];
@@ -1880,9 +1849,9 @@ double HeadingFromAZ (double az)
         pt[npt++].y += yInc;
     }
 
-    pt[npt++] = _atUTM;
-    xInc = (_toUTM.x - _atUTM.x)/nToPixels;
-    yInc = (_toUTM.y - _atUTM.y)/nToPixels;
+    pt[npt++] = _locationManager.atUTM;
+    xInc = (_locationManager.toUTM.x - _locationManager.atUTM.x)/nToPixels;
+    yInc = (_locationManager.toUTM.y - _locationManager.atUTM.y)/nToPixels;
     for (int i = 1; i < nToPixels; i++)
     {
         pt[npt] = pt[npt-1];
@@ -2049,130 +2018,7 @@ int GetGradeLevel (double grade)
     return rtn;
 }
 
--(void) offCourseNotification:(int) opt
-                    withDelay:(CGFloat) delay
-{
-    static int currentTimerOpt = 0;
-    int intDelay = max (IDNINT (delay/_minTimerDelay) * _minTimerDelay,_minTimerDelay);
-    
-    if (opt == currentTimerOpt && intDelay == _currentTimerDelay)
-        return;
-    _goLeft = FALSE;
-    currentTimerOpt = opt;
-    _currentTimerDelay = intDelay;
-    if (_offCourseTimer)
-        [_offCourseTimer invalidate];
-    switch (opt)
-    {
-        default:
-        case 0:
-            _offCourseTimer = nil;
-            break;
-        case RIGHT: //go left
-            _goLeft = TRUE;
-        case LEFT: //go right
-            if (!_offCourseTimer)
-                _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:NO];
-            _offCourseTimer = [NSTimer scheduledTimerWithTimeInterval:_currentTimerDelay target:self selector:@selector(offCourseNotificationPlay:) userInfo:nil repeats:YES];
-            break;
-    }
-    return;
 
-}
--(void) offCourseNotificationPlay:(NSTimer *) timer
-{
-    if (_goLeft)
-    {
-        AudioServicesPlaySystemSound(_lowSoundID);
-        [self performSelector:@selector(vibrate)
-                   withObject:nil
-                   afterDelay:0.5];
-        [self performSelector:@selector(vibrate)
-                   withObject:nil
-                   afterDelay:2];
-        [self performSelector:@selector(vibrate)
-                   withObject:nil
-                   afterDelay:3];
-    }
-    else
-    {
-
-        AudioServicesPlaySystemSound(_highSoundID);
-        [self performSelector:@selector(vibrate)
-                   withObject:nil
-                   afterDelay:0.5];
-        [self performSelector:@selector(vibrate)
-                   withObject:nil
-                   afterDelay:1.5];
-        [self performSelector:@selector(vibrate)
-                   withObject:nil
-                   afterDelay:3];
-    }
-}
--(void) vibrate
-{
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-}
-
--(BOOL) checkIfOffRouteTest:(LLPOINT) atLL
-{
-    DPOINT atUTM;
-    _fromUTM = saveFromUTM;
-    _toUTM = saveToUTM;
-    atUTM.x = atLL.lon;
-    atUTM.y = atLL.lat;
-    ConvertCoord(&atUTM, LATLONPROJECTION, UTM15PROJECTION);
-    [self checkIfOffRoute:atUTM];
-}
--(BOOL) checkIfOffRoute:(DPOINT) currentPoint
-{
-    BOOL offRoute = FALSE;
-    DPOINT Line[2];
-    DPOINT IntPoint;
-    double offDistNext = -1;
-    saveFromUTM = _fromUTM;
-    saveToUTM = _toUTM;
-    
-    if (CRAPI.sharedInstance.inRouteMode)
-    {
-        if (_nextUTM.x)
-        {
-            Line[0] = _toUTM;
-            Line[1] = _nextUTM;
-            if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,FALSE,&_leftOrRight))
-            {
-                offDistNext = ldistpp (&currentPoint,&IntPoint);
-            }
-        }
-        Line[0] = _fromUTM;
-        Line[1] = _toUTM;
-        if (GetPerpendicularIntersect (&currentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
-        {
-            _offDist = ldistpp (&currentPoint,&IntPoint);
-            if (_offDist > offDistNext) //switch to next point in route
-            {
-                
-            }
-            _offDist /= METERS_PER_YARD;
-            if (_offDist > _notifyDist)
-            {
-                _timerDelay = max (_minTimerDelay,(_notifyDist/_offDist) * _maxTimerDelay);
-                [self offCourseNotification:_leftOrRight
-                                  withDelay:_timerDelay];
-            }
-            else
-                [self offCourseNotification:0
-                                  withDelay:0];
-        }
-        else
-        {
-            _offDist = 0;
-            [self offCourseNotification:0
-                              withDelay:0];
-        }
-    }
-    return offRoute;
-}
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
@@ -2230,9 +2076,11 @@ int GetGradeLevel (double grade)
     {
         Line[1] = LLPointToDPoint (wp.latlon);
         ConvertCoord(&Line[1], LATLONPROJECTION, UTM15PROJECTION);
-        if (GetPerpendicularIntersect (&CurrentPoint,Line,&IntPoint,TRUE,&_leftOrRight))
+        int leftOrRight=0;
+        if (GetPerpendicularIntersect (&CurrentPoint,Line,&IntPoint,TRUE,&leftOrRight))
         {
             double offDist = ldistpp (&CurrentPoint,&IntPoint);
+            _locationManager.leftOrRight = leftOrRight;
             if (offDist < minDist)
             {
                 minDist = offDist;

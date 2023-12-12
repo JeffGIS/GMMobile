@@ -252,7 +252,6 @@
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
 		EBD02DDD2966198D0083396D /* DTMData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD02DDC2966198D0083396D /* DTMData.m */; };
-		EBD02DE62978480A0083396D /* CVTCoord.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD02DE52978480A0083396D /* CVTCoord.c */; };
 		EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */; };
 		EBE5A85A2907130B00F0A5A1 /* compass_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A8572907130B00F0A5A1 /* compass_icon.png */; };
 		EBE5A85C29071F8600F0A5A1 /* compass_icon_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */; };
@@ -615,8 +614,6 @@
 		EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PlanimetricData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBD02DDB2966198D0083396D /* DTMData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTMData.h; sourceTree = "<group>"; };
 		EBD02DDC2966198D0083396D /* DTMData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTMData.m; sourceTree = "<group>"; };
-		EBD02DE42978480A0083396D /* CVTCoord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CVTCoord.h; sourceTree = "<group>"; };
-		EBD02DE52978480A0083396D /* CVTCoord.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = CVTCoord.c; sourceTree = "<group>"; };
 		EBD6B8A91BC1CE1200BACC89 /* Destinations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Destinations.h; sourceTree = "<group>"; };
 		EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Destinations.m; sourceTree = "<group>"; };
 		EBE5A8572907130B00F0A5A1 /* compass_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass_icon.png; sourceTree = "<group>"; };
@@ -951,8 +948,6 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
-				EBD02DE42978480A0083396D /* CVTCoord.h */,
-				EBD02DE52978480A0083396D /* CVTCoord.c */,
 				EBC025162AC714D800F873B0 /* ProximityMapping.m */,
 				EBC0251A2AC715B700F873B0 /* ProximityMapping.h */,
 			);
@@ -1541,7 +1536,6 @@
 				EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */,
 				A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */,
 				A997EE221AB28F8300E26D6D /* PlatImageView.m in Sources */,
-				EBD02DE62978480A0083396D /* CVTCoord.c in Sources */,
 				EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */,
 				A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */,
 				EB10EEFA1F93AF6B006A6938 /* CreateBatchCrimeMaps.m in Sources */,

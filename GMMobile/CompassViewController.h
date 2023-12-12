@@ -6,7 +6,7 @@
 //  Copyright © 2022 GSSi. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+//#import <UIKit/UIKit.h>
 #import "CCodeLibrary/CRAPI.h"
 #import "HuntingData.h"
 
