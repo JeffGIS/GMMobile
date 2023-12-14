@@ -42,9 +42,7 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSMutableArray * userWaypointLabels;
 @property NSMutableArray * tickShapes;
 @property CGPoint po;
-@property LLPOINT currentPoint;
-@property LLPOINT routeStartPoint;
-@property LLPOINT fromPoint;
+@property LLPOINT currentFocusWaypointLL;
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
 @property CLHeading*  nowHeading;
@@ -82,9 +80,8 @@ DPOINT saveFromUTM, saveToUTM;
 @property NSTimer * minuteTimer;
 @property BOOL firstMinute;
 @property NVPopoverTableView *nvptv;
-@property BOOL startRoute;
 @property BOOL needToInitiateRoute;
-@property LLPOINT firstRoutePoint, nextRoutePoint;
+@property LLPOINT firstRoutePoint;
 @property SystemSoundID lowSoundID, highSoundID;
 
 
@@ -158,8 +155,8 @@ DPOINT saveFromUTM, saveToUTM;
         [_locationManager startUpdatingHeading];
     }
     _locationManager.offDist = 0;
-    _currentPoint = CRAPI.sharedInstance.currentGPSLocation;
-    [self addUserWaypoints:_currentPoint];
+    _locationManager.currentPoint = CRAPI.sharedInstance.currentGPSLocation;
+    [self addUserWaypoints:_locationManager.currentPoint];
     [self getWeatherData];
     [self startMinuteTimer:TRUE];
     return;
@@ -864,9 +861,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     {
         CLLocation * loc = locations.lastObject;
         //AudioServicesPlaySystemSound(_highSoundID);
-        _currentPoint.lat = loc.coordinate.latitude;
-        _currentPoint.lon = loc.coordinate.longitude;
-        [CRAPI.sharedInstance setGPSLocation:_currentPoint from:2];
+        [CRAPI.sharedInstance setGPSLocation:_locationManager.currentPoint from:2];
         if ([CRAPI.sharedInstance addPointToTrackRoute: loc.coordinate] == 2)
         {
             HuntingData *hd = HuntingData.new;
@@ -880,14 +875,12 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
         first = false;
         if (_needToInitiateRoute)
         {
-            _fromPoint = _currentPoint;
+            _locationManager.fromPoint = _locationManager.currentPoint;
             [self initiateRoute];
         }
-        if (CRAPI.sharedInstance.inRouteMode)
-            [self computeNextRoutePoint];
     }
     [self removeUserWaypoints];
-    [self addUserWaypoints:_currentPoint];
+    [self addUserWaypoints:_locationManager.currentPoint];
 }
 - (void)locationManager:(TrackLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
@@ -990,7 +983,7 @@ double HeadingFromAZ (double az)
                 {
                     if ([waypoint.type isEqual:@"RoutePoint"])
                     {
-                        _closeDistance = ArcDistanceLL(waypoint.latlon, _fromPoint);
+                        _closeDistance = ArcDistanceLL(waypoint.latlon, _locationManager.fromPoint);
                         tickText = waypoint.name;
                     }
                 }
@@ -1240,18 +1233,17 @@ double HeadingFromAZ (double az)
             {
                 int focWP = CRAPI.sharedInstance.currentFocusWaypoint;
                 CRAPI.sharedInstance.currentSelectedWaypoint = focWP;
-                _fromPoint = _currentPoint;
-                _startRoute = TRUE;
+                [_locationManager createTwoPointRoute:_locationManager.currentPoint toLL:_currentFocusWaypointLL];
             }
             [self removeUserWaypoints];
-            [self addUserWaypoints:_currentPoint];
+            [self addUserWaypoints:_locationManager.currentPoint];
             break;
         case 1: //make next route point focus
         {
             if (_currentRoutePointNumber > 0)
             {
                 UserWaypoint *wp = [hd getWaypointWithRefno:_currentRoutePointNumber];
-                _fromPoint = wp.latlon;
+                _locationManager.fromPoint = wp.latlon;
                 NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"
                                                              withRefnoGreaterThan:_currentRoutePointNumber];
                 if (routePointArray.count > 0)
@@ -1370,7 +1362,6 @@ double HeadingFromAZ (double az)
             UserWaypoint* nextwaypoint = routePointArray[1];
             CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
             _firstRoutePoint = waypoint.latlon;
-            _nextRoutePoint = nextwaypoint.latlon;
             if (!CRAPI.sharedInstance.locationTrackingEnabled)
             {
                 [_locationManager startUpdatingLocation];
@@ -1379,7 +1370,7 @@ double HeadingFromAZ (double az)
             }
             else
             {
-                _fromPoint = _currentPoint;
+                _locationManager.fromPoint = _locationManager.currentPoint;
                 [self initiateRoute];
             }
         }
@@ -1405,21 +1396,18 @@ double HeadingFromAZ (double az)
 -(void) initiateRoute
 {
     _needToInitiateRoute = FALSE;
-    _startRoute = YES;
-    _routeStartPoint = _currentPoint;
+    _locationManager.routeStartPoint = _locationManager.currentPoint;
     CRAPI.sharedInstance.inRouteMode = YES;
-    [self displayProfile:_fromPoint
-                      to:_firstRoutePoint
-                    next:_nextRoutePoint
-             checkOffset:YES];
+    [self displayProfile:_locationManager.fromPoint
+                      to:_firstRoutePoint];
     [self removeUserWaypoints];
-    [self addUserWaypoints:_currentPoint];
+    [self addUserWaypoints:_locationManager.currentPoint];
 }
 - (void) getForcastWeatherData
 {
     [_singleFingerTap setEnabled:NO];
 
-    [_wd getWeatherforecast:_currentPoint
+    [_wd getWeatherforecast:_locationManager.currentPoint
                            forTime:0
                           delegate:self];
 
@@ -1448,7 +1436,7 @@ double HeadingFromAZ (double az)
 
 -(void) getWeatherData
 {
-    [_wd getCurrentWeather:_currentPoint delegate:self];
+    [_wd getCurrentWeather:_locationManager.currentPoint delegate:self];
 }
 - (void)weatherDataDidReturnData:(WeatherRecord*)data
 {
@@ -1556,7 +1544,7 @@ double HeadingFromAZ (double az)
     CGFloat rtn = 100;
     
     double Altitude=0, Az;
-    DPOINT pt = LLPointToDPoint(_currentPoint);
+    DPOINT pt = LLPointToDPoint(_locationManager.currentPoint);
     GetAltitudeAndAzOfSun (pt,0,iTime,&Altitude,&Az);
     *pAlt = Altitude;
     rtn = DegreesToRadians (Az-90);
@@ -1637,8 +1625,8 @@ double HeadingFromAZ (double az)
         {
             if (![waypoint.type isEqual:@"RoutePoint"] || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
-                double dist = ArcDistanceLL(waypoint.latlon, _currentPoint);
-                double wpaz = HeadingFromAZ(AZMLatLon (_currentPoint,waypoint.latlon));
+                double dist = ArcDistanceLL(waypoint.latlon, _locationManager.currentPoint);
+                double wpaz = HeadingFromAZ(AZMLatLon (_locationManager.currentPoint,waypoint.latlon));
                 waypoint.headingInDeg = RadiansToDegrees (wpaz);
                 double curAz = DegreesToRadians(theHeading);
                 if (dist / METERS_PER_YARD < _locationManager.atDistance && ![waypoint.type isEqual:@"Vehicle"] )
@@ -1650,6 +1638,7 @@ double HeadingFromAZ (double az)
                     else
                         _currentRoutePointNumber = 0;
                     CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
+                    _currentFocusWaypointLL = waypoint.latlon;
                     _infoLabelOption = 1;
                     break;
                 }
@@ -1663,17 +1652,13 @@ double HeadingFromAZ (double az)
                         NSString *units = @"miles";
                         CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
                         if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
-                            haveProfile = [self displayProfile:_currentPoint
-                                          to:waypoint.latlon
-                                        next:_nextRoutePoint
-                                 checkOffset:waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint];
+                            haveProfile = [self displayProfile:_locationManager.currentPoint
+                                          to:waypoint.latlon];
                         else
                         {
-                            _fromPoint = _currentPoint;
-                            haveProfile = [self displayProfile:_currentPoint
-                                                            to:waypoint.latlon
-                                                          next:_nextRoutePoint
-                                                   checkOffset:NO];
+                            _locationManager.fromPoint = _locationManager.currentPoint;
+                            haveProfile = [self displayProfile:_locationManager.currentPoint
+                                                            to:waypoint.latlon];
                         }
                         if (dist / METERS_PER_YARD < _locationManager.nearDist && ![waypoint.type isEqual:@"Vehicle"] )
                         {
@@ -1791,8 +1776,6 @@ double HeadingFromAZ (double az)
 }
 -(BOOL) displayProfile:(LLPOINT)atLL
                     to:(LLPOINT)toLL
-                  next:(LLPOINT)nextLL
-           checkOffset:(BOOL) checkOff
 {
     BOOL rtn = FALSE;
     LLPOINT fromLL = {0};
@@ -1804,13 +1787,7 @@ double HeadingFromAZ (double az)
     [self removeProfileLayers];
     _profileLayers = NSMutableArray.new;
     
-    fromLL = _fromPoint;
-    if (checkOff && (_startRoute || fromLL.lat == 0 || ArcDistanceLL(toLL,lastToLL) > 1))
-    {
-        [self showAsRouteOnMap:fromLL
-                          toLL:toLL];
-        _startRoute = FALSE;
-    }
+    fromLL = _locationManager.fromPoint;
     lastToLL = toLL;
     DPOINT fromUTM = LLPointToDPoint (fromLL);
     DPOINT toUTM = LLPointToDPoint (toLL);
@@ -2024,76 +2001,12 @@ int GetGradeLevel (double grade)
     return UIInterfaceOrientationMaskPortrait;
 }
 
--(void) showAsRouteOnMap:(LLPOINT)fromLL
-                    toLL:(LLPOINT)toLL
-{
-    CRAPI.sharedInstance.currentRoute = NSMutableArray.new;
-    CGPoint llp = {0};
-    llp.y = fromLL.lat;
-    llp.x = fromLL.lon;
-    DPOINT pt1 = CGPointToDPOINT (llp);
-    NSNumber *routePoint = [NSNumber valueWithCGPoint:llp];
-    [CRAPI.sharedInstance.currentRoute addObject:routePoint];
-    llp.y = toLL.lat;
-    llp.x = toLL.lon;
-    DPOINT pt2 = CGPointToDPOINT (llp);
-    routePoint = [NSNumber valueWithCGPoint:llp];
-    [CRAPI.sharedInstance.currentRoute addObject:routePoint];
-    double az = getazd (pt1,pt2);
-    double azLL = getazLL (fromLL,toLL);
-    double bearing = LTWOPI (HALFPI - az)*DEGRAD;
-    double bearingLL = LTWOPI (HALFPI - azLL)*DEGRAD;
-    CRAPI.sharedInstance.routeBearing = [NSNumber numberWithDouble:bearingLL];
-
-    return;
-}
-
 - (void) removeAsRouteOnMap
 {
     CRAPI.sharedInstance.currentRoute = nil;
     CRAPI.sharedInstance.routeBearing = nil;
 }
 
--(BOOL) computeNextRoutePoint
-{
-    BOOL rtn = FALSE;
-    HuntingData *hd = HuntingData.new;
-    DPOINT Line[2];
-    DPOINT IntPoint;
-    DPOINT CurrentPoint;
-    CurrentPoint.x = _currentPoint.lon;
-    CurrentPoint.y = _currentPoint.lat;
-    ConvertCoord(&CurrentPoint, LATLONPROJECTION, UTM15PROJECTION);
-    Line[0] = LLPointToDPoint (_routeStartPoint);
-    ConvertCoord(&Line[0], LATLONPROJECTION, UTM15PROJECTION);
-
-    CRAPI.sharedInstance.currentSelectedWaypoint = -1;
-    _currentRoutePointNumber = 0;
-    double minDist = DBL_MAX;
-    
-    NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
-    for (UserWaypoint *wp in routePointArray)
-    {
-        Line[1] = LLPointToDPoint (wp.latlon);
-        ConvertCoord(&Line[1], LATLONPROJECTION, UTM15PROJECTION);
-        int leftOrRight=0;
-        if (GetPerpendicularIntersect (&CurrentPoint,Line,&IntPoint,TRUE,&leftOrRight))
-        {
-            double offDist = ldistpp (&CurrentPoint,&IntPoint);
-            _locationManager.leftOrRight = leftOrRight;
-            if (offDist < minDist)
-            {
-                minDist = offDist;
-                CRAPI.sharedInstance.currentSelectedWaypoint = wp.refno;
-                _currentRoutePointNumber = wp.refno;
-                rtn = TRUE;
-            }
-        }
-        Line[0] = Line[1];
-    }
-
-    return rtn;
-}
 
 - (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
