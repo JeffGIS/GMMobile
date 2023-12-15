@@ -240,7 +240,6 @@
 		EB69FF41240C2EE5006F7E37 /* VOTING2018_def.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */; };
 		EB69FF42240C2EE5006F7E37 /* VotingMetadata.html in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */; };
 		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
-		EB96BEDB272C0C9900CB5FE2 /* HuntingData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB96BED7272ACA2800CB5FE2 /* HuntingData.m */; };
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
@@ -592,8 +591,6 @@
 		EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = VotingMetadata.html; sourceTree = "<group>"; };
 		EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetSlowValues.h; sourceTree = "<group>"; };
 		EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetSlowValues.m; sourceTree = "<group>"; };
-		EB96BED7272ACA2800CB5FE2 /* HuntingData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HuntingData.m; sourceTree = "<group>"; };
-		EB96BEDA272ACA4500CB5FE2 /* HuntingData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HuntingData.h; sourceTree = "<group>"; };
 		EB983D381C1CF94B00A994C7 /* ThemeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeTypes.h; sourceTree = "<group>"; };
 		EB9A3BCD1FB0CC18000709A8 /* FieldList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FieldList.h; sourceTree = "<group>"; };
 		EB9A3BCE1FB0CC18000709A8 /* FieldList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FieldList.m; sourceTree = "<group>"; };
@@ -908,8 +905,6 @@
 				EB9A3BCE1FB0CC18000709A8 /* FieldList.m */,
 				EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */,
 				EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */,
-				EB96BEDA272ACA4500CB5FE2 /* HuntingData.h */,
-				EB96BED7272ACA2800CB5FE2 /* HuntingData.m */,
 				EB4A58361FC754E200B8B613 /* HuntingDataDisplay.h */,
 				EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */,
 				EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */,
@@ -1572,7 +1567,6 @@
 				EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */,
 				695F860C1F7C45AB002018D8 /* ConfigurationVC.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
-				EB96BEDB272C0C9900CB5FE2 /* HuntingData.m in Sources */,
 				69366E001C542A4B00E79AA7 /* NVPageView.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,
 				EB4A58381FC754E200B8B613 /* HuntingDataDisplay.m in Sources */,

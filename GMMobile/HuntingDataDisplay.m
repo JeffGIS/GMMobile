@@ -1899,8 +1899,8 @@ int ScoreForest (int type, int age)
         //aspen
         if (age>6 && age<15)
             rtn = 25;
-        else if (age>4 && age<7)
-            rtn = 20;
+        else if (age>2 && age<7)
+            rtn = 24;
         else if (age>14 && age<25)
             rtn = 20;
         else
@@ -1910,9 +1910,9 @@ int ScoreForest (int type, int age)
     {
         //birch
         if (age>7 && age<15)
-            rtn = 15;
-        else if (age>4 && age<7)
-            rtn = 12;
+            rtn = 18;
+        else if (age>2 && age<7)
+            rtn = 14;
         else if (age>14 && age<25)
             rtn = 10;
         else

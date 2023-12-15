@@ -49,7 +49,6 @@ DPOINT saveFromUTM, saveToUTM;
 @property CGFloat currentHeading;
 @property CGFloat lastResetHeading;
 @property int infoLabelOption;
-@property int currentRoutePointNumber;
 @property int ignoreAtWaypoint;
 @property float closeDistance;
 @property int statusBarHeight;
@@ -1240,21 +1239,21 @@ double HeadingFromAZ (double az)
             break;
         case 1: //make next route point focus
         {
-            if (_currentRoutePointNumber > 0)
+            if (_locationManager.currentRoutePointNumber > 0)
             {
-                UserWaypoint *wp = [hd getWaypointWithRefno:_currentRoutePointNumber];
+                UserWaypoint *wp = [hd getWaypointWithRefno:_locationManager.currentRoutePointNumber];
                 _locationManager.fromPoint = wp.latlon;
                 NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"
-                                                             withRefnoGreaterThan:_currentRoutePointNumber];
+                                                             withRefnoGreaterThan:_locationManager.currentRoutePointNumber];
                 if (routePointArray.count > 0)
                 {
                     CRAPI.sharedInstance.currentSelectedWaypoint = routePointArray[0].refno;
-                    _currentRoutePointNumber = routePointArray[0].refno;
+                    _locationManager.currentRoutePointNumber = routePointArray[0].refno;
                 }
                 else
                 {
                     CRAPI.sharedInstance.currentSelectedWaypoint = -1;
-                    _currentRoutePointNumber = 0;
+                    _locationManager.currentRoutePointNumber = 0;
                 }
                 _userWaypointArray = [hd getWaypoints];
             }
@@ -1634,9 +1633,9 @@ double HeadingFromAZ (double az)
                     [self setInfoLabelText:[NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD]];
                     _infoLabel.textColor = UIColor.whiteColor;
                     if ([waypoint.type isEqual:@"RoutePoint"])
-                        _currentRoutePointNumber = waypoint.refno;
+                        _locationManager.currentRoutePointNumber = waypoint.refno;
                     else
-                        _currentRoutePointNumber = 0;
+                        _locationManager.currentRoutePointNumber = 0;
                     CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
                     _currentFocusWaypointLL = waypoint.latlon;
                     _infoLabelOption = 1;
