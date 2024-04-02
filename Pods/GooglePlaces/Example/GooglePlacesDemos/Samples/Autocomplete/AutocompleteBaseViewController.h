@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2016 Google LLC. All rights reserved.
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -16,24 +16,15 @@
 #import <GooglePlaces/GooglePlaces.h>
 #import "GooglePlacesDemos/Support/BaseDemoViewController.h"
 
+static CGFloat const kButtonHeight = 44.f;
+static CGFloat const kButtonWidth = 200.f;
+static CGFloat const kButtonTopMargin = 100.f;
+
 /**
  * All other autocomplete demo classes inherit from this class. This class optionally adds a button
  * to present the autocomplete widget, and displays the results when these are selected.
  */
 @interface AutocompleteBaseViewController : BaseDemoViewController
-
-/**
- * Bounds used to bias or restrict the autocomplete results depending on the value of
- * |autocompleteBoundsMode| (can be nil).
- */
-@property(nonatomic, strong) GMSCoordinateBounds *autocompleteBounds;
-
-/**
- * How to treat the |autocompleteBounds| property. Defaults to |kGMSAutocompleteBoundsModeBias|.
- *
- * Has no effect if |autocompleteBounds| is nil.
- */
-@property(nonatomic, assign) GMSAutocompleteBoundsMode autocompleteBoundsMode;
 
 /** Filter to apply to autocomplete suggestions (can be nil). */
 @property(nonatomic, strong) GMSAutocompleteFilter *autocompleteFilter;

@@ -2,7 +2,7 @@
 //  GMSPlaceLikelihood.h
 //  Google Places SDK for iOS
 //
-//  Copyright 2016 Google Inc.
+//  Copyright 2016 Google LLC
 //
 //  Usage of this SDK is subject to the Google Maps/Google Earth APIs Terms of
 //  Service: https://developers.google.com/maps/terms
@@ -34,7 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, assign, readonly) double likelihood;
 
-- (instancetype)initWithPlace:(GMSPlace *)place likelihood:(double)likelihood;
+- (instancetype)initWithPlace:(GMSPlace *)place
+                   likelihood:(double)likelihood NS_DESIGNATED_INITIALIZER;
+
+/**
+ * Default init is not available. Please use the designated initializer.
+ */
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

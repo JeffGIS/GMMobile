@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2016 Google LLC. All rights reserved.
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -17,7 +17,7 @@
 
 #import <GoogleMaps/GoogleMaps.h>
 
-@interface SnapshotReadyViewController ()<GMSMapViewDelegate>
+@interface SnapshotReadyViewController () <GMSMapViewDelegate>
 @end
 
 @implementation SnapshotReadyViewController {
@@ -29,8 +29,9 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  GMSCameraPosition *camera =
-      [GMSCameraPosition cameraWithLatitude:-33.868 longitude:151.2086 zoom:6];
+  GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.868
+                                                          longitude:151.2086
+                                                               zoom:6];
   _mapView = [GMSMapView mapWithFrame:CGRectZero camera:camera];
   _mapView.delegate = self;
   self.view = _mapView;

@@ -2,7 +2,7 @@
 //  GMSMutablePath.h
 //  Google Maps SDK for iOS
 //
-//  Copyright 2013 Google Inc.
+//  Copyright 2013 Google LLC
 //
 //  Usage of this SDK is subject to the Google Maps/Google Earth APIs Terms of
 //  Service: https://developers.google.com/maps/terms
@@ -37,8 +37,7 @@
  * Replace the coordinate at |index| with |coord|. If |index| is after the end, grows the array with
  * an undefined coordinate.
  */
-- (void)replaceCoordinateAtIndex:(NSUInteger)index
-                  withCoordinate:(CLLocationCoordinate2D)coord;
+- (void)replaceCoordinateAtIndex:(NSUInteger)index withCoordinate:(CLLocationCoordinate2D)coord;
 
 /**
  * Remove entry at |index|.

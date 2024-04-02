@@ -2,7 +2,7 @@
 //  GMSServices.h
 //  Google Maps SDK for iOS
 //
-//  Copyright 2012 Google Inc.
+//  Copyright 2012 Google LLC
 //
 //  Usage of this SDK is subject to the Google Maps/Google Earth APIs Terms of
 //  Service: https://developers.google.com/maps/terms
@@ -36,9 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Provides your API key to the Google Maps SDK for iOS.  This key is generated for your application
- * via the Google APIs Console, and is paired with your application's bundle ID to identify it.
- * This must be called exactly once by your application before any iOS Maps SDK object is
- * initialized.
+ * via the Google Cloud Platform Console, and is paired with your application's bundle ID to
+ * identify it. This must be called exactly once by your application before any iOS Maps SDK
+ * object is initialized.
  *
  * @return YES if the APIKey was successfully provided.
  */
@@ -56,15 +56,40 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)provideAPIOptions:(NSArray<NSString *> *)APIOptions;
 
 /**
+ * Enables the map to render using Metal instead of OpenGL.
+ *
+ * The rendering might look very slightly different between renderers. The default is @c NO and
+ * value must be updated before the services instance is initialized.
+ *
+ * This property must be set from the main thread.
+ */
++ (void)setMetalRendererEnabled:(BOOL)enabled;
+
+/**
+ * Enables reporting of abnormal SDK terminations such as the app crashes while the SDK is still
+ * running. This allows Google to improve SDK stability when applicable. The default is @c YES and
+ * value must be updated before the services instance is initialized.
+ *
+ * This property must be set from the main thread.
+ */
++ (void)setAbnormalTerminationReportingEnabled:(BOOL)enabled;
+
+/**
  * Returns the open source software license information for Google Maps SDK for iOS. This
  * information must be made available within your application.
  */
 + (NSString *)openSourceLicenseInfo;
 
 /**
- * Returns the version for this release of the Google Maps SDK for iOS.
+ * Returns the version for this release of the Google Maps SDK for iOS. For example, "1.0.0"
  */
 + (NSString *)SDKVersion;
+
+/**
+ * Returns the long version for this release of the Google Maps SDK for iOS. For example, "1.0.0
+ * (102.1)".
+ */
++ (NSString *)SDKLongVersion;
 
 @end
 

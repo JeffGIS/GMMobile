@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2016 Google LLC. All rights reserved.
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -52,7 +52,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  timer = [NSTimer scheduledTimerWithTimeInterval:1.f/30.f
+  timer = [NSTimer scheduledTimerWithTimeInterval:1.f / 30.f
                                            target:self
                                          selector:@selector(moveCamera)
                                          userInfo:nil

@@ -2,7 +2,7 @@
 //  GMSPanoramaView.h
 //  Google Maps SDK for iOS
 //
-//  Copyright 2013 Google Inc.
+//  Copyright 2013 Google LLC
 //
 //  Usage of this SDK is subject to the Google Maps/Google Earth APIs Terms of
 //  Service: https://developers.google.com/maps/terms
@@ -24,7 +24,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /** Delegate for events on GMSPanoramaView. */
-@protocol GMSPanoramaViewDelegate<NSObject>
+@protocol GMSPanoramaViewDelegate <NSObject>
 @optional
 
 /**
@@ -41,8 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * This is invoked every time the |view|.panorama property changes.
  */
-- (void)panoramaView:(GMSPanoramaView *)view
-    didMoveToPanorama:(nullable GMSPanorama *)panorama;
+- (void)panoramaView:(GMSPanoramaView *)view didMoveToPanorama:(nullable GMSPanorama *)panorama;
 
 /**
  * Called when the panorama change was caused by invoking moveToPanoramaNearCoordinate:. The
@@ -118,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Can be set to nil to clear the view.
  */
-@property(nonatomic, strong, nullable) GMSPanorama *panorama;
+@property(nonatomic, nullable) GMSPanorama *panorama;
 
 /** GMSPanoramaView delegate. */
 @property(nonatomic, weak, nullable) IBOutlet id<GMSPanoramaViewDelegate> delegate;
@@ -136,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This does not limit programmatic movement of the camera.
  */
-@property(nonatomic, assign) BOOL orientationGestures;
+@property(nonatomic) BOOL orientationGestures;
 
 /**
  * Controls whether zoom gestures are enabled (default) or disabled. If enabled, users may pinch to
@@ -144,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This does not limit programmatic movement of the camera.
  */
-@property(nonatomic, assign) BOOL zoomGestures;
+@property(nonatomic) BOOL zoomGestures;
 
 /**
  * Controls whether navigation gestures are enabled (default) or disabled. If enabled, users may use
@@ -152,24 +151,24 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This does not limit programmatic control of the panorama.
  */
-@property(nonatomic, assign) BOOL navigationGestures;
+@property(nonatomic) BOOL navigationGestures;
 
 /**
  * Controls whether the tappable navigation links are hidden or visible (default). Hidden navigation
  * links cannot be tapped.
  */
-@property(nonatomic, assign) BOOL navigationLinksHidden;
+@property(nonatomic) BOOL navigationLinksHidden;
 
 /**
  * Controls whether the street name overlays are hidden or visible (default).
  */
-@property(nonatomic, assign) BOOL streetNamesHidden;
+@property(nonatomic) BOOL streetNamesHidden;
 
 /**
  * Controls the panorama's camera. Setting a new camera here jumps to the new camera value, with no
  * animation.
  */
-@property(nonatomic, strong) GMSPanoramaCamera *camera;
+@property(nonatomic) GMSPanoramaCamera *camera;
 
 /**
  * Accessor for the custom CALayer type used for the layer.
@@ -185,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Modifies the camera according to |cameraUpdate|, over |duration| (specified in seconds).
  */
 - (void)updateCamera:(GMSPanoramaCameraUpdate *)cameraUpdate
-   animationDuration:(NSTimeInterval)duration;
+    animationDuration:(NSTimeInterval)duration;
 
 /**
  * Requests a panorama near |coordinate|.

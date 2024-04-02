@@ -1,0 +1,6 @@
+module Pods_NVMobile {
+  umbrella header "Pods-NVMobile-umbrella.h"
+
+  export *
+  module * { export * }
+}

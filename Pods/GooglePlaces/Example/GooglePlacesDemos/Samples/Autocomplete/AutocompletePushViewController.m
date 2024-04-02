@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2016 Google LLC. All rights reserved.
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -46,8 +46,6 @@
   GMSAutocompleteViewController *autocompleteViewController =
       [[GMSAutocompleteViewController alloc] init];
   autocompleteViewController.delegate = self;
-  autocompleteViewController.autocompleteBoundsMode = self.autocompleteBoundsMode;
-  autocompleteViewController.autocompleteBounds = self.autocompleteBounds;
   autocompleteViewController.autocompleteFilter = self.autocompleteFilter;
   autocompleteViewController.placeFields = self.placeFields;
 

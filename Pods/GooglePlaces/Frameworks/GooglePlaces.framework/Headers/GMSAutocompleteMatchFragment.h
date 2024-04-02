@@ -2,7 +2,7 @@
 //  GMSAutocompleteMatchFragment.h
 //  Google Places SDK for iOS
 //
-//  Copyright 2016 Google Inc.
+//  Copyright 2016 Google LLC
 //
 //  Usage of this SDK is subject to the Google Maps/Google Earth APIs Terms of
 //  Service: https://developers.google.com/maps/terms
@@ -29,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
  * The length of the matched fragment.
  */
 @property(nonatomic, readonly) NSUInteger length;
+
+/**
+ * Initializer is not available.
+ */
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

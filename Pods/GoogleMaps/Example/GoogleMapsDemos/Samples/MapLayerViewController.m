@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2016 Google LLC. All rights reserved.
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
@@ -40,7 +40,6 @@
                                       target:self
                                       action:@selector(didTapMyLocation)];
   self.navigationItem.rightBarButtonItem = myLocationButton;
-
 }
 
 - (void)didTapMyLocation {
@@ -80,7 +79,7 @@
 
   // Fly out to the minimum zoom and then zoom back to the current zoom!
   CGFloat zoom = _mapView.camera.zoom;
-  NSArray *keyValues = @[@(zoom), @(kGMSMinZoomLevel), @(zoom)];
+  NSArray *keyValues = @[ @(zoom), @(kGMSMinZoomLevel), @(zoom) ];
   CAKeyframeAnimation *keyFrameAnimation =
       [CAKeyframeAnimation animationWithKeyPath:kGMSLayerCameraZoomLevelKey];
   keyFrameAnimation.duration = 2.0f;
