@@ -7,10 +7,8 @@ target 'NVMobile' do
 
   # Pods for NVMobile
   pod 'GoogleMaps'
-  pod 'GoogleMapsBase'
-  pod 'GoogleMapsCore'
+  pod 'Google-Maps-iOS-Utils'
   pod 'GooglePlaces'
-  pod 'GooglePlacePicker'
 
 
 end

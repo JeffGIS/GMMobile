@@ -864,7 +864,8 @@
         [_mapView animateToBearing:bearing];
         [self displayScalebar];
     }
-    [self createCurrentRouteFromRoutePoints];
+    if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+        [self createCurrentRouteFromRoutePoints];
 }
 - (void) setTarget:(CLLocationCoordinate2D)target
 {
@@ -1829,7 +1830,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
         [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
         _numCurrentRoutePoints = 0;
-        [self displayCurrentRoute];
+        if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+            [self displayCurrentRoute];
         [self vectorViewRefresh];
     }
 
@@ -1985,8 +1987,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
                 [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
                 _scaleBarPromptText = @"Short tap next route point or select Options";
-
-                [self displayCurrentRoute];
+                if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+                    [self displayCurrentRoute];
             }
             else
             {
@@ -2863,7 +2865,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [CRAPI.sharedInstance.currentRoute addObject:routePoint];
                 NSString * name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
                 [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
-                [self displayCurrentRoute];
+                if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+                    [self displayCurrentRoute];
                 [self vectorViewRefresh];
             }
             _numCurrentRoutePoints = 0;
@@ -4080,15 +4083,16 @@ haveVV:
                            }
                        }
                        
-                       if (_grayscaleMode)
-                           [self createGrayscale];
-                        [self performSelector:@selector(displayCurrentRoute) withObject:nil afterDelay:0.2];
-
-                       //[self displayCurrentRoute];
-                       [self displayTrackRoute];
-                       [self displayScalebar];
-                       [self displayWeatherData];
-                       CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+                        if (_grayscaleMode)
+                            [self createGrayscale];
+                        if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+                            [self performSelector:@selector(displayCurrentRoute) withObject:nil afterDelay:0.2];
+                        
+                        //[self displayCurrentRoute];
+                        [self displayTrackRoute];
+                        [self displayScalebar];
+                        [self displayWeatherData];
+                        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
                        if (reDisplay)
                        {
                            UIGraphicsBeginImageContext(self.view.frame.size);

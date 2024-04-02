@@ -2891,7 +2891,8 @@ NextPass:
             }
             if (text.length)
             {
-                UIColor *textColor = UIColor.redColor;
+                UIColor *textColor = UIColor.yellowColor;
+                UIColor *shadowColor = UIColor.blackColor;
                 CGFloat minFontSize = fontSize / 3;
                 if (nTextFields < 2)
                     minFontSize = 6 * screenScale;
@@ -2905,7 +2906,7 @@ NextPass:
                                fontSize:fontSize
                             minFontSize:minFontSize
                               textColor:textColor.CGColor
-                            shadowColor:nil
+                            shadowColor:shadowColor.CGColor
                            processingID:_processingID];
                 if (!st && from == TFONVMetroDisplay && nTextFields>1)
                 {
