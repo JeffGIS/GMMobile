@@ -2893,6 +2893,12 @@ NextPass:
             {
                 UIColor *textColor = UIColor.yellowColor;
                 UIColor *shadowColor = UIColor.blackColor;
+                if (ConfigurationControl.sharedInstance.mapType != kGMSTypeHybrid &&
+                    ConfigurationControl.sharedInstance.mapType != kGMSTypeSatellite)
+                {
+                    textColor = UIColor.blackColor;
+                    shadowColor = nil;
+                }
                 CGFloat minFontSize = fontSize / 3;
                 if (nTextFields < 2)
                     minFontSize = 6 * screenScale;
