@@ -23,10 +23,6 @@ LPYEARLYVALUES pYearly;
 - (NSNumber *) getNumberWithLocale:(NSLocale*) stringLocale;
 @end
 
-int SQLOKpd(int sqlReturn, sqlite3nv *database, int method)
-{
-    return SQLOK (__FILE__,__LINE__,sqlReturn,database);
-}
 @implementation NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale
 {
