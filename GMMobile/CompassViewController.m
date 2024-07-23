@@ -1446,7 +1446,10 @@ double HeadingFromAZ (double az)
 - (void) updateWeather
 {
     if (!_currentWeatherRecord)
+    {
+        [self getWeatherData];
         return;
+    }
     WeatherRecord* data = _currentWeatherRecord;
     _currentTemp = data.temp;
     _currentWindSpeed = data.windSpeed;
