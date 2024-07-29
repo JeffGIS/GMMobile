@@ -355,6 +355,7 @@
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _locationManager.pausesLocationUpdatesAutomatically = NO;
+    _locationManager.distanceFilter = 5;
     
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
         [_locationManager requestWhenInUseAuthorization];
@@ -6453,6 +6454,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)startTrackingUserLocation
 {
     {
+        _locationManager.delegate = self;
         [_locationManager startUpdatingLocation];
         CRAPI.sharedInstance.locationTrackingEnabled = YES;
         [self.view bringSubviewToFront:_myLocationMarker];

@@ -94,7 +94,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.delegate = self;
-    _locationManager.activityType = CLActivityTypeAutomotiveNavigation;
+    _locationManager.activityType = CLActivityTypeFitness;
     
     if ([_locationManager respondsToSelector:@selector(allowsBackgroundLocationUpdates)])
         _locationManager.allowsBackgroundLocationUpdates = YES;
@@ -333,9 +333,18 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
                                                       object:nil
                                                     userInfo:nil];
 }
-
+- (void) applicationDidEnterBackground:(UIApplication *)application
+{
+    NSLog (@"Entered background state");
+    return;
+}
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    return;
+}
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    NSLog (@"Became active");
     NSString *sourceApp = [SharedDefaults.defaults stringForKey:@"SourceApplication"];
     
     CRAPI.sharedInstance.setToAlleyWalls = NO;

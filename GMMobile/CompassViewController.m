@@ -81,7 +81,6 @@ DPOINT saveFromUTM, saveToUTM;
 @property NVPopoverTableView *nvptv;
 @property BOOL needToInitiateRoute;
 @property LLPOINT firstRoutePoint;
-@property SystemSoundID lowSoundID, highSoundID;
 
 
 @end
@@ -99,6 +98,14 @@ DPOINT saveFromUTM, saveToUTM;
     _lastResetHeading = 0;
     [self configUI];
     _displayTime = 0;
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(resignedActive)
+                                               name:@"didResignActive"
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(becameActive)
+                                               name:@"didBecomeActive"
+                                             object:nil];
 
 }
 -(BOOL) shouldAutorotate
@@ -122,12 +129,6 @@ DPOINT saveFromUTM, saveToUTM;
 {
     [super viewWillAppear:animated];
     
-    NSString *soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_high.caf"];
-    NSURL *url = [NSURL URLWithString:soundFile];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &_highSoundID);
-    soundFile = [NSString stringWithUTF8String:"///System/Library/Audio/UISounds/short_double_low.caf"];
-    url = [NSURL URLWithString:soundFile];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &_lowSoundID);
     
     CRAPI.sharedInstance.routeBearing = nil;
     _maxWaypointDist = 5.0 * METERS_PER_MILE;
@@ -149,7 +150,7 @@ DPOINT saveFromUTM, saveToUTM;
     //[self DrawCompass];
     //if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
     {
-        if (CRAPI.sharedInstance.locationTrackingEnabled)
+        //if (CRAPI.sharedInstance.locationTrackingEnabled)
             [_locationManager startUpdatingLocation];
         [_locationManager startUpdatingHeading];
     }
@@ -164,18 +165,30 @@ DPOINT saveFromUTM, saveToUTM;
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    AudioServicesDisposeSystemSoundID(_lowSoundID);
-    AudioServicesDisposeSystemSoundID(_highSoundID);
     [self removeUserWaypoints];
     [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
-    if (CRAPI.sharedInstance.locationTrackingEnabled)
-        [_locationManager stopUpdatingLocation];
-    _locationManager.delegate = _oldLocationManagerDelegate;
+    [_locationManager stopUpdatingLocation];
     //InitProj4CoordConv (TRUE);
     if (_minuteTimer)
         [_minuteTimer invalidate];
 
+}
+- (void)resignedActive
+{
+    _locationManager.delegate = nil;
+    [_locationManager stopUpdatingHeading];
+    if (!CRAPI.sharedInstance.inRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+        [_locationManager stopUpdatingLocation];
+    return;
+}
+
+- (void)becameActive
+{
+    _locationManager.delegate = self;
+    [_locationManager startUpdatingHeading];
+    [_locationManager startUpdatingLocation];
+    return;
 }
 
 -(void) startMinuteTimer:(BOOL) firstTime
@@ -967,7 +980,7 @@ double HeadingFromAZ (double az)
         if (waypoint.displayOnCompass)
         {
             double dist = waypoint.currentDistance;
-            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist && ![waypoint.type isEqual:@"RoutePoint"] && !CRAPI.sharedInstance.inRouteMode) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist || ([waypoint.type isEqual:@"RoutePoint"] && CRAPI.sharedInstance.inRouteMode)) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double az = AZMLatLon (currentPoint,waypoint.latlon);
                 double azd = RadiansToDegrees (az);
@@ -1628,84 +1641,87 @@ double HeadingFromAZ (double az)
             if (![waypoint.type isEqual:@"RoutePoint"] || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double dist = ArcDistanceLL(waypoint.latlon, _locationManager.currentPoint);
-                double wpaz = HeadingFromAZ(AZMLatLon (_locationManager.currentPoint,waypoint.latlon));
-                waypoint.headingInDeg = RadiansToDegrees (wpaz);
-                double curAz = DegreesToRadians(theHeading);
-                if (dist / METERS_PER_YARD < _locationManager.atDistance && ![waypoint.type isEqual:@"Vehicle"] )
+                if (dist < _maxWaypointDist || [waypoint.type isEqual:@"Vehicle"] )
                 {
-                    [self setInfoLabelText:[NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD]];
-                    _infoLabel.textColor = UIColor.whiteColor;
-                    if ([waypoint.type isEqual:@"RoutePoint"])
-                        _locationManager.currentRoutePointNumber = waypoint.refno;
-                    else
-                        _locationManager.currentRoutePointNumber = 0;
-                    CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
-                    _currentFocusWaypointLL = waypoint.latlon;
-                    _infoLabelOption = 1;
-                    break;
-                }
-                else
-                {
-                    double daz = DeltaAZD(wpaz, curAz);
-                    if ((CRAPI.sharedInstance.currentSelectedWaypoint <= 0 && fabs (daz) < 0.2) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+                    double wpaz = HeadingFromAZ(AZMLatLon (_locationManager.currentPoint,waypoint.latlon));
+                    waypoint.headingInDeg = RadiansToDegrees (wpaz);
+                    double curAz = DegreesToRadians(theHeading);
+                    if (dist / METERS_PER_YARD < _locationManager.atDistance && ![waypoint.type isEqual:@"Vehicle"] )
                     {
-                        BOOL haveProfile = FALSE;
-                        _maxElev= _maxGrade = 0;
-                        NSString *units = @"miles";
+                        [self setInfoLabelText:[NSString stringWithFormat:@"At %@: (%.0f yards)",waypoint.name,dist/ METERS_PER_YARD]];
+                        _infoLabel.textColor = UIColor.whiteColor;
+                        if ([waypoint.type isEqual:@"RoutePoint"])
+                            _locationManager.currentRoutePointNumber = waypoint.refno;
+                        else
+                            _locationManager.currentRoutePointNumber = 0;
                         CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
-                        if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
-                            haveProfile = [self displayProfile:_locationManager.currentPoint
-                                          to:waypoint.latlon];
-                        else
+                        _currentFocusWaypointLL = waypoint.latlon;
+                        _infoLabelOption = 1;
+                        break;
+                    }
+                    else
+                    {
+                        double daz = DeltaAZD(wpaz, curAz);
+                        if ((CRAPI.sharedInstance.currentSelectedWaypoint <= 0 && fabs (daz) < 0.2) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
                         {
-                            _locationManager.fromPoint = _locationManager.currentPoint;
-                            haveProfile = [self displayProfile:_locationManager.currentPoint
-                                                            to:waypoint.latlon];
-                        }
-                        if (dist / METERS_PER_YARD < _locationManager.nearDist && ![waypoint.type isEqual:@"Vehicle"] )
-                        {
-                            units = @"yards";
-                            dist = dist / METERS_PER_YARD;
-                            [self setInfoLabelText:[NSString stringWithFormat:@"Near %@: %.0f %@",waypoint.name,dist,units]];
-                        }
-                        else
-                        {
-                            int offDist = IDNINT(_locationManager.offDist / METERS_PER_YARD);
-                            NSString *offsetText = @"";
-                            NSString *offDir = @"L";
-                            if (offDist > 0)
+                            BOOL haveProfile = FALSE;
+                            _maxElev= _maxGrade = 0;
+                            NSString *units = @"miles";
+                            CRAPI.sharedInstance.currentFocusWaypoint = waypoint.refno;
+                            if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+                                haveProfile = [self displayProfile:_locationManager.currentPoint
+                                                                to:waypoint.latlon];
+                            else
                             {
-                                if (_locationManager.leftOrRight == RIGHT)
-                                    offDir = @"R";
-                                offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
+                                _locationManager.fromPoint = _locationManager.currentPoint;
+                                haveProfile = [self displayProfile:_locationManager.currentPoint
+                                                                to:waypoint.latlon];
                             }
-                            NSString * infoLabelText = @"";
-                            if (dist < METERS_PER_MILE/10)
+                            if (dist / METERS_PER_YARD < _locationManager.nearDist && ![waypoint.type isEqual:@"Vehicle"] )
                             {
                                 units = @"yards";
                                 dist = dist / METERS_PER_YARD;
-                                infoLabelText = [NSString stringWithFormat:@"%@: %.0f %@",waypoint.name,dist,units,offsetText];
+                                [self setInfoLabelText:[NSString stringWithFormat:@"Near %@: %.0f %@",waypoint.name,dist,units]];
                             }
                             else
                             {
-                                dist = dist / METERS_PER_MILE;
-                                infoLabelText = [NSString stringWithFormat:@"%@: %.2f %@%",waypoint.name,dist,units,offsetText];
+                                int offDist = IDNINT(_locationManager.offDist / METERS_PER_YARD);
+                                NSString *offsetText = @"";
+                                NSString *offDir = @"L";
+                                if (offDist > 0)
+                                {
+                                    if (_locationManager.leftOrRight == RIGHT)
+                                        offDir = @"R";
+                                    offsetText = [NSString stringWithFormat:@"(%i YARDS %@)",offDist,offDir];
+                                }
+                                NSString * infoLabelText = @"";
+                                if (dist < METERS_PER_MILE/10)
+                                {
+                                    units = @"yards";
+                                    dist = dist / METERS_PER_YARD;
+                                    infoLabelText = [NSString stringWithFormat:@"%@: %.0f %@",waypoint.name,dist,units,offsetText];
+                                }
+                                else
+                                {
+                                    dist = dist / METERS_PER_MILE;
+                                    infoLabelText = [NSString stringWithFormat:@"%@: %.2f %@%",waypoint.name,dist,units,offsetText];
+                                }
+                                if (haveProfile)
+                                {
+                                    NSString * ilt = [NSString stringWithFormat:@"\n%Min Elev:%i MaxElev:%i\nMax Grade:%.0f",IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
+                                    
+                                    infoLabelText = [infoLabelText stringByAppendingString:ilt];
+                                }
+                                [self setInfoLabelText:infoLabelText];
                             }
-                            if (haveProfile)
-                            {
-                                NSString * ilt = [NSString stringWithFormat:@"\n%Min Elev:%i MaxElev:%i\nMax Grade:%.0f",IDNINT(_minElev),IDNINT(_maxElev),_maxGrade];
-                                
-                                infoLabelText = [infoLabelText stringByAppendingString:ilt];
-                            }
-                            [self setInfoLabelText:infoLabelText];
+                            if (_locationManager.offCourseTimer)
+                                _infoLabel.textColor = UIColor.orangeColor;
+                            else
+                                _infoLabel.textColor = UIColor.whiteColor;
+                            
+                            _infoLabelOption = 2;
+                            break;
                         }
-                        if (_locationManager.offCourseTimer)
-                            _infoLabel.textColor = UIColor.orangeColor;
-                        else
-                            _infoLabel.textColor = UIColor.whiteColor;
-
-                        _infoLabelOption = 2;
-                        break;
                     }
                 }
             }
