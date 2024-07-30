@@ -168,7 +168,9 @@ DPOINT saveFromUTM, saveToUTM;
     [self removeUserWaypoints];
     [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
-    [_locationManager stopUpdatingLocation];
+    _locationManager.delegate = nil;
+    if (!CRAPI.sharedInstance.inRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+        [_locationManager stopUpdatingLocation];
     //InitProj4CoordConv (TRUE);
     if (_minuteTimer)
         [_minuteTimer invalidate];

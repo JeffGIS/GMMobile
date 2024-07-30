@@ -6494,17 +6494,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
      [self didUpdateLocations:locations];
  }
 
-/*- (void)locationManager:(CLLocationManager *)manager
-     didUpdateLocations:(NSArray *)locations
-{
-    [self didUpdateLocations:locations];
-}*/
 - (void) didUpdateLocations:(NSArray *)locations
 {
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
-    if (locations.count > 1)
-        iii = 1;
     _currentLocation = [locations.lastObject coordinate];
     LLPOINT llpt;
     llpt.lat = _currentLocation.latitude;
