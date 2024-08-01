@@ -1445,7 +1445,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
         for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
         {
-            if (CRAPI.sharedInstance.inRouteMode && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if (CRAPI.sharedInstance.inFollowingRouteMode && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 if (firstPoint)
                 {

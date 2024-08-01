@@ -150,8 +150,7 @@ DPOINT saveFromUTM, saveToUTM;
     //[self DrawCompass];
     //if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
     {
-        //if (CRAPI.sharedInstance.locationTrackingEnabled)
-            [_locationManager startUpdatingLocation];
+        [_locationManager startUpdatingLocation];
         [_locationManager startUpdatingHeading];
     }
     _locationManager.offDist = 0;
@@ -169,7 +168,7 @@ DPOINT saveFromUTM, saveToUTM;
     [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
     _locationManager.delegate = nil;
-    if (!CRAPI.sharedInstance.inRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+    if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
         [_locationManager stopUpdatingLocation];
     //InitProj4CoordConv (TRUE);
     if (_minuteTimer)
@@ -180,13 +179,37 @@ DPOINT saveFromUTM, saveToUTM;
 {
     _locationManager.delegate = nil;
     [_locationManager stopUpdatingHeading];
-    if (!CRAPI.sharedInstance.inRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+    if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
         [_locationManager stopUpdatingLocation];
+    else if (CRAPI.sharedInstance.amBuildingRoute)
+        [_locationManager startSavingLocations];
     return;
 }
 
 - (void)becameActive
 {
+    NSArray *savedLocations = [_locationManager retrieveSavedLocations];
+    if (CRAPI.sharedInstance.amBuildingRoute)
+    {
+        for (TrackRoutePoint *pt in savedLocations)
+        {
+            if ([CRAPI.sharedInstance addPointToTrackRoute: pt.latlon] == 2)
+            {
+                HuntingData *hd = HuntingData.new;
+                [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+                CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+                CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                break;
+            }
+            
+            if (_needToInitiateRoute)
+            {
+                _locationManager.fromPoint = _locationManager.currentPoint;
+                [self initiateRoute];
+            }
+        }
+
+    }
     _locationManager.delegate = self;
     [_locationManager startUpdatingHeading];
     [_locationManager startUpdatingLocation];
@@ -492,7 +515,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
     if (routePointArray.count > 0)
     {
-        if (CRAPI.sharedInstance.inRouteMode)
+        if (CRAPI.sharedInstance.inFollowingRouteMode)
             [optionList addObject:@"Exit Route"];
         else
             [optionList addObject:@"Start Route"];
@@ -874,14 +897,16 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     if (locations.count > 0)
     {
         CLLocation * loc = locations.lastObject;
-        //AudioServicesPlaySystemSound(_highSoundID);
         [CRAPI.sharedInstance setGPSLocation:_locationManager.currentPoint from:2];
-        if ([CRAPI.sharedInstance addPointToTrackRoute: loc.coordinate] == 2)
+        LLPOINT llpt;
+        llpt.lat = loc.coordinate.latitude;
+        llpt.lon = loc.coordinate.longitude;
+        if ([CRAPI.sharedInstance addPointToTrackRoute: llpt] == 2)
         {
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amTrackingRoute = FALSE;
+            CRAPI.sharedInstance.amBuildingRoute = FALSE;
         }
 
         if (first)
@@ -908,23 +933,6 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
                                withObject:nil
                             waitUntilDone:NO];
     }
-}
-
--(Bool) locationManagerShouldDisplayHeadingCalibration:(TrackLocationManager*)manager
-{
-    return true;
-}
-
--(void) locationManager:(TrackLocationManager*) manager
-       didFailWithError:(NSError*) error
-{
-    NSLog(@"Location manager error");
-}
-
--(void) locationManager:(TrackLocationManager*)manager
- didChangeAuthorization:(CLAuthorizationStatus)status
-{
-    NSLog(@"Location manager changed autorization");
 }
 
 -(void) removeUserWaypoints
@@ -982,7 +990,7 @@ double HeadingFromAZ (double az)
         if (waypoint.displayOnCompass)
         {
             double dist = waypoint.currentDistance;
-            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist || ([waypoint.type isEqual:@"RoutePoint"] && CRAPI.sharedInstance.inRouteMode)) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist || ([waypoint.type isEqual:@"RoutePoint"] && CRAPI.sharedInstance.inFollowingRouteMode)) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double az = AZMLatLon (currentPoint,waypoint.latlon);
                 double azd = RadiansToDegrees (az);
@@ -993,7 +1001,7 @@ double HeadingFromAZ (double az)
                 NSString *  tickText = [NSString stringWithFormat:@"%i",wpNum++];
                 
                 CGFloat textAngle = az;
-                if (CRAPI.sharedInstance.inRouteMode)
+                if (CRAPI.sharedInstance.inFollowingRouteMode)
                 {
                     if ([waypoint.type isEqual:@"RoutePoint"])
                     {
@@ -1411,7 +1419,7 @@ double HeadingFromAZ (double az)
 {
     _needToInitiateRoute = FALSE;
     _locationManager.routeStartPoint = _locationManager.currentPoint;
-    CRAPI.sharedInstance.inRouteMode = YES;
+    CRAPI.sharedInstance.inFollowingRouteMode = YES;
     [self displayProfile:_locationManager.fromPoint
                       to:_firstRoutePoint];
     [self removeUserWaypoints];

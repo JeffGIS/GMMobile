@@ -2185,7 +2185,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [optionList addObject:@"________________________"];
 
     [optionList addObject:@"Proximity Mapping"];
-    if (CRAPI.sharedInstance.amTrackingRoute)
+    if (CRAPI.sharedInstance.amBuildingRoute)
     {
         [optionList addObject:@"________________________"];
         [optionList addObject:@"Stop Tracking Location"];
@@ -2657,7 +2657,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         RoutePoint *rpt = CRAPI.sharedInstance.currentRoute[0];
         int ipt = 0;
         CGPoint pt;
-        if (CRAPI.sharedInstance.inRouteMode)
+        if (CRAPI.sharedInstance.inFollowingRouteMode)
         {
             if (rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
@@ -2683,7 +2683,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
         {
             CLLocationCoordinate2D llpt={rpt.latlon.lat,rpt.latlon.lon};
-            if (CRAPI.sharedInstance.inRouteMode && ipt && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if (CRAPI.sharedInstance.inFollowingRouteMode && ipt && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 routeLayer.path = path.CGPath;
                 [_mapView.layer addSublayer:routeLayer];
@@ -6510,7 +6510,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             HuntingData *hd = HuntingData.new;
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amTrackingRoute = TRUE;
+            CRAPI.sharedInstance.amBuildingRoute = TRUE;
             [hd deleteWaypointsOfType:@"Vehicle"];
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:llpt description:@"" displayOnCompass:YES];
             [_mapToolbar selectMyLocationButton:YES];
@@ -6518,7 +6518,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [self vectorViewRefresh];
         }
     }
-    int st = [CRAPI.sharedInstance addPointToTrackRoute: _currentLocation];
+    int st = [CRAPI.sharedInstance addPointToTrackRoute: llpt];
     if (st > 0)
     {
         [self displayTrackRoute];
@@ -6527,8 +6527,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amTrackingRoute = FALSE;
-        }       
+            CRAPI.sharedInstance.amBuildingRoute = FALSE;
+        }
     }
     
     _locationCount++;
@@ -7696,7 +7696,7 @@ didSelectPDFButtonWithText:(NSString *)text
         }
         else if ([text isEqualToString:@"Start Tracking Route"])
         {
-            CRAPI.sharedInstance.amTrackingRoute = TRUE;
+            CRAPI.sharedInstance.amBuildingRoute = TRUE;
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             [_mapToolbar selectMyLocationButton:YES];
             [self startTrackingUserLocation];
@@ -7707,7 +7707,7 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amTrackingRoute = FALSE;
+            CRAPI.sharedInstance.amBuildingRoute = FALSE;
         }
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {
@@ -7974,7 +7974,7 @@ didReturnText:(NSString *)text
         {
             _scaleBarPromptText = nil;
             _singleTapMode = STMNone;
-            CRAPI.sharedInstance.inRouteMode=NO;
+            CRAPI.sharedInstance.inFollowingRouteMode=NO;
         }
     }
     
@@ -8789,4 +8789,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
                    target:CRAPI.sharedInstance.currentCameraLocation
                      zoom:CRAPI.sharedInstance.currentZoom];
 }
+
+
 @end
