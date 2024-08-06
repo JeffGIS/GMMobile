@@ -57,6 +57,9 @@
 #import "CompassViewController.h"
 #import "CCodeLibrary/NVTextViewAlert.h"
 #import "ProximityMapping.h"
+#import "CCodeLibrary/CVTCoord.h"
+#include "CCodeLibrary/PROJ.H"
+
 
 #define MAX_VECTORVIEWS 8
 
@@ -73,10 +76,11 @@
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, CLLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate, WeatherDataDelegate,NVTextViewAlertDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate, NSURLSessionDataDelegate, NSURLSessionTaskDelegate, NVPhotoControllerDelegate, NVPhotoViewDelegate, NVWebViewDelegate, NVPopoverTableViewDelegate, UITabBarControllerDelegate, UIGestureRecognizerDelegate, NVPanoramaVCDelegate, NVGeocoderDelegate, GMSMapViewDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, NVAlertViewDelegate, MapToolbarDelegate, VectorViewDelegate, TrackLocationManagerDelegate, MarkerInfoWindowDelegate, PipeTraceDelegate, MarkerButtonDelegate, PlatImageViewDelegate, GSSiNotesViewDelegate, NVLegendViewDelegate, NVTwoTextAlertDelegate, NVDataLoaderDelegate, NSURLConnectionDataDelegate, ThemeLegendMapOverlayDelegate, CrimeDataDelegate, GSSiPopoverViewDelegate, FTPDirectoryListDelegate, FTPDataPullDelegate, PropertyListDelegate, WeatherDataDelegate,NVTextViewAlertDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
-@property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
+@property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
+@property LLPOINT currentLocation;
 @property (nonatomic, copy) NSArray *options, *linkedList, *files;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
 @property PropertyTableViewSetting tableViewSetting;
@@ -96,7 +100,7 @@
 @property MapViewScreenSetting screenSetting;
 @property NSInteger gestureCount, digitizerCount;
 @property (nonatomic) MapToolbar *mapToolbar;
-@property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) TrackLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt, *selectedBA;
 @property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo;
@@ -498,8 +502,44 @@
     return UIStatusBarStyleLightContent;
 }
 
+- (void)resignedActive:(id)selector
+{
+    _locationManager.delegate = nil;
+    [_locationManager stopUpdatingHeading];
+    if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+        [_locationManager stopUpdatingLocation];
+    else if (CRAPI.sharedInstance.amBuildingRoute)
+        [_locationManager startSavingLocations];
+    [self clearVectorView];
+    return;
+}
+
 - (void)becameActive:(id)selector
 {
+    NSArray *savedLocations = [_locationManager retrieveSavedLocations];
+    if (CRAPI.sharedInstance.amBuildingRoute)
+    {
+        for (TrackRoutePoint *pt in savedLocations)
+        {
+            if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
+            {
+                HuntingData *hd = HuntingData.new;
+                [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+                CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+                CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                break;
+            }
+            
+            //if (_needToInitiateRoute)
+            //{
+            //    _locationManager.fromPoint = _locationManager.currentPoint;
+            //    [self initiateRoute];
+            //}
+        }
+
+    }
+    if (CRAPI.sharedInstance.locationTrackingEnabled)
+        [self startTrackingUserLocation];
     if (CRAPI.sharedInstance.setToAlleyWalls)
     {
         [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
@@ -507,12 +547,9 @@
         CRAPI.sharedInstance.setToAlleyWalls = NO;
     }
     [self vectorViewRefresh];
+    return;
 }
 
-- (void)resignedActive:(id)selector
-{
-    [self clearVectorView];
-}
 -(void) computeTopBottom
 {
     UITabBarController *tabBarController = [UITabBarController new];
@@ -1827,6 +1864,9 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _numCurrentRoutePoints++;
         RoutePoint *routePoint = RoutePoint.new;
         routePoint.latlon = llp;
+        DPOINT dpt = LLPointToDPoint (llp);
+        ConvertCoord(&dpt, LATLONPROJECTION, UTM15PROJECTION);
+        routePoint.UTM = dpt;
         [CRAPI.sharedInstance.currentRoute addObject:routePoint];
         NSString *name = [NSString stringWithFormat:@"%i",_numCurrentRoutePoints];
         [hd addWaypoint:name type:@"RoutePoint" latlon:llp description:@"" displayOnCompass:YES];
@@ -2199,6 +2239,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     else
     {
         [optionList addObject:@"________________________"];
+        if (CRAPI.sharedInstance.currentTrackRoute.count > 1 && _displayTrackingRoute)
+            [optionList addObject:@"Hide Tracking Route"];
         [optionList addObject:@"Start Tracking Route"];
     }
     [optionList addObject:@"________________________"];
@@ -2662,7 +2704,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             if (rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 routeLayer.strokeColor = UIColor.greenColor.CGColor;
-                CLLocationCoordinate2D llpt={_currentLocation.latitude,_currentLocation.longitude};
+                CLLocationCoordinate2D llpt={_currentLocation.lat,_currentLocation.lon};
                 pt = [_mapView.projection pointForCoordinate:llpt];
                 [path moveToPoint:pt];
                 llpt.latitude = rpt.latlon.lat;
@@ -3242,7 +3284,10 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     
     if (!_myLocationMarker.hidden)
     {
-        CGPoint target = [self pointForCoordinate:_currentLocation];
+        CLLocationCoordinate2D loc;
+        loc.latitude = _currentLocation.lat;
+        loc.longitude = _currentLocation.lon;
+        CGPoint target = [self pointForCoordinate:loc];
         _myLocationMarker.center = CGPointMake(target.x, (target.y + statusBarHeight));
     }
     
@@ -6489,19 +6534,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 
 -(void)locationManager:(TrackLocationManager *)manager
-      didUpdateLocations:(NSArray *)locations
+      didUpdateLocations:(LLPOINT)point
  {
-     [self didUpdateLocations:locations];
+     [self didUpdateLocations:point];
  }
 
-- (void) didUpdateLocations:(NSArray *)locations
+- (void) didUpdateLocations:(LLPOINT)llpt
 {
     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
-    _currentLocation = [locations.lastObject coordinate];
-    LLPOINT llpt;
-    llpt.lat = _currentLocation.latitude;
-    llpt.lon = _currentLocation.longitude;
+    _currentLocation = llpt;
     CRAPI.sharedInstance.currentGPSLocation = llpt;
 
     if (_needToSetVehicleLocation)
@@ -6515,10 +6557,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:llpt description:@"" displayOnCompass:YES];
             [_mapToolbar selectMyLocationButton:YES];
             CRAPI.sharedInstance.currentVehicleLocation = llpt;
+            _locationManager.distanceFilter = 4;
             [self vectorViewRefresh];
         }
     }
-    int st = [CRAPI.sharedInstance addPointToTrackRoute: llpt];
+    TrackRoutePoint *routePoint = TrackRoutePoint.new;
+    routePoint.time = NSDate.timeIntervalSinceReferenceDate;
+    routePoint.latlon = llpt;
+    int st = [CRAPI.sharedInstance addPointToTrackRoute: routePoint];
     if (st > 0)
     {
         [self displayTrackRoute];
@@ -6535,15 +6581,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
     {
-        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation zoom:20];
+        CLLocationCoordinate2D loc;
+        loc.latitude = _currentLocation.lat;
+        loc.longitude = _currentLocation.lon;
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:loc zoom:20];
         GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
         [self moveCamera:update];
     }
     else if (CRAPI.sharedInstance.firstTimeZoomToCentract)
     {
         LLPOINT llpickPt;
-        llpickPt.lat = _currentLocation.latitude;
-        llpickPt.lon = _currentLocation.longitude;
+        llpickPt.lat = _currentLocation.lat;
+        llpickPt.lon = _currentLocation.lon;
         PickedItem *pi = nil;
         if (ConfigurationControl.sharedInstance.currentApp != HCConfigHunting)
             pi = [BoundaryData.new pickBoundaryArea:llpickPt type:@"BLOCK"];
@@ -6573,14 +6622,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
     }
     else if (_animateToLocation)
-    {
-        CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
+    { 
+        CLLocationCoordinate2D loc;
+        loc.latitude = _currentLocation.lat;
+        loc.longitude = _currentLocation.lon;
+
+        CGPoint target = [_mapView.projection pointForCoordinate:loc];
         if (_locationCount < 2 || !PointInView(target,_mapView))
         {
             double bearing = _mapView.camera.bearing;
             if (CRAPI.sharedInstance.routeBearing)
                 bearing = CRAPI.sharedInstance.routeBearing.doubleValue;
-            GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
+            CLLocationCoordinate2D loc;
+            loc.latitude = _currentLocation.lat;
+            loc.longitude = _currentLocation.lon;
+
+            GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:loc
                                                                        zoom:_mapView.camera.zoom
                                                                     bearing:bearing
                                                                viewingAngle:_mapView.camera.viewingAngle];
@@ -6608,7 +6665,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *urlString =
     [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=%@",
-     _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude, _routeMode];
+     _currentLocation.lat, _currentLocation.lon, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude, _routeMode];
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     urlRequest.timeoutInterval = 15;
@@ -7683,6 +7740,7 @@ didSelectPDFButtonWithText:(NSString *)text
         if ([text isEqualToString:@"Mark Vehicle Location"])
         {
             _needToSetVehicleLocation = 3;
+            _locationManager.distanceFilter = kCLDistanceFilterNone;
             [self startTrackingUserLocation];
         }
         else if ([text isEqualToString:@"Show Tracking Route"])
@@ -7693,6 +7751,7 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Hide Tracking Route"])
         {
             _displayTrackingRoute = FALSE;
+            [self vectorViewRefresh];
         }
         else if ([text isEqualToString:@"Start Tracking Route"])
         {
@@ -7708,6 +7767,7 @@ didSelectPDFButtonWithText:(NSString *)text
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             CRAPI.sharedInstance.amBuildingRoute = FALSE;
+            _mapToolbar.userLocationButton.backgroundColor = UIColor.greenColor;
         }
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {
@@ -7855,7 +7915,7 @@ didSelectPDFButtonWithText:(NSString *)text
         }
         else if ([text isEqualToString:@"Simulate Route"])
         {
-            
+            [_locationManager startSimulation];
         }
         else if ([text isEqualToString:@"Display Saved Track Routes"])
         {

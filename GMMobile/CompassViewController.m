@@ -11,8 +11,6 @@
 #include "CCodeLibrary/PROJ.H"
 #include "CCodeLibrary/shr.h"
 
-DPOINT saveFromUTM, saveToUTM;
-
 @interface CompassShapeLayer: CAShapeLayer
 @property UIColor *baseColor;
 @property UIColor *currentColor;
@@ -193,7 +191,7 @@ DPOINT saveFromUTM, saveToUTM;
     {
         for (TrackRoutePoint *pt in savedLocations)
         {
-            if ([CRAPI.sharedInstance addPointToTrackRoute: pt.latlon] == 2)
+            if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
             {
                 HuntingData *hd = HuntingData.new;
                 [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
@@ -889,19 +887,16 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     }
     return realHeading;
 }
--(void)locationManager:(TrackLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+-(void)locationManager:(TrackLocationManager *)manager didUpdateLocations:(LLPOINT)llpt
 
 {
     static bool first = true;
 
-    if (locations.count > 0)
-    {
-        CLLocation * loc = locations.lastObject;
         [CRAPI.sharedInstance setGPSLocation:_locationManager.currentPoint from:2];
-        LLPOINT llpt;
-        llpt.lat = loc.coordinate.latitude;
-        llpt.lon = loc.coordinate.longitude;
-        if ([CRAPI.sharedInstance addPointToTrackRoute: llpt] == 2)
+        TrackRoutePoint *routePoint = TrackRoutePoint.new;
+        routePoint.time = NSDate.timeIntervalSinceReferenceDate;
+        routePoint.latlon = llpt;
+        if ([CRAPI.sharedInstance addPointToTrackRoute: routePoint] == 2)
         {
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
@@ -917,7 +912,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
             _locationManager.fromPoint = _locationManager.currentPoint;
             [self initiateRoute];
         }
-    }
+    
     [self removeUserWaypoints];
     [self addUserWaypoints:_locationManager.currentPoint];
 }
@@ -1386,12 +1381,14 @@ double HeadingFromAZ (double az)
             _firstRoutePoint = waypoint.latlon;
             if (!CRAPI.sharedInstance.locationTrackingEnabled)
             {
+                _locationManager.distanceFilter = kCLDistanceFilterNone;
                 [_locationManager startUpdatingLocation];
                 CRAPI.sharedInstance.locationTrackingEnabled = TRUE;
                 _needToInitiateRoute = TRUE;
             }
             else
             {
+                _locationManager.distanceFilter = kCLDistanceFilterNone;
                 _locationManager.fromPoint = _locationManager.currentPoint;
                 [self initiateRoute];
             }
@@ -1418,7 +1415,8 @@ double HeadingFromAZ (double az)
 -(void) initiateRoute
 {
     _needToInitiateRoute = FALSE;
-    _locationManager.routeStartPoint = _locationManager.currentPoint;
+    _locationManager.routeStartPoint = _locationManager.atUTM;
+    _locationManager.distanceFilter = 4;
     CRAPI.sharedInstance.inFollowingRouteMode = YES;
     [self displayProfile:_locationManager.fromPoint
                       to:_firstRoutePoint];
