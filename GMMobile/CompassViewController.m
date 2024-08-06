@@ -177,6 +177,8 @@
 {
     _locationManager.delegate = nil;
     [_locationManager stopUpdatingHeading];
+    [self removeUserWaypoints];
+    [self removeProfileLayers];
     if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
         [_locationManager stopUpdatingLocation];
     else if (CRAPI.sharedInstance.amBuildingRoute)
@@ -948,6 +950,8 @@ double HeadingFromAZ (double az)
 }
 -(int)addUserWaypoints:(LLPOINT)currentPoint
 {
+    [self removeUserWaypoints];
+
     LLPOINT p1,p2;
     p1 = currentPoint;
     p2 = currentPoint;
@@ -1390,7 +1394,7 @@ double HeadingFromAZ (double az)
             {
                 _locationManager.distanceFilter = kCLDistanceFilterNone;
                 _locationManager.fromPoint = _locationManager.currentPoint;
-                [self initiateRoute];
+                _needToInitiateRoute = TRUE;
             }
         }
         else if ([text isEqualToString:@"Get Weather Data"])
@@ -1416,7 +1420,7 @@ double HeadingFromAZ (double az)
 {
     _needToInitiateRoute = FALSE;
     _locationManager.routeStartPoint = _locationManager.atUTM;
-    _locationManager.distanceFilter = 4;
+    _locationManager.distanceFilter = kCLDistanceFilterNone;
     CRAPI.sharedInstance.inFollowingRouteMode = YES;
     [self displayProfile:_locationManager.fromPoint
                       to:_firstRoutePoint];
@@ -1696,7 +1700,7 @@ double HeadingFromAZ (double az)
                                 int offDist = IDNINT(_locationManager.offDist / METERS_PER_YARD);
                                 NSString *offsetText = @"";
                                 NSString *offDir = @"L";
-                                if (offDist > 0)
+                                if (offDist != 0)
                                 {
                                     if (_locationManager.leftOrRight == RIGHT)
                                         offDir = @"R";
@@ -1707,12 +1711,12 @@ double HeadingFromAZ (double az)
                                 {
                                     units = @"yards";
                                     dist = dist / METERS_PER_YARD;
-                                    infoLabelText = [NSString stringWithFormat:@"%@: %.0f %@",waypoint.name,dist,units,offsetText];
+                                    infoLabelText = [NSString stringWithFormat:@"%@: %.0f %@%@",waypoint.name,dist,units,offsetText];
                                 }
                                 else
                                 {
                                     dist = dist / METERS_PER_MILE;
-                                    infoLabelText = [NSString stringWithFormat:@"%@: %.2f %@%",waypoint.name,dist,units,offsetText];
+                                    infoLabelText = [NSString stringWithFormat:@"%@: %.2f %@%@",waypoint.name,dist,units,offsetText];
                                 }
                                 if (haveProfile)
                                 {

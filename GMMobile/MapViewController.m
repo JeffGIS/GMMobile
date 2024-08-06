@@ -359,7 +359,7 @@
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _locationManager.pausesLocationUpdatesAutomatically = NO;
-    _locationManager.distanceFilter = 5;
+    _locationManager.distanceFilter = kCLDistanceFilterNone;
     
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
         [_locationManager requestWhenInUseAuthorization];
@@ -546,6 +546,9 @@
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
         CRAPI.sharedInstance.setToAlleyWalls = NO;
     }
+    _locationManager.delegate = self;
+    if (CRAPI.sharedInstance.locationTrackingEnabled)
+        [self startTrackingUserLocation];
     [self vectorViewRefresh];
     return;
 }
@@ -903,7 +906,12 @@
         [self displayScalebar];
     }
     if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+    {
         [self createCurrentRouteFromRoutePoints];
+        _locationManager.delegate = self;
+        if (CRAPI.sharedInstance.locationTrackingEnabled)
+            [self startTrackingUserLocation];
+    }
 }
 - (void) setTarget:(CLLocationCoordinate2D)target
 {
@@ -2704,6 +2712,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             if (rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 routeLayer.strokeColor = UIColor.greenColor.CGColor;
+                _currentLocation = _locationManager.currentPoint;
                 CLLocationCoordinate2D llpt={_currentLocation.lat,_currentLocation.lon};
                 pt = [_mapView.projection pointForCoordinate:llpt];
                 [path moveToPoint:pt];
@@ -2733,8 +2742,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 routeLayer = CAShapeLayer.layer;
                 routeLayer.fillColor = nil;
                 path = UIBezierPath.bezierPath;
-                routeLayer.strokeColor = UIColor.greenColor.CGColor;
-                _trackLayer.lineWidth = 5;
+                routeLayer.strokeColor = UIColor.yellowColor.CGColor;
+                routeLayer.lineWidth = 5;
                 [path moveToPoint:pt];
                 pt = [_mapView.projection pointForCoordinate:llpt];
                 [path addLineToPoint:pt];
@@ -2744,7 +2753,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 routeLayer = CAShapeLayer.layer;
                 path = UIBezierPath.bezierPath;
                 routeLayer.fillColor = nil;
-                _trackLayer.lineWidth = 5;
+                routeLayer.lineWidth = 5;
                 routeLayer.strokeColor = UIColor.redColor.CGColor;
                 ipt = 0;
             }
@@ -6500,6 +6509,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     {
         _locationManager.delegate = self;
+        [_locationManager requestLocation];
         [_locationManager startUpdatingLocation];
         CRAPI.sharedInstance.locationTrackingEnabled = YES;
         [self.view bringSubviewToFront:_myLocationMarker];
@@ -6533,6 +6543,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     return;
 }
 
+-(void)shouldRefreshScreen:(TrackLocationManager *)manager
+{
+    [self vectorViewRefresh];
+}
+
 -(void)locationManager:(TrackLocationManager *)manager
       didUpdateLocations:(LLPOINT)point
  {
@@ -6557,7 +6572,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [hd addWaypoint:@"V" type:@"Vehicle" latlon:llpt description:@"" displayOnCompass:YES];
             [_mapToolbar selectMyLocationButton:YES];
             CRAPI.sharedInstance.currentVehicleLocation = llpt;
-            _locationManager.distanceFilter = 4;
+            _locationManager.distanceFilter = kCLDistanceFilterNone;
             [self vectorViewRefresh];
         }
     }
@@ -7905,7 +7920,6 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Test Waypoint"])
         {
             CompassViewController *cvc = CompassViewController.new;
-            [cvc checkIfOffRouteTest:_llPickedPt];
         }
         else if ([text isEqualToString:@"Add Retrieved Waypoint"])
         {
