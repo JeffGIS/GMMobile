@@ -165,7 +165,8 @@
     [self removeUserWaypoints];
     [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
-    _locationManager.delegate = nil;
+    if (_locationManager.delegate ==  self)
+        _locationManager.delegate = nil;
     if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
         [_locationManager stopUpdatingLocation];
     //InitProj4CoordConv (TRUE);
@@ -175,7 +176,8 @@
 }
 - (void)resignedActive
 {
-    _locationManager.delegate = nil;
+    if (_locationManager.delegate == self)
+        _locationManager.delegate = nil;
     [_locationManager stopUpdatingHeading];
     [self removeUserWaypoints];
     [self removeProfileLayers];

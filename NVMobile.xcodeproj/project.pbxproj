@@ -239,6 +239,15 @@
 		EB68767F201A48E000C6728B /* RiteHomeCompute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB68767E201A48E000C6728B /* RiteHomeCompute.m */; };
 		EB69FF41240C2EE5006F7E37 /* VOTING2018_def.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */; };
 		EB69FF42240C2EE5006F7E37 /* VotingMetadata.html in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */; };
+		EB761FB02C650DD1008BC554 /* Right45Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FA92C650DCE008BC554 /* Right45Degrees.m4a */; };
+		EB761FB12C650DD1008BC554 /* BearRight.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FAC2C650DCF008BC554 /* BearRight.m4a */; };
+		EB761FB22C650DD1008BC554 /* BearLeft.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FAD2C650DCF008BC554 /* BearLeft.m4a */; };
+		EB761FB32C650DD1008BC554 /* Right90Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FAE2C650DD0008BC554 /* Right90Degrees.m4a */; };
+		EB761FB42C650DD1008BC554 /* Right135Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FAF2C650DD1008BC554 /* Right135Degrees.m4a */; };
+		EB761FB92C651FA9008BC554 /* EndOfRoute.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB52C651FA7008BC554 /* EndOfRoute.m4a */; };
+		EB761FBA2C651FA9008BC554 /* Left135Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB62C651FA8008BC554 /* Left135Degrees.m4a */; };
+		EB761FBB2C651FA9008BC554 /* Left90Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB72C651FA8008BC554 /* Left90Degrees.m4a */; };
+		EB761FBC2C651FA9008BC554 /* Left45Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB82C651FA9008BC554 /* Left45Degrees.m4a */; };
 		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
@@ -589,6 +598,15 @@
 		EB68767E201A48E000C6728B /* RiteHomeCompute.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RiteHomeCompute.m; sourceTree = "<group>"; };
 		EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VOTING2018_def.txt; sourceTree = "<group>"; };
 		EB69FF40240C2EE5006F7E37 /* VotingMetadata.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = VotingMetadata.html; sourceTree = "<group>"; };
+		EB761FA92C650DCE008BC554 /* Right45Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Right45Degrees.m4a; sourceTree = "<group>"; };
+		EB761FAC2C650DCF008BC554 /* BearRight.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = BearRight.m4a; sourceTree = "<group>"; };
+		EB761FAD2C650DCF008BC554 /* BearLeft.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = BearLeft.m4a; sourceTree = "<group>"; };
+		EB761FAE2C650DD0008BC554 /* Right90Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Right90Degrees.m4a; sourceTree = "<group>"; };
+		EB761FAF2C650DD1008BC554 /* Right135Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Right135Degrees.m4a; sourceTree = "<group>"; };
+		EB761FB52C651FA7008BC554 /* EndOfRoute.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = EndOfRoute.m4a; sourceTree = "<group>"; };
+		EB761FB62C651FA8008BC554 /* Left135Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Left135Degrees.m4a; sourceTree = "<group>"; };
+		EB761FB72C651FA8008BC554 /* Left90Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Left90Degrees.m4a; sourceTree = "<group>"; };
+		EB761FB82C651FA9008BC554 /* Left45Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Left45Degrees.m4a; sourceTree = "<group>"; };
 		EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetSlowValues.h; sourceTree = "<group>"; };
 		EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetSlowValues.m; sourceTree = "<group>"; };
 		EB983D381C1CF94B00A994C7 /* ThemeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeTypes.h; sourceTree = "<group>"; };
@@ -704,6 +722,15 @@
 		69AEAC74205AF0E50016DB15 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				EB761FB52C651FA7008BC554 /* EndOfRoute.m4a */,
+				EB761FB82C651FA9008BC554 /* Left45Degrees.m4a */,
+				EB761FB72C651FA8008BC554 /* Left90Degrees.m4a */,
+				EB761FB62C651FA8008BC554 /* Left135Degrees.m4a */,
+				EB761FAD2C650DCF008BC554 /* BearLeft.m4a */,
+				EB761FAC2C650DCF008BC554 /* BearRight.m4a */,
+				EB761FA92C650DCE008BC554 /* Right45Degrees.m4a */,
+				EB761FAE2C650DD0008BC554 /* Right90Degrees.m4a */,
+				EB761FAF2C650DD1008BC554 /* Right135Degrees.m4a */,
 				69AEAC78205AF0FC0016DB15 /* beep.mp3 */,
 				69AEAC77205AF0FC0016DB15 /* finalBeep.mp3 */,
 			);
@@ -1307,10 +1334,13 @@
 				69D625551FA3F1F6008D6F08 /* hsvPause.png in Resources */,
 				695A9C211EA173F400F1B5D7 /* copyIcon.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
+				EB761FB02C650DD1008BC554 /* Right45Degrees.m4a in Resources */,
+				EB761FB12C650DD1008BC554 /* BearRight.m4a in Resources */,
 				BB8B969A1E8568CA00B6A9F7 /* Robbery.png in Resources */,
 				692D9CF81CA2FCAA00AFCA9A /* whitePlus.png in Resources */,
 				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				6948ED2E1EC50A5500809632 /* NVCrimeIcon1024.jpg in Resources */,
+				EB761FBA2C651FA9008BC554 /* Left135Degrees.m4a in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				EBC7B139202CDB44007EE94F /* RiteHomeLogo.png in Resources */,
 				694F93B51C30475500723155 /* questionMark.png in Resources */,
@@ -1320,10 +1350,12 @@
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */,
 				692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */,
+				EB761FB42C650DD1008BC554 /* Right135Degrees.m4a in Resources */,
 				696DDDF71FD752A1008F4CBD /* NVCrimeList.txt in Resources */,
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				69352E511C1A7D57009A486B /* grayscale.png in Resources */,
 				BB8B969D1E8568CA00B6A9F7 /* Part2-1.png in Resources */,
+				EB761FB22C650DD1008BC554 /* BearLeft.m4a in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
 				BB8B96961E8568CA00B6A9F7 /* BurglaryOfDwelling.png in Resources */,
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,
@@ -1370,6 +1402,7 @@
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
+				EB761FB32C650DD1008BC554 /* Right90Degrees.m4a in Resources */,
 				EB5EC3C127207566002E3E7A /* hourglass4.png in Resources */,
 				69E62D501BBF276B0018390B /* fieldOptions.png in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
@@ -1390,6 +1423,7 @@
 				BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				69FDC1F22029141F00E68403 /* RiteHomeLaunchScreen.storyboard in Resources */,
+				EB761FBC2C651FA9008BC554 /* Left45Degrees.m4a in Resources */,
 				69FDA4361EE7838A00BA9735 /* glossary.png in Resources */,
 				69E2E7E11FD8628000050D10 /* ytIcon.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
@@ -1405,6 +1439,7 @@
 				69D625591FA3F2B1008D6F08 /* hsvLoop.png in Resources */,
 				69EE923B20127B9A00A610D6 /* VideoTabItem.png in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
+				EB761FBB2C651FA9008BC554 /* Left90Degrees.m4a in Resources */,
 				EBAEBB3D294000540004D22D /* windArrow.png in Resources */,
 				EB6142C2271761370056A9AE /* MinnesotaData.slt in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
@@ -1415,6 +1450,7 @@
 				69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */,
 				697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */,
 				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
+				EB761FB92C651FA9008BC554 /* EndOfRoute.m4a in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				BB8B96991E8568CA00B6A9F7 /* Assault.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
