@@ -6549,14 +6549,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 
 -(void)locationManager:(TrackLocationManager *)manager
-      didUpdateLocations:(LLPOINT)point
+      didUpdateLocations:(LLPOINT)llpt
+            GPSHeading:(double)gpsHeading
  {
-     [self didUpdateLocations:point];
- }
-
-- (void) didUpdateLocations:(LLPOINT)llpt
-{
-    if (!CRAPI.sharedInstance.locationTrackingEnabled)
+     if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
     _currentLocation = llpt;
     CRAPI.sharedInstance.currentGPSLocation = llpt;
@@ -6579,6 +6575,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     TrackRoutePoint *routePoint = TrackRoutePoint.new;
     routePoint.time = NSDate.timeIntervalSinceReferenceDate;
     routePoint.latlon = llpt;
+    routePoint.GPSHeading = gpsHeading;
     int st = [CRAPI.sharedInstance addPointToTrackRoute: routePoint];
     if (st > 0)
     {

@@ -79,6 +79,8 @@
 @property NVPopoverTableView *nvptv;
 @property BOOL needToInitiateRoute;
 @property LLPOINT firstRoutePoint;
+@property double GPSHeading;
+@property double GPSHeadingFromPoints;
 
 
 @end
@@ -94,6 +96,8 @@
     _lastToDist = 0;
     _forward = TRUE;
     _lastResetHeading = 0;
+    _GPSHeading = 1000;
+    _GPSHeadingFromPoints = 1000;
     [self configUI];
     _displayTime = 0;
     [NSNotificationCenter.defaultCenter addObserver:self
@@ -892,31 +896,34 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     return realHeading;
 }
 -(void)locationManager:(TrackLocationManager *)manager didUpdateLocations:(LLPOINT)llpt
+            GPSHeading:(double)gpsHeading
 
 {
     static bool first = true;
-
-        [CRAPI.sharedInstance setGPSLocation:_locationManager.currentPoint from:2];
-        TrackRoutePoint *routePoint = TrackRoutePoint.new;
-        routePoint.time = NSDate.timeIntervalSinceReferenceDate;
-        routePoint.latlon = llpt;
-        if ([CRAPI.sharedInstance addPointToTrackRoute: routePoint] == 2)
-        {
-            HuntingData *hd = HuntingData.new;
-            [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amBuildingRoute = FALSE;
-        }
-
-        if (first)
-            [self getWeatherData];
-        first = false;
-        if (_needToInitiateRoute)
-        {
-            _locationManager.fromPoint = _locationManager.currentPoint;
-            [self initiateRoute];
-        }
     
+    [CRAPI.sharedInstance setGPSLocation:_locationManager.currentPoint from:2];
+    TrackRoutePoint *routePoint = TrackRoutePoint.new;
+    routePoint.time = NSDate.timeIntervalSinceReferenceDate;
+    routePoint.latlon = llpt;
+    routePoint.GPSHeading = gpsHeading;
+    if ([CRAPI.sharedInstance addPointToTrackRoute: routePoint] == 2)
+    {
+        HuntingData *hd = HuntingData.new;
+        [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+        CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+        CRAPI.sharedInstance.amBuildingRoute = FALSE;
+    }
+    
+    if (first)
+        [self getWeatherData];
+    first = false;
+    if (_needToInitiateRoute)
+    {
+        _locationManager.fromPoint = _locationManager.currentPoint;
+        [self initiateRoute];
+    }
+    _GPSHeading = gpsHeading;
+    //_GPSHeadingFromPoints = _locationManager.GPSHeadingFromPoints;
     [self removeUserWaypoints];
     [self addUserWaypoints:_locationManager.currentPoint];
 }
@@ -1193,7 +1200,14 @@ double HeadingFromAZ (double az)
     {
         double tickHead = shapeLayer.heading;
         BOOL setRed = FALSE;
-        if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
+        BOOL setGreen = FALSE;
+        BOOL setBlue = FALSE;
+
+        if (tickHead-1 <= _GPSHeading && tickHead + 1 >= _GPSHeading)
+            setGreen = TRUE;
+//        else if (tickHead-1 <= _GPSHeadingFromPoints && tickHead + 1 >= _GPSHeadingFromPoints)
+//            setBlue = TRUE;
+        else if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
         {
             if (opt == 1)
             {
@@ -1209,7 +1223,17 @@ double HeadingFromAZ (double az)
         else
             _lineView.backgroundColor = UIColor.whiteColor;
 
-        if (setRed)
+        if (setGreen)
+        {
+            shapeLayer.strokeColor = UIColor.greenColor.CGColor;
+            shapeLayer.currentColor = UIColor.greenColor;
+        }
+/*        else if (setBlue)
+        {
+            shapeLayer.strokeColor = UIColor.blueColor.CGColor;
+            shapeLayer.currentColor = UIColor.blueColor;
+        }*/
+        else if (setRed)
         {
             numRed++;
             if (shapeLayer.currentColor != UIColor.redColor)
