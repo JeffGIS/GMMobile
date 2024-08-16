@@ -926,6 +926,8 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     //_GPSHeadingFromPoints = _locationManager.GPSHeadingFromPoints;
     [self removeUserWaypoints];
     [self addUserWaypoints:_locationManager.currentPoint];
+    if (_locationManager.inSimulationMode)
+        [self update];
 }
 - (void)locationManager:(TrackLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading

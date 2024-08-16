@@ -1899,7 +1899,8 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     if (_inDigitizationMode)
         return;
-    
+    else if (_locationManager.inSimulationMode)
+        [_locationManager startSimulationAt:llpickPt];
     else if (!_tableView.hidden)
         [self dismissTableView];
     
