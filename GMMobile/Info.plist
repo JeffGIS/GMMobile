@@ -60,9 +60,9 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Show local properties</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>To track user&apos;s location</string>
+	<string>To track user's location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>To track user&apos;s location</string>
+	<string>To track user's location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Create user initiated audio content</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -83,6 +83,7 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>location</string>
 		<string>processing</string>
 	</array>

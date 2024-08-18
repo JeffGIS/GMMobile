@@ -171,6 +171,7 @@
 @property CGFloat widthFactor;
 @property NSString * scaleBarPromptText;
 @property SingleTapModes singleTapMode;
+@property BOOL isVisible;
 
 @end
 
@@ -504,52 +505,60 @@
 
 - (void)resignedActive:(id)selector
 {
-    _locationManager.delegate = nil;
-    [_locationManager stopUpdatingHeading];
-    if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
-        [_locationManager stopUpdatingLocation];
-    else if (CRAPI.sharedInstance.amBuildingRoute)
-        [_locationManager startSavingLocations];
-    [self clearVectorView];
+    NSLog(@"Mapview resigned active");
+
+    if (_isVisible)
+    {
+        _locationManager.delegate = nil;
+        [_locationManager stopUpdatingHeading];
+        if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+            [_locationManager stopUpdatingLocation];
+        else if (CRAPI.sharedInstance.amBuildingRoute)
+            [_locationManager startSavingLocations];
+        [self clearVectorView];
+    }
     return;
 }
 
 - (void)becameActive:(id)selector
 {
-    NSArray *savedLocations = [_locationManager retrieveSavedLocations];
-    if (CRAPI.sharedInstance.amBuildingRoute)
+    NSLog(@"Mapview became active");
+
+    if (_isVisible)
     {
-        for (TrackRoutePoint *pt in savedLocations)
+        NSArray *savedLocations = [_locationManager retrieveSavedLocations];
+        if (CRAPI.sharedInstance.amBuildingRoute)
         {
-            if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
+            for (TrackRoutePoint *pt in savedLocations)
             {
-                HuntingData *hd = HuntingData.new;
-                [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-                CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-                CRAPI.sharedInstance.amBuildingRoute = FALSE;
-                break;
+                if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
+                {
+                    HuntingData *hd = HuntingData.new;
+                    [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+                    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+                    CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                    break;
+                }
+                
+                //if (_needToInitiateRoute)
+                //{
+                //    _locationManager.fromPoint = _locationManager.currentPoint;
+                //    [self initiateRoute];
+                //}
             }
             
-            //if (_needToInitiateRoute)
-            //{
-            //    _locationManager.fromPoint = _locationManager.currentPoint;
-            //    [self initiateRoute];
-            //}
         }
-
+        if (CRAPI.sharedInstance.setToAlleyWalls)
+        {
+            [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
+            [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
+            CRAPI.sharedInstance.setToAlleyWalls = NO;
+        }
+        _locationManager.delegate = self;
+        if (CRAPI.sharedInstance.locationTrackingEnabled)
+            [self startTrackingUserLocation];
+        [self vectorViewRefresh];
     }
-    if (CRAPI.sharedInstance.locationTrackingEnabled)
-        [self startTrackingUserLocation];
-    if (CRAPI.sharedInstance.setToAlleyWalls)
-    {
-        [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
-        [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
-        CRAPI.sharedInstance.setToAlleyWalls = NO;
-    }
-    _locationManager.delegate = self;
-    if (CRAPI.sharedInstance.locationTrackingEnabled)
-        [self startTrackingUserLocation];
-    [self vectorViewRefresh];
     return;
 }
 
@@ -578,6 +587,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    NSLog(@"Mapview will appear");
     [self computeTopBottom];
     if ([CRAPI.sharedInstance.bundleID isEqualToString:@"com.gssi.newvisionmetro"])
     {
@@ -1151,7 +1161,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    NSLog(@"Mapview did appear");
+    _isVisible = TRUE;
     [self vectorViewRefresh];
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     [self setZoom:_mapView.camera.zoom];
@@ -1514,7 +1525,8 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
+    NSLog(@"Mapview will disappear");
+
     _currentScreenHeight = self.view.frame.size.height;
     [self stopTrackingUserLocation:NO];
     if (_nvssvc)
@@ -1524,6 +1536,8 @@
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    NSLog(@"Mapview did disappear");
+    _isVisible = FALSE;
     [self clearVectorView];
 }
 
@@ -2729,7 +2743,9 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 routeLayer.strokeColor = UIColor.redColor.CGColor;
                 routeLayer.fillColor = nil;
                 routeLayer.lineWidth = 5;
-                [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
+                CGContextRef cgref = UIGraphicsGetCurrentContext();
+                if (cgref)
+                    [_mapView.layer renderInContext:cgref];
             }
         }
         for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
@@ -3835,7 +3851,7 @@ haveVV:
     {
         [_vectorViewTimer invalidate];
         CRAPI.sharedInstance.keepProcessing++;
-        NSLog(@"Vector view clear");
+        //NSLog(@"Vector view clear");
         
         if (!_vectorView)
             return;
@@ -3902,7 +3918,7 @@ haveVV:
 
     _vectorView.zoom = _vectorViewZoom;
     
-    NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
+    //NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
     
     if ([ConfigurationControl.sharedInstance haveUserAerials] &&
         [ConfigurationControl.sharedInstance layer:HCLayerAerials
@@ -4141,10 +4157,10 @@ haveVV:
                        
                         if (_grayscaleMode)
                             [self createGrayscale];
-                        if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
-                            [self performSelector:@selector(displayCurrentRoute) withObject:nil afterDelay:0.2];
+                       // if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
+                       //     [self performSelector:@selector(displayCurrentRoute) withObject:nil afterDelay:0.2];
                         
-                        //[self displayCurrentRoute];
+                        [self displayCurrentRoute];
                         [self displayTrackRoute];
                         [self displayScalebar];
                         [self displayWeatherData];
@@ -6501,6 +6517,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         else
         {
+            [_locationManager stopSimulation];
             [self stopTrackingUserLocation:YES];
         }
     }

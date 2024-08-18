@@ -81,7 +81,7 @@
 @property LLPOINT firstRoutePoint;
 @property double GPSHeading;
 @property double GPSHeadingFromPoints;
-
+@property BOOL isVisible;
 
 @end
 
@@ -148,6 +148,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    NSLog(@"Compass did appear");
+    _isVisible = TRUE;
     CRAPI.sharedInstance.firstTimeZoomToCentract = NO;
     //[self DrawCompass];
     //if (CLLocationManager.locationServicesEnabled && CLLocationManager.headingAvailable)
@@ -166,6 +168,7 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    NSLog (@"Compass will disappear");
     [self removeUserWaypoints];
     [self removeProfileLayers];
     [_locationManager stopUpdatingHeading];
@@ -178,47 +181,64 @@
         [_minuteTimer invalidate];
 
 }
+
+-(void) viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    NSLog (@"Compass did disappear");
+    _isVisible = FALSE;
+}
+
 - (void)resignedActive
 {
-    if (_locationManager.delegate == self)
-        _locationManager.delegate = nil;
-    [_locationManager stopUpdatingHeading];
-    [self removeUserWaypoints];
-    [self removeProfileLayers];
-    if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
-        [_locationManager stopUpdatingLocation];
-    else if (CRAPI.sharedInstance.amBuildingRoute)
-        [_locationManager startSavingLocations];
+    NSLog (@"Compass resign active");
+    if (_isVisible)
+    {
+        if (_locationManager.delegate == self)
+            _locationManager.delegate = nil;
+        [_locationManager stopUpdatingHeading];
+        [self removeUserWaypoints];
+        [self removeProfileLayers];
+        if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
+            [_locationManager stopUpdatingLocation];
+        else if (CRAPI.sharedInstance.amBuildingRoute)
+            [_locationManager startSavingLocations];
+    }
     return;
 }
 
 - (void)becameActive
 {
-    NSArray *savedLocations = [_locationManager retrieveSavedLocations];
-    if (CRAPI.sharedInstance.amBuildingRoute)
+    NSLog (@"Compass become active");
+
+    if (_isVisible)
     {
-        for (TrackRoutePoint *pt in savedLocations)
+        NSArray *savedLocations = [_locationManager retrieveSavedLocations];
+        if (CRAPI.sharedInstance.amBuildingRoute)
         {
-            if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
+            for (TrackRoutePoint *pt in savedLocations)
             {
-                HuntingData *hd = HuntingData.new;
-                [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-                CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-                CRAPI.sharedInstance.amBuildingRoute = FALSE;
-                break;
+                if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
+                {
+                    HuntingData *hd = HuntingData.new;
+                    [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
+                    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+                    CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                    break;
+                }
+                
+                if (_needToInitiateRoute)
+                {
+                    _locationManager.fromPoint = _locationManager.currentPoint;
+                    [self initiateRoute];
+                }
             }
             
-            if (_needToInitiateRoute)
-            {
-                _locationManager.fromPoint = _locationManager.currentPoint;
-                [self initiateRoute];
-            }
         }
-
+        _locationManager.delegate = self;
+        [_locationManager startUpdatingHeading];
+        [_locationManager startUpdatingLocation];
     }
-    _locationManager.delegate = self;
-    [_locationManager startUpdatingHeading];
-    [_locationManager startUpdatingLocation];
     return;
 }
 

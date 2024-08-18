@@ -16,7 +16,7 @@ static int pageWidthFactor = 1;
     {
         self.backgroundCrimeQueue = dispatch_queue_create("backgroundCrimeQueue", NULL);
     }
-    NSLog (@"VectorView init");
+    //NSLog (@"VectorView init");
     return self;
 }
 

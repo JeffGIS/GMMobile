@@ -340,11 +340,19 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 }
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    NSLog (@"Entered foreground state");
     return;
 }
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    BOOL myapp;
+    
     NSLog (@"Became active");
+    UIApplication *app = UIApplication.sharedApplication;
+    if (application == app)
+        myapp = TRUE;
+    else
+        myapp = FALSE;
     NSString *sourceApp = [SharedDefaults.defaults stringForKey:@"SourceApplication"];
     
     CRAPI.sharedInstance.setToAlleyWalls = NO;

@@ -44,7 +44,7 @@
         self.opaque = YES;
         self.backgroundColor = UIColor.clearColor;
     }
-    NSLog (@"VectorView init");
+    //NSLog (@"VectorView init");
      return self;
 }
 - (void)dealloc
@@ -52,7 +52,7 @@
     if (_vectorLayer)
     {
         CGLayerRelease(_vectorLayer);
-        NSLog (@"VectorView dealloc");
+        //NSLog (@"VectorView dealloc");
     }
     [self freeResources];
 }
@@ -255,11 +255,11 @@ void checkLLBounds (MNMXCORD * bounds)
             if (_vectorLayer)
             {
                 CGLayerRelease(_vectorLayer);
-                NSLog (@"Vector layer released");
+                //NSLog (@"Vector layer released");
             }
             
             _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
-            NSLog (@"Vector layer created");
+            //NSLog (@"Vector layer created");
         }
         
         else
@@ -693,7 +693,7 @@ void checkLLBounds (MNMXCORD * bounds)
             else
             {
                 CGLayerRelease(_vectorLayer);
-                NSLog (@"Vector layer released");
+                //NSLog (@"Vector layer released");
                 _vectorLayer = 0;
                 self.haveVectorLayer = NO;
                 if (self.delegate)
@@ -703,7 +703,7 @@ void checkLLBounds (MNMXCORD * bounds)
             }
             
             //[self freeResources];
-            NSLog (@"Vector view complete");
+            //NSLog (@"Vector view complete");
         });
     }
 }

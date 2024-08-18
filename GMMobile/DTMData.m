@@ -34,7 +34,7 @@
         _pathDTM = [_documentsDirectory stringByAppendingString:@"/DTM/DTMIndex.dti"];
 
 
-        NSLog(@"DTM Database init");
+       // NSLog(@"DTM Database init");
     }
     
     return self;
@@ -43,7 +43,7 @@
 - (void)dealloc
 {
     [self close:TRUE];
-    NSLog(@"DTM Database dealloc");
+    //NSLog(@"DTM Database dealloc");
 }
 
 - (BOOL)open:(LPMNMXCORD) pBounds
@@ -56,7 +56,7 @@
             [NSFileManager.defaultManager removeItemAtPath:_pathDTM
                                                      error:nil];
         
-        NSLog(@"DTM Database open");
+        //NSLog(@"DTM Database open");
         
         int fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_pathDTM
                                                                                  error:nil].fileSize;
@@ -83,7 +83,7 @@
     {
 
         DTMClose (&_hDTM);
-        NSLog(@"DTM Database close");
+        //NSLog(@"DTM Database close");
         _isOpen = NO;
     }
 }
