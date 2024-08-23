@@ -505,7 +505,7 @@
 
 - (void)resignedActive:(id)selector
 {
-    NSLog(@"Mapview resigned active");
+    NSLog(@"Mapview resigned active:isVisible = %i",_isVisible);
 
     if (_isVisible)
     {
@@ -522,7 +522,7 @@
 
 - (void)becameActive:(id)selector
 {
-    NSLog(@"Mapview became active");
+    NSLog(@"Mapview became active:isVisible = %i",_isVisible);
 
     if (_isVisible)
     {
@@ -1874,6 +1874,8 @@
 - (void)mapView:(GMSMapView *)mapView
 didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
+    _scaleBarPromptText = nil;
+    _singleTapMode = STMNone;
     CGPoint pickPt = [self pointForCoordinate:coordinate];
     LLPOINT llpickPt = {0};
     llpickPt.lat = coordinate.latitude;
@@ -2929,6 +2931,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             if (_numCurrentRoutePoints++)
             {
+                _scaleBarPromptText = nil;
                 RoutePoint *routePoint = RoutePoint.new;
                 routePoint.latlon = llp;
                 [CRAPI.sharedInstance.currentRoute addObject:routePoint];

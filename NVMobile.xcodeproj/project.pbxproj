@@ -236,6 +236,7 @@
 		EB5EC3C427207566002E3E7A /* hourglass3.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5EC3C027207565002E3E7A /* hourglass3.png */; };
 		EB6142C2271761370056A9AE /* MinnesotaData.slt in Resources */ = {isa = PBXBuildFile; fileRef = EB6142C1271761370056A9AE /* MinnesotaData.slt */; };
 		EB648ECE2C7055CB006EE470 /* TurnArround.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB648ECB2C7055CB006EE470 /* TurnArround.m4a */; };
+		EB648ED02C750C5A006EE470 /* OffCourse.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB648ECF2C750C5A006EE470 /* OffCourse.m4a */; };
 		EB6800BD2902D7F8001B6EFE /* CompassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6800BC2902D7F8001B6EFE /* CompassViewController.m */; };
 		EB68767F201A48E000C6728B /* RiteHomeCompute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB68767E201A48E000C6728B /* RiteHomeCompute.m */; };
 		EB69FF41240C2EE5006F7E37 /* VOTING2018_def.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB69FF3F240C2EE4006F7E37 /* VOTING2018_def.txt */; };
@@ -594,6 +595,7 @@
 		EB5EC3C027207565002E3E7A /* hourglass3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hourglass3.png; sourceTree = "<group>"; };
 		EB6142C1271761370056A9AE /* MinnesotaData.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = MinnesotaData.slt; sourceTree = "<group>"; };
 		EB648ECB2C7055CB006EE470 /* TurnArround.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = TurnArround.m4a; sourceTree = "<group>"; };
+		EB648ECF2C750C5A006EE470 /* OffCourse.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = OffCourse.m4a; sourceTree = "<group>"; };
 		EB6800BB2902D7F8001B6EFE /* CompassViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CompassViewController.h; sourceTree = "<group>"; };
 		EB6800BC2902D7F8001B6EFE /* CompassViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CompassViewController.m; sourceTree = "<group>"; };
 		EB68767D201A48E000C6728B /* RiteHomeCompute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RiteHomeCompute.h; sourceTree = "<group>"; };
@@ -724,6 +726,7 @@
 		69AEAC74205AF0E50016DB15 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				EB648ECF2C750C5A006EE470 /* OffCourse.m4a */,
 				EB648ECB2C7055CB006EE470 /* TurnArround.m4a */,
 				EB761FB52C651FA7008BC554 /* EndOfRoute.m4a */,
 				EB761FB82C651FA9008BC554 /* Left45Degrees.m4a */,
@@ -1445,6 +1448,7 @@
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				EB761FBB2C651FA9008BC554 /* Left90Degrees.m4a in Resources */,
 				EBAEBB3D294000540004D22D /* windArrow.png in Resources */,
+				EB648ED02C750C5A006EE470 /* OffCourse.m4a in Resources */,
 				EB6142C2271761370056A9AE /* MinnesotaData.slt in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,

@@ -191,7 +191,7 @@
 
 - (void)resignedActive
 {
-    NSLog (@"Compass resign active");
+    NSLog (@"Compass resign active:isVisible = %i",_isVisible);
     if (_isVisible)
     {
         if (_locationManager.delegate == self)
@@ -209,7 +209,7 @@
 
 - (void)becameActive
 {
-    NSLog (@"Compass become active");
+    NSLog (@"Compass become active:isVisible = %i",_isVisible);
 
     if (_isVisible)
     {
@@ -994,6 +994,13 @@ double HeadingFromAZ (double az)
     _closeDistance = 1;
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
+        if (CRAPI.sharedInstance.inFollowingRouteMode)
+        {
+            if ([waypoint.type isEqual:@"RoutePoint"] && waypoint.refno != CRAPI.sharedInstance.currentSelectedWaypoint)
+            {
+                continue;
+            }
+        }
         waypoint.currentDistance = ArcDistanceLL(waypoint.latlon, currentPoint);
         if (waypoint.currentDistance < _maxWaypointDist)
         {
@@ -1043,6 +1050,7 @@ double HeadingFromAZ (double az)
                 {
                     scale = maxScale * (dist/_closeDistance);
                 }
+                scale = 0.77;
                 CGPoint point  = [self calculateTextPositonWithArcCenter: _po andAngle: textAngle andScale: scale];
                 
                 // UILabel
@@ -1053,6 +1061,8 @@ double HeadingFromAZ (double az)
                 label.font = [UIFont systemFontOfSize: fontSize];
                 label.textAlignment = NSTextAlignmentCenter;
                 label.adjustsFontSizeToFitWidth = YES;
+                label.backgroundColor = UIColor.lightGrayColor;
+                label.textColor = UIColor.blackColor;
                 if ([waypoint.type isEqual:@"Vehicle"])
                 {
                     factor = 1.6;
@@ -1070,18 +1080,15 @@ double HeadingFromAZ (double az)
                     label.textColor = UIColor.whiteColor;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
                 }
-                else
-                {
-                    label.backgroundColor = UIColor.lightGrayColor;
-                    label.textColor = UIColor.blackColor;
-                }
                 if (waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
                 {
-                    label.backgroundColor = UIColor.redColor;
-                    label.textColor = UIColor.whiteColor;
+                    label.backgroundColor = UIColor.orangeColor;
+                    label.textColor = UIColor.blackColor;
                     factor = 1.6;
                     label.font = [UIFont boldSystemFontOfSize: fontSize * factor];
                 }
+                else if ([waypoint.type isEqual:@"RoutePoint"])
+                    continue;
                 label.frame = CGRectMake(point.x,point.y, factor*_tickLineWidth2,factor*_tickLineWidth2);
                 label.center = point;
                 label.clipsToBounds = true;
@@ -1426,6 +1433,7 @@ double HeadingFromAZ (double az)
         }
         else if ([text isEqualToString:@"Start Route"])
         {
+            [_locationManager pointInMessageList:-1];
             NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
             UserWaypoint* waypoint = routePointArray[0];
             UserWaypoint* nextwaypoint = routePointArray[1];
