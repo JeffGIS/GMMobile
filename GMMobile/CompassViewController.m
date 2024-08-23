@@ -943,7 +943,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
         [self initiateRoute];
     }
     _GPSHeading = gpsHeading;
-    //_GPSHeadingFromPoints = _locationManager.GPSHeadingFromPoints;
+    _GPSHeadingFromPoints = _locationManager.GPSHeadingFromPoints;
     [self removeUserWaypoints];
     [self addUserWaypoints:_locationManager.currentPoint];
     if (_locationManager.inSimulationMode)
@@ -1234,8 +1234,8 @@ double HeadingFromAZ (double az)
 
         if (tickHead-1 <= _GPSHeading && tickHead + 1 >= _GPSHeading)
             setGreen = TRUE;
-//        else if (tickHead-1 <= _GPSHeadingFromPoints && tickHead + 1 >= _GPSHeadingFromPoints)
-//            setBlue = TRUE;
+        else if (tickHead-1 <= _GPSHeadingFromPoints && tickHead + 1 >= _GPSHeadingFromPoints)
+            setBlue = TRUE;
         else if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
         {
             if (opt == 1)
@@ -1257,11 +1257,11 @@ double HeadingFromAZ (double az)
             shapeLayer.strokeColor = UIColor.greenColor.CGColor;
             shapeLayer.currentColor = UIColor.greenColor;
         }
-/*        else if (setBlue)
+        else if (setBlue)
         {
             shapeLayer.strokeColor = UIColor.blueColor.CGColor;
             shapeLayer.currentColor = UIColor.blueColor;
-        }*/
+        }
         else if (setRed)
         {
             numRed++;
@@ -1698,7 +1698,7 @@ double HeadingFromAZ (double az)
     if (theHeading > 270 + 45)
         directionLabelText = @"N";
     
-    [self setInfoLabelText:[NSString stringWithFormat:@"%i %@",angle,directionLabelText]];
+    [self setInfoLabelText:[NSString stringWithFormat:@"%i %@\n%.2f %.2f",angle,directionLabelText,_GPSHeading,_GPSHeadingFromPoints]];
     _infoLabelOption = 0;
     CRAPI.sharedInstance.currentFocusWaypoint = -1;
     [self removeProfileLayers];
