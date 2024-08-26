@@ -537,6 +537,7 @@
                     [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
                     CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
                     CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                    [_locationManager endLocationTrackingMessage];
                     break;
                 }
                 
@@ -2527,7 +2528,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         int width = 200, height=20;
         _scaleBarAtTop = TRUE;
         _scaleLabel1 = UILabel.new;
-        _scaleLabel1.backgroundColor = UIColor.whiteColor;
+        if (CRAPI.sharedInstance.amBuildingRoute)
+            _scaleLabel1.backgroundColor = UIColor.lightGrayColor;
+        else
+            _scaleLabel1.backgroundColor = UIColor.whiteColor;
         _scaleLabel1.frame = CGRectMake(_left,_top, _right-_left,height);
         _scaleLayerHeight = height;
         {
@@ -6607,6 +6611,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             CRAPI.sharedInstance.amBuildingRoute = FALSE;
+            [_locationManager endLocationTrackingMessage];
         }
     }
     

@@ -224,6 +224,7 @@
                     [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
                     CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
                     CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                    [_locationManager endLocationTrackingMessage];
                     break;
                 }
                 
@@ -936,6 +937,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
         [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
         CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
         CRAPI.sharedInstance.amBuildingRoute = FALSE;
+        [_locationManager endLocationTrackingMessage];
     }
     
     if (first)
@@ -1383,7 +1385,10 @@ double HeadingFromAZ (double az)
         time_t itime = NSDate.date.timeIntervalSince1970;
         NSString * date = textAfter ([WeatherData forecastDayandTime:itime],@"Today ");
         dispatch_async(dispatch_get_main_queue(), ^{
-            _selectDateLabel.text = [NSString stringWithFormat:@"Current Time\n%@",date];
+            if (CRAPI.sharedInstance.amBuildingRoute)
+                _selectDateLabel.backgroundColor = UIColor.lightGrayColor;
+            else
+                _selectDateLabel.backgroundColor = UIColor.whiteColor;
         });
     }
 
