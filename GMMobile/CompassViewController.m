@@ -214,6 +214,7 @@
     if (_isVisible)
     {
         NSArray *savedLocations = [_locationManager retrieveSavedLocations];
+        /*
         if (CRAPI.sharedInstance.amBuildingRoute)
         {
             for (TrackRoutePoint *pt in savedLocations)
@@ -236,6 +237,7 @@
             }
             
         }
+         */
         _locationManager.delegate = self;
         [_locationManager startUpdatingHeading];
         [_locationManager startUpdatingLocation];

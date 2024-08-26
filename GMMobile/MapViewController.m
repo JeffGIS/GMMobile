@@ -527,6 +527,7 @@
     if (_isVisible)
     {
         NSArray *savedLocations = [_locationManager retrieveSavedLocations];
+        /*
         if (CRAPI.sharedInstance.amBuildingRoute)
         {
             for (TrackRoutePoint *pt in savedLocations)
@@ -549,6 +550,7 @@
             }
             
         }
+         */
         if (CRAPI.sharedInstance.setToAlleyWalls)
         {
             [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
