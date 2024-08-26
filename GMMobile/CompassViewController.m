@@ -238,6 +238,9 @@
         _locationManager.delegate = self;
         [_locationManager startUpdatingHeading];
         [_locationManager startUpdatingLocation];
+        [self getWeatherData];
+        [self startMinuteTimer:TRUE];
+
     }
     return;
 }
@@ -251,6 +254,7 @@
         time_t itime = NSDate.date.timeIntervalSince1970;
         seconds = 60 - (itime % 60);
     }
+    [_minuteTimer invalidate];
     _minuteTimer = [NSTimer scheduledTimerWithTimeInterval:seconds
                                                       target:self
                                                   selector:@selector(updateMinute:)
@@ -1230,12 +1234,10 @@ double HeadingFromAZ (double az)
         double tickHead = shapeLayer.heading;
         BOOL setRed = FALSE;
         BOOL setGreen = FALSE;
-        BOOL setBlue = FALSE;
+//        BOOL setBlue = FALSE;
 
-        if (tickHead-1 <= _GPSHeading && tickHead + 1 >= _GPSHeading)
+        if (tickHead-1 <= _GPSHeadingFromPoints && tickHead + 1 >= _GPSHeadingFromPoints)
             setGreen = TRUE;
-        else if (tickHead-1 <= _GPSHeadingFromPoints && tickHead + 1 >= _GPSHeadingFromPoints)
-            setBlue = TRUE;
         else if (CRAPI.sharedInstance.currentSelectedWaypoint > 0)
         {
             if (opt == 1)
@@ -1257,11 +1259,12 @@ double HeadingFromAZ (double az)
             shapeLayer.strokeColor = UIColor.greenColor.CGColor;
             shapeLayer.currentColor = UIColor.greenColor;
         }
-        else if (setBlue)
+/*        else if (setBlue)
         {
             shapeLayer.strokeColor = UIColor.blueColor.CGColor;
             shapeLayer.currentColor = UIColor.blueColor;
         }
+ */
         else if (setRed)
         {
             numRed++;
@@ -1698,7 +1701,8 @@ double HeadingFromAZ (double az)
     if (theHeading > 270 + 45)
         directionLabelText = @"N";
     
-    [self setInfoLabelText:[NSString stringWithFormat:@"%i %@\n%.2f %.2f",angle,directionLabelText,_GPSHeading,_GPSHeadingFromPoints]];
+    //[self setInfoLabelText:[NSString stringWithFormat:@"%i %@\n%.2f %.2f",angle,directionLabelText,_GPSHeading,_GPSHeadingFromPoints]];
+    [self setInfoLabelText:[NSString stringWithFormat:@"%i %@",angle,directionLabelText]];
     _infoLabelOption = 0;
     CRAPI.sharedInstance.currentFocusWaypoint = -1;
     [self removeProfileLayers];
