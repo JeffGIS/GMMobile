@@ -152,7 +152,7 @@
 @property BOOL displayTrackingRoute;
 @property UILabel *scaleLabel1, *scaleLabel2;
 @property int  pickedRefno;
-@property BOOL hideScaleBar;
+@property (nonatomic) BOOL hideScaleBar;
 @property NSMutableArray * forecastDates;
 @property WeatherRecord * currentWeatherData;
 @property UIImageView* windImage;
@@ -397,6 +397,7 @@
     [self.view addSubview:_secondView];
     [self setupTableView];
     
+    _mapToolbar = MapToolbar.new;
     _mapToolbarCenter = CGPointMake((self.view.frame.size.width / 2.0),
                                            (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
     
@@ -2089,7 +2090,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [optionList addObject:@"Add Compass Waypoint"];
 
                 
-                _hideScaleBar = TRUE;
+                self.hideScaleBar = TRUE;
                 NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                                   delegate:self
                                                                                      title:@"Waypoint Options"
@@ -2283,7 +2284,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (CRAPI.sharedInstance.currentTrackRoute.count > 1 && _displayTrackingRoute)
         [optionList addObject:@"Simulate Route"];
 
-    _hideScaleBar = TRUE;
+    self.hideScaleBar = TRUE;
     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                       delegate:self
                                                                          title:@"Options"
@@ -2507,16 +2508,35 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         [_scaleLabel2 removeFromSuperview];
 
 }
+
+- (void) setHideScaleBar:(BOOL)hideScaleBar
+{
+    _hideScaleBar = hideScaleBar;
+}
 -(void) displayScalebar
 {
+    static CGRect lastTbframe;
+    static MapToolbarOrientation lastOrientation;
+    MapToolbarOrientation orientation;
     CGRect mvf = _mapView.frame;
     CGRect sf = self.view.frame;
     [self removeScaleBar];
     _scaleLabel1 = _scaleLayer = nil;
-     if (_hideScaleBar)
+     if (self.hideScaleBar)
         return;
     float lineWidth = 5;
     CGRect tbframe = _mapToolbar.frame;
+    if (_mapToolbar.orientation == MapToolbarOrientationMinimized)
+    {
+        tbframe = lastTbframe;
+        orientation = lastOrientation;
+    }
+    else
+    {
+        lastTbframe = tbframe;
+        orientation = _mapToolbar.orientation;
+    }
+    lastOrientation = orientation;
     CGPoint pt1, pt2, pt3, pt4, pt5, pt6;
     _scaleLayer = CAShapeLayer.layer;
     CAShapeLayer *layer = _scaleLayer;
@@ -2534,7 +2554,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
             _scaleLabel1.backgroundColor = UIColor.lightGrayColor;
         else
             _scaleLabel1.backgroundColor = UIColor.whiteColor;
-        _scaleLabel1.frame = CGRectMake(_left,_top, _right-_left,height);
+        if (orientation == MapToolbarOrientationTop)
+            _scaleLabel1.frame = CGRectMake(_left,_bottom+height*1.25, _right-_left,height);
+        else
+            _scaleLabel1.frame = CGRectMake(_left,_top, _right-_left,height);
         _scaleLayerHeight = height;
         {
             UIBezierPath *path = UIBezierPath.bezierPath;
@@ -2611,7 +2634,11 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel1.backgroundColor = UIColor.whiteColor;
         CGRect frame1 = self.view.frame;
         CGRect frame2 = _mapView.frame;
-        _scaleLabel1.frame = CGRectMake(_right-width,_top, width,frame2.size.height);
+        if (orientation == MapToolbarOrientationRight)
+            _scaleLabel1.frame = CGRectMake(_left,_top, width,frame2.size.height);
+        else
+            _scaleLabel1.frame = CGRectMake(_right-width,_top, width,frame2.size.height);
+
         _scaleLayerHeight = height;
         {
             UIBezierPath *path = UIBezierPath.bezierPath;
@@ -2843,7 +2870,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 -(void) displayWeatherData
 {
     [self clearCurrentWeatherData];
-    if (_hideScaleBar)
+    if (self.hideScaleBar)
        return;
     if (!_currentWeatherData)
         return;
@@ -3892,8 +3919,8 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
-    if (_hideScaleBar)
-        return;
+//    if (self.hideScaleBar)
+//        return;
     [self clearCurrentRoute];
 
     if (CRAPI.sharedInstance.becameActive &&
@@ -5564,7 +5591,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         _continueLoad = NO;
     else
         [popoverView hide];
-    _hideScaleBar = NO;
+    self.hideScaleBar = NO;
     [self displayScalebar];
     [self displayWeatherData];
 }
@@ -6886,7 +6913,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 -(void) displayforecast
 {
     [self removeScaleBar];
-    _hideScaleBar = YES;
+    self.hideScaleBar = YES;
     [self clearCurrentWeatherData];
     NVPopoverTableView *nvptv =
     [NVPopoverTableView showPopoverTableViewInView:self.view
@@ -7492,7 +7519,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         _mapToolbar.previousOrientation = _mapToolbar.orientation;
         _mapToolbar.orientation = MapToolbarOrientationMinimized;
-        _hideScaleBar = TRUE;
+        //self.hideScaleBar = TRUE;
         [self displayScalebar];
         [UIView animateWithDuration:duration animations:^{
             _mapToolbar.frame = CGRectMake(margin, (windowHeight - _compassSize - margin), _compassSize, _compassSize);
@@ -7511,7 +7538,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
     else if (_mapToolbar.center.y < (self.view.frame.size.height * 0.25))
     {
-        goto Bottom;
+        //goto Bottom;
         [UIView animateWithDuration:0.25
                          animations:^{
                              [_mapToolbar animateToHorizontalOrientation];
@@ -7589,7 +7616,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [self restoreMapToolbarPosition];
     [self updateCompassPosition:YES];
-    _hideScaleBar = FALSE;
+    self.hideScaleBar = FALSE;
     [self displayScalebar];
 }
 
@@ -7643,7 +7670,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
 {
     [popoverTableView hide:YES];
-    _hideScaleBar = NO;
+    self.hideScaleBar = NO;
     [self displayScalebar];
     [self displayWeatherData];
     [self vectorViewRefresh];
@@ -7743,7 +7770,7 @@ didSelectPDFButtonWithText:(NSString *)text
             GMSCameraUpdate *update = [GMSCameraUpdate setCamera:_mapView.camera];
             [self moveCamera:update];
             [popoverTableView hide:YES];
-            _hideScaleBar = NO;
+            self.hideScaleBar = NO;
 
             [self vectorViewRefresh];
         }
@@ -7828,7 +7855,7 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             
             [self removeScaleBar];
-            _hideScaleBar = YES;
+            self.hideScaleBar = YES;
             [self clearCurrentWeatherData];
 
             [NVTextViewAlert showTextViewAlertinView:self.view
@@ -7842,7 +7869,7 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             [popoverTableView hide:YES];
             [self removeScaleBar];
-            _hideScaleBar = YES;
+            self.hideScaleBar = YES;
             [self clearCurrentWeatherData];
             HuntingData *hd = HuntingData.new;
             NSArray *list = [hd getConfiguratonList];
@@ -7960,7 +7987,7 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             [popoverTableView hide:YES];
             [self removeScaleBar];
-            _hideScaleBar = YES;
+            self.hideScaleBar = YES;
             [self clearCurrentWeatherData];
             HuntingData *hd = HuntingData.new;
             NSArray * trArray = [hd getTrackRoutes];
@@ -7988,7 +8015,7 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text containsString:@"Route:"])
         {
             [popoverTableView hide:YES];
-            _hideScaleBar = YES;
+            self.hideScaleBar = YES;
             [self clearCurrentWeatherData];
             NSMutableArray *optionList = NSMutableArray.array;
             [optionList addObject:@"Display Saved Route"];
@@ -8047,7 +8074,7 @@ didSelectPDFButtonWithText:(NSString *)text
                                               type:MarkerInfoWindowTypePID];
         }
     }
-    _hideScaleBar = FALSE;
+    self.hideScaleBar = FALSE;
     [popoverTableView hide:YES];
     [self displayScalebar];
 }
