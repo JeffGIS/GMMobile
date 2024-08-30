@@ -2625,6 +2625,16 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
         _scaleLabel2.adjustsFontSizeToFitWidth = YES;
         _scaleLabel2.minimumScaleFactor = 0.15;
+        if (orientation == MapToolbarOrientationTop)
+        {
+            _scaleLabel1.center = CGPointMake((_mapView.frame.size.width / 2.0),
+                                              (self.view.frame.size.height -
+                                               (_scaleLabel1.frame.size.height / 2.0))-2);
+            _scaleLabel2.center = CGPointMake((_mapView.frame.size.width / 2.0),
+                                              (self.view.frame.size.height -
+                                               (_scaleLabel2.frame.size.height / 2.0))-2);
+        }
+
     }
     else
     {

@@ -140,8 +140,15 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     else if ([bundleID isEqualToString:@"com.gssi.newvisionmngame"])
         appID = HCConfigMinnesotaGame;
-    appID = HCConfigHunting;
-    //appID = HCConfigMetroProp;
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] init];
+    int NVCRIS_GroupNum = (int)[defaults integerForKey:@"NVCRIS_group_number"];
+    BOOL isRiteHome = [defaults boolForKey:@"RiteHome"];
+
+    if (isRiteHome)
+        appID = HCConfigMetroProp;
+    else
+        appID = HCConfigHunting;
+
     if (appID < NUMHardCodedConfigs)
     {
         [UserDefaults.defaults saveNSInteger:(appID + 1) forKey:@"CurrentConfig"];

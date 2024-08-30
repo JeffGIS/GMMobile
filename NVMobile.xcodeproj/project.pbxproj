@@ -204,6 +204,7 @@
 		BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96A01E85933100B6A9F7 /* TheftFromAuto.png */; };
 		BB8B96A31E85933100B6A9F7 /* SelectedTheft.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96A11E85933100B6A9F7 /* SelectedTheft.png */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
+		EB0FE5992C8203880030D76C /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EB0FE5982C8203880030D76C /* Settings.bundle */; };
 		EB10EEFA1F93AF6B006A6938 /* CreateBatchCrimeMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -544,6 +545,7 @@
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
 		D582A1C8109A4A12BCF6B9E0 /* Pods-NVMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NVMobile.debug.xcconfig"; path = "Target Support Files/Pods-NVMobile/Pods-NVMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
+		EB0FE5982C8203880030D76C /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		EB10EEF81F93AF6B006A6938 /* CreateBatchCrimeMaps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateBatchCrimeMaps.h; sourceTree = "<group>"; };
 		EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateBatchCrimeMaps.m; sourceTree = "<group>"; };
 		EB178F041C4FE4BA00B194AD /* UserLayerDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserLayerDisplay.h; sourceTree = "<group>"; };
@@ -1159,6 +1161,7 @@
 				698664EE1CC2A0AD001E848F /* NVMobile.entitlements */,
 				6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
+				EB0FE5982C8203880030D76C /* Settings.bundle */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1438,6 +1441,7 @@
 				69E2E7E11FD8628000050D10 /* ytIcon.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */,
+				EB0FE5992C8203880030D76C /* Settings.bundle in Resources */,
 				69E2E7E31FD864E800050D10 /* pdfIcon.png in Resources */,
 				EB648ED22C7CC42A006EE470 /* EndLocationTracking.m4a in Resources */,
 				69D625571FA3F1F6008D6F08 /* hsvPlay.png in Resources */,
