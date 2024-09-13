@@ -1508,6 +1508,47 @@ displayCharacteristics:(DisplayCharacteristics *)dc
               andWidth:width];
         free (llpoints);
     }
+    //display track route
+    n = CRAPI.sharedInstance.currentTrackRoute.count;
+    color = UIColor.greenColor.CGColor;
+    if (n > 1)
+    {
+        int ipt = 0;
+        BOOL firstPoint = TRUE;
+        LPDPOINT llpoints = malloc(n * sizeof(DPOINT) + 4);
+        
+        for (TrackRoutePoint *rpt in CRAPI.sharedInstance.currentTrackRoute)
+        {
+            firstPoint = FALSE;
+            llpoints[ipt] = LLPointToDPoint (rpt.latlon);
+            llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+            ipt++;
+        }
+        
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.yellowColor.CGColor
+              andWidth:width+4];
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.blackColor.CGColor
+              andWidth:width+2];
+        [self drawRoad:context
+               nPoints:n
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:color
+              andWidth:width];
+        free (llpoints);
+    }
+
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
     [hd close:opened];

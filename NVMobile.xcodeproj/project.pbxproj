@@ -267,6 +267,7 @@
 		EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */; };
 		EBE5A85A2907130B00F0A5A1 /* compass_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A8572907130B00F0A5A1 /* compass_icon.png */; };
 		EBE5A85C29071F8600F0A5A1 /* compass_icon_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */; };
+		EBE5A8F22C84B338009C808D /* VehicleLocationSaved.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EBE5A8EF2C84B338009C808D /* VehicleLocationSaved.m4a */; };
 		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A201BE791C400E0C1B3 /* Theme.m */; };
 		EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */; };
@@ -641,6 +642,7 @@
 		EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Destinations.m; sourceTree = "<group>"; };
 		EBE5A8572907130B00F0A5A1 /* compass_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass_icon.png; sourceTree = "<group>"; };
 		EBE5A85B29071F8600F0A5A1 /* compass_icon_grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass_icon_grey.png; sourceTree = "<group>"; };
+		EBE5A8EF2C84B338009C808D /* VehicleLocationSaved.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = VehicleLocationSaved.m4a; sourceTree = "<group>"; };
 		EBF1356E1AE282A30046990F /* ConfigurationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationControl.h; sourceTree = "<group>"; };
 		EBF1356F1AE282A30046990F /* ConfigurationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ConfigurationControl.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBFC2A1F1BE791C400E0C1B3 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
@@ -730,6 +732,7 @@
 		69AEAC74205AF0E50016DB15 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				EBE5A8EF2C84B338009C808D /* VehicleLocationSaved.m4a */,
 				EB648ED12C7CC42A006EE470 /* EndLocationTracking.m4a */,
 				EB648ECF2C750C5A006EE470 /* OffCourse.m4a */,
 				EB648ECB2C7055CB006EE470 /* TurnArround.m4a */,
@@ -1466,6 +1469,7 @@
 				69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */,
 				697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */,
 				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
+				EBE5A8F22C84B338009C808D /* VehicleLocationSaved.m4a in Resources */,
 				EB761FB92C651FA9008BC554 /* EndOfRoute.m4a in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				BB8B96991E8568CA00B6A9F7 /* Assault.png in Resources */,

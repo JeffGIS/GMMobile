@@ -1391,6 +1391,8 @@ double HeadingFromAZ (double az)
                 _selectDateLabel.backgroundColor = UIColor.lightGrayColor;
             else
                 _selectDateLabel.backgroundColor = UIColor.whiteColor;
+            _selectDateLabel.text = [NSString stringWithFormat:@"Current Time\n%@",date];
+
         });
     }
 
@@ -1663,7 +1665,12 @@ double HeadingFromAZ (double az)
 {
     if (text.length > 100)
         iii = 1;
-    _infoLabel.text = text;
+    if (![text containsString:@"\n"])
+        text = [NSString stringWithFormat:@"%@\n%@",text,_locationManager.currentMotionActivity];
+    dispatch_async(dispatch_get_main_queue(), ^{
+                _infoLabel.text = text;
+            });
+    
 }
 -(void) update
 {
