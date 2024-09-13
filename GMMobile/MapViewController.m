@@ -158,7 +158,6 @@
 @property UIImageView* windImage;
 @property UILabel * weatherLabel;
 @property NSArray * currentForecast;
-@property int needToSetVehicleLocation;
 @property NSMutableArray * routeSubLayers;
 @property int mapTypeFromConfig;
 @property int top,left,right,bottom,midx,midy;
@@ -514,7 +513,7 @@
         [_locationManager stopUpdatingHeading];
         if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
             [_locationManager stopUpdatingLocation];
-        else if (CRAPI.sharedInstance.amBuildingRoute)
+        else if (CRAPI.sharedInstance.amBuildingTrackRoute)
             [_locationManager startSavingLocations];
         [self clearVectorView];
     }
@@ -529,7 +528,7 @@
     {
         NSArray *savedLocations = [_locationManager retrieveSavedLocations];
         /*
-        if (CRAPI.sharedInstance.amBuildingRoute)
+        if (CRAPI.sharedInstance.amBuildingTrackRoute)
         {
             for (TrackRoutePoint *pt in savedLocations)
             {
@@ -538,7 +537,7 @@
                     HuntingData *hd = HuntingData.new;
                     [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
                     CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-                    CRAPI.sharedInstance.amBuildingRoute = FALSE;
+                    CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
                     [_locationManager endLocationTrackingMessage];
                     break;
                 }
@@ -2254,7 +2253,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [optionList addObject:@"________________________"];
 
     [optionList addObject:@"Proximity Mapping"];
-    if (CRAPI.sharedInstance.amBuildingRoute)
+    if (CRAPI.sharedInstance.amBuildingTrackRoute)
     {
         [optionList addObject:@"________________________"];
         [optionList addObject:@"Stop Tracking Location"];
@@ -2550,7 +2549,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         int width = 200, height=20;
         _scaleBarAtTop = TRUE;
         _scaleLabel1 = UILabel.new;
-        if (CRAPI.sharedInstance.amBuildingRoute)
+        if (CRAPI.sharedInstance.amBuildingTrackRoute)
             _scaleLabel1.backgroundColor = UIColor.lightGrayColor;
         else
             _scaleLabel1.backgroundColor = UIColor.whiteColor;
@@ -6609,6 +6608,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 -(void)shouldRefreshScreen:(TrackLocationManager *)manager
 {
+    [_mapToolbar selectMyLocationButton:YES];
+    [self vectorViewRefresh];
+}
+
+-(void)didMarkVehicleLocation:(TrackLocationManager *)manager
+{
+    [_mapToolbar selectMyLocationButton:YES];
+    [self vectorViewRefresh];
     [self vectorViewRefresh];
 }
 
@@ -6621,21 +6628,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _currentLocation = llpt;
     CRAPI.sharedInstance.currentGPSLocation = llpt;
 
-    if (_needToSetVehicleLocation)
-    {
-        if (_needToSetVehicleLocation-- == 1)
-        {
-            HuntingData *hd = HuntingData.new;
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amBuildingRoute = TRUE;
-            [hd deleteWaypointsOfType:@"Vehicle"];
-            [hd addWaypoint:@"V" type:@"Vehicle" latlon:llpt description:@"" displayOnCompass:YES];
-            [_mapToolbar selectMyLocationButton:YES];
-            CRAPI.sharedInstance.currentVehicleLocation = llpt;
-            _locationManager.distanceFilter = kCLDistanceFilterNone;
-            [self vectorViewRefresh];
-        }
-    }
     TrackRoutePoint *routePoint = TrackRoutePoint.new;
     routePoint.time = NSDate.timeIntervalSinceReferenceDate;
     routePoint.latlon = llpt;
@@ -6649,7 +6641,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amBuildingRoute = FALSE;
+            CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
             [_locationManager endLocationTrackingMessage];
         }
     }
@@ -7816,8 +7808,12 @@ didSelectPDFButtonWithText:(NSString *)text
     {
         if ([text isEqualToString:@"Mark Vehicle Location"])
         {
-            _needToSetVehicleLocation = 3;
+            [_locationManager markVehicleLocation];
+            
             _locationManager.distanceFilter = kCLDistanceFilterNone;
+            _locationManager.delegate = self;
+            [_locationManager requestLocation];
+            [_locationManager startUpdatingLocation];
             [self startTrackingUserLocation];
         }
         else if ([text isEqualToString:@"Show Tracking Route"])
@@ -7832,7 +7828,7 @@ didSelectPDFButtonWithText:(NSString *)text
         }
         else if ([text isEqualToString:@"Start Tracking Route"])
         {
-            CRAPI.sharedInstance.amBuildingRoute = TRUE;
+            CRAPI.sharedInstance.amBuildingTrackRoute = TRUE;
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
             [_mapToolbar selectMyLocationButton:YES];
             [self startTrackingUserLocation];
@@ -7843,7 +7839,7 @@ didSelectPDFButtonWithText:(NSString *)text
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
             CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amBuildingRoute = FALSE;
+            CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
             _mapToolbar.userLocationButton.backgroundColor = UIColor.greenColor;
         }
         else if ([text isEqualToString:@"Clear Tracking Route"])

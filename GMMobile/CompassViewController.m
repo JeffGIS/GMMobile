@@ -201,7 +201,7 @@
         [self removeProfileLayers];
         if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
             [_locationManager stopUpdatingLocation];
-        else if (CRAPI.sharedInstance.amBuildingRoute)
+        else if (CRAPI.sharedInstance.amBuildingTrackRoute)
             [_locationManager startSavingLocations];
     }
     return;
@@ -938,7 +938,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
         HuntingData *hd = HuntingData.new;
         [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
         CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-        CRAPI.sharedInstance.amBuildingRoute = FALSE;
+        CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
         [_locationManager endLocationTrackingMessage];
     }
     
@@ -1387,7 +1387,7 @@ double HeadingFromAZ (double az)
         time_t itime = NSDate.date.timeIntervalSince1970;
         NSString * date = textAfter ([WeatherData forecastDayandTime:itime],@"Today ");
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (CRAPI.sharedInstance.amBuildingRoute)
+            if (CRAPI.sharedInstance.amBuildingTrackRoute)
                 _selectDateLabel.backgroundColor = UIColor.lightGrayColor;
             else
                 _selectDateLabel.backgroundColor = UIColor.whiteColor;
