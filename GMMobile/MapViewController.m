@@ -513,8 +513,6 @@
         [_locationManager stopUpdatingHeading];
         if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
             [_locationManager stopUpdatingLocation];
-        else if (CRAPI.sharedInstance.amBuildingTrackRoute)
-            [_locationManager startSavingLocations];
         [self clearVectorView];
     }
     return;
@@ -527,30 +525,6 @@
     if (_isVisible)
     {
         NSArray *savedLocations = [_locationManager retrieveSavedLocations];
-        /*
-        if (CRAPI.sharedInstance.amBuildingTrackRoute)
-        {
-            for (TrackRoutePoint *pt in savedLocations)
-            {
-                if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
-                {
-                    HuntingData *hd = HuntingData.new;
-                    [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-                    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-                    CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
-                    [_locationManager endLocationTrackingMessage];
-                    break;
-                }
-                
-                //if (_needToInitiateRoute)
-                //{
-                //    _locationManager.fromPoint = _locationManager.currentPoint;
-                //    [self initiateRoute];
-                //}
-            }
-            
-        }
-         */
         if (CRAPI.sharedInstance.setToAlleyWalls)
         {
             [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
@@ -6570,13 +6544,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)startTrackingUserLocation
 {
-    {
-        _locationManager.delegate = self;
-        [_locationManager requestLocation];
-        [_locationManager startUpdatingLocation];
-        CRAPI.sharedInstance.locationTrackingEnabled = YES;
-        [self.view bringSubviewToFront:_myLocationMarker];
-    }
+    _locationManager.delegate = self;
+    [_locationManager requestLocation];
+    [_locationManager startUpdatingLocation];
+    CRAPI.sharedInstance.locationTrackingEnabled = YES;
+    CRAPI.sharedInstance.amBuildingTrackRoute = TRUE;
+    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+    [_mapToolbar selectMyLocationButton:YES];
+        
+    [self.view bringSubviewToFront:_myLocationMarker];
 }
 
 - (void)stopTrackingUserLocation:(BOOL)setEnabled
@@ -6616,7 +6592,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [_mapToolbar selectMyLocationButton:YES];
     [self vectorViewRefresh];
-    [self vectorViewRefresh];
+}
+- (void)didInitiateTracking:(TrackLocationManager *)manager;
+{
+    [self startTrackingUserLocation];
 }
 
 -(void)locationManager:(TrackLocationManager *)manager
@@ -6632,20 +6611,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     routePoint.time = NSDate.timeIntervalSinceReferenceDate;
     routePoint.latlon = llpt;
     routePoint.GPSHeading = gpsHeading;
-    int st = [CRAPI.sharedInstance addPointToTrackRoute: routePoint];
-    if (st > 0)
-    {
-        [self displayTrackRoute];
-        if (st == 2)
-        {
-            HuntingData *hd = HuntingData.new;
-            [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
-            [_locationManager endLocationTrackingMessage];
-        }
-    }
-    
     _locationCount++;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
@@ -7808,13 +7773,11 @@ didSelectPDFButtonWithText:(NSString *)text
     {
         if ([text isEqualToString:@"Mark Vehicle Location"])
         {
-            [_locationManager markVehicleLocation];
-            
             _locationManager.distanceFilter = kCLDistanceFilterNone;
             _locationManager.delegate = self;
             [_locationManager requestLocation];
             [_locationManager startUpdatingLocation];
-            [self startTrackingUserLocation];
+            [_locationManager markVehicleLocation];
         }
         else if ([text isEqualToString:@"Show Tracking Route"])
         {
@@ -7828,9 +7791,6 @@ didSelectPDFButtonWithText:(NSString *)text
         }
         else if ([text isEqualToString:@"Start Tracking Route"])
         {
-            CRAPI.sharedInstance.amBuildingTrackRoute = TRUE;
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-            [_mapToolbar selectMyLocationButton:YES];
             [self startTrackingUserLocation];
         }
         else if ([text isEqualToString:@"Stop Tracking Location"] ||

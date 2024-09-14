@@ -201,8 +201,6 @@
         [self removeProfileLayers];
         if (!CRAPI.sharedInstance.inFollowingRouteMode && !CRAPI.sharedInstance.locationTrackingEnabled)
             [_locationManager stopUpdatingLocation];
-        else if (CRAPI.sharedInstance.amBuildingTrackRoute)
-            [_locationManager startSavingLocations];
     }
     return;
 }
@@ -214,30 +212,6 @@
     if (_isVisible)
     {
         NSArray *savedLocations = [_locationManager retrieveSavedLocations];
-        /*
-        if (CRAPI.sharedInstance.amBuildingRoute)
-        {
-            for (TrackRoutePoint *pt in savedLocations)
-            {
-                if ([CRAPI.sharedInstance addPointToTrackRoute: pt] == 2)
-                {
-                    HuntingData *hd = HuntingData.new;
-                    [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-                    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-                    CRAPI.sharedInstance.amBuildingRoute = FALSE;
-                    [_locationManager endLocationTrackingMessage];
-                    break;
-                }
-                
-                if (_needToInitiateRoute)
-                {
-                    _locationManager.fromPoint = _locationManager.currentPoint;
-                    [self initiateRoute];
-                }
-            }
-            
-        }
-         */
         _locationManager.delegate = self;
         [_locationManager startUpdatingHeading];
         [_locationManager startUpdatingLocation];
@@ -933,15 +907,6 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     routePoint.time = NSDate.timeIntervalSinceReferenceDate;
     routePoint.latlon = llpt;
     routePoint.GPSHeading = gpsHeading;
-    if ([CRAPI.sharedInstance addPointToTrackRoute: routePoint] == 2)
-    {
-        HuntingData *hd = HuntingData.new;
-        [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-        CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
-        CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
-        [_locationManager endLocationTrackingMessage];
-    }
-    
     if (first)
         [self getWeatherData];
     first = false;
