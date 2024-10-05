@@ -2714,7 +2714,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         RoutePoint *routePoint = RoutePoint.new;
         routePoint.refno = wp.refno;
         routePoint.latlon = wp.latlon;
-        //routePoint.UTM = wp.ut
+        routePoint.UTM = wp.UTM;
         [CRAPI.sharedInstance.currentRoute addObject:routePoint];
     }
 }

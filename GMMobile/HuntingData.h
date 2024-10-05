@@ -18,6 +18,7 @@
 @interface UserWaypoint : NSObject
 @property (nonatomic) INT64 refno;
 @property (nonatomic) LLPOINT latlon;
+@property (nonatomic) DPOINT UTM;
 @property (nonatomic) NSString * name;
 @property (nonatomic) NSString *type;
 @property (nonatomic) NSString *desc;
