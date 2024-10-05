@@ -77,8 +77,6 @@
 @property NSTimer * minuteTimer;
 @property BOOL firstMinute;
 @property NVPopoverTableView *nvptv;
-@property BOOL needToInitiateRoute;
-@property LLPOINT firstRoutePoint;
 @property double GPSHeading;
 @property double GPSHeadingFromPoints;
 @property BOOL isVisible;
@@ -910,11 +908,6 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     if (first)
         [self getWeatherData];
     first = false;
-    if (_needToInitiateRoute)
-    {
-        _locationManager.fromPoint = _locationManager.currentPoint;
-        [self initiateRoute];
-    }
     _GPSHeading = gpsHeading;
     _GPSHeadingFromPoints = _locationManager.GPSHeadingFromPoints;
     [self removeUserWaypoints];
@@ -1401,7 +1394,6 @@ double HeadingFromAZ (double az)
     }
     else
     {
-        HuntingData *hd = HuntingData.new;
         if ([text isEqualToString:@"Exit Route"])
         {
             [_locationManager exitRouteMode];
@@ -1410,25 +1402,7 @@ double HeadingFromAZ (double az)
         }
         else if ([text isEqualToString:@"Start Route"])
         {
-            [_locationManager pointInMessageList:-1];
-            NSArray <UserWaypoint*> *routePointArray = [hd getWaypointsOfType:@"RoutePoint"];
-            UserWaypoint* waypoint = routePointArray[0];
-            UserWaypoint* nextwaypoint = routePointArray[1];
-            CRAPI.sharedInstance.currentSelectedWaypoint = waypoint.refno;
-            _firstRoutePoint = waypoint.latlon;
-            if (!CRAPI.sharedInstance.locationTrackingEnabled)
-            {
-                _locationManager.distanceFilter = kCLDistanceFilterNone;
-                [_locationManager startUpdatingLocation];
-                CRAPI.sharedInstance.locationTrackingEnabled = TRUE;
-                _needToInitiateRoute = TRUE;
-            }
-            else
-            {
-                _locationManager.distanceFilter = kCLDistanceFilterNone;
-                _locationManager.fromPoint = _locationManager.currentPoint;
-                _needToInitiateRoute = TRUE;
-            }
+            [_locationManager startRoute];
         }
         else if ([text isEqualToString:@"Get Weather Data"])
         {
@@ -1449,14 +1423,11 @@ double HeadingFromAZ (double az)
     [_singleFingerTap setEnabled:YES];
 
 }
--(void) initiateRoute
+
+- (void)didInitiateRoute:(TrackLocationManager *)manager
 {
-    _needToInitiateRoute = FALSE;
-    _locationManager.routeStartPoint = _locationManager.atUTM;
-    _locationManager.distanceFilter = kCLDistanceFilterNone;
-    CRAPI.sharedInstance.inFollowingRouteMode = YES;
     [self displayProfile:_locationManager.fromPoint
-                      to:_firstRoutePoint];
+                      to:_locationManager.firstRoutePoint];
     [self removeUserWaypoints];
     [self addUserWaypoints:_locationManager.currentPoint];
 }
@@ -1728,7 +1699,7 @@ double HeadingFromAZ (double az)
                                 haveProfile = [self displayProfile:_locationManager.currentPoint
                                                                 to:waypoint.latlon];
                             }
-                            if (dist / METERS_PER_YARD < _locationManager.nearDist && ![waypoint.type isEqual:@"Vehicle"] )
+                            if (dist / METERS_PER_YARD < _locationManager.nearDistance && ![waypoint.type isEqual:@"Vehicle"] )
                             {
                                 units = @"yards";
                                 dist = dist / METERS_PER_YARD;

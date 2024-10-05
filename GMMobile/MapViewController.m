@@ -2723,7 +2723,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 -(void) displayCurrentRoute
 {
     [self clearCurrentRoute];
-    HuntingData *hd = HuntingData.new;
+    [self createCurrentRouteFromRoutePoints];
     int n = CRAPI.sharedInstance.currentRoute.count;
     if (CRAPI.sharedInstance.currentRoute.count > 1)
     {
@@ -6532,7 +6532,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         if (enabled)
         {
-            [self startTrackingUserLocation];
+            CRAPI.sharedInstance.locationTrackingEnabled = YES;
+            [_locationManager requestLocation];
+            [_locationManager startUpdatingLocation];
         }
         else
         {
@@ -6548,7 +6550,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [_locationManager requestLocation];
     [_locationManager startUpdatingLocation];
     CRAPI.sharedInstance.locationTrackingEnabled = YES;
-    CRAPI.sharedInstance.amBuildingTrackRoute = TRUE;
+    CRAPI.sharedInstance.amBuildingTrackRoute = YES;
     CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
     [_mapToolbar selectMyLocationButton:YES];
         
