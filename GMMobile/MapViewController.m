@@ -2670,6 +2670,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         _scaleLabel2.font = [UIFont monospacedSystemFontOfSize:width weight:UIFontWeightBold];
         _scaleLabel2.textAlignment = NSTextAlignmentCenter;
         _scaleLabel2.transform = CGAffineTransformMakeRotation(HALFPI);
+        if (CRAPI.sharedInstance.amBuildingTrackRoute)
+            _scaleLabel1.backgroundColor = UIColor.lightGrayColor;
+        else
+            _scaleLabel1.backgroundColor = UIColor.whiteColor;
         if (!_scaleBarPromptText)
         {
             CGRect frame = _scaleLabel1.frame;
@@ -2710,6 +2714,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         RoutePoint *routePoint = RoutePoint.new;
         routePoint.refno = wp.refno;
         routePoint.latlon = wp.latlon;
+        //routePoint.UTM = wp.ut
         [CRAPI.sharedInstance.currentRoute addObject:routePoint];
     }
 }
@@ -6552,6 +6557,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     CRAPI.sharedInstance.locationTrackingEnabled = YES;
     CRAPI.sharedInstance.amBuildingTrackRoute = YES;
     CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+    _displayTrackingRoute = TRUE;
     [_mapToolbar selectMyLocationButton:YES];
         
     [self.view bringSubviewToFront:_myLocationMarker];
@@ -6566,7 +6572,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (setEnabled)
         CRAPI.sharedInstance.locationTrackingEnabled = NO;
 }
-
 -(BOOL) Point:(CGPoint)target InView:(UIView*)view
 {
     BOOL rtn = TRUE;
@@ -6582,6 +6587,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse)
         iii = 2;
     return;
+}
+
+- (void)trackRouteChanged:(TrackLocationManager *)manager
+{
+    [self displayTrackRoute];
 }
 
 -(void)shouldRefreshScreen:(TrackLocationManager *)manager
