@@ -6617,7 +6617,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
      if (!CRAPI.sharedInstance.locationTrackingEnabled)
         return;
     _currentLocation = llpt;
-    CRAPI.sharedInstance.currentGPSLocation = llpt;
 
     TrackRoutePoint *routePoint = TrackRoutePoint.new;
     routePoint.time = NSDate.timeIntervalSinceReferenceDate;

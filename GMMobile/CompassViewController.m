@@ -5,6 +5,7 @@
 //  Created by Jeff Smith on 10/21/22.
 //  Copyright © 2022 GSSi. All rights reserved.
 //
+int ii=0;
 #import "CompassViewController.h"
 #import "DTMData.h"
 //#import "NVCoordinateLibrary/proj_api.h"
@@ -43,6 +44,7 @@
 @property LLPOINT currentFocusWaypointLL;
 @property NSArray <UserWaypoint*> *userWaypointArray;
 @property double maxWaypointDist;
+@property double maxVehicleDist;
 @property CLHeading*  nowHeading;
 @property CGFloat currentHeading;
 @property CGFloat lastResetHeading;
@@ -132,6 +134,7 @@
     
     CRAPI.sharedInstance.routeBearing = nil;
     _maxWaypointDist = 5.0 * METERS_PER_MILE;
+    _maxVehicleDist = 10 * METERS_PER_MILE;
     _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.headingFilter = 1;
     _locationManager.headingOrientation = CLDeviceOrientationFaceUp;
@@ -993,7 +996,8 @@ double HeadingFromAZ (double az)
         if (waypoint.displayOnCompass)
         {
             double dist = waypoint.currentDistance;
-            if ([waypoint.type isEqual:@"Vehicle"]||(dist < _maxWaypointDist || ([waypoint.type isEqual:@"RoutePoint"] && CRAPI.sharedInstance.inFollowingRouteMode)) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            if (([waypoint.type isEqual:@"Vehicle"] && dist < _maxVehicleDist)||
+                (dist < _maxWaypointDist || ([waypoint.type isEqual:@"RoutePoint"] && CRAPI.sharedInstance.inFollowingRouteMode)) || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double az = AZMLatLon (currentPoint,waypoint.latlon);
                 double azd = RadiansToDegrees (az);
@@ -1658,12 +1662,14 @@ double HeadingFromAZ (double az)
     [self removeProfileLayers];
     for (UserWaypoint* waypoint in _userWaypointArray)
     {
+        if ([waypoint.type isEqual:@"Vehicle"])
+            ii = 1;
         if (waypoint.displayOnCompass && waypoint.refno != _ignoreAtWaypoint)
         {
             if (![waypoint.type isEqual:@"RoutePoint"] || waypoint.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
             {
                 double dist = ArcDistanceLL(waypoint.latlon, _locationManager.currentPoint);
-                if (dist < _maxWaypointDist || [waypoint.type isEqual:@"Vehicle"] )
+                if (dist < _maxWaypointDist || ([waypoint.type isEqual:@"Vehicle"] && dist < _maxVehicleDist))
                 {
                     double wpaz = HeadingFromAZ(AZMLatLon (_locationManager.currentPoint,waypoint.latlon));
                     waypoint.headingInDeg = RadiansToDegrees (wpaz);
