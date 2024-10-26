@@ -1259,8 +1259,9 @@ double HeadingFromAZ (double az)
 {
     HuntingData *hd = HuntingData.new;
     
-    [_locationManager offCourseNotification:0
-                      withDelay:0];
+    [_locationManager setOffCourseSound:0
+                 withVolume:0];
+
     _lastToDist = 0;
     switch (_infoLabelOption)
     {
@@ -1742,10 +1743,7 @@ double HeadingFromAZ (double az)
                                 }
                                 [self setInfoLabelText:infoLabelText];
                             }
-                            if (_locationManager.offCourseTimer)
-                                _infoLabel.textColor = UIColor.orangeColor;
-                            else
-                                _infoLabel.textColor = UIColor.whiteColor;
+                            _infoLabel.textColor = UIColor.whiteColor;
                             
                             _infoLabelOption = 2;
                             break;

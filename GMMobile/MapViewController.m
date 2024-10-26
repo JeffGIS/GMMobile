@@ -532,8 +532,6 @@
             CRAPI.sharedInstance.setToAlleyWalls = NO;
         }
         _locationManager.delegate = self;
-        if (CRAPI.sharedInstance.locationTrackingEnabled)
-            [self startTrackingUserLocation];
         [self vectorViewRefresh];
     }
     return;
@@ -896,8 +894,6 @@
     {
         [self createCurrentRouteFromRoutePoints];
         _locationManager.delegate = self;
-        if (CRAPI.sharedInstance.locationTrackingEnabled)
-            [self startTrackingUserLocation];
     }
 }
 - (void) setTarget:(CLLocationCoordinate2D)target
@@ -1490,7 +1486,6 @@
                                     superView:nil];
     if (CRAPI.sharedInstance.locationTrackingEnabled)
     {
-        [self startTrackingUserLocation];
         [_mapToolbar selectMyLocationButton:YES];
     }
     if (_amAcceptingHeading)
@@ -2243,7 +2238,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         [optionList addObject:@"________________________"];
         if (CRAPI.sharedInstance.currentTrackRoute.count > 1 && _displayTrackingRoute)
             [optionList addObject:@"Hide Tracking Route"];
-        [optionList addObject:@"Start Tracking Route"];
+        [optionList addObject:@"Start Tracking Location"];
     }
     [optionList addObject:@"________________________"];
     
@@ -2816,7 +2811,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 -(void) displayTrackRoute
 {
-    [self clearCurrentTrackRoute];
+    [self removeCurrentTrackRoute];
     if (!_displayTrackingRoute)
         return;
     int n = CRAPI.sharedInstance.currentTrackRoute.count;
@@ -2923,7 +2918,7 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_weatherLabel];
 }
 
--(void) clearCurrentTrackRoute
+-(void) removeCurrentTrackRoute
 {
     [_trackLayer removeFromSuperlayer];
 }
@@ -3236,7 +3231,7 @@ wasTappedAtPoint:(DPOINT)point
        willMove:(BOOL)gesture
 {
     [self clearCurrentRoute];
-    [self clearCurrentTrackRoute];
+    [self removeCurrentTrackRoute];
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
     
@@ -6556,7 +6551,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [_locationManager startUpdatingLocation];
     CRAPI.sharedInstance.locationTrackingEnabled = YES;
     CRAPI.sharedInstance.amBuildingTrackRoute = YES;
-    CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+    [CRAPI.sharedInstance clearTrackRoute];
     _displayTrackingRoute = TRUE;
     [_mapToolbar selectMyLocationButton:YES];
         
@@ -7800,7 +7795,7 @@ didSelectPDFButtonWithText:(NSString *)text
             _displayTrackingRoute = FALSE;
             [self vectorViewRefresh];
         }
-        else if ([text isEqualToString:@"Start Tracking Route"])
+        else if ([text isEqualToString:@"Start Tracking Location"])
         {
             [self startTrackingUserLocation];
         }
@@ -7809,13 +7804,13 @@ didSelectPDFButtonWithText:(NSString *)text
         {
             HuntingData *hd = HuntingData.new;
             [hd saveTrackRoute:CRAPI.sharedInstance.currentTrackRoute];
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            [CRAPI.sharedInstance clearTrackRoute];
             CRAPI.sharedInstance.amBuildingTrackRoute = FALSE;
             _mapToolbar.userLocationButton.backgroundColor = UIColor.greenColor;
         }
         else if ([text isEqualToString:@"Clear Tracking Route"])
         {
-            CRAPI.sharedInstance.currentTrackRoute = NSMutableArray.new;
+            [CRAPI.sharedInstance clearTrackRoute];
             _displayTrackingRoute = FALSE;
             [self displayTrackRoute];
             [self vectorViewRefresh];
@@ -7966,16 +7961,27 @@ didSelectPDFButtonWithText:(NSString *)text
             [self removeScaleBar];
             self.hideScaleBar = YES;
             [self clearCurrentWeatherData];
+            
+            time_t currentTime = NSDate.timeIntervalSinceReferenceDate;
+            struct tm today_time = *localtime (&currentTime);
             HuntingData *hd = HuntingData.new;
             NSArray * trArray = [hd getTrackRoutes];
             NSMutableArray *optionList = NSMutableArray.array;
             for (NSNumber * n in trArray)
             {
+                time_t trackTime = n.integerValue;
+                struct tm track_time = *localtime (&trackTime);
+
                 NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
                 dateFormatter.timeStyle = NSDateFormatterShortStyle;
                 dateFormatter.dateStyle = NSDateFormatterShortStyle;
                 [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
                 NSString *when = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSinceReferenceDate:n.integerValue]];
+                NSString *hourMin = textAfter(when, @" ");
+                if (today_time.tm_yday == track_time.tm_yday)
+                    when = [@"Today " stringByAppendingString:hourMin];
+                else if (today_time.tm_yday - track_time.tm_yday == 1)
+                    when = [@"Yesterday" stringByAppendingString:hourMin];
                 NSString *info = [hd getTrackInfo:n.integerValue];
                 when = [when stringByAppendingString:[NSString stringWithFormat:@"\n%@||Route:%i",info,n.integerValue]];
                 [optionList addObject:when];
