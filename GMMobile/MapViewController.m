@@ -2239,6 +2239,9 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         if (CRAPI.sharedInstance.currentTrackRoute.count > 1 && _displayTrackingRoute)
             [optionList addObject:@"Hide Tracking Route"];
         [optionList addObject:@"Start Tracking Location"];
+        [optionList addObject:@"Start Tracking Motion"];
+        [optionList addObject:@"Stop Tracking Motion"];
+        [optionList addObject:@"Replay Motion"];
     }
     [optionList addObject:@"________________________"];
     
@@ -7798,6 +7801,18 @@ didSelectPDFButtonWithText:(NSString *)text
         else if ([text isEqualToString:@"Start Tracking Location"])
         {
             [self startTrackingUserLocation];
+        }
+        else if ([text isEqualToString:@"Start Tracking Motion"])
+        {
+            [_locationManager startTrackingMotion];
+        }
+        else if ([text isEqualToString:@"Stop Tracking Motion"])
+        {
+            [_locationManager stopTrackingMotion];
+        }
+        else if ([text isEqualToString:@"Replay Motion"])
+        {
+            [_locationManager replayMotion];
         }
         else if ([text isEqualToString:@"Stop Tracking Location"] ||
                  [text isEqualToString:@"Save Tracking Route"])
