@@ -2239,10 +2239,10 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
         if (CRAPI.sharedInstance.currentTrackRoute.count > 1 && _displayTrackingRoute)
             [optionList addObject:@"Hide Tracking Route"];
         [optionList addObject:@"Start Tracking Location"];
-        [optionList addObject:@"Start Tracking Motion"];
-        [optionList addObject:@"Stop Tracking Motion"];
-        [optionList addObject:@"Replay Motion"];
     }
+    [optionList addObject:@"Start Tracking Motion"];
+    [optionList addObject:@"Stop Tracking Motion"];
+    [optionList addObject:@"Replay Motion"];
     [optionList addObject:@"________________________"];
     
     NSArray *vehiclePoints = [hd getWaypointsOfType:@"Vehicle"];
