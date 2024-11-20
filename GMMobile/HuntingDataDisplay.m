@@ -127,6 +127,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
             nDisplayed = [self display:context
+                              areaType:@"GROUSEMANAREAS"
+                                 color:_WMAColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
+            nDisplayed = [self display:context
                               areaType:@"LAKES"
                                  color:_LAKESColor
                           pointInAreas:pia
@@ -219,6 +226,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                           displayCharacteristics:dc
                                           themes:themes
                                      pointInArea:pia];
+                nDisplayed = [self displaySnowTrails:context
+                                       llCorners:latlonCornerPoints
+                                        LLBounds:platlonBounds
+                                      viewBounds:pvbounds
+                          displayCharacteristics:dc
+                                          themes:themes
+                                     pointInArea:pia];
             }
             nDisplayed = [self displayEdgePoints:context
                                        llCorners:latlonCornerPoints
@@ -297,6 +311,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         if ([table isEqual:@"LAKES"])
         {
             key = @"NAME";
+            textZoom = 8;
+        }
+        if ([table isEqual:@"GROUSEMANAREAS"])
+        {
+            key = @"TITLE";
             textZoom = 8;
         }
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
@@ -1363,6 +1382,246 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         LPSTR routeid = (LPSTR)sqlite3_column_text(statement,i++);
         dc.width = 5.5;
         dc.penColor = [UIColor orangeColor];
+        
+        int np = 0;
+        //if (abs(numPoints)<108000)
+        {
+            if (numPoints < 0)
+            {
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
+                {
+                    llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                    /* if (np)
+                     {
+                     if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                     np++;
+                     }
+                     else*/
+                    np++;
+                }
+            }
+            
+            else for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
+                /* if (np)
+                 {
+                 if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                 np++;
+                 }
+                 else*/
+                np++;
+            }
+            int nLoopTot = 0;
+            if (numLoops > 1)
+            {
+                numLoops--;
+                for (int i = 0;i < numLoops;i++)
+                {
+                    nLoopTot += polyPartLen[i];
+                }
+            }
+            if ([themes setDisplayCharacteristics:dc
+                                        displayID:_processingID
+                                     compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+            {
+                
+                [self drawRoad:context
+                       nPoints:np
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:dc.penColor.CGColor
+                      andWidth:dc.width];
+                nDisplayed++;
+            }
+        }
+        free (llpoints);
+        [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
+                                     current:(NSInteger)++_currentRec
+                                       range:0
+                                   numRanges:1];
+        
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), hd.database);
+    //display Route
+    int n = CRAPI.sharedInstance.currentRoute.count;
+    int width = 5;
+    CGColorRef color = UIColor.redColor.CGColor;
+    if (n > 1)
+    {
+        int ipt = 0;
+        BOOL firstPoint = TRUE;
+        LPDPOINT llpoints = malloc(n * sizeof(DPOINT) + 4);
+        
+        for (RoutePoint *rpt in CRAPI.sharedInstance.currentRoute)
+        {
+            if (CRAPI.sharedInstance.inFollowingRouteMode && rpt.refno == CRAPI.sharedInstance.currentSelectedWaypoint)
+            {
+                if (firstPoint)
+                {
+                    llpoints[ipt] = LLPointToDPoint (CRAPI.sharedInstance.currentGPSLocation);
+                    llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+                    ipt++;
+                }
+                llpoints[ipt] = LLPointToDPoint (rpt.latlon);
+                llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+                ipt++;
+                [self drawRoad:context
+                       nPoints:ipt
+                        nLoops:1
+                       partLen:0
+                        points:llpoints
+                     withColor:UIColor.yellowColor.CGColor
+                      andWidth:width+6];
+                [self drawRoad:context
+                       nPoints:ipt
+                        nLoops:1
+                       partLen:0
+                        points:llpoints
+                     withColor:UIColor.blackColor.CGColor
+                      andWidth:width+4];
+                [self drawRoad:context
+                       nPoints:ipt
+                        nLoops:1
+                       partLen:0
+                        points:llpoints
+                     withColor:UIColor.greenColor.CGColor
+                      andWidth:width+2];
+                ipt = 0;
+            }
+            firstPoint = FALSE;
+            llpoints[ipt] = LLPointToDPoint (rpt.latlon);
+            llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+            ipt++;
+        }
+        
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.yellowColor.CGColor
+              andWidth:width+4];
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.blackColor.CGColor
+              andWidth:width+2];
+        [self drawRoad:context
+               nPoints:n
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:color
+              andWidth:width];
+        free (llpoints);
+    }
+    //display track route
+    n = CRAPI.sharedInstance.currentTrackRoute.count;
+    color = UIColor.greenColor.CGColor;
+    if (n > 1)
+    {
+        int ipt = 0;
+        BOOL firstPoint = TRUE;
+        LPDPOINT llpoints = malloc(n * sizeof(DPOINT) + 4);
+        
+        for (TrackRoutePoint *rpt in CRAPI.sharedInstance.currentTrackRoute)
+        {
+            firstPoint = FALSE;
+            llpoints[ipt] = LLPointToDPoint (rpt.latlon);
+            llpoints[ipt] = TranDPOINTP(&llpoints[ipt], _pTranLLtoView);
+            ipt++;
+        }
+        
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.yellowColor.CGColor
+              andWidth:width+4];
+        [self drawRoad:context
+               nPoints:ipt
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:UIColor.blackColor.CGColor
+              andWidth:width+2];
+        [self drawRoad:context
+               nPoints:n
+                nLoops:1
+               partLen:0
+                points:llpoints
+             withColor:color
+              andWidth:width];
+        free (llpoints);
+    }
+
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    [hd close:opened];
+    return nDisplayed;
+}
+-(int) displaySnowTrails:(CGContextRef)context
+           llCorners:(CORNERPOINTS *) latlonCornerPoints
+            LLBounds:(MNMXCORD *)platlonBounds
+          viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+              themes:(Themes*)themes
+         pointInArea:(PointInArea *)pia
+{
+    int nDisplayed = 0;
+    NSString *query = @"";
+    //NSString *querys;
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints, useCode;
+    int numLoops;
+    HuntingData *hd = HuntingData.new;
+    
+    BOOL opened = [hd open];
+    _database = hd.database;
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+    
+    query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, SNOWMOBILE_TRAILS_LINE.OWNER FROM SNOWMOBILE_TRAILS_LINE,SNOWMOBILE_TRAILS_LINE_index WHERE SNOWMOBILE_TRAILS_LINE.id=SNOWMOBILE_TRAILS_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    _totRecords = [self getQueryCount:query];
+    [CRAPI.sharedInstance updateProgress:-1
+                                 current:0
+                                   range:1
+                               numRanges:1];
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), hd.database);
+    _currentRec = 0;
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        BasePt.x = sqlite3_column_double(statement,i++);
+        BasePt.y = sqlite3_column_double(statement,i++);
+        numPoints = sqlite3_column_int(statement,i++);
+        numLoops = sqlite3_column_int(statement,i++);
+        int nBlobBytes = sqlite3_column_bytes(statement,i);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+        int nBlobBytes2 = sqlite3_column_bytes(statement,i);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        LPSTR routeid = (LPSTR)sqlite3_column_text(statement,i++);
+        dc.width = 5.5;
+        dc.penColor = [UIColor cyanColor];
         
         int np = 0;
         //if (abs(numPoints)<108000)
