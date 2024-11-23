@@ -1523,7 +1523,7 @@ double HeadingFromAZ (double az)
     long riseDiff = now - riseTime;
     long setDiff = setTime - now;
     NSString * sinceUntil = @"since";
-    if (abs (setDiff) > abs (riseDiff))
+    if (riseDiff < 0)
     {
         if (riseDiff < 0)
             sinceUntil = @"until";

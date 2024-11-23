@@ -590,6 +590,13 @@ LPDPOINT ExpandPoints (FILE *fid,INT64 offset,int reclen,int compressType,int nu
     FILE *binFile;
     NSString *savePointsFile = nil;
     FILE *savePointsFID = nil;
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.timeStyle = NSDateFormatterNoStyle;
+    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
+    NSString *year = textBefore(today, @"-");
+    int CURRENTYEAR = year.intValue;
     CGColorRef blackColor = NVColor.blackColor.CGColor;
 #define OWNER_COLORS    1
 #define FWS_COLORS      2
@@ -694,7 +701,7 @@ NextPass:
                 LPSTR standDesc = (LPSTR)sqlite3_column_text(statement,i++);
                 int surveyYear = (LPSTR)sqlite3_column_int(statement,i++);
                 int standAge = (LPSTR)sqlite3_column_int(statement,i++);
-                int TRUEAGE=(2022-surveyYear)+standAge;
+                int TRUEAGE=(CURRENTYEAR-surveyYear)+standAge;
                 forestAge = TRUEAGE;
                 if (standAge > 0)
                     text = [NSString stringWithFormat:@"%s\nAge:%i",standDesc,TRUEAGE];
@@ -705,11 +712,9 @@ NextPass:
                 }
                 if (standType == 12)
                 {
-                    if (TRUEAGE>6 && TRUEAGE<15)
+                    if (TRUEAGE>2 && TRUEAGE<12)
                         forestCode = 3;
-                    else if (TRUEAGE>4 && TRUEAGE<7)
-                        forestCode = 2;
-                    else if (TRUEAGE>14 && TRUEAGE<19)
+                    else if (TRUEAGE>11 && TRUEAGE<19)
                         forestCode = 2;
                     else
                         forestCode = 1;
