@@ -269,6 +269,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantGrayscale] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantEmailPDF] = YES;
@@ -353,6 +354,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantExtents] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantOptions] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantGrayscale] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantClearMarkers] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantEmailPDF] = NO;

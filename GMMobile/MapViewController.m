@@ -8704,7 +8704,10 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     switch (ConfigurationControl.sharedInstance.currentApp)
     {
         case HCConfigHunting:
-            rtn = [NVColor boldColors][index*6];
+            if (!index)
+                rtn = UIColor.redColor;
+            else
+                rtn = [NVColor boldColors][index*6];
             return rtn;
             break;
         case HCConfigMetroProp:

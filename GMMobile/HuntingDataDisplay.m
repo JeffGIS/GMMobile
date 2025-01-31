@@ -22,7 +22,7 @@ static int ii=0;
 
 +(CGColorRef) WMAColor
 {
-    return [NVColor boldColors][0*6].CGColor;
+    return NVColor.redColor.CGColor;
 }
 +(CGColorRef) WPAColor
 {
@@ -43,7 +43,6 @@ static int ii=0;
 +(CGColorRef) LAKESColor
 {
     return NVColor.blueColor.CGColor;
-    
 }
 - (id)init
 {
@@ -936,7 +935,7 @@ NextPass:
                      lineColor:blackColor
                      lineWidth:0];
                 
-                if (_zoom >= 1)//textZoom)
+                if (_zoom >= textZoom)
                 {
                     [self drawArea:context
                            nPoints:numPoints
