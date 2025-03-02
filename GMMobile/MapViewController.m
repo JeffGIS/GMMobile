@@ -5808,17 +5808,19 @@ didCompleteWithError:(NSError *)error
 - (void)perform3DFlyAround
 {
     NSString *flyOverURL = @"NVFlyover://";
+    //NSString *flyOverURL = @"NVTuner://";
     [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
+    NSDictionary *optionsDict = NSDictionary.new;
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL] options:optionsDict completionHandler:nil];
     
     else
     {
         flyOverURL = @"https://itunes.apple.com/us/app/newvision-flyover/id1105410284";
         
         if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
-            [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
+            [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL] options:optionsDict completionHandler:nil];
         
         else
         {
