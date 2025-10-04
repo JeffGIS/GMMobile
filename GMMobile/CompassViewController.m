@@ -1607,7 +1607,7 @@ double HeadingFromAZ (double az)
     if (text.length > 100)
         iii = 1;
     if (![text containsString:@"\n"])
-        text = [NSString stringWithFormat:@"%@\n%@",text,_locationManager.currentMotionActivity];
+        text = [NSString stringWithFormat:@"%@\n%@",text,[_locationManager getCurrentMotionActivity]];
     dispatch_async(dispatch_get_main_queue(), ^{
                 _infoLabel.text = text;
             });

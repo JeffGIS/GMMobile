@@ -59,6 +59,7 @@
 #import "ProximityMapping.h"
 #import "CCodeLibrary/CVTCoord.h"
 #include "CCodeLibrary/PROJ.H"
+#include "HuntingSettingsViewController.h"
 
 
 #define MAX_VECTORVIEWS 8
@@ -1155,7 +1156,7 @@
         NVMetroSettingsVC *nvmsvc = NVMetroSettingsVC.new;
         nvmsvc.restorationIdentifier = @"NVMetroSettingsVC";
         nvmsvc.tabBarItem.title = @"Settings";
-        
+
         nvmsvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"settings"
                                                                                                  ofType:@"png"]];
         
@@ -1291,6 +1292,33 @@
         }
     }
     
+    else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
+    {
+        NSString *imagePath = [NSBundle.mainBundle pathForResource:@"find" ofType:@"png"];
+        NSString *settingsID = @"HuntingSettingsVC";
+
+        FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
+        findBounds.restorationIdentifier = @"FindBounds";
+        findBounds.delegate = self;
+        [NVTabBarEdit tabBarController:self.tabBarController replaceViewControllerWithID:@"FindVC"
+                    withViewController:findBounds];
+        [NVTabBarEdit tabBarController:self.tabBarController setImage:[UIImage imageWithContentsOfFile:imagePath] forViewControllerWithID:@"FindBounds"];
+        [NVTabBarEdit tabBarController:self.tabBarController setText:@"Find" forViewControllerWithID:@"FindBounds"];
+        UIViewController *svc = [storyboard instantiateViewControllerWithIdentifier:@"HuntingSettingsVC"];
+        //NVMetroSettingsVC *nvmsvc = HuntingSettingsViewController.new;
+        svc.restorationIdentifier = @"HuntingSettingsVC";
+        svc.tabBarItem.title = @"Settings";
+
+        svc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"settings"
+                                                                                                 ofType:@"png"]];
+        [NVTabBarEdit tabBarController:self.tabBarController
+           replaceViewControllerWithID:@"SettingsVC"
+                    withViewController:svc];
+
+        UIViewController *cvc = [storyboard instantiateViewControllerWithIdentifier:@"CompassVC"];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cvc atIndex:4];
+ 
+    }
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVSpreadsheet"];
@@ -1305,21 +1333,6 @@
                     withViewController:svc];
     }
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
-    {
-        NSString *imagePath = [NSBundle.mainBundle pathForResource:@"find" ofType:@"png"];
-
-        FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
-        findBounds.restorationIdentifier = @"FindBounds";
-        findBounds.delegate = self;
-        [NVTabBarEdit tabBarController:self.tabBarController replaceViewControllerWithID:@"FindVC"
-                    withViewController:findBounds];
-        [NVTabBarEdit tabBarController:self.tabBarController setImage:[UIImage imageWithContentsOfFile:imagePath] forViewControllerWithID:@"FindBounds"];
-        [NVTabBarEdit tabBarController:self.tabBarController setText:@"Find" forViewControllerWithID:@"FindBounds"];
-        UIViewController *cvc = [storyboard instantiateViewControllerWithIdentifier:@"CompassVC"];
-        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cvc atIndex:4];
- 
-    }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {

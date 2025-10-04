@@ -207,6 +207,7 @@
 		EB0A7E282C95E4F900AE05F1 /* StartLocationTracking.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB0A7E252C95E4F900AE05F1 /* StartLocationTracking.m4a */; };
 		EB0FE5992C8203880030D76C /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EB0FE5982C8203880030D76C /* Settings.bundle */; };
 		EB10EEFA1F93AF6B006A6938 /* CreateBatchCrimeMaps.m in Sources */ = {isa = PBXBuildFile; fileRef = EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */; };
+		EB134CBD2E82CE2A000AE2E3 /* HuntingSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB134CBC2E82CE2A000AE2E3 /* HuntingSettingsViewController.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
 		EB1CC5062A21B36D001ED02E /* StickManT.png in Resources */ = {isa = PBXBuildFile; fileRef = EB1CC5032A21B36D001ED02E /* StickManT.png */; };
@@ -552,6 +553,8 @@
 		EB0FE5982C8203880030D76C /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		EB10EEF81F93AF6B006A6938 /* CreateBatchCrimeMaps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateBatchCrimeMaps.h; sourceTree = "<group>"; };
 		EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateBatchCrimeMaps.m; sourceTree = "<group>"; };
+		EB134CBB2E82CE2A000AE2E3 /* HuntingSettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HuntingSettingsViewController.h; sourceTree = "<group>"; };
+		EB134CBC2E82CE2A000AE2E3 /* HuntingSettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HuntingSettingsViewController.m; sourceTree = "<group>"; };
 		EB178F041C4FE4BA00B194AD /* UserLayerDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserLayerDisplay.h; sourceTree = "<group>"; };
 		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ShapeFileDisplay.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1051,6 +1054,8 @@
 				69366DFE1C542A4B00E79AA7 /* NVPageView.h */,
 				69366DFF1C542A4B00E79AA7 /* NVPageView.m */,
 				699D81B6202D89F800E1A5C2 /* NVPanoramaVC.h */,
+				EB134CBB2E82CE2A000AE2E3 /* HuntingSettingsViewController.h */,
+				EB134CBC2E82CE2A000AE2E3 /* HuntingSettingsViewController.m */,
 				699D81B7202D89F800E1A5C2 /* NVPanoramaVC.m */,
 				69E0BB811DBE522A003555DD /* NVSpreadsheetDelegate.h */,
 				69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */,
@@ -1618,6 +1623,7 @@
 				EB6800BD2902D7F8001B6EFE /* CompassViewController.m in Sources */,
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,
 				EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */,
+				EB134CBD2E82CE2A000AE2E3 /* HuntingSettingsViewController.m in Sources */,
 				69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */,
 				698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,

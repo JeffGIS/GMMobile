@@ -94,7 +94,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     _locationManager = [CRAPI.sharedInstance getLocationManager];
     _locationManager.delegate = self;
-    _locationManager.activityType = CLActivityTypeFitness;
+    _locationManager.activityType = CLActivityTypeOtherNavigation;
     
     if ([_locationManager respondsToSelector:@selector(allowsBackgroundLocationUpdates)])
         _locationManager.allowsBackgroundLocationUpdates = YES;
