@@ -1491,9 +1491,11 @@ double HeadingFromAZ (double az)
     _currentWeatherDesc = data.desc;
     NSString * sunRise = @"";
     NSString * sunSet = @"";
+    BOOL MNGrouseHunting = TRUE;
+    int sunRiseOffset = 30 * 60;
     if (data.sunRise > 0)
     {
-        sunRise = [WeatherData forecastDayandTime:data.sunRise];
+        sunRise = [WeatherData forecastDayandTime:data.sunRise-sunRiseOffset];
         sunSet = [WeatherData forecastDayandTime:data.sunSet];
     }
 
@@ -1505,11 +1507,22 @@ double HeadingFromAZ (double az)
             NSString * setText = textAfter(sunSet, @"Today ");
             NSString * sinceUntilText = [self getSinceUntilText:data.sunRise
                                                         setText:data.sunSet];
-            _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@\n%@",riseText,setText,sinceUntilText];
+            if (MNGrouseHunting)
+            {
+                _sunRiseSetLabel.numberOfLines = 4;
+                _sunRiseSetLabel.text = [NSString stringWithFormat:@"MN Grouse Hunting\nOpens:%@\nCloses:%@\n%@",riseText,setText,sinceUntilText];
+            }
+            else
+            {
+                _sunRiseSetLabel.numberOfLines = 3;
+                _sunRiseSetLabel.text = [NSString stringWithFormat:@"Sunrise:%@\nSunset:%@\n%@",riseText,setText,sinceUntilText];
+            }
+            
         }
         [self addSun];
         [self addWind];
    }];
+
 
     //3.35,"deg":213,"gust":3.12}
    return;
