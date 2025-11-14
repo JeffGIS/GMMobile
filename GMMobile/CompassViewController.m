@@ -8,6 +8,7 @@
 int ii=0;
 #import "CompassViewController.h"
 #import "DTMData.h"
+#import "HuntingSeasonData.h"
 //#import "NVCoordinateLibrary/proj_api.h"
 #include "CCodeLibrary/PROJ.H"
 #include "CCodeLibrary/shr.h"
@@ -82,6 +83,7 @@ int ii=0;
 @property double GPSHeading;
 @property double GPSHeadingFromPoints;
 @property BOOL isVisible;
+@property HuntingSeasonData *huntingSeasonData;
 
 @end
 
@@ -91,6 +93,7 @@ int ii=0;
     [super viewDidLoad];
     
     _wd = WeatherData.new;
+    _huntingSeasonData = HuntingSeasonData.new;
     _currentWindSpeed = -1;
     _heightExpansion = 2;
     _lastToDist = 0;
@@ -387,7 +390,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     _sunRiseSetLabel.adjustsFontSizeToFitWidth = YES;
     _sunRiseSetLabel.textAlignment = NSTextAlignmentCenter;
     _sunRiseSetLabel.numberOfLines = 3;
-    _sunRiseSetLabel.text = @"Sunrise:5:31\nSunset:7:33";
+    _sunRiseSetLabel.text = @"";
     [self.view  addSubview:_sunRiseSetLabel];
 
     _weatherLabel = UILabel.new;
@@ -1491,6 +1494,8 @@ double HeadingFromAZ (double az)
     _currentWeatherDesc = data.desc;
     NSString * sunRise = @"";
     NSString * sunSet = @"";
+    NSString * huntingSeasonText;
+    NSString * weatherText = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];;
     BOOL MNGrouseHunting = TRUE;
     int sunRiseOffset = 30 * 60;
     if (data.sunRise > 0)
@@ -1500,7 +1505,8 @@ double HeadingFromAZ (double az)
     }
 
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
-        _weatherLabel.text = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];
+        _weatherLabel.text = weatherText;
+        [_huntingSeasonData setLabel:_sunRiseSetLabel];
         if (sunRise.length > 0)
         {
             NSString * riseText = textAfter(sunRise, @"Today ");

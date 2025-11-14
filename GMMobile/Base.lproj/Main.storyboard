@@ -2961,11 +2961,10 @@
                                     <action selector="loadMapleGrove:" destination="nWl-XI-pP2" eventType="touchUpInside" id="7er-Zd-GOr"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hbh-zZ-fbi">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hbh-zZ-fbi">
                                 <rect key="frame" x="8" y="50" width="258" height="41.5"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                <state key="normal" title="Load Database">
+                                <state key="normal" title="Load Database" image="filemenu.and.selection" catalog="system">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <variation key="heightClass=compact">
@@ -3766,6 +3765,7 @@
         <image name="criminal.png" width="8.7272729873657227" height="8.7272729873657227"/>
         <image name="destinations.png" width="8.7272729873657227" height="8.7272729873657227"/>
         <image name="fieldOptions.png" width="8.7272729873657227" height="8.7272729873657227"/>
+        <image name="filemenu.and.selection" catalog="system" width="128" height="93"/>
         <image name="find.png" width="13.090909004211426" height="13.090909004211426"/>
         <image name="layers.png" width="10.909090995788574" height="10.909090995788574"/>
         <image name="map.png" width="10.909090995788574" height="10.909090995788574"/>

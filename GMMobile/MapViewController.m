@@ -1370,7 +1370,9 @@
         
         nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"fieldOptions"
                                                                                                ofType:@"png"]];
-        
+        nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
+                                                                                               ofType:@"png"]];
+
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:nvpc atIndex:1];
         UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:crimeOptionsVC atIndex:1];
@@ -6135,7 +6137,7 @@ didCompleteWithError:(NSError *)error
     }
     else
     {
-        CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation] + 6.0));
+        CGPoint origin = CGPointMake(100.0, ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation] + 100.0));
         
         if ([self.view.subviews containsObject:_legendView])
             [_legendView reloadView];
@@ -6148,6 +6150,12 @@ didCompleteWithError:(NSError *)error
                                                       delegate:self
                                                     selectable:NO
                                                       animated:YES];
+            CGRect frame = _legendView.frame;
+            int containerWidth = _mapView.frame.size.width;
+            int containerHeight = _mapView.frame.size.height;
+            frame.origin.x = containerWidth/2 - frame.size.width/2;
+            frame.origin.y = containerHeight/2 - frame.size.height/2;
+            _legendView.frame = frame;
         }
     }
 }

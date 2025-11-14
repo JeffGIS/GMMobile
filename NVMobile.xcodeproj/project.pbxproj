@@ -254,6 +254,7 @@
 		EB761FBA2C651FA9008BC554 /* Left135Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB62C651FA8008BC554 /* Left135Degrees.m4a */; };
 		EB761FBB2C651FA9008BC554 /* Left90Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB72C651FA8008BC554 /* Left90Degrees.m4a */; };
 		EB761FBC2C651FA9008BC554 /* Left45Degrees.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EB761FB82C651FA9008BC554 /* Left45Degrees.m4a */; };
+		EB8F1A592EC7826800AB9DCD /* legends.svg in Resources */ = {isa = PBXBuildFile; fileRef = EB8F1A582EC7826800AB9DCD /* legends.svg */; };
 		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
 		EB9A3BCF1FB0CC18000709A8 /* FieldList.m in Sources */ = {isa = PBXBuildFile; fileRef = EB9A3BCE1FB0CC18000709A8 /* FieldList.m */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
@@ -277,6 +278,7 @@
 		EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A291BE79DCA00E0C1B3 /* ThemeClass.m */; };
 		EBFC2A341BE9186900E0C1B3 /* CrimeDataDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */; };
 		EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A391BEA5FBF00E0C1B3 /* ThemeLegendCell.m */; };
+		EBFDFA772E940EB800A1F36D /* HuntingSeasonData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFDFA762E940EB800A1F36D /* HuntingSeasonData.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -622,6 +624,7 @@
 		EB761FB62C651FA8008BC554 /* Left135Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Left135Degrees.m4a; sourceTree = "<group>"; };
 		EB761FB72C651FA8008BC554 /* Left90Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Left90Degrees.m4a; sourceTree = "<group>"; };
 		EB761FB82C651FA9008BC554 /* Left45Degrees.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = Left45Degrees.m4a; sourceTree = "<group>"; };
+		EB8F1A582EC7826800AB9DCD /* legends.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = legends.svg; sourceTree = "<group>"; };
 		EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetSlowValues.h; sourceTree = "<group>"; };
 		EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetSlowValues.m; sourceTree = "<group>"; };
 		EB983D381C1CF94B00A994C7 /* ThemeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeTypes.h; sourceTree = "<group>"; };
@@ -662,6 +665,8 @@
 		EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CrimeDataDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EBFC2A381BEA5FBF00E0C1B3 /* ThemeLegendCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeLegendCell.h; sourceTree = "<group>"; };
 		EBFC2A391BEA5FBF00E0C1B3 /* ThemeLegendCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegendCell.m; sourceTree = "<group>"; };
+		EBFDFA752E940EB800A1F36D /* HuntingSeasonData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HuntingSeasonData.h; sourceTree = "<group>"; };
+		EBFDFA762E940EB800A1F36D /* HuntingSeasonData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HuntingSeasonData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -771,6 +776,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EB8F1A582EC7826800AB9DCD /* legends.svg */,
 				EB1CC5032A21B36D001ED02E /* StickManT.png */,
 				EBAEBD662944F6500004D22D /* weather.png */,
 				EBAEBB3A294000540004D22D /* windArrow.png */,
@@ -1176,6 +1182,8 @@
 				6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
 				EB0FE5982C8203880030D76C /* Settings.bundle */,
+				EBFDFA752E940EB800A1F36D /* HuntingSeasonData.h */,
+				EBFDFA762E940EB800A1F36D /* HuntingSeasonData.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1497,6 +1505,7 @@
 				69FD71381FE2FB3400EAFDEF /* VideoRecordIcon.png in Resources */,
 				EB69FF42240C2EE5006F7E37 /* VotingMetadata.html in Resources */,
 				692D9CF31CA2FB6C00AFCA9A /* whiteUpload.png in Resources */,
+				EB8F1A592EC7826800AB9DCD /* legends.svg in Resources */,
 				697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */,
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
 				69FDA4341EE77D4600BA9735 /* versionHistory.png in Resources */,
@@ -1622,6 +1631,7 @@
 				EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */,
 				EB6800BD2902D7F8001B6EFE /* CompassViewController.m in Sources */,
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,
+				EBFDFA772E940EB800A1F36D /* HuntingSeasonData.m in Sources */,
 				EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */,
 				EB134CBD2E82CE2A000AE2E3 /* HuntingSettingsViewController.m in Sources */,
 				69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */,
