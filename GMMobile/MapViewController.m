@@ -885,10 +885,9 @@
         [_tableView reloadData];
     int top = self.view.safeAreaInsets.top;
     iii = top;
-    if (CRAPI.sharedInstance.routeBearing)
+    if (CRAPI.sharedInstance.currentBearing != 0)
     {
-        double bearing = CRAPI.sharedInstance.routeBearing.doubleValue;
-        [_mapView animateToBearing:bearing];
+        [_mapView animateToBearing:CRAPI.sharedInstance.currentBearing];
         [self displayScalebar];
     }
     if (CRAPI.sharedInstance.currentApp == HCConfigHunting)
@@ -936,7 +935,7 @@
         top += _scaleLayerHeight;
     }
     _compass.center = CGPointMake(_mapToolbar.center.x, top + halfSize);
-    return;
+    //return;
     CGFloat xCenterLeft = (CGRectGetMinX(_mapToolbar.frame) - halfSize);
     CGFloat xCenterRight = (CGRectGetMaxX(_mapToolbar.frame) + halfSize);
     CGFloat yCenterTop = (CGRectGetMinY(_mapToolbar.frame) - halfSize);
@@ -3315,6 +3314,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
     double bearing = position.bearing;
+    CRAPI.sharedInstance.currentBearing = bearing;
     if (bearing != 0.0)
     {
         [self showCompass];
@@ -3392,8 +3392,9 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     else
         _firstTimeMap = NO;
-    
-    if (position.bearing == 0.0)
+    double bearing = position.bearing;
+    bearing = CRAPI.sharedInstance.currentBearing;
+    if (bearing == 0.0)
         [self hideCompass];
     else
         iii = 1;
@@ -3407,7 +3408,13 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     [self updateMarkerPosition];
 }
-
+- (void)mapViewSnapshotReady:(GMSMapView *)mapView;
+{
+    CLLocationDirection bearing = mapView.camera.bearing;
+    if (bearing == 0.0)
+        [self hideCompass];
+    return;
+}
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
@@ -6696,9 +6703,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         CGPoint target = [_mapView.projection pointForCoordinate:loc];
         if (_locationCount < 2 || !PointInView(target,_mapView))
         {
-            double bearing = _mapView.camera.bearing;
-            if (CRAPI.sharedInstance.routeBearing)
-                bearing = CRAPI.sharedInstance.routeBearing.doubleValue;
+            double bearing = CRAPI.sharedInstance.currentBearing;
             CLLocationCoordinate2D loc;
             loc.latitude = _currentLocation.lat;
             loc.longitude = _currentLocation.lon;
@@ -8556,7 +8561,7 @@ didReturnText:(NSString *)text
 
 - (void)compassTapped:(UIButton *)button
 {
-    CRAPI.sharedInstance.routeBearing = nil;
+    CRAPI.sharedInstance.currentBearing = 0;
     [_mapView animateToBearing:0.0];
 
     [self hideCompass];
@@ -8581,6 +8586,7 @@ didReturnText:(NSString *)text
     [self updateCompassPosition:NO];
     if (_compass.hidden && _mapView.camera.bearing != 0.0)
     {
+        CRAPI.sharedInstance.currentBearing = _mapView.camera.bearing;
         _compass.hidden = NO;
         [UIView animateWithDuration:0.25
                          animations:^{
