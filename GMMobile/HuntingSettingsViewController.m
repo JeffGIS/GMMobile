@@ -24,6 +24,7 @@
     [super viewDidAppear:animated];
     CGRect frame = _autoVehicleLocationSwitch.frame;
     frame = _autoTrackingSwitch.frame;
+    [_displayMotionSwitch setOn:CRAPI.sharedInstance.displayMotion];
     return;
 }
 
@@ -61,6 +62,10 @@
     {
         [locationManager pauseMotionActivityMonitoring];
     }
+}
+- (IBAction)displayMotionChanged:(id)sender {
+    UISwitch *displayMotionSwitch = sender;
+    CRAPI.sharedInstance.displayMotion = displayMotionSwitch.on;
 }
 
 @end

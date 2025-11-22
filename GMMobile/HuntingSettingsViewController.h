@@ -14,8 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HuntingSettingsViewController : UIViewController
 @property (weak, nonatomic) IBOutlet UISwitch *autoVehicleLocationSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *autoTrackingSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *displayMotionSwitch;
 - (IBAction)autoVehicleLocationChanged:(id)sender;
 - (IBAction)autoTrackingChanged:(id)sender;
+- (IBAction)displayMotionChanged:(id)sender;
 
 @end
 
