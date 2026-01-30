@@ -12,7 +12,7 @@ static int ii=0;
 @interface HuntingDataDisplay ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
-@property (nonatomic) CGColorRef WMAColor, WPAColor, NWRColor, FSAColor, WalkInColor, LAKESColor;
+@property (nonatomic) CGColorRef WMAColor, WPAColor, NWRColor, FSAColor, WalkInColor, LAKESColor, GOVTPARCELSColor;
 @property sqlite3nv *database;
 @property INT64 totRecords,currentRec;
 @property int topScore;
@@ -36,6 +36,10 @@ static int ii=0;
 {
     return [NVColor boldColors][3*6].CGColor;
 }
++(CGColorRef) GOVTPARCELSColor
+{
+    return NVColor.forestGreenColor.CGColor;
+}
 +(CGColorRef) WalkInColor
 {
     return [NVColor boldColors][4*6].CGColor;
@@ -56,6 +60,7 @@ static int ii=0;
         self.FSAColor = [HuntingDataDisplay FSAColor];
         self.WalkInColor = [HuntingDataDisplay WalkInColor];
         self.LAKESColor = [HuntingDataDisplay LAKESColor];
+        self.GOVTPARCELSColor = [HuntingDataDisplay GOVTPARCELSColor];
         self.topScore = 500;
     }
     
@@ -80,8 +85,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     if (ConfigurationControl.sharedInstance.mapType != kGMSTypeHybrid &&
         ConfigurationControl.sharedInstance.mapType != kGMSTypeNormal)
-    
-    {        
+        
+    {
         if ([ConfigurationControl.sharedInstance layer:HCLayerHunting
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
@@ -118,6 +123,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
              LLBounds:platlonBounds
              viewBounds:pvbounds];
              }*/
+            nDisplayed = [self display:context
+                              areaType:@"GOVTPARCELS"
+                                 color:_GOVTPARCELSColor
+                          pointInAreas:pia
+                             llCorners:latlonCornerPoints
+                              LLBounds:platlonBounds
+                            viewBounds:pvbounds];
             nDisplayed = [self display:context
                               areaType:@"WMA"
                                  color:_WMAColor
@@ -172,68 +184,60 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                               LLBounds:platlonBounds
                             viewBounds:pvbounds];
         }
-            if ([ConfigurationControl.sharedInstance layer:HCLayerForest
-                                             visibleAtZoom:_zoom
-                                                   andPass:_passID])
-            {
-                nDisplayed = [self displayUsingBinFile:context
-                                              areaType:@"FOREST"
-                                                 color:0
-                                          pointInAreas:pia
-                                             llCorners:latlonCornerPoints
-                                              LLBounds:platlonBounds
-                                            viewBounds:pvbounds];
-            }
-            if ([ConfigurationControl.sharedInstance layer:HCLayerFEESURF
-                                             visibleAtZoom:_zoom
-                                                   andPass:_passID])
-            {
-                nDisplayed = [self displayUsingBinFile:context
-                                              areaType:@"FEESURF"
-                                                 color:0
-                                          pointInAreas:pia
-                                             llCorners:latlonCornerPoints
-                                              LLBounds:platlonBounds
-                                            viewBounds:pvbounds];
-            }
-            if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
-                                             visibleAtZoom:_zoom
-                                                   andPass:_passID])
-            {
-                UIColor *clr = [UIColor colorWithRed:0.2 green:0.2 blue:1 alpha:0.5];
-                nDisplayed = [self displayUsingBinFile:context
-                                              areaType:@"NWI"
-                                                 color:clr.CGColor
-                                          pointInAreas:pia
-                                             llCorners:latlonCornerPoints
-                                              LLBounds:platlonBounds
-                                            viewBounds:pvbounds];
-            }
-            if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
-            {
-                nDisplayed = [self displayRoads:context
-                                      llCorners:latlonCornerPoints
-                                       LLBounds:platlonBounds
-                                     viewBounds:pvbounds
-                         displayCharacteristics:dc
-                                         themes:themes
-                                    pointInArea:pia];
-                nDisplayed = [self displayTrails:context
-                                       llCorners:latlonCornerPoints
-                                        LLBounds:platlonBounds
-                                      viewBounds:pvbounds
-                          displayCharacteristics:dc
-                                          themes:themes
-                                     pointInArea:pia];
-                nDisplayed = [self displaySnowTrails:context
-                                       llCorners:latlonCornerPoints
-                                        LLBounds:platlonBounds
-                                      viewBounds:pvbounds
-                          displayCharacteristics:dc
-                                          themes:themes
-                                     pointInArea:pia];
-            }
-            nDisplayed = [self displayEdgePoints:context
+        if ([ConfigurationControl.sharedInstance layer:HCLayerForest
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self displayUsingBinFile:context
+                                          areaType:@"FOREST"
+                                             color:0
+                                      pointInAreas:pia
+                                         llCorners:latlonCornerPoints
+                                          LLBounds:platlonBounds
+                                        viewBounds:pvbounds];
+        }
+        if ([ConfigurationControl.sharedInstance layer:HCLayerFEESURF
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            nDisplayed = [self displayUsingBinFile:context
+                                          areaType:@"FEESURF"
+                                             color:0
+                                      pointInAreas:pia
+                                         llCorners:latlonCornerPoints
+                                          LLBounds:platlonBounds
+                                        viewBounds:pvbounds];
+        }
+        if ([ConfigurationControl.sharedInstance layer:HCLayerNWI
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
+        {
+            UIColor *clr = [UIColor colorWithRed:0.2 green:0.2 blue:1 alpha:0.5];
+            nDisplayed = [self displayUsingBinFile:context
+                                          areaType:@"NWI"
+                                             color:clr.CGColor
+                                      pointInAreas:pia
+                                         llCorners:latlonCornerPoints
+                                          LLBounds:platlonBounds
+                                        viewBounds:pvbounds];
+        }
+        if (ConfigurationControl.sharedInstance.mapType == kGMSTypeNone)
+        {
+            nDisplayed = [self displayRoads:context
+                                  llCorners:latlonCornerPoints
+                                   LLBounds:platlonBounds
+                                 viewBounds:pvbounds
+                     displayCharacteristics:dc
+                                     themes:themes
+                                pointInArea:pia];
+            nDisplayed = [self displayTrails:context
+                                   llCorners:latlonCornerPoints
+                                    LLBounds:platlonBounds
+                                  viewBounds:pvbounds
+                      displayCharacteristics:dc
+                                      themes:themes
+                                 pointInArea:pia];
+            nDisplayed = [self displaySnowTrails:context
                                        llCorners:latlonCornerPoints
                                         LLBounds:platlonBounds
                                       viewBounds:pvbounds
@@ -241,6 +245,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                           themes:themes
                                      pointInArea:pia];
         }
+        nDisplayed = [self displayEdgePoints:context
+                                   llCorners:latlonCornerPoints
+                                    LLBounds:platlonBounds
+                                  viewBounds:pvbounds
+                      displayCharacteristics:dc
+                                      themes:themes
+                                 pointInArea:pia];
+    }
     
     nDisplayed = [self displayWaypoints:context
                               llCorners:latlonCornerPoints
@@ -249,7 +261,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                  displayCharacteristics:dc
                                  themes:themes
                             pointInArea:pia];
-
+    
     
 }
 - (BOOL)continueProcessing
@@ -316,6 +328,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             key = @"TITLE";
             textZoom = 8;
+        }
+        if ([table isEqual:@"GOVTPARCELS"])
+        {
+            key = @"GOVT_OWN";
+            textZoom = 8;
+        }
+        if ([table isEqual:@"WMA"])
+        {
+            key = @"WMA";
+            textZoom = 10;
         }
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];

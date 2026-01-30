@@ -293,7 +293,7 @@ Top:
         {
             HuntingData *hd = [[HuntingData alloc] init];
             
-            if (hd.datasetVersion.integerValue > 7)
+            if (hd.datasetVersion.integerValue > 8)
                 rtn = YES;
         }
             break;
