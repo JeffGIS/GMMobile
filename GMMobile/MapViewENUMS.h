@@ -130,6 +130,7 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
     DigitizationModeCurbRamps,
     DigitizationModeSidewalkPointNew,
     DigitizationModeSidewalkPointMove,
+    DigitizationModeHunting,
 };
 
 typedef NS_ENUM(NSInteger, AlleyStatusSetting)

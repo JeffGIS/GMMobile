@@ -2066,19 +2066,17 @@ didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [optionList addObject:txt];
                     [optionList addObject:@"________________________"];
                 }
-                [optionList addObject:@"Add Flushed Waypoint"];
-                [optionList addObject:@"Test Waypoint"];
-                [optionList addObject:@"Add Retrieved Waypoint"];
-                [optionList addObject:@"Add Compass Waypoint"];
 
-                
-                self.hideScaleBar = TRUE;
-                NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
-                                                                                  delegate:self
-                                                                                     title:@"Waypoint Options"
-                                                                                 textArray:optionList
-                                                                             includeCancel:YES];
-                nvptv.allowsSubtitle = NO;
+                if (optionList.count)
+                {
+                    self.hideScaleBar = TRUE;
+                    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                                      delegate:self
+                                                                                         title:@"Waypoint Options"
+                                                                                     textArray:optionList
+                                                                                 includeCancel:YES];
+                    nvptv.allowsSubtitle = NO;
+                }
             }
 
         }
@@ -7054,6 +7052,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigAlleyWalls:
             _digitizationMode = DigitizationModeAlleyWallNew;
             break;
+        case HCConfigHunting:
+        {
+            NSMutableArray *optionList = NSMutableArray.array;
+                        
+            [optionList addObject:@"Add Flushed Waypoint"];
+            [optionList addObject:@"Test Waypoint"];
+            [optionList addObject:@"Add Retrieved Waypoint"];
+            [optionList addObject:@"Add Compass Waypoint"];
+            self.hideScaleBar = TRUE;
+            NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                              delegate:self
+                                                                                 title:@"Digitize Options"
+                                                                             textArray:optionList
+                                                                         includeCancel:YES];
+            nvptv.allowsSubtitle = NO;
+            nvptv.identifier = @"digitize";
+
+        }
+            return;
         case HCConfigMetroProp:
             _digitizationMode = DigitizationModeProperty;
             [self hideMarkersAndInfoWindows:YES];
@@ -7808,7 +7825,18 @@ didSelectPDFButtonWithText:(NSString *)text
     }
     else if (ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
     {
-        if ([text isEqualToString:@"Mark Vehicle Location"])
+        if ([popoverTableView.identifier isEqual:@"digitize"])
+        {
+            _digitizationMode = DigitizationModeHunting;
+            [self hideMarkersAndInfoWindows:YES];
+            [_mapToolbar hide];
+            
+            _nvdv = [NVDigitizerView showDigitizerInView:self.view
+                                       constrainedToView:_mapView
+                                                delegate:self];
+            _inDigitizationMode = YES;
+        }
+        else if ([text isEqualToString:@"Mark Vehicle Location"])
         {
             _locationManager.distanceFilter = kCLDistanceFilterNone;
             _locationManager.delegate = self;
@@ -8832,7 +8860,10 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     [self showMarkersAndInfoWindows:YES];
     [_mapToolbar show];
 }
-
+- (void)digitizerViewDidAddPoint:(CLLocationCoordinate2D)point
+{
+    return;
+}
 - (void)zoomMapToNearLeft:(CLLocationCoordinate2D)nearLeft
                  farRight:(CLLocationCoordinate2D)farRight
 {

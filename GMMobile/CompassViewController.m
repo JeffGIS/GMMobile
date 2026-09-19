@@ -55,6 +55,7 @@ int ii=0;
 @property int statusBarHeight;
 @property UIButton *optionsButton;
 @property UILabel *weatherLabel;
+@property UILabel *sunRiseTitleLabel;
 @property UILabel *sunRiseSetLabel;
 @property UIButton *weatherButton;
 @property WeatherData * wd;
@@ -382,24 +383,35 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
                      forControlEvents:UIControlEventTouchUpInside];
     [self.view  addSubview:_optionsButton];
 
+    _sunRiseTitleLabel = UILabel.new;
+    _sunRiseTitleLabel.frame = CGRectMake(_optionsButton.frame.origin.x+_optionsButton.frame.size.width,top,160*_widthFactor,_optionsButton.frame.size.height/3);
+    _sunRiseTitleLabel.backgroundColor = UIColor.blackColor;
+    _sunRiseTitleLabel.textColor = UIColor.greenColor;
+    _sunRiseTitleLabel.font =[UIFont systemFontOfSize: 20];
+    _sunRiseTitleLabel.adjustsFontSizeToFitWidth = YES;
+    _sunRiseTitleLabel.textAlignment = NSTextAlignmentCenter;
+    _sunRiseTitleLabel.numberOfLines = 1;
+    _sunRiseTitleLabel.text = @"";
+    [self.view  addSubview:_sunRiseTitleLabel];
     _sunRiseSetLabel = UILabel.new;
-    _sunRiseSetLabel.frame = CGRectMake(_optionsButton.frame.origin.x+_optionsButton.frame.size.width,top,160*_widthFactor,_optionsButton.frame.size.height);
+    int th = _optionsButton.frame.size.height / 3;
+    _sunRiseSetLabel.frame = CGRectMake(_optionsButton.frame.origin.x+_optionsButton.frame.size.width,top+th,160*_widthFactor,th * 2);
     _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
     _sunRiseSetLabel.textColor = UIColor.whiteColor;
     _sunRiseSetLabel.font =[UIFont systemFontOfSize: 20];
     _sunRiseSetLabel.adjustsFontSizeToFitWidth = YES;
     _sunRiseSetLabel.textAlignment = NSTextAlignmentCenter;
-    _sunRiseSetLabel.numberOfLines = 3;
+    _sunRiseSetLabel.numberOfLines = 2;
     _sunRiseSetLabel.text = @"";
     [self.view  addSubview:_sunRiseSetLabel];
 
     _weatherLabel = UILabel.new;
-    frame = _sunRiseSetLabel.frame;
+    frame = CGRectMake(_optionsButton.frame.origin.x+_optionsButton.frame.size.width,top,160*_widthFactor,_optionsButton.frame.size.height);
     frame.origin.x = right - frame.size.width - _optionsButton.frame.size.width/2;
     _weatherLabel.frame = frame;
     _weatherLabel.backgroundColor = UIColor.blackColor;
     _weatherLabel.textColor = UIColor.whiteColor;
-    _weatherLabel.font =[UIFont systemFontOfSize: 20];
+    _weatherLabel.font =[UIFont systemFontOfSize: 22];
     _weatherLabel.adjustsFontSizeToFitWidth = YES;
     _weatherLabel.textAlignment = NSTextAlignmentCenter;
     _weatherLabel.numberOfLines = 3;
@@ -505,6 +517,7 @@ CGRect getCGRect (NSString * rectName,CGRect rect)
     [_weatherLabel removeFromSuperview];
     [_weatherButton removeFromSuperview];
 
+    [_sunRiseTitleLabel removeFromSuperview];
     [_sunRiseSetLabel removeFromSuperview];
 
     [_backgroundView removeFromSuperview];
@@ -1512,11 +1525,19 @@ double HeadingFromAZ (double az)
             NSString * riseText = textAfter(sunRise, @"Today ");
             NSString * setText = textAfter(sunSet, @"Today ");
             NSString * sinceUntilText = [self getSinceUntilText:data.sunRise
-                                                        setText:data.sunSet];
+                                                       setText:data.sunSet];
+            _sunRiseSetLabel.font =[UIFont systemFontOfSize: 22];
             if (MNGrouseHunting)
             {
-                _sunRiseSetLabel.numberOfLines = 4;
-                _sunRiseSetLabel.text = [NSString stringWithFormat:@"MN Grouse Hunting\nOpens:%@\nCloses:%@\n%@",riseText,setText,sinceUntilText];
+                _sunRiseTitleLabel.backgroundColor = UIColor.blackColor;
+                _sunRiseTitleLabel.numberOfLines = 2;
+                _sunRiseTitleLabel.textColor = UIColor.greenColor;
+                _sunRiseTitleLabel.text = [NSString stringWithFormat:@"MN Grouse"];
+                _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
+                _sunRiseSetLabel.numberOfLines = 2;
+                _sunRiseSetLabel.textColor = UIColor.whiteColor;
+                _sunRiseSetLabel.text = [NSString stringWithFormat:@"%@\nopens at %@",sinceUntilText,riseText];
+                //_sunRiseSetLabel.text = [NSString stringWithFormat:@"MN Grouse Hunting\nOpens:%@\nCloses:%@\n%@",riseText,setText,sinceUntilText];
             }
             else
             {

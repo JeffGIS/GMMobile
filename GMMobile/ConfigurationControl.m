@@ -348,7 +348,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantPlat] = NO;
-        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapTypeButton] = YES;
         configToobarSegs[HCConfigHunting][MapToolbarPropertyWantUserLocation] = YES;
