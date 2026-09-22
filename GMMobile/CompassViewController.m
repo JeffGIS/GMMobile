@@ -1501,6 +1501,7 @@ double HeadingFromAZ (double az)
         return;
     }
     WeatherRecord* data = _currentWeatherRecord;
+    [_huntingSeasonData updateInfo:data];
     _currentTemp = data.temp;
     _currentWindSpeed = data.windSpeed;
     _currentWindDirection = data.windDir;
@@ -1508,8 +1509,7 @@ double HeadingFromAZ (double az)
     NSString * sunRise = @"";
     NSString * sunSet = @"";
     NSString * huntingSeasonText;
-    NSString * weatherText = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];;
-    BOOL MNGrouseHunting = TRUE;
+    NSString * weatherText = [NSString stringWithFormat:@"Temp:%i deg\nWind:%i mph\n%@",_currentTemp,_currentWindSpeed,_currentWeatherDesc];
     int sunRiseOffset = 30 * 60;
     if (data.sunRise > 0)
     {
@@ -1524,20 +1524,25 @@ double HeadingFromAZ (double az)
         {
             NSString * riseText = textAfter(sunRise, @"Today ");
             NSString * setText = textAfter(sunSet, @"Today ");
-            NSString * sinceUntilText = [self getSinceUntilText:data.sunRise
-                                                       setText:data.sunSet];
+            NSString * sinceUntilText = @"";
+            //NSString * sinceUntilText = [self getSinceUntilText:data.sunRise
+              //                                         setText:data.sunSet];
             _sunRiseSetLabel.font =[UIFont systemFontOfSize: 22];
-            if (MNGrouseHunting)
+            if (_huntingSeasonData.CurrentSpecies == Grouse)
             {
                 _sunRiseTitleLabel.backgroundColor = UIColor.blackColor;
-                _sunRiseTitleLabel.numberOfLines = 2;
-                _sunRiseTitleLabel.textColor = UIColor.greenColor;
-                _sunRiseTitleLabel.text = [NSString stringWithFormat:@"MN Grouse"];
-                _sunRiseSetLabel.backgroundColor = UIColor.blackColor;
-                _sunRiseSetLabel.numberOfLines = 2;
-                _sunRiseSetLabel.textColor = UIColor.whiteColor;
-                _sunRiseSetLabel.text = [NSString stringWithFormat:@"%@\nopens at %@",sinceUntilText,riseText];
-                //_sunRiseSetLabel.text = [NSString stringWithFormat:@"MN Grouse Hunting\nOpens:%@\nCloses:%@\n%@",riseText,setText,sinceUntilText];
+                _sunRiseTitleLabel.numberOfLines = 1;
+                if (_huntingSeasonData.isOpen)
+                {
+                    _sunRiseTitleLabel.textColor = UIColor.greenColor;
+                    _sunRiseSetLabel.text = [NSString stringWithFormat:@"%@\n%@",_huntingSeasonData.line1,_huntingSeasonData.line2];
+                }
+                else
+                {
+                    _sunRiseSetLabel.text = [NSString stringWithFormat:@"%@\n%@",_huntingSeasonData.line1,_huntingSeasonData.line2];
+                    _sunRiseTitleLabel.textColor = UIColor.redColor;
+                }
+                _sunRiseTitleLabel.text = _huntingSeasonData.label;
             }
             else
             {
@@ -1555,60 +1560,6 @@ double HeadingFromAZ (double az)
    return;
 }
 
-- (NSString*) getSinceUntilText:(time_t)riseTime
-                        setText:(time_t)setTime
-{
-    NSString * rtn = @"";
-    time_t now = NSDate.date.timeIntervalSince1970;
-    long riseDiff = now - riseTime;
-    long setDiff = setTime - now;
-    NSString * sinceUntil = @"since";
-    if (riseDiff < 0)
-    {
-        if (riseDiff < 0)
-            sinceUntil = @"until";
-        riseDiff = abs (riseDiff) / 60;
-        int mins = riseDiff % 60;
-        int hours = riseDiff / 60;
-        if (hours)
-        {
-            NSString * hourText = @"hr";
-            if (hours > 1)
-                hourText = @"hrs";
-            if (mins)
-                rtn = [NSString stringWithFormat:@"%i %@ %i min %@",hours,hourText, mins,sinceUntil];
-            else
-                rtn = [NSString stringWithFormat:@"%i %@ %@",hours,hourText,sinceUntil];
-        }
-        else
-        {
-            rtn = [NSString stringWithFormat:@"%i minutes %@",mins,sinceUntil];
-        }
-    }
-    else
-    {
-        if (setDiff > 0)
-            sinceUntil = @"until";
-        setDiff = abs (setDiff) / 60;
-        int mins = setDiff % 60;
-        int hours = setDiff / 60;
-        if (hours)
-        {
-            NSString * hourText = @"hr";
-            if (hours > 1)
-                hourText = @"hrs";
-            if (mins)
-                rtn = [NSString stringWithFormat:@"%i %@ %i min %@",hours,hourText, mins,sinceUntil];
-            else
-                rtn = [NSString stringWithFormat:@"%i %@ %@",hours,hourText,sinceUntil];
-        }
-        else
-        {
-            rtn = [NSString stringWithFormat:@"%i minutes %@",mins,sinceUntil];
-        }
-    }
-    return rtn;
-}
 - (void)weatherDataDidReturnError:(NSString *) message
 {
     
