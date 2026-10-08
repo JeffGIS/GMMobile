@@ -218,6 +218,7 @@
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
 		EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB398F091ABC94240043875E /* PlatProfileView.m */; };
 		EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F0D1AC04B530043875E /* censusdatadef.txt */; };
+		EB435CB83066F2A400366AB1 /* HuntersCompass_Logo.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EB435CB73066F2A400366AB1 /* HuntersCompass_Logo.jpg */; };
 		EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C11AA89DE100B8B162 /* PipeTrace.m */; };
 		EB4A58381FC754E200B8B613 /* HuntingDataDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
@@ -573,6 +574,7 @@
 		EB398F081ABC94240043875E /* PlatProfileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatProfileView.h; sourceTree = "<group>"; };
 		EB398F091ABC94240043875E /* PlatProfileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatProfileView.m; sourceTree = "<group>"; };
 		EB398F0D1AC04B530043875E /* censusdatadef.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = censusdatadef.txt; sourceTree = "<group>"; };
+		EB435CB73066F2A400366AB1 /* HuntersCompass_Logo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = HuntersCompass_Logo.jpg; sourceTree = "<group>"; };
 		EB4A18C01AA89DE100B8B162 /* PipeTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeTrace.h; sourceTree = "<group>"; };
 		EB4A18C11AA89DE100B8B162 /* PipeTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PipeTrace.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB4A58361FC754E200B8B613 /* HuntingDataDisplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HuntingDataDisplay.h; sourceTree = "<group>"; };
@@ -776,6 +778,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EB435CB73066F2A400366AB1 /* HuntersCompass_Logo.jpg */,
 				EB8F1A582EC7826800AB9DCD /* legends.svg */,
 				EB1CC5032A21B36D001ED02E /* StickManT.png */,
 				EBAEBD662944F6500004D22D /* weather.png */,
@@ -1513,6 +1516,7 @@
 				69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */,
 				692EFA571D36B11D007B0D18 /* questionMarkHighlighted.png in Resources */,
 				69CB89E01DCD558700D408E9 /* backspace.png in Resources */,
+				EB435CB83066F2A400366AB1 /* HuntersCompass_Logo.jpg in Resources */,
 				BB8B969C1E8568CA00B6A9F7 /* Part2-2.png in Resources */,
 				EB1CC5062A21B36D001ED02E /* StickManT.png in Resources */,
 				EB0A7E282C95E4F900AE05F1 /* StartLocationTracking.m4a in Resources */,
