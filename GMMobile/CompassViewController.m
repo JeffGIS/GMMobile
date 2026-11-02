@@ -1528,6 +1528,7 @@ double HeadingFromAZ (double az)
             //NSString * sinceUntilText = [self getSinceUntilText:data.sunRise
               //                                         setText:data.sunSet];
             _sunRiseSetLabel.font =[UIFont systemFontOfSize: 22];
+            
             if (_huntingSeasonData.CurrentSpecies == Grouse)
             {
                 _sunRiseTitleLabel.backgroundColor = UIColor.blackColor;
